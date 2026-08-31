@@ -9,11 +9,11 @@ export function isVideo(url) {
   return VIDEO_EXT.test(String(url || ''));
 }
 
-// Every public link in a published post must use the artist's own domain.
+// Every public link in a published post must use the studio's own domain.
 // Anything still carrying the platform hostname (older drafts, pasted links,
 // AI-written captions) is rewritten right before the post goes out.
 export function useOwnDomain(text) {
-  return String(text || '').replace(/https?:\/\/(?:www\.)?roxsan\.base44\.app/gi, PUBLIC_SITE_URL);
+  return String(text || '').replace(/https?:\/\/(?:www\.)?iroxanne\.base44\.app/gi, PUBLIC_SITE_URL);
 }
 
 export function buildMessage(post, link) {

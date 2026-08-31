@@ -1,5 +1,5 @@
 // Shared Canva Connect API constants and helpers.
-export const CANVA_REDIRECT_URI = 'https://roxsan.base44.app/functions/canvaCallback';
+export const CANVA_REDIRECT_URI = 'https://iroxanne.base44.app/functions/canvaCallback';
 export const CANVA_AUTHORIZE_URL = 'https://www.canva.com/api/oauth/authorize';
 export const CANVA_TOKEN_URL = 'https://api.canva.com/rest/v1/oauth/token';
 
