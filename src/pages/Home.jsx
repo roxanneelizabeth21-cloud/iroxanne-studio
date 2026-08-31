@@ -48,14 +48,24 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="dark min-h-screen bg-[#292745] text-white">
+    <div className="dark min-h-screen bg-[#15162B] text-white">
       <SiteNav />
 
       <main>
-        <Hero />
+        <Hero projects={projects} loading={loading} />
+
         <Services />
-        <FeaturedWork items={projects} loading={loading} />
-        <Testimonials items={testimonials} loading={loading} />
+
+        <FeaturedWork
+          items={projects}
+          loading={loading}
+        />
+
+        <Testimonials
+          items={testimonials}
+          loading={loading}
+        />
+
         <ClosingCTA />
       </main>
 
