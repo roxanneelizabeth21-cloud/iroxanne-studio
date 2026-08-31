@@ -25,6 +25,7 @@ import EmailTemplatesAdminPage from '@/pages/admin/EmailTemplatesAdminPage';
 import LegalPage from '@/pages/LegalPage';
 import Unsubscribe from '@/pages/Unsubscribe';
 import Home from '@/pages/Home';
+import GetQuote from '@/pages/GetQuote';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
@@ -91,6 +92,7 @@ const AuthenticatedApp = () => {
       <Route path="/privacy" element={<LegalPage />} />
       <Route path="/terms" element={<LegalPage />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
+      <Route path="/quote" element={<GetQuote />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />

@@ -1,0 +1,226 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Lead email address"
+    },
+    "name": {
+      "type": "string",
+      "description": "Lead contact name"
+    },
+    "interested_apps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "App/service categories the lead is interested in"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where the lead came from (e.g. get_quote_form)"
+    },
+    "request_type": {
+      "type": "string",
+      "description": "Kind of request (e.g. quote_request)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "proposal_sent",
+        "won",
+        "lost",
+        "archived"
+      ],
+      "default": "new",
+      "description": "Lead lifecycle status"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "business_name": {
+      "type": "string",
+      "description": "Business name"
+    },
+    "business_type": {
+      "type": "string",
+      "description": "Business type / industry"
+    },
+    "website": {
+      "type": "string",
+      "description": "Existing website URL, if any"
+    },
+    "quick_pitch": {
+      "type": "string",
+      "description": "2-3 sentence summary of what the app needs to do"
+    },
+    "business_model": {
+      "type": "string",
+      "description": "How the business operates today and who the customers are"
+    },
+    "problem_to_solve": {
+      "type": "string",
+      "description": "Problem or pain point driving the project"
+    },
+    "initial_users": {
+      "type": "string",
+      "description": "Expected users at launch"
+    },
+    "projected_growth": {
+      "type": "string",
+      "description": "Growth expected in 12 months"
+    },
+    "competitors": {
+      "type": "string",
+      "description": "Competitors and what they do well or poorly"
+    },
+    "primary_workflows": {
+      "type": "string",
+      "description": "Top workflows users need to complete"
+    },
+    "user_types": {
+      "type": "string",
+      "description": "Who uses the app and whether they need different views"
+    },
+    "data_to_collect": {
+      "type": "string",
+      "description": "Information the app must capture and store"
+    },
+    "reports_needed": {
+      "type": "string",
+      "description": "What needs to appear in dashboards/reports"
+    },
+    "must_have_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Features required for launch"
+    },
+    "nice_to_have_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Features that are fine to launch without"
+    },
+    "out_of_scope": {
+      "type": "string",
+      "description": "Explicitly out of scope"
+    },
+    "existing_tools": {
+      "type": "string",
+      "description": "Tools currently in use and any pain points"
+    },
+    "integrations_needed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Integrations the lead will need"
+    },
+    "compliance_needs": {
+      "type": "string",
+      "description": "Compliance/legal requirements (HIPAA, GDPR, PCI, none)"
+    },
+    "design_style": {
+      "type": "string",
+      "description": "Preferred design style"
+    },
+    "design_inspiration": {
+      "type": "string",
+      "description": "Links to sites/apps the lead likes"
+    },
+    "device_focus": {
+      "type": "string",
+      "description": "Device focus (mobile-first, desktop-first, both, not sure)"
+    },
+    "accessibility_needs": {
+      "type": "string",
+      "description": "Accessibility needs, if any"
+    },
+    "ideal_launch_date": {
+      "type": "string",
+      "description": "Ideal launch date or timeframe"
+    },
+    "revision_expectations": {
+      "type": "string",
+      "description": "Number of revision rounds expected"
+    },
+    "training_needed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the team needs training/documentation"
+    },
+    "ongoing_support_needed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether ongoing post-launch support is wanted"
+    },
+    "budget_range": {
+      "type": "string",
+      "enum": [
+        "under_5k",
+        "5k_10k",
+        "10k_20k",
+        "20k_50k",
+        "50k_plus",
+        "not_sure"
+      ],
+      "description": "Selected budget range"
+    },
+    "pricing_model_preference": {
+      "type": "string",
+      "description": "Preferred pricing model (fixed, hourly, not_sure)"
+    },
+    "payment_schedule_preference": {
+      "type": "string",
+      "description": "Preferred payment schedule"
+    },
+    "estimated_tier": {
+      "type": "string",
+      "description": "Auto-estimated project tier (small, standard, enterprise)"
+    },
+    "estimated_hours_low": {
+      "type": "number",
+      "description": "Auto-estimated lower bound of hours"
+    },
+    "estimated_hours_high": {
+      "type": "number",
+      "description": "Auto-estimated upper bound of hours"
+    },
+    "estimated_price_low": {
+      "type": "number",
+      "description": "Auto-estimated lower bound of price (USD)"
+    },
+    "estimated_price_high": {
+      "type": "number",
+      "description": "Auto-estimated upper bound of price (USD)"
+    }
+  },
+  "required": [
+    "email"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
