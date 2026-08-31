@@ -23,12 +23,7 @@ export default function Today() {
 
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: templates = [] } = useQuery({ queryKey: ['video-templates'], queryFn: () => base44.entities.VideoTemplate.list() });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: platformLinks = [] } = useQuery({ queryKey: ['music-platform-links'], queryFn: () => base44.entities.MusicPlatformLink.filter({ is_visible: true }) });
-  const { data: allTracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
-  const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
-  const { data: bpList = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
-  const brandProfile = bpList[0] || null;
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
 
   const dueToday = posts.filter((p) => p.scheduled_date === today && p.status !== 'Skipped' && p.status !== 'Posted');
   const comingUp = [1, 2, 3].map((n) => {
@@ -115,11 +110,7 @@ export default function Today() {
               key={p.id}
               post={p}
               templates={templates}
-              releases={releases}
-              platformLinks={platformLinks}
-              allTracks={allTracks}
-              songProfiles={songProfiles}
-              brandProfile={brandProfile}
+              portfolioItems={portfolioItems}
               onEdit={setEditing}
               onRegenerate={regenerate}
               onSkip={skip}

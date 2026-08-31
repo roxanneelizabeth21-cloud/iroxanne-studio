@@ -1,20 +1,19 @@
 import { Pencil, RefreshCw, SkipForward, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { platformColor, STATUS_STYLES, isVideoFormat, copyText, resolveStreamLink } from '@/lib/marketing';
+import { platformColor, STATUS_STYLES, isVideoFormat, copyText, resolvePostLink } from '@/lib/marketing';
 import CopyEverythingButton from './CopyEverythingButton';
 import AssemblyChecklist from './AssemblyChecklist';
 
 // TodayPostCard — a large, mobile-first card for one of today's posts.
 // Primary action: Copy Everything. Secondary: edit, regenerate, skip, mark posted.
 // Video posts show the inline assembly checklist.
-export default function TodayPostCard({ post, templates, releases, platformLinks, allTracks, songProfiles, brandProfile, onEdit, onRegenerate, onSkip, onMarkPosted, busyId }) {
+export default function TodayPostCard({ post, templates, portfolioItems, onEdit, onRegenerate, onSkip, onMarkPosted, busyId }) {
   const pc = platformColor(post.platform);
   const isVideo = isVideoFormat(post.format);
   const template = templates.find((t) => t.id === post.template_id) || null;
 
-  // Resolve streaming link from the release's visible MusicPlatformLink records
-  // (or the track's parent release), then song profile, then brand default.
-  const link = resolveStreamLink(post, releases, platformLinks, allTracks, songProfiles, brandProfile);
+  // Link to append at the bottom of the post: the project's portfolio page or the consult-booking page.
+  const link = resolvePostLink(post, portfolioItems);
 
   const busy = busyId === post.id;
   const firstLine = String(post.hook || (post.caption || '').split('\n')[0] || '').trim();

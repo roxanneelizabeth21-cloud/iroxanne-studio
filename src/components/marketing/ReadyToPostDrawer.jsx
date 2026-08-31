@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Copy, Check, Download, Pencil, CheckCircle2, Loader2 } from 'lucide-react';
-import { copyText, platformColor, resolveStreamLink } from '@/lib/marketing';
+import { copyText, platformColor, resolvePostLink } from '@/lib/marketing';
 import { getPostMedia } from '@/lib/postMedia';
 import { downloadFile } from '@/lib/postShare';
 import CopyEverythingButton from '@/components/marketing/CopyEverythingButton';
@@ -55,9 +55,7 @@ export default function ReadyToPostDrawer({ post: postProp, open, onOpenChange, 
 
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: platformLinks = [] } = useQuery({ queryKey: ['music-platform-links'], queryFn: () => base44.entities.MusicPlatformLink.filter({ is_visible: true }) });
-  const { data: allTracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
-  const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
   const { data: brandProfile } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const { data: galleryImages = [] } = useQuery({ queryKey: ['gallery-images'], queryFn: () => base44.entities.GalleryImage.list('-created_date', 200) });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
@@ -66,11 +64,8 @@ export default function ReadyToPostDrawer({ post: postProp, open, onOpenChange, 
 
   const media = getPostMedia(post, clips, galleryImages);
   const pc = platformColor(post.platform);
-  const link = resolveStreamLink(post, releases, platformLinks, allTracks, songProfiles, brandProfile && brandProfile[0]);
-  const release = releases.find((r) => r.id === post.song_id);
-  const shareUrl = release && release.slug
-    ? `${window.location.origin}/release/${release.slug}`
-    : `${window.location.origin}/music`;
+  const link = resolvePostLink(post, portfolioItems);
+  const shareUrl = link;
   const posted = isLocked(post);
   const combinedCaption = `${post.caption || ''}${post.hashtags ? '\n\n' + post.hashtags : ''}${link ? '\n\n' + link : ''}`;
 

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Download, Loader2 } from 'lucide-react';
-import { resolveStreamLink } from '@/lib/marketing';
+import { resolvePostLink } from '@/lib/marketing';
 import { getPostMedia } from '@/lib/postMedia';
 import { downloadFile } from '@/lib/postShare';
 import { displayTime, platformResult, platformError, platformUrl, schedulingTimezone } from '@/lib/postValidation';
@@ -38,9 +38,7 @@ export default function PostPublishPanel({ post: postProp }) {
 
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: platformLinks = [] } = useQuery({ queryKey: ['music-platform-links'], queryFn: () => base44.entities.MusicPlatformLink.filter({ is_visible: true }) });
-  const { data: allTracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
-  const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
   const { data: brandProfiles = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const { data: galleryImages = [] } = useQuery({ queryKey: ['gallery-images'], queryFn: () => base44.entities.GalleryImage.list('-created_date', 200) });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
@@ -50,9 +48,9 @@ export default function PostPublishPanel({ post: postProp }) {
   const brandProfile = brandProfiles[0];
   const timezone = schedulingTimezone(brandProfile);
   const media = getPostMedia(post, clips, galleryImages);
-  const link = resolveStreamLink(post, releases, platformLinks, allTracks, songProfiles, brandProfile);
-  const release = releases.find((r) => r.id === post.song_id);
-  const shareUrl = release?.slug ? `${window.location.origin}/release/${release.slug}` : `${window.location.origin}/music`;
+  const link = resolvePostLink(post, portfolioItems);
+  const portfolioItem = portfolioItems.find((p) => p.id === post.portfolio_item_id) || null;
+  const shareUrl = link;
   const canAutoPublish = ['Facebook', 'Instagram'].includes(post.platform);
   const posted = post.status === 'Posted';
 
@@ -130,7 +128,7 @@ export default function PostPublishPanel({ post: postProp }) {
           open={!!review}
           onOpenChange={(o) => !o && setReview(null)}
           campaignName={campaigns.find((c) => c.id === review.post.campaign_id)?.name || ''}
-          releaseTitle={release?.title || ''}
+          releaseTitle={portfolioItem?.title || ''}
           timezone={timezone}
         />
       )}

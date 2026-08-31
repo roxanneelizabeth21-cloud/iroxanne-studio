@@ -1,5 +1,5 @@
 import { base44 } from '@/api/base44Client';
-import { defaultLinkTarget, shareablePageUrl } from '@/lib/postLink';
+import { pageUrl, defaultLinkTarget } from '@/lib/postLink';
 
 // Shared helpers for the Marketing Content Suite UI.
 
@@ -293,40 +293,12 @@ export function buildPasteReady(post, link) {
   return parts.join('\n\n').trim();
 }
 
-// Resolve the best streaming link to append for a post: visible MusicPlatformLink records
-// for the release (or the track's parent release), then the song profile, then brand default.
-// Replaces the old Release.spotify_url/apple_music_url/... fields, which no longer exist.
-export function resolveStreamLink(post, releases, platformLinks, tracks, songProfiles, brandProfile) {
-  const songId = post?.song_id;
-  let release = releases?.find((r) => r.id === songId);
-  let track = null;
-  if (!release && songId) {
-    track = tracks?.find((t) => t.id === songId);
-    if (track) release = releases?.find((r) => r.id === track.release_id);
-  }
-  // The owner's chosen link for the bottom of the post wins: the release page,
-  // the pre-save page, or nothing at all.
-  const target = post?.link_target || defaultLinkTarget(release);
+// Resolve the link to append at the bottom of a post for the service business:
+// the portfolio page of the attached project, or the consult-booking page.
+// Mirrors the backend portfolio link resolver used by publishPost/fillFirstComment.
+export function resolvePostLink(post, portfolioItems) {
+  const item = (portfolioItems || []).find((p) => p.id === post?.portfolio_item_id) || null;
+  const target = post?.link_target || defaultLinkTarget(item);
   if (target === 'None') return '';
-  if (target === 'Release page' || target === 'Pre-save page') {
-    // Preview-safe URL — the SPA pages serve no Open Graph tags to crawlers.
-    const pageUrl = shareablePageUrl(release, target);
-    if (pageUrl) return pageUrl;
-  }
-  if (release) {
-    const order = ['spotify', 'youtube', 'apple_music', 'amazon_music', 'tiktok_instagram', 'tidal', 'pandora', 'iheartradio', 'other'];
-    const links = (platformLinks || []).filter((l) => l.release_id === release.id && l.is_visible && l.url);
-    const hit = [...links].sort((a, b) => order.indexOf(a.platform_type) - order.indexOf(b.platform_type))[0];
-    if (hit) return hit.url;
-  }
-  const profile = songProfiles?.find((s) => s.song_id === songId || (release && s.title === release.title) || (track && s.title === track.title));
-  if (profile?.streaming_links) {
-    const first = String(profile.streaming_links).split('\n').map((x) => x.trim()).find(Boolean);
-    if (first) return first;
-  }
-  if (brandProfile?.default_streaming_links) {
-    const first = String(brandProfile.default_streaming_links).split('\n').map((x) => x.trim()).find(Boolean);
-    if (first) return first;
-  }
-  return '';
+  return pageUrl(item, target) || '';
 }
