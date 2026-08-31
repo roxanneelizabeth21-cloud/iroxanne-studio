@@ -3,7 +3,7 @@
 // admin-editable template registry (shared/emailTemplates.ts).
 
 export const SITE_URL = 'https://iroxanne.com';
-export const FROM_NAME = 'Roxsan Music';
+export const FROM_NAME = 'iRoxanne Studio';
 
 export function unsubscribeUrl(email: string): string {
   return `${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}`;

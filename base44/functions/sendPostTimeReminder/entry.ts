@@ -80,7 +80,7 @@ export default async function (req) {
     let emailed: any = null;
     if (ns.email) {
       try {
-        await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject: heading, body, from_name: 'Roxsan' });
+        await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject: heading, body, from_name: 'iRoxanne Studio' });
         emailed = true;
       } catch (e) {
         emailed = { error: e.message };

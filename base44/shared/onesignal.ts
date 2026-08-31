@@ -3,7 +3,7 @@
 // browsers) using the Subscribed Users segment.
 //
 // OneSignal REST API key is read from app secrets (ONESIGNAL_REST_API_KEY).
-// App ID is the RoxSan OneSignal app (Typical Site, v16 SDK).
+// App ID is the iRoxanne Studio OneSignal app (Typical Site, v16 SDK).
 //
 // NOTE: this module never references `base44:runtime`. Each calling function
 // imports `secrets` itself and passes apiKey in.

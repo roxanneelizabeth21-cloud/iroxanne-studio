@@ -8,9 +8,9 @@ import { unsubscribeUrl } from '../../shared/fanEmail.ts';
 // way the real send does — same shell, same merge-field substitution — using
 // sample data, and emails it to the signed-in admin.
 const SAMPLE: Record<string, Record<string, any>> = {
-  fan_welcome: { fan_name: 'Alex', email: 'fan@example.com', site_url: 'https://iroxanne.com', music_url: 'https://iroxanne.com/music' },
-  admin_new_subscriber: { email: 'fan@example.com', name: 'Alex', source: 'love-song', utm: 'instagram / social / launch', signed_up: new Date().toLocaleString() },
-  admin_new_inquiry: { name: 'Alex', email: 'fan@example.com', inquiry_type: 'booking', message_subject: 'Festival booking', submitted: new Date().toLocaleString() },
+  fan_welcome: { fan_name: 'Alex', email: 'fan@example.com', site_url: 'https://iroxanne.com', music_url: 'https://iroxanne.com/consult' },
+  admin_new_subscriber: { email: 'fan@example.com', name: 'Alex', source: 'newsletter', utm: 'instagram / social / launch', signed_up: new Date().toLocaleString() },
+  admin_new_inquiry: { name: 'Alex', email: 'fan@example.com', inquiry_type: 'collaboration', message_subject: 'Custom app inquiry', submitted: new Date().toLocaleString() },
   admin_daily_posts: { count: 2, plural: 's', date: new Date().toISOString().slice(0, 10) },
   admin_post_time: { count: 1, plural: '', date: new Date().toISOString().slice(0, 10), time: '09:00' },
   admin_weekly_digest: { week_start: '2026-08-19', week_end: '2026-08-31', completed_count: 4, scheduled_count: 6 },
@@ -23,8 +23,8 @@ const SAMPLE_ROWS: Record<string, string[]> = {
   admin_daily_posts: ['09:00 Instagram · Reel — Sample hook line', '17:00 Facebook · Feed Post — Sample caption line'],
   admin_post_time: ['09:00 Instagram · Reel — Sample hook line'],
   admin_weekly_digest: ['Posts completed last week: 4', 'Posts scheduled this week: 6'],
-  admin_release_countdown: ['"Love Song" — 7 days to release', 'Campaign: Launch push (Active)'],
-  admin_filming_nudge: ['Shot 1 — Love Song (~20s)', 'Opening line: "This one started on a rainy Tuesday."'],
+  admin_release_countdown: ['"Booking System" — 7 days to launch', 'Campaign: Launch push (Active)'],
+  admin_filming_nudge: ['Shot 1 — Booking System demo (~20s)', 'Opening line: "This one started with a client who hated their spreadsheets."'],
   admin_publish_failed: ['Instagram — Sample hook line: token expired'],
 };
 
@@ -77,7 +77,7 @@ ${detailRows([['Name', vars.name], ['Email', vars.email], ['Inquiry Type', vars.
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to,
-      from_name: 'Roxsan Music',
+      from_name: 'iRoxanne Studio',
       subject: `[Test] ${subject}`,
       body: html,
     });

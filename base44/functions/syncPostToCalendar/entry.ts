@@ -86,7 +86,7 @@ export default async function (req) {
 
     const ns = await loadNotificationSettings(base44);
     const tz = ns.timezone || 'America/New_York';
-    const origin = appOrigin(req) || 'https://roxsan.base44.app';
+    const origin = appOrigin(req) || 'https://iroxanne.com';
 
     // Bulk pass over all posts (campaign bulk-generation skips entity automations).
     if (body.sweep) {

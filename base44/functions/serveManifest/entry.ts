@@ -7,8 +7,8 @@
 // both favicon auditors and PWA installability checks can parse it.
 export default async function (req: Request): Promise<Response> {
   const manifest = {
-    name: "RoxSan Music",
-    short_name: "RoxSan",
+    name: "iRoxanne Studio",
+    short_name: "iRoxanne",
     start_url: "/",
     scope: "/",
     display: "standalone",

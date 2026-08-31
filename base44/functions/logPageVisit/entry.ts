@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-// In-app page visit tracker for Roxsan Music.
+// In-app page visit tracker for iRoxanne Studio.
 // Public endpoint (no auth required) so anonymous visitors are logged.
 // Creates a PageVisit record using the service role.
 // Stores UTM parameters, classified source/medium/campaign, device/browser, and session attribution.

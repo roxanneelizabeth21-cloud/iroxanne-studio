@@ -57,7 +57,7 @@ ${detailRows([
     });
 
     const { messageId } = await sendGmail(base44, {
-      fromName: 'Roxsan',
+      fromName: 'iRoxanne Studio',
       subject: emailSubject,
       body: emailBody,
       html: true,

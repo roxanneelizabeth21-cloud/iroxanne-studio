@@ -11,8 +11,8 @@ export default async function(req) {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json().catch(() => ({}));
-    const heading = body.heading || 'RoxSan Test Push';
-    const message = body.message || 'This is a test notification from the RoxSan app.';
+    const heading = body.heading || 'iRoxanne Studio Test Push';
+    const message = body.message || 'This is a test notification from the iRoxanne Studio app.';
 
     const apiKey = secrets.get('ONESIGNAL_REST_API_KEY');
     if (!apiKey) return Response.json({ error: 'ONESIGNAL_REST_API_KEY not set' }, { status: 500 });

@@ -118,7 +118,7 @@ export default async function (req) {
             linkPath: '/marketing/calendar',
             linkLabel: 'Open the calendar',
           });
-          await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject: heading, body, from_name: 'Roxsan' });
+          await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject: heading, body, from_name: 'iRoxanne Studio' });
           emailed = true;
         } catch (e) {
           emailed = { error: e.message };

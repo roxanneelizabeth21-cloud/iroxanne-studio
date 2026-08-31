@@ -21,49 +21,48 @@ export type TemplateDef = {
 export const TEMPLATE_DEFS: TemplateDef[] = [
   {
     key: 'fan_welcome',
-    name: 'Fan Welcome / Confirmation',
-    description: 'Sent to a fan right after they subscribe on any page (release pages, /go capture pages, newsletter). Sent once per fan.',
-    audience: 'The fan who just subscribed',
-    body_label: 'Email body — one paragraph per blank line. A “Read & Listen” button and unsubscribe link are added automatically.',
+    name: 'Subscriber Welcome / Confirmation',
+    description: 'Sent to a subscriber right after they join the list (newsletter or any capture page). Sent once per subscriber.',
+    audience: 'The subscriber who just joined',
+    body_label: 'Email body — one paragraph per blank line. A “Book a consult” button and unsubscribe link are added automatically.',
     merge_fields: [
-      { field: '{fan_name}', note: "The fan's first name, or “there” when they didn't give one" },
-      { field: '{email}', note: "The fan's email address" },
+      { field: '{fan_name}', note: "The subscriber's first name, or “there” when they didn't give one" },
+      { field: '{email}', note: "The subscriber's email address" },
       { field: '{site_url}', note: 'Your public site link' },
-      { field: '{music_url}', note: 'Link to your Music page' },
     ],
-    subject: 'Welcome to the Roxsan mailing list',
+    subject: 'Welcome to the iRoxanne Studio list',
     body: `Hi {fan_name},
 
-Thank you for joining the Roxsan mailing list. It means a lot to have you here.
+Thanks for joining the iRoxanne Studio list — glad to have you here.
 
-Here's what you can expect from me: new music the moment it drops, and the occasional story I only share with this list. No spam, and never more than you'd want.
+Here's what you'll get from me: notes on apps I'm building, the occasional behind-the-build story, and first looks at new work. No spam, and never more than you'd want.
 
-Want the story behind the songs? Every release page has a "Behind the Song" section — come read the story and listen to the latest.
+If you've got an idea you're thinking about building, you can always book a free consult from the link below.
 
 Talk soon,
-Roxsan`,
+iRoxanne Studio`,
   },
   {
     key: 'admin_new_subscriber',
-    name: 'New Fan Subscriber Alert',
+    name: 'New Subscriber Alert',
     description: 'Sent to you the moment someone subscribes anywhere on the site. The subscriber detail table is added automatically below your text.',
     audience: 'You (admin)',
     body_label: 'Intro line shown above the subscriber details.',
     merge_fields: [
       { field: '{email}', note: "The new subscriber's email" },
       { field: '{name}', note: 'Their name, or — when blank' },
-      { field: '{source}', note: 'Release slug or “newsletter”' },
+      { field: '{source}', note: 'Capture slug or “newsletter”' },
       { field: '{utm}', note: 'UTM source / medium / campaign' },
       { field: '{signed_up}', note: 'When they signed up' },
     ],
-    subject: 'New Fan Subscriber — {email}',
-    body: 'A new fan just subscribed on the Roxsan site.',
+    subject: 'New Subscriber — {email}',
+    body: 'A new subscriber just joined the iRoxanne Studio list.',
   },
   {
     key: 'admin_new_inquiry',
     name: 'New Contact Inquiry',
     description: 'Sent to you when someone submits the website contact form. Their details and full message are added automatically below your text.',
-    audience: 'You (admin) — replying goes straight back to the fan',
+    audience: 'You (admin) — replying goes straight back to the inquirer',
     body_label: 'Intro line shown above the inquiry details.',
     merge_fields: [
       { field: '{name}', note: 'Name they entered' },
@@ -72,8 +71,8 @@ Roxsan`,
       { field: '{message_subject}', note: 'Subject line they entered' },
       { field: '{submitted}', note: 'When the form was submitted' },
     ],
-    subject: 'New Fan Inquiry — {message_subject}',
-    body: 'You received a new message from the Roxsan website contact form.',
+    subject: 'New Inquiry — {message_subject}',
+    body: 'You received a new message from the iRoxanne Studio website contact form.',
   },
   {
     key: 'admin_daily_posts',
@@ -121,16 +120,16 @@ Roxsan`,
   },
   {
     key: 'admin_release_countdown',
-    name: 'Release Countdown',
-    description: 'Sent to you 14, 7, 3 and 1 days before a release date. The per-release status rows are added automatically below your text.',
+    name: 'Launch Countdown',
+    description: 'Sent to you 14, 7, 3 and 1 days before a campaign launch date. The per-project status rows are added automatically below your text.',
     audience: 'You (admin)',
     body_label: 'Intro line shown above the countdown details.',
     merge_fields: [
       { field: '{date}', note: "Today's date" },
-      { field: '{count}', note: 'How many releases are in a countdown window' },
+      { field: '{count}', note: 'How many projects are in a countdown window' },
     ],
-    subject: 'Release countdown update',
-    body: 'Where each upcoming release stands today, {date}.',
+    subject: 'Launch countdown update',
+    body: 'Where each upcoming launch stands today, {date}.',
   },
   {
     key: 'admin_publish_failed',
@@ -214,12 +213,12 @@ export function textToHtmlParagraphs(text: string): string {
     .join('\n');
 }
 
-// Wraps admin-authored fan copy in the branded Roxsan shell, with the
-// Read & Listen button and unsubscribe footer appended.
+// Wraps admin-authored subscriber copy in the branded iRoxanne Studio shell, with the
+// "Book a consult" button and unsubscribe footer appended.
 export function fanEmailHtml(text: string, unsubscribeLink: string): string {
   return brandedEmail({
     content: `${textToHtmlParagraphs(text)}
-<p style="margin:24px 0 0;">${brandButton('Read & Listen', `${SITE_URL}/music`)}</p>`,
+<p style="margin:24px 0 0;">${brandButton('Book a consult', `${SITE_URL}/consult`)}</p>`,
     footerNote: `You're receiving this because you signed up at <a href="${SITE_URL}" style="color:#8B8B85;">iroxanne.com</a>.<br>
 <a href="${unsubscribeLink}" style="color:#8B8B85;text-decoration:underline;">Unsubscribe</a>`,
   });

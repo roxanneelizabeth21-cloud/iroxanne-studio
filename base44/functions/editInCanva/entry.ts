@@ -7,7 +7,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function nameBase64(title) {
   // Canva caps an asset name at 50 unencoded characters and rejects the whole
   // metadata header when it's longer.
-  const name = String(title || 'Roxsan media').trim().slice(0, 50) || 'Roxsan media';
+  const name = String(title || 'iRoxanne Studio media').trim().slice(0, 50) || 'iRoxanne Studio media';
   const bytes = new TextEncoder().encode(name);
   let s = '';
   for (const b of bytes) s += String.fromCharCode(b);
@@ -61,7 +61,7 @@ export default async function (req: Request): Promise<Response> {
     const designRes = await fetch(`${CANVA_API}/designs`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ asset_id: job.asset.id, title: title || 'Roxsan media' }),
+      body: JSON.stringify({ asset_id: job.asset.id, title: title || 'iRoxanne Studio media' }),
     });
     const design = await designRes.json();
     if (!designRes.ok || !design.design?.urls?.edit_url) {
