@@ -24,27 +24,29 @@ export async function requireAuthenticated(base44): Promise<{ ok: true } | { ok:
   return { ok: false, response: Response.json({ error: 'Unauthorized' }, { status: 401 }) };
 }
 
-// The content rules shared by campaign generation and single-post regeneration.
-export const ARTIST_CONTEXT = `
-About the artist:
-- Name: Roxsan (write "Roxsan", never "Roxanne" unless quoting a song title).
-- Independent artist speaking directly to her audience — warm, authentic, direct. Not a corporate brand.
-- Music blends Caribbean (reggae, soca) with country-pop and contemporary Christian influences.
-- Faith-positive tone where it fits naturally; never forced or preachy.
+// The studio context shared by campaign generation and single-post regeneration.
+export const STUDIO_CONTEXT = `
+About the studio:
+- Name: iRoxanne Studio (write it exactly this way). A real person building real custom apps — not a faceless agency.
+- iRoxanne Studio builds custom applications for clients using Base44 (and related no-code/low-code tools).
+- Target clients: small business owners, solo entrepreneurs, and creators who need a custom app (booking systems, marketing tools, e-commerce, client portals, internal tools) but don't want to hire a full dev team.
+- Positioning: fast, personal, high-quality app development. Show the work, show the process, build trust.
+- Tone: confident, approachable, expert but not intimidating.
 `.trim();
 
 export const CONTENT_RULES = `
 Content rules:
-- Voice: warm, authentic, direct — an independent artist speaking to her audience, not a corporate brand. Use "I" and "you".
+- Voice: confident, approachable, expert but not intimidating — a real person building real solutions, not a faceless agency. Use "I" and "you".
 - Platform-native writing:
   - Instagram captions: line breaks for rhythm, 5–10 relevant hashtags at the end, hashtag-friendly tone.
   - Facebook: slightly longer and conversational, 1–3 hashtags.
   - YouTube: keyword-aware titles (put the title in the caption field first line), description with value, hashtags at the end.
-- Image prompts MUST describe a scene WITHOUT any faces visible (hands, silhouettes, landscapes, objects, back-of-figure shots are fine) and MUST NOT include any text or logos in the image — branding is added separately by the admin in Canva. Describe lighting, mood, color palette, and composition.
-- Vary content types across the calendar: lyric teasers, behind-the-scenes style prompts, countdown posts, release-day announcement, fan-engagement questions, streaming-link CTAs post-release.
+- Image prompts: prefer showing real app screenshots, UI, dashboards, or device mockups. Do NOT bake text or logos into the image. Describe lighting, mood, color palette, and composition.
+- Vary content types across the calendar: portfolio showcases, educational/tech-tip posts, behind-the-build/process content, client testimonials (only approved ones), direct offers/CTAs.
 - Hooks should stop the scroll in the first 2 seconds (for video) or first line (for text).
-- CTAs should be specific and platform-appropriate (e.g. "Pre-save now", "Drop a 🎧 if this is your vibe", "Subscribe for the official video").
-- Never invent streaming URLs or dates that contradict the provided campaign details.
+- CTAs should be specific and platform-appropriate (e.g. "Book a free consult", "See the portfolio", "DM to get started").
+- Never invent client names, testimonials, or results. Only reference real PortfolioItem/Testimonial records, and only use a client's name or quote when the record is marked shareable/approved.
+- Never invent streaming URLs, prices, or dates.
 `.trim();
 
 // Performance-based content rules. These override generic defaults and are based on
@@ -53,11 +55,11 @@ export const PERFORMANCE_RULES = `
 PERFORMANCE-BASED CONTENT RULES — these override generic defaults. Apply to every post.
 
 Content mix per campaign (approximate):
-- 60% short music loop clips: 8–15 seconds, built around the song's most energetic moment (chorus or hook), lyric text on screen, designed to loop seamlessly.
-- 25% authentic/personal content: phone-shot feel, behind-the-scenes, story-behind-the-song, direct-to-camera moments. These briefs MUST specify the admin's OWN footage, never stock.
-- 15% announcement/CTA posts: countdowns, release-day, streaming-link pushes.
+- 40% portfolio/showcase posts: show a real project, screenshot, UI, or "here's what I built" walkthrough. Built from real PortfolioItem records.
+- 30% educational/tech-tip posts: short, useful no-code/Base44 tips, "how I built X", common mistakes, quick wins.
+- 30% testimonial & direct-offer posts: approved client quotes (Testimonial records with approved_for_use=true), and direct CTAs (book a consult, see the portfolio, DM to get started).
 
-Assign each post a "content_bucket" of one of: "Loop Clip", "Authentic/Personal", "Announcement/CTA" so the mix holds across the calendar.
+Assign each post a "content_bucket" of one of: "Loop Clip" (= showcase), "Authentic/Personal" (= educational/process), "Announcement/CTA" (= testimonial/offer) so the mix holds across the calendar.
 
 Format rules (apply per platform on every video post):
 - All video is vertical 9:16 with captions/on-screen text always on.
@@ -66,11 +68,10 @@ Format rules (apply per platform on every video post):
 - Stories: 5–10 seconds.
 
 Hook rules (every video brief MUST specify):
-- The audio must start at the song's chorus/drop/most energetic moment — never the intro. The brief must name the song section to use.
-- Frame one must have bold on-screen text: a provocative line, lyric, or direct address to the listener. The brief provides the exact text.
+- Frame one must have bold on-screen text: a provocative line, a result, a question, or a direct address to the viewer. The brief provides the exact text.
 - The first 2–3 seconds decide performance; the brief must describe exactly what is on screen in those seconds.
 
-Hashtag rules: 5–8 hashtags per Reel in three tiers — 2–3 niche genre tags, 2–3 content-type tags, 1–2 broad discovery tags. Never mega-generic tags like #music.
+Hashtag rules: 5–8 hashtags per Reel in three tiers — 2–3 niche tags (e.g. #NoCode #Base44), 2–3 content-type tags (e.g. #AppBuilder #SmallBusinessTools), 1–2 broad discovery tags (e.g. #SoloFounder). Never mega-generic tags.
 
 Caption rules: Put the primary keyword/topic phrase in the first line, before the truncation point.
 `.trim();
@@ -84,9 +85,9 @@ export function generationSettings(bp: any): { campaignPerWeek: number; evergree
   return {
     campaignPerWeek: num(bp?.posts_per_campaign_week, 4),
     evergreenPerWeek: num(bp?.posts_per_evergreen_week, 3),
-    loopPct: num(bp?.mix_loop_pct, 60),
-    authenticPct: num(bp?.mix_authentic_pct, 25),
-    ctaPct: num(bp?.mix_cta_pct, 15),
+    loopPct: num(bp?.mix_loop_pct, 40),
+    authenticPct: num(bp?.mix_authentic_pct, 30),
+    ctaPct: num(bp?.mix_cta_pct, 30),
   };
 }
 
@@ -94,9 +95,9 @@ export function generationSettings(bp: any): { campaignPerWeek: number; evergree
 export function performanceRules(bp: any): string {
   const s = generationSettings(bp);
   return PERFORMANCE_RULES
-    .replace('- 60% short music loop clips:', `- ${s.loopPct}% short music loop clips:`)
-    .replace('- 25% authentic/personal content:', `- ${s.authenticPct}% authentic/personal content:`)
-    .replace('- 15% announcement/CTA posts:', `- ${s.ctaPct}% announcement/CTA posts:`);
+    .replace('- 40% portfolio/showcase posts:', `- ${s.loopPct}% portfolio/showcase posts:`)
+    .replace('- 30% educational/tech-tip posts:', `- ${s.authenticPct}% educational/tech-tip posts:`)
+    .replace('- 30% testimonial & direct-offer posts:', `- ${s.ctaPct}% testimonial & direct-offer posts:`);
 }
 
 export const POST_SCHEMA_FIELDS = [
@@ -186,14 +187,14 @@ export function brandProfileSection(bp: any): string {
     .join('\n');
   return [
     'BRAND PROFILE — authoritatively defines voice and rules. Override any generic content rules above where they conflict.',
-    `- Artist name: ${bp.artist_name || 'Roxsan'} (always spell it exactly this way)`,
-    `- Voice / how the artist speaks: ${bp.voice_description || ''}`,
-    `- Genre / musical identity: ${bp.genre_blend || ''}`,
+    `- Studio name: ${bp.artist_name || 'iRoxanne Studio'} (always spell it exactly this way)`,
+    `- Voice / how the studio speaks: ${bp.voice_description || ''}`,
+    `- What the studio builds / for whom: ${bp.genre_blend || ''}`,
     `- Audience: ${bp.audience_description || ''}`,
-    `- Faith integration (when/how faith themes appear): ${bp.faith_integration_notes || ''}`,
+    `- Positioning notes (personal / real-person angle): ${bp.faith_integration_notes || ''}`,
     rules ? `- Hard writing rules:\n${rules}` : '',
     bp.banned_words_phrases ? `- Banned words/phrases (never use): ${bp.banned_words_phrases}` : '',
-    `- Default streaming links: ${bp.default_streaming_links || ''}`,
+    `- Default links (portfolio, consult booking, etc.): ${bp.default_streaming_links || ''}`,
     `- Hashtag bank (preferred by platform): ${bp.hashtag_bank || ''}`,
     `- Image style notes: ${bp.image_style_notes || ''}`,
     presetLine ? `- Image style presets (append the matching prompt_suffix to image prompts):\n${presetLine}` : '',
@@ -227,80 +228,81 @@ export async function loadStyleExamples(base44, platform?: string): Promise<stri
   }
 }
 
-// --- Song content profiles (the knowledge base) ---
+// --- Portfolio item context (the knowledge base) ---
 
-// Load the SongProfile for a song. Match by song_id (Release id) first, then by title.
-export async function loadSongProfile(base44, songId?: string, releaseTitle?: string): Promise<any | null> {
+// Load a PortfolioItem by id.
+export async function loadPortfolioItem(base44, portfolioItemId?: string): Promise<any | null> {
+  if (!portfolioItemId) return null;
   try {
-    if (songId) {
-      const byId = await base44.asServiceRole.entities.SongProfile.filter({ song_id: songId }, '-created_date', 1);
-      if (byId && byId[0]) return byId[0];
-    }
-    if (releaseTitle) {
-      const all = await base44.asServiceRole.entities.SongProfile.list();
-      const t = String(releaseTitle).trim().toLowerCase();
-      const match = (all || []).find((s) => String(s.title || '').trim().toLowerCase() === t);
-      if (match) return match;
-    }
-    return null;
+    return await base44.asServiceRole.entities.PortfolioItem.get(portfolioItemId);
   } catch {
     return null;
   }
 }
 
-// Resolve a song context from either a MusicRelease id (album/single) or a Track id
-// (song-level). Returns { title, description, songProfile } where songProfile is the
-// best available content profile: a real SongProfile if one matches by id or title,
-// otherwise a minimal profile built from the track's own lyrics. Used by every
-// generation function so lyric posts can target individual tracks on an album.
-export async function resolveSongContext(base44, songId?: string): Promise<{ title: string; description: string; songProfile: any | null } | null> {
-  if (!songId) return null;
-  let release: any = null;
-  try { release = await base44.asServiceRole.entities.MusicRelease.get(songId); } catch {}
-  if (release) {
-    const songProfile = await loadSongProfile(base44, songId, release.title);
-    return { title: release.title || '', description: release.description || release.tagline || '', songProfile };
-  }
-  let track: any = null;
-  try { track = await base44.asServiceRole.entities.Track.get(songId); } catch {}
-  if (track) {
-    let parent: any = null;
-    try { parent = await base44.asServiceRole.entities.MusicRelease.get(track.release_id); } catch {}
-    const title = track.title || parent?.title || '';
-    let songProfile = await loadSongProfile(base44, songId, title);
-    if (!songProfile && track.lyrics) {
-      songProfile = { title, lyrics: track.lyrics, themes: [], key_lines: '', chorus_summary: '', song_story: '', streaming_links: '' };
-    }
-    return { title, description: parent?.description || parent?.tagline || '', songProfile };
-  }
-  return null;
+// Resolve a portfolio context from a PortfolioItem id. Returns { title, description, item }.
+export async function resolvePortfolioContext(base44, portfolioItemId?: string): Promise<{ title: string; description: string; item: any | null } | null> {
+  if (!portfolioItemId) return null;
+  const item = await loadPortfolioItem(base44, portfolioItemId);
+  if (!item) return null;
+  return {
+    title: item.title || '',
+    description: item.description || item.tagline || '',
+    item,
+  };
 }
 
-// Render a SongProfile into an authoritative prompt section. The AI must draw hooks,
-// on-screen text, and captions from the real lyric lines, quoting them where fitting.
-export function songProfileSection(profile: any): string {
-  if (!profile) return '';
-  const themes = Array.isArray(profile.themes) ? profile.themes.join(', ') : (profile.themes || '');
-  const keyLines = String(profile.key_lines || '')
-    .split('\n').map((l) => l.trim()).filter(Boolean).map((l) => `  “${l}”`).join('\n');
+// Render a PortfolioItem into an authoritative prompt section.
+export function portfolioSection(item: any): string {
+  if (!item) return '';
+  const tech = Array.isArray(item.tech_used) ? item.tech_used.join(', ') : (item.tech_used || '');
+  const shots = Array.isArray(item.screenshots) ? item.screenshots : [];
+  const clientLine = item.client_shareable && item.client_name ? `- Client: ${item.client_name}` : (item.client_name ? `- Client: (name not cleared for public use — refer to generically)` : '');
   return [
-    'SONG CONTENT PROFILE — the authoritative knowledge base for this song. Draw hooks, on-screen text, and captions from the REAL lyric lines below. Quote actual lines where fitting; do not invent lyrics.',
-    `- Title: ${profile.title || ''}`,
-    `- What the song is about (story): ${profile.song_story || ''}`,
-    themes ? `- Themes: ${themes}` : '',
-    `- Chorus message (one sentence): ${profile.chorus_summary || ''}`,
-    keyLines ? `- Key / quotable lyric lines (use these for hooks and on-screen text):\n${keyLines}` : '',
-    profile.lyrics ? `- Full lyrics (with section labels):\n${profile.lyrics}` : '',
-    profile.streaming_links ? `- Streaming links: ${profile.streaming_links}` : '',
+    'PORTFOLIO ITEM — the authoritative knowledge base for this showcase. Draw hooks and on-screen text from the real details below. Do not invent features, results, or metrics the project does not have.',
+    `- Title: ${item.title || ''}`,
+    clientLine,
+    `- Category: ${item.category || ''}`,
+    `- Tagline: ${item.tagline || ''}`,
+    `- What it does: ${item.description || ''}`,
+    tech ? `- Tech / tools used: ${tech}` : '',
+    item.project_url ? `- Live link: ${item.project_url}` : '',
+    item.cover_image_url ? `- Cover screenshot: ${item.cover_image_url}` : '',
+    shots.length ? `- Additional screenshots: ${shots.join(', ')}` : '',
+    `- Featured: ${item.featured ? 'yes' : 'no'}`,
   ].filter(Boolean).join('\n');
 }
 
+// Load approved testimonials, optionally filtered to a portfolio item.
+export async function loadApprovedTestimonials(base44, portfolioItemId?: string): Promise<any[]> {
+  try {
+    const all = await base44.asServiceRole.entities.Testimonial.list('-created_date', 50);
+    let pool = (all || []).filter((t) => t.approved_for_use === true);
+    if (portfolioItemId) {
+      const forItem = pool.filter((t) => t.portfolio_item_id === portfolioItemId);
+      if (forItem.length >= 2) pool = forItem;
+    }
+    return pool.slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
+// Render approved testimonials into a prompt section. Only quotes approved_for_use,
+// and anonymizes clients whose client_anonymous is true.
+export function testimonialSection(testimonials: any[]): string {
+  if (!testimonials || !testimonials.length) return '';
+  const lines = testimonials.map((t, i) => {
+    const who = t.client_anonymous ? 'a recent client' : (t.client_name || 'a client');
+    return `  ${i + 1}. "${String(t.quote || '').trim()}" — ${who}`;
+  });
+  return `APPROVED TESTIMONIALS — real, admin-approved client quotes. You may quote these directly (only these). Do not invent new quotes or attribute quotes to unnamed clients.\n${lines.join('\n')}`;
+}
+
 // Regenerate a single post's AI content (caption, hashtags, hook, cta, image_prompt,
-// and for video formats the template slot values + video_brief) using the CURRENT song
-// lyrics + brand profile. Returns the regenerated field object (not persisted), or
-// null if the AI produced nothing usable. Shared by the single-post regenerate
-// endpoint and the batch "regenerate stale posts" endpoint so both quote real lyrics
-// instead of fabricated lines from before the lyrics were uploaded.
+// and for video formats the template slot values + video_brief) using the CURRENT
+// portfolio context + brand profile + approved testimonials. Returns the regenerated
+// field object (not persisted), or null if the AI produced nothing usable.
 export async function regeneratePostContent(base44, post, opts) {
   const o = opts || {};
   const instruction = o.instruction;
@@ -315,14 +317,17 @@ export async function regeneratePostContent(base44, post, opts) {
     if (cache.styleExamplesByPlatform) cache.styleExamplesByPlatform.set(post.platform, styleExamples);
   }
   let ctx = cache.ctx != null ? cache.ctx : null;
-  if (!ctx && post.song_id) ctx = await resolveSongContext(base44, post.song_id);
+  const pid = post.portfolio_item_id || post.song_id; // song_id kept as legacy alias
+  if (!ctx && pid) ctx = await resolvePortfolioContext(base44, pid);
   const brandSection = brandProfileSection(brandProfile);
   const templateSection = videoTemplateSection(templates);
-  let songTitle = 'this release';
-  let songDescription = '';
-  if (ctx) { songTitle = ctx.title || songTitle; songDescription = ctx.description || ''; }
-  const songProfile = ctx?.songProfile || await loadSongProfile(base44, post.song_id, songTitle);
-  const songSection = songProfileSection(songProfile);
+  let itemTitle = 'this work';
+  let itemDescription = '';
+  let portfolioItem = null;
+  if (ctx) { itemTitle = ctx.title || itemTitle; itemDescription = ctx.description || ''; portfolioItem = ctx.item; }
+  const portfolioSec = portfolioSection(portfolioItem);
+  const testimonials = cache.testimonials != null ? cache.testimonials : await loadApprovedTestimonials(base44, pid);
+  const testimonialSec = testimonialSection(testimonials);
 
   const isVideo = VIDEO_FORMATS.includes(post.format);
   const keepTemplate = isVideo && post.template_id && !(instruction && /change\s+template|different\s+template/i.test(instruction));
@@ -333,15 +338,15 @@ export async function regeneratePostContent(base44, post, opts) {
     ? `\nAdmin instruction for this rewrite: "${instruction}". Honor it while keeping the post platform-native and on-brand.`
     : '';
 
-  const systemPrompt = `You are a senior music social media copywriter for an independent artist.
-${ARTIST_CONTEXT}
+  const systemPrompt = `You are a senior social media copywriter for an independent app-development studio.
+${STUDIO_CONTEXT}
 
 ${CONTENT_RULES}
 
 ${performanceRules(brandProfile)}
-${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${songSection ? `\n\n${songSection}` : ''}
+${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}
 
-Rewrite a single social post for Roxsan.
+Rewrite a single social post for iRoxanne Studio.
 
 Existing post:
 - Platform: ${post.platform || 'Instagram'}
@@ -351,9 +356,10 @@ Existing post:
 - Current caption: ${post.caption || ''}
 - Current hook: ${post.hook || ''}
 - Current CTA: ${post.cta || ''}
-- Song/Release: ${songTitle}
-${songDescription ? `- Release themes: ${songDescription}` : ''}
-${songSection ? `- This song has a full content profile (lyrics, story, key lines). Quote real lyric lines for hooks and on-screen text.` : ''}
+- Portfolio item: ${itemTitle}
+${itemDescription ? `- What it does: ${itemDescription}` : ''}
+${portfolioSec ? `- This post has a full portfolio context. Draw hooks and on-screen text from the real project details.` : ''}
+${testimonialSec ? `- Approved testimonials are available — you may quote them directly when the post is testimonial/social-proof.` : ''}
 ${keepTemplate ? `- This post already uses template "${currentTpl?.name}" (id ${post.template_id}). KEEP this template and regenerate fresh slot_values for every slot.\n  Slots:\n${currentSlots}` : ''}
 ${post.image_style_preset ? `- Image style preset in use: "${post.image_style_preset}" — keep the look.` : ''}
 ${instructionLine}
@@ -362,7 +368,7 @@ Return a fresh version of THIS post only. Keep the same platform and format.
 - caption, hashtags, hook, cta, image_prompt are all required.
 - Follow the PERFORMANCE-BASED CONTENT RULES for hook timing, on-screen text, and hashtags.
 ${isVideo ? `- For this video format, pick the best-fitting template (or keep the existing one${keepTemplate ? ' — ' + currentTpl?.name : ''}), fill every slot in slot_values, and set video_brief to a human-readable CapCut assembly checklist derived from the template + slot values.` : ''}
-- Image prompt must show NO faces and NO text/logos.
+- Image prompt must show real screenshots/UI where possible, NO baked text/logos.
 
 Return ONLY a JSON object with fields: platform, format, content_bucket, scheduled_date, scheduled_time, caption, hashtags, hook, cta, image_prompt, image_style_preset, video_brief, template_id, slot_values, clip_asset_id. No commentary, no markdown fences.`;
 
@@ -414,7 +420,6 @@ Return ONLY a JSON object with fields: platform, format, content_bucket, schedul
 }
 
 // --- Notification settings (for scheduled email functions) ---
-
 export async function loadNotificationSettings(base44): Promise<any> {
   try {
     const list = await base44.asServiceRole.entities.BrandProfile.list();
@@ -424,18 +429,17 @@ export async function loadNotificationSettings(base44): Promise<any> {
       timezone: String(bp.notify_timezone || 'America/New_York').trim() || 'America/New_York',
       daily_posts: bp.notify_daily_posts !== false,
       weekly_digest: bp.notify_weekly_digest !== false,
-      release_countdown: bp.notify_release_countdown !== false,
+      release_countdown: bp.notify_release_countdown === true,
       filming_nudge: bp.notify_filming_nudge !== false,
       send_time: String(bp.notify_send_time || '08:00'),
     };
   } catch {
-    return { email: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, release_countdown: true, filming_nudge: true, send_time: '08:00' };
+    return { email: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, release_countdown: false, filming_nudge: true, send_time: '08:00' };
   }
 }
 
 // --- Video template system ---
 
-// Load all video templates (admin-only entity).
 export async function loadVideoTemplates(base44): Promise<any[]> {
   try {
     const list = await base44.asServiceRole.entities.VideoTemplate.list();
@@ -445,8 +449,6 @@ export async function loadVideoTemplates(base44): Promise<any[]> {
   }
 }
 
-// Render templates into an authoritative prompt section so the AI can pick the best fit
-// and fill every slot for each video-format post.
 export function videoTemplateSection(templates: any[]): string {
   if (!templates || templates.length === 0) return '';
   const lines = templates.map((t) => {
@@ -463,7 +465,6 @@ ${lines.join('\n\n')}`;
 
 // --- Clip library (for suggestClips) ---
 
-// Load the admin's clip library, returning a compact list for LLM matching.
 export async function loadClipLibrary(base44): Promise<any[]> {
   try {
     const list = await base44.asServiceRole.entities.ClipAsset.list();
@@ -495,9 +496,6 @@ export function addDays(d: Date, n: number): Date {
   return x;
 }
 
-// Date key (YYYY-MM-DD) in a specific IANA timezone. Falls back to UTC on error.
-// Used by scheduled reminder functions so "today" matches the admin's calendar
-// day rather than the backend runtime's UTC day.
 export function dateKeyInTZ(tz: string, d: Date): string {
   try {
     return new Intl.DateTimeFormat('en-CA', {
@@ -511,8 +509,6 @@ export function dateKeyInTZ(tz: string, d: Date): string {
   }
 }
 
-// { h, m } (0-23 hour, 0-59 minute) in a specific IANA timezone. Falls back to
-// the runtime local time on error.
 export function hourMinuteInTZ(tz: string, d: Date): { h: number; m: number } {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -522,7 +518,7 @@ export function hourMinuteInTZ(tz: string, d: Date): { h: number; m: number } {
       minute: '2-digit',
     }).formatToParts(d);
     let h = Number((parts.find((p) => p.type === 'hour') || {}).value || '0');
-    if (h === 24) h = 0; // some runtimes emit "24" at midnight with hour12:false
+    if (h === 24) h = 0;
     const m = Number((parts.find((p) => p.type === 'minute') || {}).value || '0');
     return { h, m };
   } catch {
@@ -530,13 +526,9 @@ export function hourMinuteInTZ(tz: string, d: Date): { h: number; m: number } {
   }
 }
 
-// The public site origin used in email links. The platform invokes scheduled
-// functions through an internal dispatcher host
-// (base44-dispatcher-production.base44.workers.dev), so req.url's origin is NOT
-// publicly routable — emailing it produces a link the admin can't open. Derive
-// the real public origin from forwarded headers first, then fall back to the
-// site's public domain.
-export const PUBLIC_ORIGIN = 'https://iroxanne.com';
+// The public site origin used in email links. Placeholder until the real
+// iRoxanne Studio domain is provided.
+export const PUBLIC_ORIGIN = 'https://iroxanne-studio.example.com';
 
 export function appOrigin(req?: any): string {
   try {
@@ -558,7 +550,6 @@ export function appOrigin(req?: any): string {
     }
     if (req && req.url) {
       const o = new URL(req.url).origin;
-      // The internal dispatcher host is not publicly routable; ignore it.
       if (!o.includes('base44-dispatcher') && !o.includes('.base44.workers.dev')) return o;
     }
   } catch {}
@@ -571,12 +562,10 @@ function escapeEmailHtml(s: string): string {
   return String(s || '').replace(/[&<>"]/g, (c) => (c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;'));
 }
 
-// A row in the email body. Plain strings render as a gold-bulleted line; an
-// object lets the caller emit a bold section header (no bullet) or muted note.
 export type EmailRow = string | { text: string; strong?: boolean; muted?: boolean; bullet?: boolean };
 
-// Renders a branded Roxsan HTML email. `rows` are the body lines (already built
-// by the caller). `linkPath` is appended to the public origin (e.g. '/marketing').
+// Renders a branded iRoxanne Studio HTML email. `rows` are the body lines (already
+// built by the caller). `linkPath` is appended to the public origin (e.g. '/marketing').
 export function marketingEmailHtml(opts: {
   heading: string;
   intro?: string;
@@ -606,7 +595,7 @@ export function marketingEmailHtml(opts: {
     <tr><td align="center">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:100%;max-width:560px;background:#171C1D;border-radius:16px;overflow:hidden;border:1px solid rgba(197,160,89,0.22);">
         <tr><td style="padding:30px 28px 22px;background:linear-gradient(135deg,rgba(27,87,93,0.55) 0%,#0D0D0D 100%);">
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#C59F59;font-weight:600;letter-spacing:0.5px;">Roxsan</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#C59F59;font-weight:600;letter-spacing:0.5px;">iRoxanne Studio</div>
           <div style="margin-top:16px;font-size:21px;color:#F5F2EA;font-weight:600;line-height:1.3;">${escapeEmailHtml(heading)}</div>
           ${intro ? `<div style="margin-top:12px;font-size:14px;color:#B8B4AC;line-height:1.6;">${escapeEmailHtml(intro)}</div>` : ''}
         </td></tr>
@@ -615,7 +604,7 @@ export function marketingEmailHtml(opts: {
           <a href="${escapeEmailHtml(link)}" style="display:inline-block;background:#C59F59;color:#0D0D0D;text-decoration:none;font-weight:600;font-size:14px;padding:13px 26px;border-radius:999px;">${escapeEmailHtml(linkLabel || 'Open the Today view')}</a>
         </td></tr>` : ''}
         <tr><td style="padding:16px 28px 26px;border-top:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:12px;color:#6F6A60;">${escapeEmailHtml(footerNote || 'Marketing Content Suite · Roxsan Music')}</div>
+          <div style="font-size:12px;color:#6F6A60;">${escapeEmailHtml(footerNote || 'Marketing Content Suite · iRoxanne Studio')}</div>
         </td></tr>
       </table>
     </td></tr>
@@ -623,8 +612,6 @@ export function marketingEmailHtml(opts: {
 </body></html>`;
 }
 
-// Normalizes a scheduled_time value to a clean "HH:MM" display (drops seconds
-// and AM/PM suffixes) so email rows read consistently.
 export function shortTime(t?: string): string {
   const s = String(t || '').trim();
   if (!s) return '';

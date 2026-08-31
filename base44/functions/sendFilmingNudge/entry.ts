@@ -3,7 +3,7 @@ import {
   loadNotificationSettings,
   loadBrandProfile,
   brandProfileSection,
-  ARTIST_CONTEXT,
+  STUDIO_CONTEXT,
   requireAuthenticated,
   marketingEmailHtml,
   EmailRow,
@@ -11,6 +11,8 @@ import {
 import { renderTemplate } from '../../shared/emailTemplates.ts';
 
 // sendFilmingNudge — scheduled monthly (service role). Rejects anonymous external callers.
+// Plans a single ~1 hour content session of 4-6 screen-capture / behind-the-build shots,
+// drawing from real PortfolioItems so the owner always has concrete things to film.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -19,35 +21,34 @@ export default async function(req) {
     const ns = await loadNotificationSettings(base44);
     if (!ns.filming_nudge || !ns.email) return Response.json({ sent: false, reason: 'disabled or no email' });
 
-    const [songProfiles, brandProfile] = await Promise.all([
-      base44.asServiceRole.entities.SongProfile.list(),
+    const [portfolioItems, brandProfile] = await Promise.all([
+      base44.asServiceRole.entities.PortfolioItem.list('-created_date', 20),
       loadBrandProfile(base44),
     ]);
     const brandSection = brandProfileSection(brandProfile);
 
-    // Use songs that have a story to draw opening lines from.
-    const pool = (songProfiles || []).filter((s) => s.song_story || s.key_lines).slice(0, 6);
-    const songsDigest = pool.map((s, i) => `Song ${i + 1}: "${s.title}"\nStory: ${s.song_story || ''}\nKey lines:\n${String(s.key_lines || '').split('\n').map((l) => `  ${l.trim()}`).filter(Boolean).join('\n')}`).join('\n\n');
+    const pool = (portfolioItems || []).filter((p) => p.description || p.tagline).slice(0, 6);
+    const itemsDigest = pool.map((p, i) => `Project ${i + 1}: "${p.title}"\nWhat it does: ${p.description || p.tagline || ''}\nCategory: ${p.category || ''}${p.cover_image_url ? `\nCover: ${p.cover_image_url}` : ''}`).join('\n\n');
 
-    const prompt = `You are a content director for an independent artist.
-${ARTIST_CONTEXT}
+    const prompt = `You are a content director for an independent app-development studio.
+${STUDIO_CONTEXT}
 ${brandSection ? `\n${brandSection}\n` : ''}
 
-Plan a single filming session (~1 hour, one sitting) of 4-6 direct-to-camera / authentic personal shots. For each shot:
-- opening_line: the EXACT first line the artist says to camera (drawn from the song's story or a real lyric line where fitting)
-- shot_description: what to film (phone-shot, behind-the-scenes feel — admin's OWN footage, never stock)
-- which_song: the song title it relates to
+Plan a single filming/screen-capture session (~1 hour, one sitting) of 4-6 authentic behind-the-build shots. For each shot:
+- opening_line: the EXACT first line the owner says to camera (drawn from a real project detail)
+- shot_description: what to film (screen recording, workspace, phone demo, behind-the-build — admin's OWN footage, never stock)
+- which_project: the project title it relates to
 - length_seconds: 15-30
 
-Songs to draw from:
-${songsDigest || '(no song profiles yet — generate generic personal shots: morning routine, studio moment, thanking fans, a favourite lyric)'}
+Projects to draw from:
+${itemsDigest || '(no portfolio items yet — generate generic behind-the-build shots: workspace setup, planning a new app, building a feature, thanking a client)'}
 
-Return ONLY { "shots": [ { opening_line, shot_description, which_song, length_seconds } ] }. No commentary, no markdown fences.`;
+Return ONLY { "shots": [ { opening_line, shot_description, which_project, length_seconds } ] }. No commentary, no markdown fences.`;
 
     const schema = {
       type: 'object',
       properties: { shots: { type: 'array', items: { type: 'object', properties: {
-        opening_line: { type: 'string' }, shot_description: { type: 'string' }, which_song: { type: 'string' }, length_seconds: { type: 'number' },
+        opening_line: { type: 'string' }, shot_description: { type: 'string' }, which_project: { type: 'string' }, length_seconds: { type: 'number' },
       } } } },
       required: ['shots'],
     };
@@ -62,7 +63,7 @@ Return ONLY { "shots": [ { opening_line, shot_description, which_song, length_se
 
     const rows: EmailRow[] = [];
     shots.forEach((s, i) => {
-      rows.push({ text: `Shot ${i + 1} — ${s.which_song || 'personal'} (~${s.length_seconds || 20}s)`, strong: true, bullet: false });
+      rows.push({ text: `Shot ${i + 1} — ${s.which_project || 'behind the build'} (~${s.length_seconds || 20}s)`, strong: true, bullet: false });
       rows.push(`Opening line: "${s.opening_line}"`);
       rows.push(`Film: ${s.shot_description}`);
     });
@@ -75,7 +76,7 @@ Return ONLY { "shots": [ { opening_line, shot_description, which_song, length_se
       linkLabel: 'Open the Clip Library',
     });
 
-    await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject, body, from_name: 'Roxsan' });
+    await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject, body, from_name: 'iRoxanne Studio' });
     return Response.json({ sent: true, count: shots.length });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

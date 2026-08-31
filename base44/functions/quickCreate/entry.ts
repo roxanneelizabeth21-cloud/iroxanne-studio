@@ -1,9 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import {
   requireAdmin,
-  ARTIST_CONTEXT,
+  STUDIO_CONTEXT,
   CONTENT_RULES,
-  PERFORMANCE_RULES,
+  performanceRules,
   normalizePost,
   loadBrandProfile,
   brandProfileSection,
@@ -11,15 +11,17 @@ import {
   loadVideoTemplates,
   videoTemplateSection,
   assembleVideoBrief,
-  loadSongProfile,
-  songProfileSection,
-  resolveSongContext,
+  portfolioSection,
+  resolvePortfolioContext,
+  loadApprovedTestimonials,
+  testimonialSection,
 } from '../../shared/marketingAdmin.ts';
 
 // quickCreate — admin-only.
-// Generates a single one-off post for a chosen song + platform (+ optional note).
-// Returns a full post object (caption, hashtags, hook, cta, image_prompt, and for video
-// formats template_id/slot_values/video_brief). The frontend can Save to Calendar or discard.
+// Generates a single one-off post for a chosen portfolio item + platform (+ optional note).
+// Accepts portfolio_item_id (or legacy song_id). Returns a full post object
+// (caption, hashtags, hook, cta, image_prompt, and for video formats
+// template_id/slot_values/video_brief). The frontend can Save to Calendar or discard.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -27,44 +29,48 @@ export default async function(req) {
     if (!guard.ok) return guard.response;
 
     const body = await req.json();
-    const { song_id, platform, note } = body || {};
-    if (!song_id) return Response.json({ error: 'song_id is required' }, { status: 400 });
+    const { song_id, portfolio_item_id, platform, note } = body || {};
+    const pid = portfolio_item_id || song_id;
+    if (!pid) return Response.json({ error: 'portfolio_item_id (or song_id) is required' }, { status: 400 });
     if (!['Facebook', 'Instagram', 'YouTube', 'TikTok'].includes(platform)) {
         return Response.json({ error: 'platform is required (Facebook, Instagram, YouTube, or TikTok)' }, { status: 400 });
     }
 
-    const ctx = await resolveSongContext(base44, song_id);
-    const songTitle = ctx?.title || 'this release';
-    const songDescription = ctx?.description || '';
+    const ctx = await resolvePortfolioContext(base44, pid);
+    const itemTitle = ctx?.title || 'this work';
+    const itemDescription = ctx?.description || '';
 
     const brandProfile = await loadBrandProfile(base44);
     const brandSection = brandProfileSection(brandProfile);
+    const perfRules = performanceRules(brandProfile);
     const styleExamples = await loadStyleExamples(base44, platform);
     const templates = await loadVideoTemplates(base44);
     const templateSection = videoTemplateSection(templates);
-    const songProfile = ctx?.songProfile || await loadSongProfile(base44, song_id, songTitle);
-    const songSection = songProfileSection(songProfile);
+    const portfolioSec = portfolioSection(ctx?.item);
+    const testimonials = await loadApprovedTestimonials(base44, pid);
+    const testimonialSec = testimonialSection(testimonials);
 
     const noteLine = note ? `\nAdmin note for this post: "${note}". Honor it while keeping the post on-brand.` : '';
 
-    const prompt = `You are a senior music social media copywriter for an independent artist.
-${ARTIST_CONTEXT}
+    const prompt = `You are a senior social media copywriter for an independent app-development studio.
+${STUDIO_CONTEXT}
 
 ${CONTENT_RULES}
 
-${PERFORMANCE_RULES}
-${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${songSection ? `\n\n${songSection}` : ''}
+${perfRules}
+${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}
 
-Write a single social post for Roxsan.
+Write a single social post for iRoxanne Studio.
 - Platform: ${platform}
-- Song/Release: "${songTitle}"
-${songDescription ? `- Release themes: ${songDescription}` : ''}
-${songSection ? `- Draw the hook and on-screen text from the song's REAL lyric lines (quote them where fitting).` : ''}
+- Portfolio item: "${itemTitle}"
+${itemDescription ? `- What it does: ${itemDescription}` : ''}
+${portfolioSec ? `- Draw the hook and on-screen text from the real project details.` : ''}
+${testimonialSec ? `- Approved testimonials are available — use them if this is a testimonial/social-proof post.` : ''}
 - Pick the most platform-native format for ${platform}.
 ${noteLine}
 
 Return a single post with: platform, format, content_bucket, caption, hashtags, hook, cta, image_prompt, image_style_preset, and (if the format is video: Reel/Short/Video) template_id, slot_values, video_brief.
-- Image prompt: NO faces, NO text/logos.
+- Image prompt: real screenshots/UI where possible, NO baked text/logos.
 - Follow the PERFORMANCE-BASED CONTENT RULES.
 
 Return ONLY a JSON object with those fields. No commentary, no markdown fences.`;
@@ -108,7 +114,7 @@ Return ONLY a JSON object with those fields. No commentary, no markdown fences.`
       post: {
         ...generated,
         platform,
-        song_id,
+        portfolio_item_id: pid,
         original_ai_caption: generated.caption || '',
       },
     });

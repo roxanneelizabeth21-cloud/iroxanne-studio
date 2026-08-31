@@ -2,17 +2,17 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import {
   requireAdmin,
   regeneratePostContent,
-  resolveSongContext,
+  resolvePortfolioContext,
   loadBrandProfile,
   loadVideoTemplates,
 } from '../../shared/marketingAdmin.ts';
 
 // regenerateStalePosts — admin-only.
 // Regenerates the AI text of auto-generated posts that were created BEFORE their
-// song's lyrics were uploaded — so the AI fabricated lyric lines. Re-runs each
-// affected post through `regeneratePostContent` now that real lyrics exist in the
-// SongProfile (or the matching Track). Only touches Draft / Pending Review posts
-// (never admin-approved Ready / Posted). Skips posts whose song still has no lyrics.
+// portfolio item was fully filled in. Re-runs each affected post through
+// `regeneratePostContent` now that the real PortfolioItem context exists.
+// Only touches Draft / Pending Review posts (never admin-approved Ready / Posted).
+// Skips posts whose portfolio item still can't be resolved.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -36,24 +36,25 @@ export default async function(req) {
       checked: stale.length,
       eligible: 0,
       regenerated: 0,
-      skipped_no_lyrics: 0,
+      skipped_no_portfolio: 0,
       remaining: 0,
       errors: [],
     };
 
-    // Resolve lyric availability once per song (and cache the context for reuse).
-    const songIds = [...new Set(stale.map((p) => p.song_id).filter(Boolean))];
-    const hasLyricsBySong = {};
-    const ctxBySong = {};
-    for (const sid of songIds) {
-      const ctx = await resolveSongContext(base44, sid);
-      ctxBySong[sid] = ctx;
-      hasLyricsBySong[sid] = !!(ctx && ctx.songProfile && String(ctx.songProfile.lyrics || '').trim());
+    // Resolve portfolio availability once per item (and cache the context for reuse).
+    const pids = [...new Set(stale.map((p) => p.portfolio_item_id || p.song_id).filter(Boolean))];
+    const hasItemByPid = {};
+    const ctxByPid = {};
+    for (const pid of pids) {
+      const ctx = await resolvePortfolioContext(base44, pid);
+      ctxByPid[pid] = ctx;
+      hasItemByPid[pid] = !!(ctx && ctx.item);
     }
 
     const eligible = stale.filter((p) => {
-      const has = p.song_id ? !!hasLyricsBySong[p.song_id] : false;
-      if (!has) { report.skipped_no_lyrics += 1; return false; }
+      const pid = p.portfolio_item_id || p.song_id;
+      const has = pid ? !!hasItemByPid[pid] : false;
+      if (!has) { report.skipped_no_portfolio += 1; return false; }
       return true;
     });
     report.eligible = eligible.length;
@@ -62,8 +63,9 @@ export default async function(req) {
     const updates = [];
     for (const post of queue) {
       try {
+        const pid = post.portfolio_item_id || post.song_id;
         const generated = await regeneratePostContent(base44, post, {
-          cache: { ...cache, ctx: post.song_id ? ctxBySong[post.song_id] : null },
+          cache: { ...cache, ctx: pid ? ctxByPid[pid] : null },
         });
         if (!generated) { report.errors.push({ id: post.id, reason: 'AI returned nothing' }); continue; }
         updates.push({

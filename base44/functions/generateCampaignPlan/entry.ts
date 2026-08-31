@@ -1,9 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import {
   requireAdmin,
-  ARTIST_CONTEXT,
+  STUDIO_CONTEXT,
   CONTENT_RULES,
-  PERFORMANCE_RULES,
+  performanceRules,
   parsePostsArray,
   loadBrandProfile,
   brandProfileSection,
@@ -11,9 +11,10 @@ import {
   loadVideoTemplates,
   videoTemplateSection,
   assembleVideoBrief,
-  loadSongProfile,
-  songProfileSection,
-  resolveSongContext,
+  portfolioSection,
+  resolvePortfolioContext,
+  loadApprovedTestimonials,
+  testimonialSection,
 } from '../../shared/marketingAdmin.ts';
 
 // generateCampaignPlan — admin-only.
@@ -28,58 +29,63 @@ export default async function(req) {
     const body = await req.json();
     const {
       song_id,
+      portfolio_item_id,
       release_date,
-      goal = 'Release week push',
+      goal = 'Launch week push',
       start_date,
       end_date,
       default_image_style_preset,
     } = body || {};
 
-    if (!song_id) return Response.json({ error: 'song_id is required' }, { status: 400 });
+    const pid = portfolio_item_id || song_id;
+    if (!pid) return Response.json({ error: 'portfolio_item_id (or song_id) is required' }, { status: 400 });
     if (!start_date || !end_date) return Response.json({ error: 'start_date and end_date are required' }, { status: 400 });
 
-    const ctx = await resolveSongContext(base44, song_id);
-    const songTitle = ctx?.title || body.song_title || 'the new release';
-    const songDescription = ctx?.description || body.song_description || '';
+    const ctx = await resolvePortfolioContext(base44, pid);
+    const itemTitle = ctx?.title || body.song_title || body.portfolio_title || 'the new project';
+    const itemDescription = ctx?.description || body.song_description || '';
+    const portfolioSec = portfolioSection(ctx?.item);
+    const testimonials = await loadApprovedTestimonials(base44, pid);
+    const testimonialSec = testimonialSection(testimonials);
 
     const windowDays = Math.max(1, Math.round((new Date(end_date).getTime() - new Date(start_date).getTime()) / 86400000) + 1);
     const targetPosts = Math.min(40, Math.max(6, Math.round(windowDays / 7) * 4));
 
     const brandProfile = await loadBrandProfile(base44);
     const brandSection = brandProfileSection(brandProfile);
+    const perfRules = performanceRules(brandProfile);
     const styleExamples = await loadStyleExamples(base44);
     const templates = await loadVideoTemplates(base44);
     const templateSection = videoTemplateSection(templates);
-    const songProfile = ctx?.songProfile || await loadSongProfile(base44, song_id, songTitle);
-    const songSection = songProfileSection(songProfile);
 
     const presetLine = default_image_style_preset
       ? `\nDEFAULT IMAGE STYLE PRESET for this campaign: "${default_image_style_preset}". Append its prompt_suffix style to every image_prompt (the admin can change it per post later).`
       : '';
 
-    const systemPrompt = `You are a senior music marketing strategist for an independent artist.
-${ARTIST_CONTEXT}
+    const systemPrompt = `You are a senior social media strategist for an independent app-development studio.
+${STUDIO_CONTEXT}
 
 ${CONTENT_RULES}
 
-${PERFORMANCE_RULES}
-${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${songSection ? `\n\n${songSection}` : ''}${presetLine}
+${perfRules}
+${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${presetLine}
 
 Campaign brief:
-- Song/Release: "${songTitle}"
-- Release date: ${release_date || 'TBD'}
+- Portfolio item: "${itemTitle}"
+- Launch/target date: ${release_date || 'TBD'}
 - Campaign window: ${start_date} to ${end_date} (${windowDays} days)
 - Campaign goal: ${goal}
-${songDescription ? `- Release description / themes: ${songDescription}` : ''}
-${songSection ? `- This song has a full content profile (lyrics, story, key lines). Quote real lyric lines for hooks and on-screen text.` : ''}
+${itemDescription ? `- What it does: ${itemDescription}` : ''}
+${portfolioSec ? `- This project has a full portfolio context. Draw hooks and on-screen text from the real project details.` : ''}
+${testimonialSec ? `- Approved testimonials are available — use them for testimonial/social-proof posts.` : ''}
 
 Generate ${targetPosts} social posts spread across the campaign window (${start_date} to ${end_date}).
 - Cover Facebook, Instagram, YouTube, and TikTok. Weight Reels, YouTube Shorts, and TikTok videos heaviest, plus feed posts, stories, and YouTube community posts.
-- Distribute dates sensibly across the window: build buzz pre-release, peak on release day (${release_date || 'the release date'}), and sustain post-release with streaming-link CTAs and fan engagement.
-- Follow the PERFORMANCE-BASED CONTENT RULES: roughly 60% loop clips, 25% authentic/personal (admin's OWN footage, never stock), 15% announcement/CTA. Assign each post a content_bucket accordingly.
+- Distribute dates sensibly across the window: build buzz pre-launch, peak on launch day (${release_date || 'the launch date'}), and sustain post-launch with portfolio showcases, educational tips, and consult CTAs.
+- Follow the PERFORMANCE-BASED CONTENT RULES: roughly 40% showcase, 30% educational/tech-tip, 30% testimonial/offer. Assign each post a content_bucket accordingly.
 - Every post MUST include scheduled_date (YYYY-MM-DD), platform, format, caption, hashtags, hook, cta, and image_prompt.
-- For every video-format post (Reel, Short, Video): pick the best-fitting template by id, fill every slot in slot_values (exact on-screen text, song section with start/end timestamps like "chorus, approx 0:45–0:57", loop notes), and set video_brief to a human-readable CapCut assembly checklist. The hook text must be bold on frame one; the brief must name the song section and describe the first 2–3 seconds.
-- Image prompts must show NO faces and NO text/logos.${default_image_style_preset ? ` Apply the "${default_image_style_preset}" preset look to image prompts and set image_style_preset accordingly.` : ''}
+- For every video-format post (Reel, Short, Video): pick the best-fitting template by id, fill every slot in slot_values (exact on-screen text, what to show, loop notes), and set video_brief to a human-readable CapCut assembly checklist. The hook text must be bold on frame one; the brief must describe the first 2–3 seconds.
+- Image prompts must show real screenshots/UI where possible, NO baked text/logos.${default_image_style_preset ? ` Apply the "${default_image_style_preset}" preset look to image prompts and set image_style_preset accordingly.` : ''}
 
 Return ONLY a JSON object with a "posts" array. No commentary, no markdown fences.`;
 
@@ -126,8 +132,6 @@ Return ONLY a JSON object with a "posts" array. No commentary, no markdown fence
       return Response.json({ error: 'AI generation failed to produce usable posts. Please try again.' }, { status: 502 });
     }
 
-    // Derive the human-readable video_brief from template + slot values when the AI returned slots
-    // but left video_brief empty, so drafts are immediately usable.
     const tplById = new Map(templates.map((t) => [t.id, t]));
     for (const p of posts) {
       if (p.template_id && p.slot_values && !p.video_brief) {
