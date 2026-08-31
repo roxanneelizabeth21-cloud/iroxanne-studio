@@ -14,7 +14,7 @@ export function canonicalUrl(path = '/') {
 }
 
 const BRAND_DESCRIPTION =
-  'Roxsan is a songwriter and storyteller blending country-pop warmth with contemporary Christian depth — music written from real life, faith, and hope. Stream her music, pre-save new releases, and shop official merch.';
+  'Roxsan is a songwriter and storyteller blending country-pop warmth with contemporary Christian depth — music written from real life, faith, and hope. Stream her music and pre-save new releases.';
 
 // Per-route share metadata for the public pages rendered inside AppLayout.
 export const PAGE_META = {
@@ -23,8 +23,6 @@ export const PAGE_META = {
   '/videos': { title: 'Videos — Roxsan', description: 'Music videos, lyric videos, and behind-the-scenes clips from Roxsan.' },
   '/about': { title: 'About Roxsan', description: 'The story behind Roxsan — a songwriter blending country-pop warmth with contemporary Christian depth.' },
   '/gallery': { title: 'Gallery — Roxsan', description: 'Photos from the studio, the stage, and life behind the songs.' },
-  '/store': { title: 'Store — Roxsan', description: 'Official Roxsan merch: tees, hoodies, and more.' },
-  '/shop': { title: 'Shop — Roxsan', description: 'Official Roxsan merch: tees, hoodies, and more.' },
   '/contact': { title: 'Contact Roxsan', description: 'Booking, press, and fan mail — get in touch with Roxsan.' },
   '/press': { title: 'Press Kit — Roxsan', description: 'Official bio, photos, and press assets for Roxsan.' },
   '/privacy': { title: 'Privacy Policy — Roxsan Music', description: 'How Roxsan Music handles your information.' },

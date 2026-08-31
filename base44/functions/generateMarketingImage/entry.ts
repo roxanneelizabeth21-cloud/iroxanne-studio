@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { listShopifyProducts } from '../../shared/shopifyProduct.ts';
 
 // Generates a real marketing image with Base44's built-in image integration,
 // saves it into the existing GalleryImage library with its visual direction,
@@ -115,7 +114,7 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const {
-      post_id, campaign_id, release_id, track_id, product_id, shopify_product_id, portfolio_item_id,
+      post_id, campaign_id, release_id, track_id, portfolio_item_id,
       visual_direction = {}, prompt, platform, format, aspect_ratio,
       text_overlay, reference_asset_urls, elements_to_preserve, elements_to_avoid,
       regenerate = false, variation_instruction, original_request,
@@ -142,12 +141,11 @@ export default async function (req) {
 
     const campaign = effCampaignId ? await base44.entities.Campaign.get(effCampaignId).catch(() => null) : null;
     const portfolioItem = effPortfolioItemId ? await base44.entities.PortfolioItem.get(effPortfolioItemId).catch(() => null) : null;
-    const product = product_id ? await base44.entities.MerchProduct.get(product_id).catch(() => null) : null;
 
     const brand = (await base44.entities.BrandProfile.list().catch(() => []))?.[0] || null;
 
     const context = {
-      project_title: portfolioItem?.title || product?.name,
+      project_title: portfolioItem?.title,
       category: portfolioItem?.category,
       genre: brand?.genre_blend,
       tech_used: portfolioItem?.tech_used,
@@ -162,32 +160,11 @@ export default async function (req) {
       image_style_notes: brand?.image_style_notes,
     };
 
-    // When a merch product is the subject, its real product image is ALWAYS used as a
-    // visual reference so the printed design stays identical across every piece of a series.
-    let productImage = '';
-    let productName = product?.name || '';
-    const effShopifyId = shopify_product_id || product?.shopify_product_id || '';
-    if (effShopifyId) {
-      const live = (await listShopifyProducts().catch(() => []))
-        .find((p) => p.shopify_product_id === String(effShopifyId).trim());
-      if (live) {
-        productImage = live.image_url;
-        productName = productName || live.title;
-      }
-    }
-    if (!productImage && product?.image_url && /^https?:\/\//.test(product.image_url)) {
-      productImage = product.image_url;
-    }
-    const productPreserve = productImage
-      ? `The attached reference image is the real ${productName} product photo. Reproduce the printed artwork on the garment exactly as shown — identical wording, spelling, lettering shapes, layout, proportions and colours. Do not redraw, restyle, translate, re-letter, crop or add to the design. Everything else in the frame (model, pose, setting, lighting) is yours to compose.`
-      : '';
-
     const { finalPrompt, aspect } = buildPrompt({
       prompt: prompt || post?.image_prompt,
       visual_direction, aspect_ratio, platform: effPlatform, format: effFormat,
       text_overlay,
-      elements_to_preserve: [productPreserve, elements_to_preserve ?? visual_direction.elements_to_preserve]
-        .flat().filter(Boolean),
+      elements_to_preserve: elements_to_preserve ?? visual_direction.elements_to_preserve,
       elements_to_avoid,
       variation_instruction: regenerate ? variation_instruction : undefined,
       context,
@@ -195,8 +172,7 @@ export default async function (req) {
 
     // --- Generate the actual image ---
     const passedRefs = Array.isArray(reference_asset_urls) ? reference_asset_urls.filter(Boolean) : [];
-    // Product photo goes first so it dominates as the design reference.
-    const refs = [...new Set([productImage, ...passedRefs].filter(Boolean))];
+    const refs = [...new Set(passedRefs.filter(Boolean))];
     const gen = await base44.integrations.Core.GenerateImage(
       refs.length ? { prompt: finalPrompt, existing_image_urls: refs } : { prompt: finalPrompt }
     );
@@ -231,7 +207,6 @@ export default async function (req) {
       post_id: post?.id || '',
       campaign_id: effCampaignId,
       portfolio_item_id: effPortfolioItemId,
-      product_id: product_id || '',
       generation_status: 'generated',
       generated_at: new Date().toISOString(),
       variation_instruction: regenerate ? (variation_instruction || '') : '',

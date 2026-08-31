@@ -11,7 +11,6 @@ const PAGES = [
   { key: 'page_videos_enabled', label: 'Videos', path: '/videos' },
   { key: 'page_about_enabled', label: 'About', path: '/about' },
   { key: 'page_gallery_enabled', label: 'Gallery', path: '/gallery' },
-  { key: 'page_store_enabled', label: 'Store', path: '/store' },
   { key: 'page_contact_enabled', label: 'Contact', path: '/contact' },
   { key: 'page_press_enabled', label: 'Press Kit', path: '/press' },
 ];

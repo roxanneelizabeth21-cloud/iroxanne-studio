@@ -10,7 +10,6 @@ const PAGE_OPTIONS = [
   { key: 'all', label: 'All pages' },
   { key: 'home', label: 'Home' },
   { key: 'music', label: 'Music' },
-  { key: 'shop', label: 'Shop' },
   { key: 'release', label: 'Release' },
 ];
 
@@ -35,7 +34,7 @@ export default function PromoBannerForm({ initial, onSave, onCancel }) {
   const [b, setB] = useState(() => ({
     title: '',
     is_active: false,
-    target_pages: 'shop',
+    target_pages: 'home',
     headline: '',
     subtext: '',
     cta_text: '',
