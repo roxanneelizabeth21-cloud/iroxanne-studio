@@ -37,15 +37,6 @@ export default function FeaturedWork({ items, loading }) {
                 )}
               </div>
               <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{item?.tagline || item?.description}</p>
-              {item?.tech_used?.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {item.tech_used.slice(0, 4).map((t) => (
-                    <span key={t} className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </article>
         ))}
