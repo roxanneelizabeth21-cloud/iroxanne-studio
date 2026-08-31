@@ -13,9 +13,9 @@ import { useToast } from '@/components/ui/use-toast';
 const LAYOUTS = [
   { value: 'centered', label: 'Centered Text + Glow' },
   { value: 'cinematic', label: 'Cinematic (Full Bleed)' },
-  { value: 'artist_left', label: 'Artist Left / Text Right' },
-  { value: 'artist_right', label: 'Artist Right / Text Left' },
-  { value: 'album_cover', label: 'Album Cover Hero' },
+  { value: 'artist_left', label: 'Portrait Left / Text Right' },
+  { value: 'artist_right', label: 'Portrait Right / Text Left' },
+  { value: 'album_cover', label: 'Showcase Hero' },
   { value: 'video_bg', label: 'Video Background Hero' },
 ];
 
@@ -26,12 +26,12 @@ const ALIGNMENTS = [
 ];
 
 const DEFAULTS = {
-  hero_title: 'Roxsan',
-  hero_tagline: 'Stories that stay. Music that feels real.',
-  hero_primary_button_text: 'Listen Now',
-  hero_primary_button_url: '/music',
-  hero_secondary_button_text: 'Watch Videos',
-  hero_secondary_button_url: '/videos',
+  hero_title: 'iRoxanne Studio',
+  hero_tagline: 'Custom apps for small businesses, solo founders, and creators.',
+  hero_primary_button_text: 'Book a consult',
+  hero_primary_button_url: '/contact',
+  hero_secondary_button_text: 'See the work',
+  hero_secondary_button_url: '/work',
   hero_layout_style: 'centered',
   hero_text_alignment: 'center',
   hero_glow_intensity: 10,
@@ -62,7 +62,6 @@ const INNER_TABS = [
   { value: 'images', label: 'Images', icon: Image },
   { value: 'text', label: 'Text & CTAs', icon: Type },
   { value: 'sections', label: 'Sections', icon: ToggleLeft },
-  { value: 'streaming', label: 'Streaming', icon: null },
   { value: 'social', label: 'Social', icon: Share2 },
 ];
 
@@ -107,9 +106,11 @@ export default function HomePageSettingsForm() {
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
-  const { data: releases = [] } = useQuery({
-    queryKey: ['all-releases'],
-    queryFn: () => base44.entities.MusicRelease.list('-release_date'),
+  // Featured project picker — stores a PortfolioItem id in featured_release_id
+  // (field name kept for backward compatibility with stored settings).
+  const { data: projects = [] } = useQuery({
+    queryKey: ['portfolio-items-homepage'],
+    queryFn: () => base44.entities.PortfolioItem.list('-date_built'),
   });
 
   const handleSave = async () => {
@@ -159,7 +160,7 @@ export default function HomePageSettingsForm() {
 
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex justify-between">
-              <span>Blue Glow Intensity</span>
+              <span>Glow Intensity</span>
               <span className="font-mono text-foreground">{form.hero_glow_intensity ?? 10}</span>
             </label>
             <Slider min={1} max={20} step={1} value={[form.hero_glow_intensity ?? 10]} onValueChange={(v) => set('hero_glow_intensity', v[0])} />
@@ -173,14 +174,14 @@ export default function HomePageSettingsForm() {
             <Slider min={0} max={95} step={5} value={[form.hero_overlay_opacity ?? 40]} onValueChange={(v) => set('hero_overlay_opacity', v[0])} />
           </div>
 
-          {/* Featured Release */}
+          {/* Featured Project */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Featured Release Override</label>
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Featured Project Override</label>
             <Select value={form.featured_release_id || '__none__'} onValueChange={(v) => set('featured_release_id', v === '__none__' ? '' : v)}>
-              <SelectTrigger><SelectValue placeholder="Auto (first featured)" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Auto (first featured project)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">Auto — use featured flag</SelectItem>
-                {releases.map((r) => <SelectItem key={r.id} value={r.id}>{r.title}</SelectItem>)}
+                {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -190,13 +191,13 @@ export default function HomePageSettingsForm() {
         {activeTab === 'images' && <div className="space-y-5">
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hero Background Image</label>
-            <p className="text-xs text-muted-foreground">Falls back to animated blue-glow gradient if empty.</p>
+            <p className="text-xs text-muted-foreground">Falls back to animated glow gradient if empty.</p>
             <MediaUploader type="image" currentUrl={form.hero_background_image} onUpload={(url) => set('hero_background_image', url)} placeholder="Upload background image" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Artist Profile Image</label>
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Studio / Profile Image</label>
             <p className="text-xs text-muted-foreground">Used in split layouts and cinematic hero.</p>
-            <MediaUploader type="image" currentUrl={form.hero_artist_image} onUpload={(url) => set('hero_artist_image', url)} placeholder="Upload artist photo" />
+            <MediaUploader type="image" currentUrl={form.hero_artist_image} onUpload={(url) => set('hero_artist_image', url)} placeholder="Upload studio photo" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hero Overlay Graphic</label>
@@ -218,29 +219,29 @@ export default function HomePageSettingsForm() {
         {activeTab === 'text' && <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hero Title</label>
-            <Input value={form.hero_title} onChange={(e) => set('hero_title', e.target.value)} placeholder="Roxsan" />
-            <p className="text-xs text-muted-foreground">The last word is automatically highlighted in blue.</p>
+            <Input value={form.hero_title} onChange={(e) => set('hero_title', e.target.value)} placeholder="iRoxanne Studio" />
+            <p className="text-xs text-muted-foreground">The last word is automatically highlighted.</p>
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tagline</label>
-            <Textarea value={form.hero_tagline} onChange={(e) => set('hero_tagline', e.target.value)} rows={2} placeholder="Stories that stay. Music that feels real." />
+            <Textarea value={form.hero_tagline} onChange={(e) => set('hero_tagline', e.target.value)} rows={2} placeholder="Custom apps for small businesses, solo founders, and creators." />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Primary Button Text</label>
-              <Input value={form.hero_primary_button_text} onChange={(e) => set('hero_primary_button_text', e.target.value)} placeholder="Listen Now" />
+              <Input value={form.hero_primary_button_text} onChange={(e) => set('hero_primary_button_text', e.target.value)} placeholder="Book a consult" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Primary Button URL</label>
-              <Input value={form.hero_primary_button_url} onChange={(e) => set('hero_primary_button_url', e.target.value)} placeholder="/music" />
+              <Input value={form.hero_primary_button_url} onChange={(e) => set('hero_primary_button_url', e.target.value)} placeholder="/contact" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Secondary Button Text</label>
-              <Input value={form.hero_secondary_button_text} onChange={(e) => set('hero_secondary_button_text', e.target.value)} placeholder="Watch Videos" />
+              <Input value={form.hero_secondary_button_text} onChange={(e) => set('hero_secondary_button_text', e.target.value)} placeholder="See the work" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Secondary Button URL</label>
-              <Input value={form.hero_secondary_button_url} onChange={(e) => set('hero_secondary_button_url', e.target.value)} placeholder="/videos" />
+              <Input value={form.hero_secondary_button_url} onChange={(e) => set('hero_secondary_button_url', e.target.value)} placeholder="/work" />
             </div>
           </div>
         </div>}
@@ -249,29 +250,10 @@ export default function HomePageSettingsForm() {
         {activeTab === 'sections' && <div className="space-y-4">
           <p className="text-xs text-muted-foreground">Toggle homepage sections on or off.</p>
           <div className="space-y-4 p-4 border border-border/50 rounded-xl">
-            <Toggle value={form.show_featured_release} onChange={(v) => set('show_featured_release', v)} label="Show Featured Release Banner" />
-            <Toggle value={form.show_video_preview} onChange={(v) => set('show_video_preview', v)} label="Show Latest Videos Section" />
+            <Toggle value={form.show_featured_release} onChange={(v) => set('show_featured_release', v)} label="Show Featured Project Banner" />
+            <Toggle value={form.show_video_preview} onChange={(v) => set('show_video_preview', v)} label="Show Latest Work Section" />
             <Toggle value={form.show_newsletter} onChange={(v) => set('show_newsletter', v)} label="Show Newsletter Signup" />
-            <Toggle value={form.show_gallery_preview} onChange={(v) => set('show_gallery_preview', v)} label="Show Gallery Preview" />
-          </div>
-        </div>}
-
-        {/* STREAMING TAB */}
-        {activeTab === 'streaming' && <div className="space-y-4">
-          <p className="text-xs text-muted-foreground">Set the links for the "Stream Everywhere" section on the homepage.</p>
-          <div className="space-y-3">
-            {[
-              { key: 'streaming_spotify_url', label: 'Spotify URL' },
-              { key: 'streaming_apple_music_url', label: 'Apple Music URL' },
-              { key: 'streaming_youtube_url', label: 'YouTube URL' },
-              { key: 'streaming_tiktok_url', label: 'TikTok URL' },
-              { key: 'streaming_amazon_music_url', label: 'Amazon Music URL' },
-            ].map(({ key, label }) => (
-              <div key={key} className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</label>
-                <Input value={form[key] || ''} onChange={(e) => set(key, e.target.value)} placeholder="https://..." />
-              </div>
-            ))}
+            <Toggle value={form.show_gallery_preview} onChange={(v) => set('show_gallery_preview', v)} label="Show Portfolio Preview" />
           </div>
         </div>}
 
@@ -279,7 +261,7 @@ export default function HomePageSettingsForm() {
         {activeTab === 'social' && <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Homepage Social Share Image</label>
-            <p className="text-xs text-muted-foreground">Used for OG/Twitter previews when sharing the home page. Falls back to artist image.</p>
+            <p className="text-xs text-muted-foreground">Used for OG/Twitter previews when sharing the home page. Falls back to studio image.</p>
             <MediaUploader type="image" currentUrl={form.homepage_social_share_image} onUpload={(url) => set('homepage_social_share_image', url)} placeholder="Upload social share image (1200×630 recommended)" />
           </div>
         </div>}
