@@ -37,13 +37,6 @@ export default function SiteNav() {
         {/* Desktop navigation */}
         <nav className="hidden items-center gap-9 md:flex">
           <a
-            href="#services"
-            className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
-          >
-            Services
-          </a>
-
-          <a
             href="#work"
             className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
           >

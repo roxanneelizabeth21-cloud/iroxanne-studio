@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 
 import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
-import Services from '@/components/home/Services';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import Testimonials from '@/components/home/Testimonials';
 import ClosingCTA from '@/components/home/ClosingCTA';
@@ -53,8 +52,6 @@ export default function Home() {
 
       <main>
         <Hero projects={projects} loading={loading} />
-
-        <Services />
 
         <FeaturedWork
           items={projects}
