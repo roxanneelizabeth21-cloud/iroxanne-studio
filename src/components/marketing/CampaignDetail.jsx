@@ -82,7 +82,7 @@ export default function CampaignDetail({ id }) {
   const campaignPosts = posts.filter((p) => p.campaign_id === id);
   const projectTitle = (sid) => portfolioItems.find((r) => r.id === sid)?.title || '—';
   const cForm = campaignForm || (campaign ? {
-    name: campaign.name, portfolio_item_id: campaign.portfolio_item_id, release_date: campaign.release_date,
+    name: campaign.name, portfolio_item_id: campaign.portfolio_item_id, launch_date: campaign.launch_date,
     start_date: campaign.start_date, end_date: campaign.end_date, goal: campaign.goal,
     status: campaign.status, notes: campaign.notes, default_image_style_preset: campaign.default_image_style_preset,
   } : null);
@@ -94,7 +94,7 @@ export default function CampaignDetail({ id }) {
     try {
       const res = await base44.functions.invoke('generateCampaignPlan', {
         portfolio_item_id: campaign.portfolio_item_id,
-        release_date: campaign.release_date,
+        launch_date: campaign.launch_date,
         goal: campaign.goal,
         start_date: campaign.start_date,
         end_date: campaign.end_date,
@@ -160,7 +160,7 @@ export default function CampaignDetail({ id }) {
   };
 
   if (!campaign) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
-  const dUntil = daysUntil(campaign.release_date);
+  const dUntil = daysUntil(campaign.launch_date);
 
   return (
     <div className="space-y-6">
@@ -174,7 +174,7 @@ export default function CampaignDetail({ id }) {
             <h1 className="font-display text-2xl font-bold mt-0.5 truncate">{campaign.name}</h1>
             <p className="text-sm text-muted-foreground">{campaign.goal} · {formatDate(campaign.start_date)} → {formatDate(campaign.end_date)}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Launch: {formatDate(campaign.release_date) || '—'} · {dUntil === null ? '' : dUntil > 0 ? `${dUntil} days to launch` : dUntil === 0 ? 'launch day' : `${Math.abs(dUntil)} days past`} · {campaignPosts.length} posts
+              Launch: {formatDate(campaign.launch_date) || '—'} · {dUntil === null ? '' : dUntil > 0 ? `${dUntil} days to launch` : dUntil === 0 ? 'launch day' : `${Math.abs(dUntil)} days past`} · {campaignPosts.length} posts
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => { setCampaignForm(cForm); setEditCampaign(true); }} className="gap-1.5"><Pencil className="h-3.5 w-3.5" /> Edit</Button>
@@ -184,7 +184,7 @@ export default function CampaignDetail({ id }) {
           <div className="mt-4 pt-4 border-t border-border/40 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2"><label className={FL}>Name</label><Input value={cForm.name} onChange={(e) => setCampaignForm({ ...cForm, name: e.target.value })} /></div>
-              <div><label className={FL}>Launch date</label><Input type="date" value={cForm.release_date} onChange={(e) => setCampaignForm({ ...cForm, release_date: e.target.value })} /></div>
+              <div><label className={FL}>Launch date</label><Input type="date" value={cForm.launch_date} onChange={(e) => setCampaignForm({ ...cForm, launch_date: e.target.value })} /></div>
               <div><label className={FL}>Status</label><select value={cForm.status} onChange={(e) => setCampaignForm({ ...cForm, status: e.target.value })} className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">{CAMPAIGN_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}</select></div>
               <div><label className={FL}>Start date</label><Input type="date" value={cForm.start_date} onChange={(e) => setCampaignForm({ ...cForm, start_date: e.target.value })} /></div>
               <div><label className={FL}>End date</label><Input type="date" value={cForm.end_date} onChange={(e) => setCampaignForm({ ...cForm, end_date: e.target.value })} /></div>

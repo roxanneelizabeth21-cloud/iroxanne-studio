@@ -11,7 +11,7 @@ const TITLES = {
 };
 
 // Confirms what actually happened, then offers only the next steps that apply.
-export default function CreatePostSummary({ result, post, clips, songTitle, platformIds, onCreateAnother }) {
+export default function CreatePostSummary({ result, post, clips, projectTitle, platformIds, onCreateAnother }) {
   const media = resolveMedia(post, clips);
   return (
     <div className="max-w-xl space-y-4" aria-live="polite">
@@ -26,7 +26,7 @@ export default function CreatePostSummary({ result, post, clips, songTitle, plat
             : <img src={media.url} alt="" className="h-20 w-20 rounded-lg object-cover shrink-0" />
         ) : null}
         <div className="min-w-0 text-sm space-y-1">
-          <p className="font-medium truncate">{songTitle || 'iRoxanne Studio'}</p>
+          <p className="font-medium truncate">{projectTitle || 'iRoxanne Studio'}</p>
           <p className="text-muted-foreground">{platformIds.map((id) => getPlatform(id)?.label).filter(Boolean).join(' + ')}</p>
           <p className="text-muted-foreground">Status: {post.status}</p>
           {result.when && <p className="text-muted-foreground">Goes live {result.when}</p>}

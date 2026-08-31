@@ -18,7 +18,7 @@ export default function CampaignBuilder() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: '', portfolio_item_id: '', release_date: '', start_date: '', end_date: '', goal: 'Launch week push', status: 'Planning', notes: '', default_image_style_preset: '',
+    name: '', portfolio_item_id: '', launch_date: '', start_date: '', end_date: '', goal: 'Launch week push', status: 'Planning', notes: '', default_image_style_preset: '',
   });
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -42,7 +42,7 @@ export default function CampaignBuilder() {
       ...f,
       portfolio_item_id: projectId,
       name: f.name ? f.name : (item?.title ? `${item.title} — Launch` : ''),
-      release_date: f.release_date ? f.release_date : (item?.date_built || ''),
+      launch_date: f.launch_date ? f.launch_date : (item?.date_built || ''),
     }));
   };
 
@@ -110,7 +110,7 @@ export default function CampaignBuilder() {
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Launch date</label>
-            <Input type="date" value={form.release_date} onChange={(e) => set('release_date', e.target.value)} />
+            <Input type="date" value={form.launch_date} onChange={(e) => set('launch_date', e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Goal</label>
@@ -156,7 +156,7 @@ export default function CampaignBuilder() {
         ) : (
           <div className="space-y-2">
             {visible.map((c) => {
-              const d = daysUntil(c.release_date);
+              const d = daysUntil(c.launch_date);
               return (
                 <Link key={c.id} to={`/marketing/campaigns/${c.id}`} className="block glass rounded-xl p-4 hover:border-primary/40 transition-colors">
                   <div className="flex items-center justify-between gap-3">

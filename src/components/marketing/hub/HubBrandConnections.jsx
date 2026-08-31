@@ -5,7 +5,7 @@ import BrandProfilePage from '@/pages/marketing/BrandProfile';
 import { SOCIAL_PLATFORMS, isHttpsUrl } from '@/lib/socialPlatforms';
 import FacebookConnectionStatus from '@/components/marketing/FacebookConnectionStatus';
 
-const BRAND_FIELDS = ['artist_name', 'voice_description', 'genre_blend', 'audience_description', 'writing_rules', 'hashtag_bank', 'image_style_notes'];
+const BRAND_FIELDS = ['studio_name', 'voice_description', 'service_description', 'audience_description', 'writing_rules', 'hashtag_bank', 'image_style_notes'];
 
 const CELL = 'rounded-xl border-[0.5px] border-border bg-card/60 px-4 py-3';
 
@@ -34,7 +34,7 @@ export default function HubBrandConnections({ brandProfile, activeCampaign }) {
         </div>
         <div className={CELL}>
           <p className="text-xs text-muted-foreground">Studio identity</p>
-          <p className="text-sm font-medium mt-0.5 truncate">{brandProfile?.artist_name || 'iRoxanne Studio'}</p>
+          <p className="text-sm font-medium mt-0.5 truncate">{brandProfile?.studio_name || 'iRoxanne Studio'}</p>
         </div>
         <div className={`${CELL} sm:col-span-2`}>
           <p className="text-xs text-muted-foreground">Active campaign visual direction</p>

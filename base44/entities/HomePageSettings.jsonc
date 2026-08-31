@@ -6,7 +6,7 @@
       "type": "string",
       "description": "Hero background image URL"
     },
-    "hero_artist_image": {
+    "hero_studio_image": {
       "type": "string",
       "description": "Studio / profile image URL for hero"
     },
@@ -67,7 +67,7 @@
         "artist_left",
         "artist_right",
         "cinematic",
-        "album_cover",
+        "project_cover",
         "video_bg"
       ],
       "default": "centered",
@@ -93,7 +93,7 @@
       "default": "center",
       "description": "Hero text alignment"
     },
-    "show_featured_release": {
+    "show_featured_project": {
       "type": "boolean",
       "default": true,
       "description": "Show the featured project banner on the homepage."

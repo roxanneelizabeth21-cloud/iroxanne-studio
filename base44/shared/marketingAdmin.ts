@@ -187,14 +187,14 @@ export function brandProfileSection(bp: any): string {
     .join('\n');
   return [
     'BRAND PROFILE — authoritatively defines voice and rules. Override any generic content rules above where they conflict.',
-    `- Studio name: ${bp.artist_name || 'iRoxanne Studio'} (always spell it exactly this way)`,
+    `- Studio name: ${bp.studio_name || 'iRoxanne Studio'} (always spell it exactly this way)`,
     `- Voice / how the studio speaks: ${bp.voice_description || ''}`,
-    `- What the studio builds / for whom: ${bp.genre_blend || ''}`,
+    `- What the studio builds / for whom: ${bp.service_description || ''}`,
     `- Audience: ${bp.audience_description || ''}`,
-    `- Positioning notes (personal / real-person angle): ${bp.faith_integration_notes || ''}`,
+    `- Positioning notes (personal / real-person angle): ${bp.positioning_notes || ''}`,
     rules ? `- Hard writing rules:\n${rules}` : '',
     bp.banned_words_phrases ? `- Banned words/phrases (never use): ${bp.banned_words_phrases}` : '',
-    `- Default links (portfolio, consult booking, etc.): ${bp.default_streaming_links || ''}`,
+    `- Default links (portfolio, consult booking, etc.): ${bp.default_links || ''}`,
     `- Hashtag bank (preferred by platform): ${bp.hashtag_bank || ''}`,
     `- Image style notes: ${bp.image_style_notes || ''}`,
     presetLine ? `- Image style presets (append the matching prompt_suffix to image prompts):\n${presetLine}` : '',
@@ -429,12 +429,12 @@ export async function loadNotificationSettings(base44): Promise<any> {
       timezone: String(bp.notify_timezone || 'America/New_York').trim() || 'America/New_York',
       daily_posts: bp.notify_daily_posts !== false,
       weekly_digest: bp.notify_weekly_digest !== false,
-      release_countdown: bp.notify_release_countdown === true,
+      launch_countdown: bp.notify_launch_countdown === true,
       filming_nudge: bp.notify_filming_nudge !== false,
       send_time: String(bp.notify_send_time || '08:00'),
     };
   } catch {
-    return { email: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, release_countdown: false, filming_nudge: true, send_time: '08:00' };
+    return { email: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, launch_countdown: false, filming_nudge: true, send_time: '08:00' };
   }
 }
 

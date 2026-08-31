@@ -41,8 +41,8 @@ export default function CanvasStepRelease({ releases, releaseId, onPick }) {
             )}
             <span className="min-w-0">
               <span className="block text-sm font-medium truncate">{r.title}</span>
-              {r.release_type && <span className="block text-[11px] text-muted-foreground truncate">{r.release_type}</span>}
-              {r.release_date && <span className="block text-[11px] text-muted-foreground truncate">{formatDate(r.release_date)}</span>}
+              {r.category && <span className="block text-[11px] text-muted-foreground truncate">{r.category}</span>}
+              {r.date_built && <span className="block text-[11px] text-muted-foreground truncate">{formatDate(r.date_built)}</span>}
             </span>
           </button>
         ))}

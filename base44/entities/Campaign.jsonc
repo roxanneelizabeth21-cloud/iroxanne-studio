@@ -10,7 +10,7 @@
       "type": "string",
       "description": "ID of the PortfolioItem this campaign promotes."
     },
-    "release_date": {
+    "launch_date": {
       "type": "string",
       "format": "date",
       "description": "Launch/target date the campaign builds toward"

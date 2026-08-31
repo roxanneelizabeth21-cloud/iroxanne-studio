@@ -17,22 +17,22 @@ const HELP = 'text-xs text-muted-foreground/80';
 
 // Sensible seeds for the first (and only) record.
 const DEFAULTS = {
-  artist_name: 'iRoxanne Studio',
+  studio_name: 'iRoxanne Studio',
   voice_description: '',
-  genre_blend: '',
+  service_description: '',
   audience_description: '',
-  faith_integration_notes: '',
+  positioning_notes: '',
   writing_rules: 'No long em dashes\nNo corporate marketing speak\nWarm, conversational, direct',
   banned_words_phrases: '',
   example_captions: '',
-  default_streaming_links: '',
+  default_links: '',
   hashtag_bank: '',
   image_style_notes: 'No faces visible. No text or logos in image. Branding added separately in Canva.',
   image_style_presets: DEFAULT_STYLE_PRESETS,
   notify_email: '',
   notify_daily_posts: true,
   notify_weekly_digest: true,
-  notify_release_countdown: true,
+  notify_launch_countdown: true,
   notify_filming_nudge: true,
   notify_send_time: '08:00',
   posts_per_campaign_week: 4,
@@ -43,15 +43,15 @@ const DEFAULTS = {
 };
 
 const FIELDS = [
-  { key: 'artist_name', label: 'Studio name', type: 'input', help: 'Used throughout generated copy — always spelled exactly this way.' },
+  { key: 'studio_name', label: 'Studio name', type: 'input', help: 'Used throughout generated copy — always spelled exactly this way.' },
   { key: 'voice_description', label: 'Voice / tone', type: 'textarea', help: 'How the studio speaks to its audience. Shapes every caption.' },
-  { key: 'genre_blend', label: 'What you build / for whom', type: 'textarea', help: 'What the studio builds and for whom — influences themes and references.' },
+  { key: 'service_description', label: 'What you build / for whom', type: 'textarea', help: 'What the studio builds and for whom — influences themes and references.' },
   { key: 'audience_description', label: 'Audience', type: 'textarea', help: 'Who the audience is — helps the AI pitch tone correctly.' },
-  { key: 'faith_integration_notes', label: 'Positioning notes', type: 'textarea', help: 'When and how to emphasize the personal, real-person, not-an-agency angle.' },
+  { key: 'positioning_notes', label: 'Positioning notes', type: 'textarea', help: 'When and how to emphasize the personal, real-person, not-an-agency angle.' },
   { key: 'writing_rules', label: 'Writing rules', type: 'textarea', help: 'Hard rules, one per line. These OVERRIDE generic content rules where they conflict.', rows: 4 },
   { key: 'banned_words_phrases', label: 'Banned words / phrases', type: 'textarea', help: 'Words or phrases the AI must never use.' },
   { key: 'example_captions', label: 'Example captions', type: 'textarea', help: 'Captions you love — used as style reference for the AI.', rows: 4 },
-  { key: 'default_streaming_links', label: 'Default links', type: 'textarea', help: 'Standard links the AI can reference (portfolio URL, consult-booking URL, etc.).' },
+  { key: 'default_links', label: 'Default links', type: 'textarea', help: 'Standard links the AI can reference (portfolio URL, consult-booking URL, etc.).' },
   { key: 'hashtag_bank', label: 'Hashtag bank', type: 'textarea', help: 'Preferred hashtags by platform.' },
   { key: 'image_style_notes', label: 'Image style notes', type: 'textarea', help: 'Rules for AI image prompts (no faces, no text/logos…).' },
 ];
@@ -216,7 +216,7 @@ export default function BrandProfile() {
             {[
               { key: 'notify_daily_posts', label: 'Daily posts-due reminder' },
               { key: 'notify_weekly_digest', label: 'Weekly digest (Sunday evening)' },
-              { key: 'notify_release_countdown', label: 'Launch countdown (14/7/3/1 days)' },
+              { key: 'notify_launch_countdown', label: 'Launch countdown (14/7/3/1 days)' },
               { key: 'notify_filming_nudge', label: 'Monthly filming nudge' },
             ].map((t) => (
               <label key={t.key} className="flex items-center gap-2 text-sm cursor-pointer select-none">

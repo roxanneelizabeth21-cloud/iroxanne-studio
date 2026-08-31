@@ -209,7 +209,7 @@ export default function CreatePost() {
     status: 'released',
     themes: Array.isArray(portfolioItem?.tech_used) ? portfolioItem.tech_used.join(', ') : '',
     story: portfolioItem?.description || portfolioItem?.tagline || '',
-    genre: brandProfile?.genre_blend,
+    genre: brandProfile?.service_description,
   }), [portfolioItem, projectTitle, campaign, brandProfile]);
 
   const linkOptions = useMemo(() => {
@@ -218,7 +218,7 @@ export default function CreatePost() {
     const pageLink = shareablePageUrl(portfolioItem, 'Portfolio page');
     if (pageLink) out.push({ label: `${projectTitle || 'Project'} page`, url: pageLink });
     out.push({ label: 'Consult booking', url: shareablePageUrl(portfolioItem, 'Consult booking') });
-    String(brandProfile?.default_streaming_links || '').split('\n').map((s) => s.trim()).filter(Boolean)
+    String(brandProfile?.default_links || '').split('\n').map((s) => s.trim()).filter(Boolean)
       .forEach((url) => out.push({ label: url, url }));
     const seen = new Set();
     return out.filter((o) => o.url && !seen.has(o.url) && seen.add(o.url));
@@ -273,7 +273,7 @@ export default function CreatePost() {
       <ResumeDraftCard
         post={resumable}
         clips={clips}
-        songTitle={rItem?.title || ''}
+        projectTitle={rItem?.title || ''}
         platformLabels={platformLabels(resumable) || resumable.platform}
         onContinue={() => startFrom(resumable)}
         onStartNew={startFresh}
@@ -288,7 +288,7 @@ export default function CreatePost() {
         result={result}
         post={post}
         clips={clips}
-        songTitle={projectTitle}
+        projectTitle={projectTitle}
         platformIds={draft.platformIds}
         onCreateAnother={() => { setResult(null); startFresh(); }}
       />
@@ -325,11 +325,11 @@ export default function CreatePost() {
           clips={clips}
           campaigns={campaigns}
           releases={portfolioItems}
-          songContext={portfolioContext}
+          projectContext={portfolioContext}
         />
       )}
       {step === 2 && post && (
-        <StepCopy draft={draft} patch={patch} post={post} patchPost={patchPost} linkOptions={linkOptions} songTitle={projectTitle} clips={clips} />
+        <StepCopy draft={draft} patch={patch} post={post} patchPost={patchPost} linkOptions={linkOptions} projectTitle={projectTitle} clips={clips} />
       )}
       {step === 3 && post && (
         <StepReview
@@ -339,7 +339,7 @@ export default function CreatePost() {
           clips={clips}
           brandProfile={brandProfile}
           campaignName={campaign?.name || ''}
-          songTitle={projectTitle}
+          projectTitle={projectTitle}
           onDone={finish}
           onEdit={() => goToStep(2)}
         />

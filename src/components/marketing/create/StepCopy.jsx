@@ -18,7 +18,7 @@ const TWEAKS = [
 ];
 
 // Step 3 — platform choice, generated or hand-written copy, and the real CTA link.
-export default function StepCopy({ draft, patch, post, patchPost, linkOptions, songTitle }) {
+export default function StepCopy({ draft, patch, post, patchPost, linkOptions, projectTitle }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState('');
   const [mode, setMode] = useState(post.caption ? 'edit' : '');
@@ -82,7 +82,7 @@ export default function StepCopy({ draft, patch, post, patchPost, linkOptions, s
     setBusy('tweak');
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Rewrite this social caption for iRoxanne Studio, about "${songTitle}". ${instruction}
+        prompt: `Rewrite this social caption for iRoxanne Studio, about "${projectTitle}". ${instruction}
 Keep it truthful: never invent results, metrics, quotes, testimonials, prices or links. Keep any existing link exactly as written.
 
 Current caption:

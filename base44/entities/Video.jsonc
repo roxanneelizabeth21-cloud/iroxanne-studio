@@ -25,13 +25,13 @@
     "type": {
       "type": "string",
       "enum": [
-        "music_video",
-        "lyric_video",
+        "demo_video",
+        "walkthrough",
         "reel",
         "behind_the_scenes",
-        "live"
+        "tutorial"
       ],
-      "default": "music_video",
+      "default": "demo_video",
       "description": "Type of video content"
     },
     "featured": {

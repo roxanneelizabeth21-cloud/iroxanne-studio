@@ -29,7 +29,7 @@ export default async function(req) {
     const body = await req.json();
     const {
       portfolio_item_id,
-      release_date,
+      launch_date,
       goal = 'Launch week push',
       start_date,
       end_date,
@@ -41,8 +41,8 @@ export default async function(req) {
     if (!start_date || !end_date) return Response.json({ error: 'start_date and end_date are required' }, { status: 400 });
 
     const ctx = await resolvePortfolioContext(base44, pid);
-    const itemTitle = ctx?.title || body.song_title || body.portfolio_title || 'the new project';
-    const itemDescription = ctx?.description || body.song_description || '';
+    const itemTitle = ctx?.title || body.project_title || body.portfolio_title || 'the new project';
+    const itemDescription = ctx?.description || body.project_description || '';
     const portfolioSec = portfolioSection(ctx?.item);
     const testimonials = await loadApprovedTestimonials(base44, pid);
     const testimonialSec = testimonialSection(testimonials);
@@ -71,7 +71,7 @@ ${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conf
 
 Campaign brief:
 - Portfolio item: "${itemTitle}"
-- Launch/target date: ${release_date || 'TBD'}
+- Launch/target date: ${launch_date || 'TBD'}
 - Campaign window: ${start_date} to ${end_date} (${windowDays} days)
 - Campaign goal: ${goal}
 ${itemDescription ? `- What it does: ${itemDescription}` : ''}
@@ -80,7 +80,7 @@ ${testimonialSec ? `- Approved testimonials are available — use them for testi
 
 Generate ${targetPosts} social posts spread across the campaign window (${start_date} to ${end_date}).
 - Cover Facebook, Instagram, YouTube, and TikTok. Weight Reels, YouTube Shorts, and TikTok videos heaviest, plus feed posts, stories, and YouTube community posts.
-- Distribute dates sensibly across the window: build buzz pre-launch, peak on launch day (${release_date || 'the launch date'}), and sustain post-launch with portfolio showcases, educational tips, and consult CTAs.
+- Distribute dates sensibly across the window: build buzz pre-launch, peak on launch day (${launch_date || 'the launch date'}), and sustain post-launch with portfolio showcases, educational tips, and consult CTAs.
 - Follow the PERFORMANCE-BASED CONTENT RULES: roughly 40% showcase, 30% educational/tech-tip, 30% testimonial/offer. Assign each post a content_bucket accordingly.
 - Every post MUST include scheduled_date (YYYY-MM-DD), platform, format, caption, hashtags, hook, cta, and image_prompt.
 - For every video-format post (Reel, Short, Video): pick the best-fitting template by id, fill every slot in slot_values (exact on-screen text, what to show, loop notes), and set video_brief to a human-readable CapCut assembly checklist. The hook text must be bold on frame one; the brief must describe the first 2–3 seconds.

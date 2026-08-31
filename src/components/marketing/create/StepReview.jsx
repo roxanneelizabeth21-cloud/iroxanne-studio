@@ -16,7 +16,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 // Step 4 — a realistic preview plus the four completion paths. Publishing only
 // ever happens through the existing Final Review confirmation.
 export default function StepReview({
-  draft, post, patchPost, clips, brandProfile, campaignName, songTitle, onDone, onEdit,
+  draft, post, patchPost, clips, brandProfile, campaignName, projectTitle, onDone, onEdit,
 }) {
   const { toast } = useToast();
   const [finalOpen, setFinalOpen] = useState(false);
@@ -113,7 +113,7 @@ export default function StepReview({
           {post.cta && <p className="text-sm"><span className="text-muted-foreground">CTA: </span>{post.cta}</p>}
           {draft.link && <p className="text-xs break-all">{draft.link}</p>}
           <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-            <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{songTitle || '—'}</dd></div>
+            <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{projectTitle || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Campaign: </dt><dd className="inline">{campaignName || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Format: </dt><dd className="inline">{post.format || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Approval: </dt><dd className="inline">{post.approval_status || 'Not Reviewed'}</dd></div>
@@ -173,7 +173,7 @@ export default function StepReview({
         onOpenChange={setFinalOpen}
         onEdit={onEdit}
         campaignName={campaignName}
-        releaseTitle={songTitle}
+        releaseTitle={projectTitle}
         timezone={tz}
       />
 

@@ -41,7 +41,7 @@ function buildPrompt(input) {
   } = input;
 
   let p = '';
-  p += 'Create a single finished marketing image for a recording artist.\n\n';
+  p += 'Create a single finished marketing image for the studio.\n\n';
   if (prompt) p += `CORE IMAGE BRIEF\n${prompt}\n\n`;
 
   p += 'VISUAL DIRECTION\n';
@@ -67,7 +67,7 @@ function buildPrompt(input) {
     p += 'CONTENT CONTEXT (guides the visual — do not render this text into the image)\n';
     p += line('Project', context.project_title);
     p += line('Category', context.category);
-    p += line('Service / style', context.genre);
+    p += line('Service', context.service);
     p += line('Tech used', context.tech_used);
     p += line('Project description', context.project_description);
     p += line('Tagline', context.tagline);
@@ -99,7 +99,7 @@ function buildPrompt(input) {
   const avoid = elements_to_avoid ?? vd.elements_to_avoid;
   if (preserve) p += line('MUST PRESERVE', preserve) + '\n';
   p += line('MUST AVOID', avoid);
-  p += 'Avoid generic stock-inspirational clichés unless the direction above explicitly calls for them: lone back-facing silhouettes, glowing crosses, open Bibles, praying hands, sunrise-over-clouds, empty roads and windswept fields. Avoid distorted anatomy, extra limbs, garbled lettering and fake brand marks.\n';
+  p += 'Avoid generic stock-inspirational clichés unless the direction above explicitly calls for them: lone back-facing silhouettes, empty roads and windswept fields, generic flat-lay mockups. Avoid distorted anatomy, extra limbs, garbled lettering and fake brand marks.\n';
   if (variation_instruction) p += `\nREVISION FOR THIS VERSION\nKeep everything above intact and change only this: ${variation_instruction}\n`;
 
   return { finalPrompt: p.trim(), aspect: ar };
@@ -147,7 +147,7 @@ export default async function (req) {
     const context = {
       project_title: portfolioItem?.title,
       category: portfolioItem?.category,
-      genre: brand?.genre_blend,
+      service: brand?.service_description,
       tech_used: portfolioItem?.tech_used,
       project_description: portfolioItem?.description,
       tagline: portfolioItem?.tagline,

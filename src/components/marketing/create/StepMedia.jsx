@@ -21,7 +21,7 @@ const OPTIONS = [
 ];
 
 // Step 2 — one real, previewable image or video attached to the in-progress post.
-export default function StepMedia({ draft, patch, post, patchPost, clips, campaigns, releases, songContext }) {
+export default function StepMedia({ draft, patch, post, patchPost, clips, campaigns, releases, projectContext }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [panel, setPanel] = useState('');
@@ -46,7 +46,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
     setBusy(true);
     try {
       await base44.entities.ClipAsset.create({
-        title: `${songContext?.title || 'Generated image'} — AI image`.slice(0, 60),
+        title: `${projectContext?.title || 'Generated image'} — AI image`.slice(0, 60),
         file: url,
         source_type: 'Stock',
         media_category: 'Promo',
@@ -193,7 +193,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
         <VisualDirectionPanel
           draft={draft}
           post={post}
-          songContext={songContext}
+          projectContext={projectContext}
           aspect={draft.aspect}
           onAttached={(url) => attachGenerated(url)}
         />
@@ -210,7 +210,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
           <p className="text-xs text-muted-foreground">
             Composition prepared for {draft.aspect}. Final crop may still be needed.
           </p>
-          <CanvaRoundTrip media={media} title={songContext?.title} aspect={draft.aspect} patchPost={patchPost} />
+          <CanvaRoundTrip media={media} title={projectContext?.title} aspect={draft.aspect} patchPost={patchPost} />
           <Button type="button" variant="ghost" size="sm" onClick={remove} disabled={busy} className="gap-1.5 text-destructive hover:text-destructive">
             <X className="h-3.5 w-3.5" /> Remove media
           </Button>

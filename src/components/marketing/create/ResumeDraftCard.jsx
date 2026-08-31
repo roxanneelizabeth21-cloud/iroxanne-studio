@@ -12,7 +12,7 @@ const when = (v) => {
 
 // Shown when Create Post opens with an unfinished Draft — nothing new is started
 // automatically, and discarding always asks first.
-export default function ResumeDraftCard({ post, clips, songTitle, platformLabels, onContinue, onStartNew, onDiscard }) {
+export default function ResumeDraftCard({ post, clips, projectTitle, platformLabels, onContinue, onStartNew, onDiscard }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const media = resolveMedia(post, clips);
@@ -39,7 +39,7 @@ export default function ResumeDraftCard({ post, clips, songTitle, platformLabels
           <span className="h-20 w-20 rounded-lg bg-muted grid place-items-center text-[10px] text-muted-foreground shrink-0">No media</span>
         )}
         <dl className="text-xs space-y-1 min-w-0">
-          <div><dt className="text-muted-foreground inline">Music: </dt><dd className="inline">{songTitle || '—'}</dd></div>
+          <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{projectTitle || '—'}</dd></div>
           <div><dt className="text-muted-foreground inline">Platform: </dt><dd className="inline">{platformLabels || '—'}</dd></div>
           <div><dt className="text-muted-foreground inline">Last step: </dt><dd className="inline">{STEPS[stepIndex].label}</dd></div>
           <div><dt className="text-muted-foreground inline">Last saved: </dt><dd className="inline">{when(post.updated_date)}</dd></div>
@@ -48,7 +48,7 @@ export default function ResumeDraftCard({ post, clips, songTitle, platformLabels
 
       {confirming ? (
         <div role="alert" className="rounded-xl border border-destructive/40 p-3 space-y-2">
-          <p className="text-sm">Discard this draft? Your images, clips, campaigns and music all stay exactly as they are.</p>
+          <p className="text-sm">Discard this draft? Your images, clips, campaigns and media all stay exactly as they are.</p>
           <div className="flex gap-2">
             <Button type="button" size="sm" variant="destructive" onClick={discard} disabled={busy} className="gap-1.5">
               {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} Yes, discard it

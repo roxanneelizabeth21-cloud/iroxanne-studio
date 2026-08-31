@@ -77,7 +77,7 @@ export default function PromoBannerForm({ initial, onSave, onCancel }) {
     <form onSubmit={submit} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="space-y-5">
         <Field label="Title (internal)">
-          <Input value={b.title} onChange={(e) => set('title', e.target.value)} placeholder="Hymns pre-save banner" required />
+          <Input value={b.title} onChange={(e) => set('title', e.target.value)} placeholder="Launch promo banner" required />
         </Field>
 
         <div className="flex items-center justify-between rounded-lg border border-border/50 p-3">
@@ -111,15 +111,15 @@ export default function PromoBannerForm({ initial, onSave, onCancel }) {
         </Field>
 
         <Field label="Subtext">
-          <Input value={b.subtext} onChange={(e) => set('subtext', e.target.value)} placeholder="Those Old Hymns: Reimagined, Vol. 1 — pre-save the album." />
+          <Input value={b.subtext} onChange={(e) => set('subtext', e.target.value)} placeholder="New service launching — book a free consult." />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="CTA text">
-            <Input value={b.cta_text} onChange={(e) => set('cta_text', e.target.value)} placeholder="Pre-Save →" />
+            <Input value={b.cta_text} onChange={(e) => set('cta_text', e.target.value)} placeholder="Learn More →" />
           </Field>
           <Field label="CTA URL">
-            <Input value={b.cta_url} onChange={(e) => set('cta_url', e.target.value)} placeholder="/release/those-old-hymns" />
+            <Input value={b.cta_url} onChange={(e) => set('cta_url', e.target.value)} placeholder="/booking" />
           </Field>
         </div>
 

@@ -2,7 +2,7 @@
   "name": "BrandProfile",
   "type": "object",
   "properties": {
-    "artist_name": {
+    "studio_name": {
       "type": "string",
       "default": "iRoxanne Studio",
       "description": "Studio name used in generated copy \u2014 always spelled exactly this way"
@@ -11,7 +11,7 @@
       "type": "string",
       "description": "How the studio speaks to its audience (tone, register)"
     },
-    "genre_blend": {
+    "service_description": {
       "type": "string",
       "description": "What the studio builds and for whom (service description)"
     },
@@ -19,7 +19,7 @@
       "type": "string",
       "description": "Who the audience is (small business owners, solo founders, creators)"
     },
-    "faith_integration_notes": {
+    "positioning_notes": {
       "type": "string",
       "description": "Positioning notes \u2014 when/how to emphasize the personal, real-person, not-an-agency angle"
     },
@@ -36,7 +36,7 @@
       "type": "string",
       "description": "Captions the admin loves, for style reference"
     },
-    "default_streaming_links": {
+    "default_links": {
       "type": "string",
       "description": "Default links the AI can reference (portfolio URL, consult-booking URL, etc.)"
     },
@@ -130,10 +130,10 @@
       "default": true,
       "description": "Send a weekly digest email (Sunday evening)"
     },
-    "notify_release_countdown": {
+    "notify_launch_countdown": {
       "type": "boolean",
       "default": false,
-      "description": "Reserved \u2014 legacy release-countdown toggle. Off by default for the service business."
+      "description": "Send launch-countdown emails (14/7/3/1 days before a campaign launch date)."
     },
     "notify_filming_nudge": {
       "type": "boolean",

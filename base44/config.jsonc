@@ -1,6 +1,6 @@
 {
-  "name": "Roxsan Music",
-  "description": "Roxsan is a singer-songwriter blending country, pop, and island soul. Stream her latest singles and albums, watch music videos, read her story, and join the fan list for exclusive updates. Music for the soul, stories from the heart.",
+  "name": "iRoxanne Studio",
+  "description": "iRoxanne Studio builds custom apps for small businesses, solo founders, and creators — booking systems, marketing tools, e-commerce, client portals, and internal tools. Built fast, by a real person.",
   "site": {
     "installCommand": "npm install",
     "buildCommand": "npm run build",

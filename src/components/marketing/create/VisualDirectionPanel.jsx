@@ -33,7 +33,7 @@ const CHOICES = [
 
 // Builds a plain-language Visual Direction from the real project/campaign context,
 // then generates a real image through the existing generateMarketingImage function.
-export default function VisualDirectionPanel({ draft, post, songContext, aspect, onAttached }) {
+export default function VisualDirectionPanel({ draft, post, projectContext, aspect, onAttached }) {
   const { toast } = useToast();
   const [direction, setDirection] = useState(null);
   const [own, setOwn] = useState('');
@@ -52,18 +52,18 @@ export default function VisualDirectionPanel({ draft, post, songContext, aspect,
       const res = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an art director for the app-development studio iRoxanne Studio. Propose ONE visual direction for a single social image.
 
-Project: ${songContext.title || 'untitled'}
-Project type: ${songContext.releaseType || ''}
-Project status: ${songContext.status || ''}
-Themes: ${songContext.themes || ''}
-Story: ${songContext.story || ''}
-Key details / highlights: ${songContext.keyLines || ''}
-Project category / identity: ${songContext.genre || ''}
-Campaign: ${songContext.campaignName || ''} ${songContext.campaignGoal || ''}
+Project: ${projectContext.title || 'untitled'}
+Project type: ${projectContext.releaseType || ''}
+Project status: ${projectContext.status || ''}
+Themes: ${projectContext.themes || ''}
+Story: ${projectContext.story || ''}
+Key details / highlights: ${projectContext.keyLines || ''}
+Project category / identity: ${projectContext.genre || ''}
+Campaign: ${projectContext.campaignName || ''} ${projectContext.campaignGoal || ''}
 Post goal: ${effectiveGoal(draft)}
 Owner instruction: ${draft.instruction || 'none'}
 Aspect ratio: ${aspect}
-Brand image rules: ${songContext.imageStyleNotes || ''}
+Brand image rules: ${projectContext.imageStyleNotes || ''}
 
 Vary the aesthetic to suit THIS project specifically. Avoid repeating generic stock clichés (generic mockups, flat backgrounds, empty screenshots) unless the project truly calls for it. Never invent quotes or metrics: only use the real details above, and only if a text overlay genuinely helps.
 Return concise plain-language values for: creative_concept, mood, subject, setting, composition, lighting, color_direction, text_overlay (empty string when the image should be text-free), reason_for_match.`,
@@ -106,7 +106,7 @@ Return concise plain-language values for: creative_concept, mood, subject, setti
         text_overlay: choices.with_text ? overlay : '',
         elements_to_avoid: avoid.join('; '),
         elements_to_preserve: preserve.join('; '),
-        reference_asset_urls: choices.artwork && songContext.artworkUrl ? [songContext.artworkUrl] : [],
+        reference_asset_urls: choices.artwork && projectContext.artworkUrl ? [projectContext.artworkUrl] : [],
         regenerate: !!variation,
         variation_instruction: variation || '',
         original_request: `${effectiveGoal(draft)} — ${draft.instruction || ''}`.trim(),

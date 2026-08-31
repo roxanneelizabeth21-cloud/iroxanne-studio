@@ -24,9 +24,9 @@
     "media_category": {
       "type": "string",
       "enum": [
-        "Cover Art",
+        "Screenshot",
         "Promo",
-        "Live",
+        "Demo",
         "Behind the Scenes",
         "Press",
         "Other"

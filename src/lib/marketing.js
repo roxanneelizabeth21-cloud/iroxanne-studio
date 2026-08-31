@@ -12,7 +12,7 @@ export const VIDEO_CONTENT_TYPES = ['Demo Loop', 'Countdown', 'Behind The Scenes
 export const SLOT_TYPES = ['text', 'clip', 'audio_cue', 'timestamp'];
 export const CLIP_SOURCES = ['My Footage', 'Stock', 'Canva Export', 'Adobe Stock'];
 export const ORIENTATIONS = ['Vertical 9:16', 'Horizontal', 'Square'];
-export const CLIP_MOODS = ['Beach', 'Island', 'Worship', 'Sunset', 'Road', 'Rain', 'Studio', 'Hands', 'Silhouette', 'Nature', 'City', 'Celebration'];
+export const CLIP_MOODS = ['Beach', 'Island', 'Sunset', 'Road', 'Rain', 'Studio', 'Hands', 'Silhouette', 'Nature', 'City', 'Celebration'];
 export const CONTENT_BUCKETS = ['Loop Clip', 'Authentic/Personal', 'Announcement/CTA'];
 
 export const isVideoFormat = (format) => ['Reel', 'Short', 'Video'].includes(format);
@@ -20,10 +20,10 @@ export const isVideoFormat = (format) => ['Reel', 'Short', 'Video'].includes(for
 // Default image style presets seeded into the Brand Profile on first load.
 export const DEFAULT_STYLE_PRESETS = [
   { name: 'Warm Film', prompt_suffix: 'shot on warm 35mm film, soft golden tones, gentle grain, natural light' },
-  { name: 'Island Watercolor', prompt_suffix: 'soft watercolor painting, tropical palette, dreamy washes of teal and coral' },
+  { name: 'Soft Watercolor', prompt_suffix: 'soft watercolor painting, tropical palette, dreamy washes of teal and coral' },
   { name: 'Golden Hour Realism', prompt_suffix: 'photorealistic, golden hour sunlight, warm cinematic color grade' },
   { name: 'Minimalist Light', prompt_suffix: 'clean minimalist composition, soft neutral palette, abundant negative space' },
-  { name: 'Vintage Country', prompt_suffix: 'faded vintage photograph, rustic warm tones, countryside film aesthetic' },
+  { name: 'Vintage Film', prompt_suffix: 'faded vintage photograph, rustic warm tones, countryside film aesthetic' },
 ];
 
 // Five starter video templates seeded into the Templates page on first load.
