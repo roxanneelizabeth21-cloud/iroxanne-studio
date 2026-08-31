@@ -1,7 +1,5 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 
-const LOGO_URL = 'https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/d414309b5_CodexImageAug31202602_28_43PM.png';
-
 export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
@@ -29,9 +27,6 @@ export default function Hero() {
           >
             See Work
           </a>
-        </div>
-        <div className="mx-auto mt-14 max-w-sm rounded-2xl bg-black p-6 shadow-2xl shadow-black/50 ring-1 ring-white/10">
-          <img src={LOGO_URL} alt="iRoxanne Studio — We build apps. You grow." className="h-auto w-full rounded-lg" />
         </div>
       </div>
     </section>
