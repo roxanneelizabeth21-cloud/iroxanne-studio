@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { resolveStreamLinkForPost } from '../../shared/publishPost.ts';
+import { resolveLinkForPost } from '../../shared/publishPost.ts';
 
 // Entity automation: when a MarketingPost is created (Strategist, weekly
 // auto-generation, Quick Create, or by hand), give it a ready first comment
@@ -19,7 +19,7 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ skipped: 'already has a first comment' });
     }
 
-    const link = await resolveStreamLinkForPost(base44, post);
+    const link = await resolveLinkForPost(base44, post);
     if (!link) return Response.json({ skipped: 'no link for this post' });
 
     const text = `▶️ Listen here: ${link}`;

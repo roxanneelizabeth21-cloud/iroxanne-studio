@@ -18,7 +18,7 @@ export function useOwnDomain(text) {
 
 export function buildMessage(post, link) {
   const parts = [String(post.caption || '').trim(), String(post.hashtags || '').trim(), link ? String(link).trim() : ''].filter(Boolean);
-  return usePreviewSafeLinks(useOwnDomain(parts.join('\n\n')));
+  return useOwnDomain(parts.join('\n\n'));
 }
 
 export async function resolveMediaUrl(post, base44) {
@@ -32,49 +32,31 @@ export async function resolveMediaUrl(post, base44) {
 
 export const PUBLIC_SITE_URL = 'https://iroxanne.com';
 const SITE_URL = PUBLIC_SITE_URL;
+const CONSULT_URL = `${SITE_URL}/consult`;
 
-// The one place a release's shareable link is built on the backend.
-export function shareUrlForRelease(slug, target) {
-  const dest = target === 'Pre-save page' ? '&dest=go' : '';
-  return `${SITE_URL}/functions/releaseShareMeta?slug=${encodeURIComponent(slug)}${dest}`;
+// The public page for a portfolio item: its live project URL if set, otherwise
+// the studio's /portfolio/<slug> page. Mirrors src/lib/postLink.js on the backend.
+function portfolioPageUrl(item) {
+  if (!item) return '';
+  if (item.project_url) return item.project_url;
+  if (item.slug) return `${SITE_URL}/portfolio/${item.slug}`;
+  return '';
 }
 
-// Rewrite any raw /release/ or /go/ landing-page link (older drafts, pasted
-// links, AI-written captions) into its preview-safe equivalent.
-export function usePreviewSafeLinks(text) {
-  return String(text || '').replace(
-    /https?:\/\/(?:www\.)?iroxanne\.com\/(release|go)\/([a-z0-9-]+)/gi,
-    (_m, kind, slug) => shareUrlForRelease(slug, kind.toLowerCase() === 'go' ? 'Pre-save page' : 'Release page'),
-  );
-}
-
-// Resolve the link appended at the bottom of the post. The owner's choice wins:
-// the public release page, the pre-save (/go) page, a streaming link, or none.
-export async function resolveStreamLinkForPost(base44, post) {
-  if (!post.song_id) return '';
+// Resolve the link appended at the bottom of a post. The owner's choice wins:
+// the portfolio project page, the consult-booking page, or none. Direct links —
+// no Open Graph proxy step.
+export async function resolveLinkForPost(base44, post) {
   if (post.link_target === 'None') return '';
+  const target = post.link_target || (post.portfolio_item_id ? 'Portfolio page' : 'Consult booking');
 
-  let release = null;
-  try {
-    release = await base44.asServiceRole.entities.MusicRelease.get(post.song_id);
-  } catch { /* song_id may point at a Track */ }
-  if (!release) {
-    const track = await base44.asServiceRole.entities.Track.get(post.song_id).catch(() => null);
-    if (track?.release_id) release = await base44.asServiceRole.entities.MusicRelease.get(track.release_id).catch(() => null);
+  if (target === 'Consult booking') return CONSULT_URL;
+  if (target === 'Portfolio page') {
+    if (!post.portfolio_item_id) return '';
+    const item = await base44.asServiceRole.entities.PortfolioItem.get(post.portfolio_item_id).catch(() => null);
+    return portfolioPageUrl(item);
   }
-
-  const target = post.link_target || (release ? (release.status === 'upcoming' ? 'Pre-save page' : 'Release page') : 'Streaming link');
-  if (release?.slug && (target === 'Release page' || target === 'Pre-save page')) {
-    // Preview-safe URL: the /release and /go pages are rendered by the SPA, so
-    // crawlers see no Open Graph tags there and show no preview card. This
-    // endpoint serves the release's own tags, then redirects humans onward.
-    return shareUrlForRelease(release.slug, target);
-  }
-
-  const links = await base44.asServiceRole.entities.MusicPlatformLink.filter({ release_id: post.song_id, is_visible: true });
-  const order = ['spotify', 'youtube', 'apple_music', 'amazon_music', 'tiktok_instagram', 'tidal', 'pandora', 'iheartradio', 'other'];
-  const hit = [...links].sort((a, b) => order.indexOf(a.platform_type) - order.indexOf(b.platform_type))[0];
-  return hit?.url || '';
+  return '';
 }
 
 // Facebook Pages: resolve the first managed Page + a Page access token.
@@ -189,7 +171,7 @@ export async function publishToPlatform(base44, post, platform) {
   if (!mediaUrl) {
     throw new Error('This post has no attached graphic or video, so it cannot be published.');
   }
-  const link = await resolveStreamLinkForPost(base44, post);
+  const link = await resolveLinkForPost(base44, post);
 
   const integrationType = platform === 'Facebook' ? 'facebook_pages' : 'instagram';
   const { accessToken } = await base44.asServiceRole.connectors.getConnection(integrationType);
