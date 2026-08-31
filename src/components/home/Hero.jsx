@@ -19,7 +19,7 @@ export default function Hero({ projects, loading }) {
     <section
       className="
         relative isolate overflow-hidden
-        bg-[#15162B]
+        bg-background
         pt-[82px]
       "
     >
@@ -159,7 +159,7 @@ export default function Hero({ projects, loading }) {
                 text-[50px] font-semibold
                 leading-[0.98]
                 tracking-[-0.045em]
-                text-[#F4F2F0]
+                text-foreground
                 sm:text-[62px]
                 md:text-[72px]
                 lg:text-[76px]
@@ -192,7 +192,7 @@ export default function Hero({ projects, loading }) {
               className="
                 mt-7 max-w-[460px]
                 text-[15px] leading-7
-                text-white/58
+                text-muted-foreground
                 sm:text-base
               "
             >
@@ -228,13 +228,13 @@ export default function Hero({ projects, loading }) {
                 variant="outline"
                 className="
                   h-11 rounded-lg
-                  border-white/20
+                  border-border
                   bg-transparent
                   px-6
-                  text-[13px] font-semibold text-white
-                  hover:border-white/30
-                  hover:bg-white/[0.05]
-                  hover:text-white
+                  text-[13px] font-semibold text-foreground
+                  hover:border-primary/40
+                  hover:bg-muted
+                  hover:text-foreground
                 "
               >
                 <a href="#work">
@@ -254,8 +254,11 @@ export default function Hero({ projects, loading }) {
             src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/ff9831304_Untitled.png"
             alt="iRoxanne Studio"
             draggable="false"
-            className="hidden h-[200px] w-[200px] select-none object-contain mix-blend-screen md:block md:ml-auto md:h-[280px] md:w-[280px] lg:h-[340px] lg:w-[340px]"
-          />
+            className="hidden h-[200px] w-[200px] select-none object-contain mix-blend-screen dark:block md:block md:ml-auto md:h-[280px] md:w-[280px] lg:h-[340px] lg:w-[340px]"
+            />
+            <span className="hidden select-none text-right md:block md:ml-auto dark:hidden">
+            <span className="ir-gradient-text font-display text-6xl font-semibold tracking-tight lg:text-8xl">iRoxanne</span>
+            </span>
 
         </div>
 
@@ -267,7 +270,7 @@ export default function Hero({ projects, loading }) {
 
           {trustNames.length > 0 ? (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground/60">
                 Selected work
               </p>
 
@@ -284,7 +287,7 @@ export default function Hero({ projects, loading }) {
                     key={name}
                     className="
                       text-sm font-semibold
-                      tracking-wide text-white/35
+                      tracking-wide text-muted-foreground
                     "
                   >
                     {name}
@@ -294,7 +297,7 @@ export default function Hero({ projects, loading }) {
             </>
           ) : (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground/60">
                 Designed for businesses ready to work smarter
               </p>
 
@@ -303,7 +306,7 @@ export default function Hero({ projects, loading }) {
                   flex flex-wrap items-center justify-center
                   gap-x-8 gap-y-3
                   text-[12px] font-medium
-                  text-white/32
+                  text-muted-foreground
                 "
               >
                 <span>Custom Apps</span>
@@ -329,7 +332,7 @@ export default function Hero({ projects, loading }) {
           h-px
           bg-gradient-to-r
           from-transparent
-          via-white/10
+          via-border
           to-transparent
         "
       />

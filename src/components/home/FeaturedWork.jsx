@@ -3,7 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 export default function FeaturedWork({ items, loading }) {
   if (!loading && (!items || items.length === 0)) return null;
   return (
-    <section id="work" className="mx-auto max-w-6xl border-t border-white/5 px-6 py-20">
+    <section id="work" className="mx-auto max-w-6xl border-t border-border px-6 py-20">
       <div>
         <h2 className="font-sans text-3xl font-bold tracking-tight">Selected work</h2>
         <p className="mt-2 text-muted-foreground">I build for anyone.</p>
@@ -12,7 +12,7 @@ export default function FeaturedWork({ items, loading }) {
         {(loading ? Array.from({ length: 3 }) : items).map((item, i) => (
           <article
             key={item?.id || i}
-            className="group rounded-2xl border border-white/10 bg-card/50 transition hover:border-primary/40"
+            className="group rounded-2xl border border-border bg-card/50 transition hover:border-primary/40"
           >
             <div className="aspect-video overflow-hidden bg-muted/30">
               {item?.cover_image_url ? (

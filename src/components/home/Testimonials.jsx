@@ -4,7 +4,7 @@ export default function Testimonials({ items, loading }) {
   const list = (items || []).slice(0, 2);
   if (!loading && list.length === 0) return null;
   return (
-    <section className="mx-auto max-w-4xl border-t border-white/5 px-6 py-20">
+    <section className="mx-auto max-w-4xl border-t border-border px-6 py-20">
       <h2 className="text-center font-sans text-3xl font-bold tracking-tight">What clients say</h2>
       <div className="mt-10 grid gap-5 sm:grid-cols-2">
         {list.map((t) => {
@@ -14,7 +14,7 @@ export default function Testimonials({ items, loading }) {
             ? '★'
             : name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
           return (
-            <figure key={t.id} className="rounded-2xl border border-white/10 bg-card/50 p-6">
+            <figure key={t.id} className="rounded-2xl border border-border bg-card/50 p-6">
               <Quote className="h-6 w-6 text-primary/60" />
               <blockquote className="mt-3 text-lg leading-relaxed">“{t.quote}”</blockquote>
               <figcaption className="mt-4 flex items-center gap-3">
