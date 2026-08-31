@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+
 import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 import Services from '@/components/home/Services';
@@ -15,27 +16,41 @@ export default function Home() {
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       try {
         const [proj, test] = await Promise.all([
-          base44.entities.PortfolioItem.list('-sort_order', 6).catch(() => []),
-          base44.entities.Testimonial.filter({ approved_for_use: true }, '-date', 3).catch(() => []),
+          base44.entities.PortfolioItem
+            .list('-sort_order', 6)
+            .catch(() => []),
+
+          base44.entities.Testimonial
+            .filter(
+              { approved_for_use: true },
+              '-date',
+              3
+            )
+            .catch(() => []),
         ]);
+
         if (!active) return;
+
         setProjects(proj);
         setTestimonials(test);
       } finally {
         if (active) setLoading(false);
       }
     })();
+
     return () => {
       active = false;
     };
   }, []);
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
+    <div className="dark min-h-screen bg-[#292745] text-white">
       <SiteNav />
+
       <main>
         <Hero />
         <Services />
@@ -43,6 +58,7 @@ export default function Home() {
         <Testimonials items={testimonials} loading={loading} />
         <ClosingCTA />
       </main>
+
       <SiteFooter />
     </div>
   );
