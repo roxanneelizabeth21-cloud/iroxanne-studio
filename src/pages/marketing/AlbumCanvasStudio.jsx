@@ -19,15 +19,16 @@ import { getCanvasPreset } from '@/lib/canvasPresets';
 import { paletteFromCover } from '@/lib/canvasPalette';
 
 const CANVAS_STEPS = [
-  { key: 'release', label: 'Release' },
+  { key: 'release', label: 'Project' },
   { key: 'design', label: 'Design' },
   { key: 'save', label: 'Save' },
 ];
 
-const EMPTY_DESIGN = { color: '', ctaPreset: 'Out now', customCta: '', subtext: '', services: ['Apple Music'] };
+const EMPTY_DESIGN = { color: '', ctaPreset: 'See the build', customCta: '', subtext: '', services: ['Base44'] };
 
-// Create a Canvas — the same guided shell as Create a Post
-// (Release → Design → Save), on top of the existing canvas renderer.
+// Case Study Canvas — the same guided shell as Create a Post
+// (Project → Design → Save), on top of the existing canvas renderer.
+// Cards are built from a PortfolioItem's screenshot/cover image.
 export default function AlbumCanvasStudio() {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -38,16 +39,30 @@ export default function AlbumCanvasStudio() {
   const [saving, setSaving] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
 
-  const { data: allReleases = [] } = useQuery({
-    queryKey: ['music-releases'],
-    queryFn: () => base44.entities.MusicRelease.list('-release_date'),
+  const { data: allItems = [] } = useQuery({
+    queryKey: ['portfolio-items'],
+    queryFn: () => base44.entities.PortfolioItem.list('-date_built'),
   });
   const { data: canvases = [], isLoading } = useQuery({
     queryKey: ['album-canvases'],
     queryFn: () => base44.entities.AlbumCanvas.list('-created_date'),
   });
 
-  const releases = useMemo(() => allReleases.filter((r) => r.cover_image_url), [allReleases]);
+  // Map portfolio items into the release-like shape the canvas renderer expects.
+  const releases = useMemo(
+    () => allItems
+      .filter((r) => r.cover_image_url)
+      .map((r) => ({
+        id: r.id,
+        title: r.title,
+        cover_image_url: r.cover_image_url,
+        artist_name: 'iRoxanne Studio',
+        release_type: r.category,
+        status: 'released',
+        release_date: r.date_built,
+      })),
+    [allItems]
+  );
   const release = releases.find((r) => r.id === releaseId) || null;
   const { dominant } = useDominantColor(release?.cover_image_url);
   const { data: palette = [] } = useQuery({
@@ -75,7 +90,7 @@ export default function AlbumCanvasStudio() {
       const canvas = await drawAlbumCanvas({
         coverUrl: release.cover_image_url,
         title: release.title,
-        artist: release.artist_name || 'ROXSAN',
+        artist: release.artist_name || 'iRoxanne Studio',
         color, ratio: preset.ratio, width: preset.w, height: preset.h, safeBottom: preset.safeBottom,
         cta, subtext: design.subtext, services: design.services,
       });
@@ -131,7 +146,7 @@ export default function AlbumCanvasStudio() {
       ctaPreset: 'Custom',
       customCta: canvas.cta || '',
       subtext: canvas.subtext || '',
-      services: canvas.services?.length ? canvas.services : ['Apple Music'],
+      services: canvas.services?.length ? canvas.services : ['Base44'],
     });
     setMaxStep(2);
     setStep(1);
@@ -159,12 +174,12 @@ export default function AlbumCanvasStudio() {
         <div className="min-w-0">
           <HowThisWorks
             steps={[
-              'Step 1 — Release: pick the album or single whose cover art the card is built from.',
-              'Step 2 — Design: the card is the portrait Apple Music for Artists shape at 1080×1920. Pick the background colour from the swatches pulled out of your cover art, add the second line, and choose which platform marks show.',
+              'Step 1 — Project: pick the portfolio project whose screenshot the card is built from.',
+              'Step 2 — Design: the card is the portrait shape at 1080×1920. Pick the background colour from the swatches pulled out of your screenshot, add the second line, and choose which tech marks show.',
               'Step 3 — Save: check the card and save it to your canvases.',
-              'Optional — send a saved canvas to Canva, add your audio there, then use “Bring back from Canva” to pull the finished video into your clips.',
+              'Optional — send a saved canvas to Canva, add your motion there, then use “Bring back from Canva” to pull the finished video into your clips.',
             ]}
-            note="Colours are matched to your cover art automatically, so every card stays on brand."
+            note="Colours are matched to your project screenshot automatically, so every card stays on brand."
           />
 
           {step === 0 && (
