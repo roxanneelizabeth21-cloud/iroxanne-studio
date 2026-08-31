@@ -71,11 +71,11 @@ export default function Hero({ projects, loading }) {
       <div
         className="
           relative z-10 mx-auto
-          flex min-h-[660px] max-w-7xl
+          flex min-h-[560px] max-w-7xl
           flex-col
-          px-5 pb-10 pt-14
-          md:px-8 md:pt-20
-          lg:min-h-[690px] lg:pt-[92px]
+          px-5 pb-10 pt-6
+          md:px-8 md:pt-10
+          lg:min-h-[600px] lg:pt-12
         "
       >
         <div className="flex flex-1 items-center">
