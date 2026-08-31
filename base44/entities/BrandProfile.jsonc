@@ -4,28 +4,28 @@
   "properties": {
     "artist_name": {
       "type": "string",
-      "default": "Roxsan",
-      "description": "Artist name used in generated copy \u2014 always spelled exactly this way"
+      "default": "iRoxanne Studio",
+      "description": "Studio name used in generated copy \u2014 always spelled exactly this way"
     },
     "voice_description": {
       "type": "string",
-      "description": "How the artist speaks to her audience (tone, register)"
+      "description": "How the studio speaks to its audience (tone, register)"
     },
     "genre_blend": {
       "type": "string",
-      "description": "Musical identity description"
+      "description": "What the studio builds and for whom (service description)"
     },
     "audience_description": {
       "type": "string",
-      "description": "Who the audience is"
+      "description": "Who the audience is (small business owners, solo founders, creators)"
     },
     "faith_integration_notes": {
       "type": "string",
-      "description": "When and how faith themes appear"
+      "description": "Positioning notes \u2014 when/how to emphasize the personal, real-person, not-an-agency angle"
     },
     "writing_rules": {
       "type": "string",
-      "default": "No long em dashes\nNo corporate marketing speak\nWarm, conversational, direct",
+      "default": "No long em dashes\nNo corporate marketing speak\nWarm, conversational, direct\nNever invent client names, testimonials, or results",
       "description": "Hard rules, one per line \u2014 override any generic content rules where they conflict"
     },
     "banned_words_phrases": {
@@ -38,11 +38,11 @@
     },
     "default_streaming_links": {
       "type": "string",
-      "description": "Default streaming platform links the AI can reference"
+      "description": "Default links the AI can reference (portfolio URL, consult-booking URL, etc.)"
     },
     "hashtag_bank": {
       "type": "string",
-      "description": "Preferred hashtags by platform"
+      "description": "Preferred hashtags by platform (e.g. #NoCode #Base44 #CustomApps #SmallBusinessTools #SoloFounder)"
     },
     "posts_per_campaign_week": {
       "type": "number",
@@ -52,22 +52,22 @@
     "posts_per_evergreen_week": {
       "type": "number",
       "default": 3,
-      "description": "How many posts the daily auto-generator keeps rotating per week for each released song with Evergreen switched on."
+      "description": "How many posts the daily auto-generator keeps rotating per week for each featured portfolio item on evergreen rotation."
     },
     "mix_loop_pct": {
       "type": "number",
-      "default": 60,
-      "description": "Target share (%) of short music loop clip posts in the generated content mix."
+      "default": 40,
+      "description": "Target share (%) of portfolio/showcase posts in the generated content mix."
     },
     "mix_authentic_pct": {
       "type": "number",
-      "default": 25,
-      "description": "Target share (%) of authentic/personal posts in the generated content mix."
+      "default": 30,
+      "description": "Target share (%) of educational/tech-tip posts in the generated content mix."
     },
     "mix_cta_pct": {
       "type": "number",
-      "default": 15,
-      "description": "Target share (%) of announcement/CTA posts in the generated content mix."
+      "default": 20,
+      "description": "Target share (%) of testimonial/social-proof posts in the generated content mix."
     },
     "instagram_profile_url": {
       "type": "string",
@@ -87,7 +87,7 @@
     },
     "image_style_notes": {
       "type": "string",
-      "default": "No faces visible. No text or logos in image. Branding added separately in Canva.",
+      "default": "No text or logos baked into the image. Show real screenshots/UI where possible. Branding added separately.",
       "description": "Rules for AI image prompts"
     },
     "image_style_presets": {
@@ -132,13 +132,13 @@
     },
     "notify_release_countdown": {
       "type": "boolean",
-      "default": true,
-      "description": "Send release countdown emails at 14/7/3/1 days out"
+      "default": false,
+      "description": "Reserved \u2014 legacy release-countdown toggle. Off by default for the service business."
     },
     "notify_filming_nudge": {
       "type": "boolean",
       "default": true,
-      "description": "Send a monthly filming nudge email with shot briefs"
+      "description": "Send a monthly content nudge email with shot/screen briefs"
     },
     "notify_send_time": {
       "type": "string",

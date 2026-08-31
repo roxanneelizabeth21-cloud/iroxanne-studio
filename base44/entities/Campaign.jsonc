@@ -8,12 +8,12 @@
     },
     "song_id": {
       "type": "string",
-      "description": "ID of the Release (song/album) this campaign promotes"
+      "description": "ID of the PortfolioItem this campaign promotes. Field name kept for backward compatibility; semantically references PortfolioItem."
     },
     "release_date": {
       "type": "string",
       "format": "date",
-      "description": "Release date the campaign builds toward"
+      "description": "Launch/target date the campaign builds toward"
     },
     "start_date": {
       "type": "string",
@@ -27,7 +27,7 @@
     },
     "goal": {
       "type": "string",
-      "description": "Campaign goal, e.g. Pre-release buzz, Release week push, Catalog re-promotion"
+      "description": "Campaign goal, e.g. Portfolio buzz, Launch-week push, Evergreen promotion"
     },
     "status": {
       "type": "string",

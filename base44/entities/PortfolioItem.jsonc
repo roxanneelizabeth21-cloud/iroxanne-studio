@@ -1,0 +1,107 @@
+{
+  "name": "PortfolioItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Project / app name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-safe slug for the case-study/canvas builder"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name. Only referenced publicly when client_shareable is true."
+    },
+    "client_shareable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the client name may be shown in public/generated content. Generated posts must never name a client when this is false."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Booking System",
+        "Marketing Tool",
+        "E-commerce",
+        "Client Portal",
+        "Internal Tool",
+        "Other"
+      ],
+      "default": "Other",
+      "description": "Kind of app built"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the app does and the problem it solves",
+      "maxLength": 2000
+    },
+    "tech_used": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tools/platforms used (e.g. Base44, Stripe, Resend)"
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Primary screenshot/hero image URL"
+    },
+    "screenshots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional screenshot/image URLs"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Optional demo video URL"
+    },
+    "project_url": {
+      "type": "string",
+      "description": "Public link to the live app, if any"
+    },
+    "date_built": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the project was built/launched"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a featured portfolio piece"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order (lower shows first)"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short one-line summary shown on cards"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
