@@ -20,9 +20,10 @@ export default function SiteNav() {
         {/* Transparent logo, left */}
         <a href="/" className="flex shrink-0 items-center">
           <img
-            src="/logo.png"
+            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/7380fe8cf_CodexImageAug31202603_50_41PM.png"
             alt="iRoxanne Studio"
-            className="h-11 w-auto object-contain md:h-12"
+            draggable="false"
+            className="h-12 w-auto object-contain mix-blend-screen md:h-14"
           />
         </a>
 
