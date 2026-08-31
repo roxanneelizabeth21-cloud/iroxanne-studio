@@ -3,8 +3,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import {
-  isVideoFormat, captureStyleExample, assembleVideoBrief, resolveStreamLink,
+  isVideoFormat, captureStyleExample, assembleVideoBrief,
 } from '@/lib/marketing';
+import { shareablePageUrl, defaultLinkTarget } from '@/lib/postLink';
 
 // All post-editing state and actions, extracted so the full-page editor and any
 // other surface share one implementation.
@@ -28,6 +29,7 @@ export function usePostEditor(post, onDone) {
   const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: merchProducts = [] } = useQuery({ queryKey: ['merch-products'], queryFn: () => base44.entities.MerchProduct.list() });
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
 
   useEffect(() => {
     if (!post) return;
@@ -61,6 +63,7 @@ export function usePostEditor(post, onDone) {
       status: post.status || 'Draft',
       publish_mode: post.publish_mode || 'manual',
       campaign_id: post.campaign_id || '',
+      portfolio_item_id: post.portfolio_item_id || post.song_id || '',
       song_id: post.song_id || '',
       create_post_state: post.create_post_state && typeof post.create_post_state === 'object' ? post.create_post_state : {},
       link_target: post.link_target || '',
@@ -88,8 +91,8 @@ export function usePostEditor(post, onDone) {
   const release = form
     ? releases.find((r) => r.id === form.song_id) || releases.find((r) => r.id === track?.release_id) || null
     : null;
-  const rawStreamLink = form ? resolveStreamLink({ ...form, link_target: 'Streaming link' }, releases, platformLinks, allTracks, songProfiles, brandProfile?.[0]) : '';
-  const appendedLink = form ? resolveStreamLink(form, releases, platformLinks, allTracks, songProfiles, brandProfile?.[0]) : '';
+  const portfolioItem = form ? portfolioItems.find((p) => p.id === form.portfolio_item_id) || null : null;
+  const appendedLink = form ? shareablePageUrl(portfolioItem, form.link_target || defaultLinkTarget(portfolioItem)) : '';
 
   const changeTemplate = (id) => {
     const tpl = templates.find((t) => t.id === id) || null;
@@ -193,7 +196,7 @@ export function usePostEditor(post, onDone) {
     setRegenerating(true);
     try {
       const res = await base44.functions.invoke('regeneratePost', {
-        post: { ...form, song_id: form.song_id },
+        post: { ...form, portfolio_item_id: form.portfolio_item_id, song_id: form.song_id },
         instruction: instruction.trim() || undefined,
       });
       const data = res?.data ?? res;
@@ -240,8 +243,8 @@ export function usePostEditor(post, onDone) {
     form, set, setForm, saving, regenerating, instruction, setInstruction,
     showMetrics, setShowMetrics, metrics, setMetrics, uploading,
     templates, presets, clips, allTracks, currentTemplate, release,
-    releases, merchProducts,
-    rawStreamLink, appendedLink,
+    releases, merchProducts, portfolioItems, portfolioItem,
+    appendedLink,
     changeTemplate, changeSlot, selectClip, uploadMedia,
     save, markPosted, regenerate, del,
   };

@@ -5,7 +5,7 @@ import PublishModeToggle from '@/components/marketing/PublishModeToggle';
 import PostLinkTargetSelect from '@/components/marketing/PostLinkTargetSelect';
 import PlatformScheduleFields from '@/components/marketing/PlatformScheduleFields';
 
-export default function PostEditorSetupTab({ form, set, metrics, setMetrics, showMetrics, setShowMetrics, release, streamLink }) {
+export default function PostEditorSetupTab({ form, set, metrics, setMetrics, showMetrics, setShowMetrics, release }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
@@ -47,7 +47,6 @@ export default function PostEditorSetupTab({ form, set, metrics, setMetrics, sho
         value={form.link_target}
         onChange={(v) => set('link_target', v)}
         release={release}
-        streamLink={streamLink}
       />
 
       <div className="space-y-1.5">

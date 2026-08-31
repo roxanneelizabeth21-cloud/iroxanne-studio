@@ -57,13 +57,11 @@ export default function PostEditor() {
 
       <div className="grid gap-5 md:grid-cols-3 md:items-start">
         <div className="md:col-span-2 space-y-5">
-          <PostEditorSection icon={Target} title="What are we marketing?" hint="Start here — pick the release, song or product this post is promoting.">
+          <PostEditorSection icon={Target} title="What are we marketing?" hint="Start here — pick the portfolio project this post is promoting.">
             <PostSubjectSection
               form={form}
               set={ed.set}
-              releases={ed.releases}
-              allTracks={ed.allTracks}
-              merchProducts={ed.merchProducts}
+              portfolioItems={ed.portfolioItems}
             />
           </PostEditorSection>
 
@@ -112,8 +110,7 @@ export default function PostEditor() {
               setMetrics={ed.setMetrics}
               showMetrics={ed.showMetrics}
               setShowMetrics={ed.setShowMetrics}
-              release={ed.release}
-              streamLink={ed.rawStreamLink}
+              release={ed.portfolioItem}
             />
           </PostEditorSection>
 
