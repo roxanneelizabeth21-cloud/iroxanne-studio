@@ -20,7 +20,7 @@ export default function Hero({ projects, loading }) {
     <section
       className="
         relative isolate overflow-hidden
-        bg-[#15162B]
+        bg-background dark:bg-[#15162B]
         pt-[82px]
       "
     >
@@ -87,7 +87,7 @@ export default function Hero({ projects, loading }) {
                 text-[50px] font-semibold
                 leading-[0.98]
                 tracking-[-0.045em]
-                text-[#F4F2F0]
+                text-foreground
                 sm:text-[62px]
                 md:text-[72px]
                 lg:text-[76px]
@@ -120,7 +120,7 @@ export default function Hero({ projects, loading }) {
               className="
                 mt-7 max-w-[460px]
                 text-[15px] leading-7
-                text-white/58
+                text-muted-foreground
                 sm:text-base
               "
             >
@@ -156,13 +156,13 @@ export default function Hero({ projects, loading }) {
                 variant="outline"
                 className="
                   h-11 rounded-lg
-                  border-white/20
+                  border-foreground/20
                   bg-transparent
                   px-6
-                  text-[13px] font-semibold text-white
-                  hover:border-white/30
-                  hover:bg-white/[0.05]
-                  hover:text-white
+                  text-[13px] font-semibold text-foreground
+                  hover:border-foreground/30
+                  hover:bg-foreground/[0.05]
+                  hover:text-foreground
                 "
               >
                 <a href="#work">
@@ -185,7 +185,7 @@ export default function Hero({ projects, loading }) {
 
           {trustNames.length > 0 ? (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                 Selected work
               </p>
 
@@ -202,7 +202,7 @@ export default function Hero({ projects, loading }) {
                     key={name}
                     className="
                       text-sm font-semibold
-                      tracking-wide text-white/35
+                      tracking-wide text-muted-foreground
                     "
                   >
                     {name}
@@ -212,7 +212,7 @@ export default function Hero({ projects, loading }) {
             </>
           ) : (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                 Designed for businesses ready to work smarter
               </p>
 
@@ -221,7 +221,7 @@ export default function Hero({ projects, loading }) {
                   flex flex-wrap items-center justify-center
                   gap-x-8 gap-y-3
                   text-[12px] font-medium
-                  text-white/32
+                  text-muted-foreground
                 "
               >
                 <span>Custom Apps</span>
@@ -247,7 +247,7 @@ export default function Hero({ projects, loading }) {
           h-px
           bg-gradient-to-r
           from-transparent
-          via-white/10
+          via-border
           to-transparent
         "
       />

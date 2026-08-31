@@ -62,6 +62,14 @@
     --ir-gradient-from: 276 40% 32%;
     --ir-gradient-via: 330 35% 40%;
     --ir-gradient-to: 7 48% 59%;
+
+    /* Hero orbital artwork opacities — light mode (cream hero) */
+    --orb-o1: 0.55;
+    --orb-o2: 0.72;
+    --orb-o3: 0.85;
+    --orb-o4: 0.95;
+    --orb-glow-opacity: 0.30;
+    --orb-core-opacity: 0.45;
   }
 
   .dark {
@@ -115,6 +123,14 @@
     --ir-gradient-from: 238 48% 55%;
     --ir-gradient-via: 350 60% 55%;
     --ir-gradient-to: 12 100% 64%;
+
+    /* Hero orbital artwork opacities — dark mode (indigo hero) */
+    --orb-o1: 0;
+    --orb-o2: 0.65;
+    --orb-o3: 0.90;
+    --orb-o4: 1;
+    --orb-glow-opacity: 0.85;
+    --orb-core-opacity: 1;
   }
 }
 
@@ -202,6 +218,14 @@
     background-clip: text;
     color: transparent;
   }
+
+  /* Hero orbital artwork — theme-driven stop/layer opacities (see --orb-* vars) */
+  #orbTrail > stop:nth-of-type(1) { stop-opacity: var(--orb-o1); }
+  #orbTrail > stop:nth-of-type(2) { stop-opacity: var(--orb-o2); }
+  #orbTrail > stop:nth-of-type(3) { stop-opacity: var(--orb-o3); }
+  #orbTrail > stop:nth-of-type(4) { stop-opacity: var(--orb-o4); }
+  .orb-glow { opacity: var(--orb-glow-opacity); }
+  .orb-core { opacity: var(--orb-core-opacity); }
   .safe-area-top {
     padding-top: var(--safe-top);
   }
