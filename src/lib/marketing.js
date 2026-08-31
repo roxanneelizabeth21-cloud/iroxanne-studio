@@ -8,7 +8,7 @@ export const FORMATS = ['Feed Post', 'Reel', 'Story', 'Short', 'Video', 'Communi
 export const POST_STATUSES = ['Draft', 'Pending Review', 'Approved', 'Ready', 'Scheduled', 'Publishing', 'Posted', 'Partially Published', 'Failed', 'Paused', 'Cancelled', 'Skipped'];
 export const CAMPAIGN_STATUSES = ['Planning', 'Active', 'Completed', 'Archived'];
 
-export const VIDEO_CONTENT_TYPES = ['Lyric Loop', 'Countdown', 'Behind The Scenes', 'Announcement', 'Story Teaser', 'Performance Clip'];
+export const VIDEO_CONTENT_TYPES = ['Demo Loop', 'Countdown', 'Behind The Scenes', 'Announcement', 'Story Teaser', 'Performance Clip'];
 export const SLOT_TYPES = ['text', 'clip', 'audio_cue', 'timestamp'];
 export const CLIP_SOURCES = ['My Footage', 'Stock', 'Canva Export', 'Adobe Stock'];
 export const ORIENTATIONS = ['Vertical 9:16', 'Horizontal', 'Square'];
@@ -31,7 +31,7 @@ export const DEFAULT_TEMPLATES = [
   {
     name: 'Chorus Loop',
     description: 'Short looping clip built around the song chorus with lyric text on screen.',
-    content_type: 'Lyric Loop',
+    content_type: 'Demo Loop',
     target_length_seconds: 12,
     platforms: ['Instagram', 'YouTube', 'Facebook'],
     capcut_notes: 'Loop template: seamless end-to-start cut, lyric text timed to the beat, audio fades match.',

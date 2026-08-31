@@ -8,7 +8,7 @@
     },
     "hero_artist_image": {
       "type": "string",
-      "description": "Artist profile image URL for hero"
+      "description": "Studio / profile image URL for hero"
     },
     "hero_overlay_image": {
       "type": "string",
@@ -17,7 +17,7 @@
     "hero_title": {
       "type": "string",
       "description": "Hero heading text",
-      "default": "Roxsan"
+      "default": "iRoxanne Studio"
     },
     "hero_tagline": {
       "type": "string",
@@ -41,7 +41,7 @@
     },
     "featured_release_id": {
       "type": "string",
-      "description": "ID of release to feature on homepage"
+      "description": "ID of PortfolioItem to feature as the homepage project override. Field name kept for backward compatibility with stored settings."
     },
     "homepage_social_share_image": {
       "type": "string",
@@ -95,11 +95,13 @@
     },
     "show_featured_release": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Show the featured project banner on the homepage. Field name kept for backward compatibility."
     },
     "show_video_preview": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Show the latest work section"
     },
     "show_newsletter": {
       "type": "boolean",
@@ -107,27 +109,8 @@
     },
     "show_gallery_preview": {
       "type": "boolean",
-      "default": false
-    },
-    "streaming_spotify_url": {
-      "type": "string",
-      "description": "Spotify URL for Stream Everywhere section"
-    },
-    "streaming_apple_music_url": {
-      "type": "string",
-      "description": "Apple Music URL for Stream Everywhere section"
-    },
-    "streaming_youtube_url": {
-      "type": "string",
-      "description": "YouTube URL for Stream Everywhere section"
-    },
-    "streaming_tiktok_url": {
-      "type": "string",
-      "description": "TikTok URL for Stream Everywhere section"
-    },
-    "streaming_amazon_music_url": {
-      "type": "string",
-      "description": "Amazon Music URL for Stream Everywhere section"
+      "default": false,
+      "description": "Show a portfolio preview section"
     },
     "description": {
       "type": "string",

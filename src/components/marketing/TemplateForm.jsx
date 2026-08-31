@@ -14,7 +14,7 @@ export default function TemplateForm({ initial, onSave, onCancel, saving }) {
   const { toast } = useToast();
   const [name, setName] = useState(initial?.name || '');
   const [description, setDescription] = useState(initial?.description || '');
-  const [content_type, setContentType] = useState(initial?.content_type || 'Lyric Loop');
+  const [content_type, setContentType] = useState(initial?.content_type || 'Demo Loop');
   const [target_length_seconds, setLength] = useState(initial?.target_length_seconds ?? 12);
   const [platforms, setPlatforms] = useState(initial?.platforms || ['Instagram', 'YouTube', 'Facebook']);
   const [capcut_notes, setCapcut] = useState(initial?.capcut_notes || '');

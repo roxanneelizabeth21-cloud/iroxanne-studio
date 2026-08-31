@@ -8,15 +8,15 @@
     },
     "release_id": {
       "type": "string",
-      "description": "MusicRelease this track highlight ad promotes"
+      "description": "PortfolioItem this carousel ad promotes. Field name kept for backward compatibility."
     },
     "track_id": {
       "type": "string",
-      "description": "Track being highlighted, when a single track was chosen"
+      "description": "Optional specific PortfolioItem highlight featured in the ad. Field name kept for backward compatibility."
     },
     "release_title": {
       "type": "string",
-      "description": "Release/track title at launch time"
+      "description": "Project / highlight title at launch time. Field name kept for backward compatibility."
     },
     "ad_account_id": {
       "type": "string",
@@ -36,7 +36,7 @@
     },
     "cta_type": {
       "type": "string",
-      "description": "Meta call-to-action button type, e.g. LISTEN_NOW"
+      "description": "Meta call-to-action button type, e.g. LEARN_MORE"
     },
     "daily_budget_usd": {
       "type": "number",

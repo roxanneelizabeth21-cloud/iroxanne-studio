@@ -26,21 +26,19 @@
       "enum": [
         "Cover Art",
         "Promo",
-        "Merch",
-        "Lyric Graphic",
         "Live",
         "Behind the Scenes",
         "Press",
         "Other"
       ],
-      "description": "What kind of asset this is inside its collection. 'Merch' covers hoodies, tees, mugs and other product footage."
+      "description": "What kind of asset this is inside its collection."
     },
     "moods": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Mood / scene tags (e.g. Beach, Sunset, Worship, Studio)"
+      "description": "Mood / scene tags (e.g. Studio, Office, Demo, Onsite)"
     },
     "portfolio_item_id": {
       "type": "string",

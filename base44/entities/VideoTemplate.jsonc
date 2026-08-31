@@ -13,7 +13,7 @@
     "content_type": {
       "type": "string",
       "enum": [
-        "Lyric Loop",
+        "Demo Loop",
         "Countdown",
         "Behind The Scenes",
         "Announcement",

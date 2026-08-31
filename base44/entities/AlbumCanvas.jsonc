@@ -8,11 +8,11 @@
     },
     "release_id": {
       "type": "string",
-      "description": "MusicRelease (album or single) this canvas was built from"
+      "description": "PortfolioItem this case-study canvas was built from. Field name kept for backward compatibility."
     },
     "release_title": {
       "type": "string",
-      "description": "Release title at the time the canvas was built"
+      "description": "Project title at the time the canvas was built. Field name kept for backward compatibility."
     },
     "image_url": {
       "type": "string",
@@ -48,7 +48,7 @@
     },
     "matched_color": {
       "type": "string",
-      "description": "Hex color pulled from the cover art and used across the card"
+      "description": "Hex color pulled from the project image and used across the card"
     },
     "cta": {
       "type": "string",
@@ -63,7 +63,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Streaming services shown as badges on the card"
+      "description": "Service / tech badges shown on the card (e.g. platforms or tools used)"
     }
   },
   "required": [

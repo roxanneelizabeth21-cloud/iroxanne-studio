@@ -27,14 +27,12 @@
       "enum": [
         "Cover Art",
         "Promo",
-        "Merch",
-        "Lyric Graphic",
         "Live",
         "Behind the Scenes",
         "Press",
         "Other"
       ],
-      "description": "What kind of asset this is inside its collection. 'Merch' covers hoodies, tees, mugs and other product shots."
+      "description": "What kind of asset this is inside its collection."
     },
     "source": {
       "type": "string",
@@ -101,7 +99,7 @@
     },
     "product_id": {
       "type": "string",
-      "description": "MerchProduct this image relates to"
+      "description": "Legacy \u2014 references a removed merch product entity. No longer used."
     },
     "generation_status": {
       "type": "string",
