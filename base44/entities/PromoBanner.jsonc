@@ -13,7 +13,7 @@
     },
     "target_pages": {
       "type": "string",
-      "description": "Comma-separated page keys to show on. Valid keys: shop, home, music, release, all"
+      "description": "Comma-separated page keys to show on. Valid keys: home, all"
     },
     "headline": {
       "type": "string",
@@ -29,7 +29,7 @@
     },
     "cta_url": {
       "type": "string",
-      "description": "URL the banner links to (internal path like /release/those-old-hymns or external https URL)"
+      "description": "URL the banner links to (internal path like /booking or external https URL)"
     },
     "image_url": {
       "type": "string",
