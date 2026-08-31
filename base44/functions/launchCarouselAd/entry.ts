@@ -14,7 +14,7 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const {
-      name, release_id, track_id, release_title, ad_account_id, page_id,
+      name, portfolio_item_id, project_title, ad_account_id, page_id,
       primary_text, destination_url, cta_type, daily_budget_usd,
       countries, age_min, age_max, slides, activate = false,
     } = body;
@@ -36,9 +36,8 @@ export default async function (req) {
 
     const record = {
       name,
-      release_id: release_id || '',
-      track_id: track_id || '',
-      release_title: release_title || '',
+      portfolio_item_id: portfolio_item_id || '',
+      project_title: project_title || '',
       ad_account_id: String(ad_account_id).replace(/^act_/, ''),
       page_id: pageId,
       primary_text: primary_text || '',

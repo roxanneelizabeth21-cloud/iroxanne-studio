@@ -11,7 +11,7 @@ export default function SendCanvasToLibraryButton({ canvas }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
-  const title = canvas.title || canvas.release_title || 'Canvas';
+  const title = canvas.title || canvas.project_title || 'Canvas';
 
   const send = async () => {
     setBusy(true);
@@ -22,7 +22,7 @@ export default function SendCanvasToLibraryButton({ canvas }) {
         category: 'promo',
         media_category: 'Promo',
         source: 'upload',
-        release_id: canvas.release_id || undefined,
+        portfolio_item_id: canvas.portfolio_item_id || undefined,
         aspect_ratio: canvas.aspect_ratio,
       });
       if (canvas.video_url) {
@@ -31,7 +31,7 @@ export default function SendCanvasToLibraryButton({ canvas }) {
           file: canvas.video_url,
           source_type: 'Canva Export',
           media_category: 'Promo',
-          linked_song_id: canvas.release_id || undefined,
+          portfolio_item_id: canvas.portfolio_item_id || undefined,
           orientation: 'Vertical 9:16',
         });
       }

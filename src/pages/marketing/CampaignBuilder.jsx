@@ -18,7 +18,7 @@ export default function CampaignBuilder() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: '', song_id: '', release_date: '', start_date: '', end_date: '', goal: 'Launch week push', status: 'Planning', notes: '', default_image_style_preset: '',
+    name: '', portfolio_item_id: '', release_date: '', start_date: '', end_date: '', goal: 'Launch week push', status: 'Planning', notes: '', default_image_style_preset: '',
   });
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -40,7 +40,7 @@ export default function CampaignBuilder() {
     const item = portfolioItems.find((r) => r.id === projectId) || null;
     setForm((f) => ({
       ...f,
-      song_id: projectId,
+      portfolio_item_id: projectId,
       name: f.name ? f.name : (item?.title ? `${item.title} — Launch` : ''),
       release_date: f.release_date ? f.release_date : (item?.date_built || ''),
     }));
@@ -48,7 +48,7 @@ export default function CampaignBuilder() {
 
   const create = async () => {
     if (!form.name.trim()) return toast({ title: 'Campaign name is required', variant: 'destructive' });
-    if (!form.song_id) return toast({ title: 'Select a project', variant: 'destructive' });
+    if (!form.portfolio_item_id) return toast({ title: 'Select a project', variant: 'destructive' });
     setSaving(true);
     try {
       const created = await base44.entities.Campaign.create(form);
@@ -68,7 +68,7 @@ export default function CampaignBuilder() {
   const visible = campaigns.filter((c) => {
     if (statusFilter && c.status !== statusFilter) return false;
     if (query) {
-      const hay = `${c.name} ${c.goal || ''} ${projectTitle(c.song_id)}`.toLowerCase();
+      const hay = `${c.name} ${c.goal || ''} ${projectTitle(c.portfolio_item_id)}`.toLowerCase();
       if (!hay.includes(query.toLowerCase())) return false;
     }
     return true;
@@ -103,7 +103,7 @@ export default function CampaignBuilder() {
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Project</label>
-            <select value={form.song_id} onChange={(e) => onProjectChange(e.target.value)} className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
+            <select value={form.portfolio_item_id} onChange={(e) => onProjectChange(e.target.value)} className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
               <option value="">Select a project…</option>
               {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
             </select>
@@ -161,7 +161,7 @@ export default function CampaignBuilder() {
                 <Link key={c.id} to={`/marketing/campaigns/${c.id}`} className="block glass rounded-xl p-4 hover:border-primary/40 transition-colors">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium truncate flex items-center gap-2"><Briefcase className="h-3.5 w-3.5 text-primary shrink-0" /> {projectTitle(c.song_id)}</p>
+                      <p className="font-medium truncate flex items-center gap-2"><Briefcase className="h-3.5 w-3.5 text-primary shrink-0" /> {projectTitle(c.portfolio_item_id)}</p>
                       <p className="text-xs text-muted-foreground truncate">{c.name} · {c.goal} · {counts(c.id)} posts</p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">

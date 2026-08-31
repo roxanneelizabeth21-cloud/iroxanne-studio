@@ -28,7 +28,6 @@ export default async function(req) {
 
     const body = await req.json();
     const {
-      song_id,
       portfolio_item_id,
       release_date,
       goal = 'Launch week push',
@@ -37,8 +36,8 @@ export default async function(req) {
       default_image_style_preset,
     } = body || {};
 
-    const pid = portfolio_item_id || song_id;
-    if (!pid) return Response.json({ error: 'portfolio_item_id (or song_id) is required' }, { status: 400 });
+    const pid = portfolio_item_id;
+    if (!pid) return Response.json({ error: 'portfolio_item_id is required' }, { status: 400 });
     if (!start_date || !end_date) return Response.json({ error: 'start_date and end_date are required' }, { status: 400 });
 
     const ctx = await resolvePortfolioContext(base44, pid);

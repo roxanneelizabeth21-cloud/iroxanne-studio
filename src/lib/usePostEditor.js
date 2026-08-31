@@ -58,8 +58,7 @@ export function usePostEditor(post, onDone) {
       status: post.status || 'Draft',
       publish_mode: post.publish_mode || 'manual',
       campaign_id: post.campaign_id || '',
-      portfolio_item_id: post.portfolio_item_id || post.song_id || '',
-      song_id: post.song_id || '',
+      portfolio_item_id: post.portfolio_item_id || '',
       create_post_state: post.create_post_state && typeof post.create_post_state === 'object' ? post.create_post_state : {},
       link_target: post.link_target || '',
       original_ai_caption: post.original_ai_caption || '',
@@ -187,7 +186,7 @@ export function usePostEditor(post, onDone) {
     setRegenerating(true);
     try {
       const res = await base44.functions.invoke('regeneratePost', {
-        post: { ...form, portfolio_item_id: form.portfolio_item_id, song_id: form.song_id },
+        post: { ...form, portfolio_item_id: form.portfolio_item_id },
         instruction: instruction.trim() || undefined,
       });
       const data = res?.data ?? res;

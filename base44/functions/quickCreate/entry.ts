@@ -19,7 +19,7 @@ import {
 
 // quickCreate — admin-only.
 // Generates a single one-off post for a chosen portfolio item + platform (+ optional note).
-// Accepts portfolio_item_id (or legacy song_id). Returns a full post object
+// Accepts portfolio_item_id. Returns a full post object
 // (caption, hashtags, hook, cta, image_prompt, and for video formats
 // template_id/slot_values/video_brief). The frontend can Save to Calendar or discard.
 export default async function(req) {
@@ -29,9 +29,9 @@ export default async function(req) {
     if (!guard.ok) return guard.response;
 
     const body = await req.json();
-    const { song_id, portfolio_item_id, platform, note } = body || {};
-    const pid = portfolio_item_id || song_id;
-    if (!pid) return Response.json({ error: 'portfolio_item_id (or song_id) is required' }, { status: 400 });
+    const { portfolio_item_id, platform, note } = body || {};
+    const pid = portfolio_item_id;
+    if (!pid) return Response.json({ error: 'portfolio_item_id is required' }, { status: 400 });
     if (!['Facebook', 'Instagram', 'YouTube', 'TikTok'].includes(platform)) {
         return Response.json({ error: 'platform is required (Facebook, Instagram, YouTube, or TikTok)' }, { status: 400 });
     }

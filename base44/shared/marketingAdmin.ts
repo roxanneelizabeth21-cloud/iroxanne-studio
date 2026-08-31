@@ -317,7 +317,7 @@ export async function regeneratePostContent(base44, post, opts) {
     if (cache.styleExamplesByPlatform) cache.styleExamplesByPlatform.set(post.platform, styleExamples);
   }
   let ctx = cache.ctx != null ? cache.ctx : null;
-  const pid = post.portfolio_item_id || post.song_id; // song_id kept as legacy alias
+  const pid = post.portfolio_item_id;
   if (!ctx && pid) ctx = await resolvePortfolioContext(base44, pid);
   const brandSection = brandProfileSection(brandProfile);
   const templateSection = videoTemplateSection(templates);

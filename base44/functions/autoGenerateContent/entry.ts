@@ -134,9 +134,9 @@ Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
     const activeCampaigns = (campaigns || []).filter((c) => c.status === 'Active');
     for (const c of activeCampaigns) {
       report.campaigns_checked += 1;
-      const pid = c.song_id || '';
+      const pid = c.portfolio_item_id || '';
       const item = itemById(pid);
-      const avoid = recentAngles((p) => p.campaign_id === c.id || p.portfolio_item_id === pid || p.song_id === pid);
+      const avoid = recentAngles((p) => p.campaign_id === c.id || p.portfolio_item_id === pid);
       const existing = (posts || []).filter((p) => p.campaign_id === c.id && coming7.includes(p.scheduled_date) && p.status !== 'Skipped');
       const cadence = settings.campaignPerWeek;
       const needed = Math.max(0, cadence - existing.length);
@@ -154,13 +154,13 @@ Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
     for (const item of featuredItems) {
       report.evergreen_checked += 1;
       const pid = item.id;
-      if (activeCampaigns.some((c) => c.song_id === pid)) continue;
+      if (activeCampaigns.some((c) => c.portfolio_item_id === pid)) continue;
       const since7 = addDays(today, -7).getTime();
       const last7 = (posts || []).filter((p) => {
         if (p.status === 'Skipped') return false;
         const dt = new Date((p.scheduled_date || '') + 'T00:00:00').getTime();
         if (dt < since7) return false;
-        return p.portfolio_item_id === pid || p.song_id === pid;
+        return p.portfolio_item_id === pid;
       });
       const want = settings.evergreenPerWeek;
       const needed = Math.max(0, want - last7.length);
@@ -170,7 +170,7 @@ Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
       if (available.length < needed) available = coming7.slice();
       const dates = available.slice(0, Math.min(needed, 2));
       if (!dates.length) continue;
-      const avoid = recentAngles((p) => p.portfolio_item_id === pid || p.song_id === pid);
+      const avoid = recentAngles((p) => p.portfolio_item_id === pid);
       const made = await generateBatch({ count: dates.length, dates, item, avoid, campaignId: '', portfolioItemId: pid });
       report.evergreen_posts += made.length;
     }

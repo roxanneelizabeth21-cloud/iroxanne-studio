@@ -38,7 +38,7 @@ function Card({ selected, onClick, image, title, lines, icon: Icon }) {
 export default function StepMusic({ draft, patch, portfolioItems, campaigns }) {
   const [q, setQ] = useState('');
 
-  const campaignFor = (pid) => campaigns.filter((c) => c.song_id === pid);
+  const campaignFor = (pid) => campaigns.filter((c) => c.portfolio_item_id === pid);
 
   const term = q.trim().toLowerCase();
   const matches = (text) => !term || String(text || '').toLowerCase().includes(term);

@@ -82,7 +82,7 @@ export default function CampaignDetail({ id }) {
   const campaignPosts = posts.filter((p) => p.campaign_id === id);
   const projectTitle = (sid) => portfolioItems.find((r) => r.id === sid)?.title || '—';
   const cForm = campaignForm || (campaign ? {
-    name: campaign.name, song_id: campaign.song_id, release_date: campaign.release_date,
+    name: campaign.name, portfolio_item_id: campaign.portfolio_item_id, release_date: campaign.release_date,
     start_date: campaign.start_date, end_date: campaign.end_date, goal: campaign.goal,
     status: campaign.status, notes: campaign.notes, default_image_style_preset: campaign.default_image_style_preset,
   } : null);
@@ -93,7 +93,7 @@ export default function CampaignDetail({ id }) {
     setGenerating(true);
     try {
       const res = await base44.functions.invoke('generateCampaignPlan', {
-        portfolio_item_id: campaign.song_id,
+        portfolio_item_id: campaign.portfolio_item_id,
         release_date: campaign.release_date,
         goal: campaign.goal,
         start_date: campaign.start_date,
@@ -103,7 +103,7 @@ export default function CampaignDetail({ id }) {
       const data = res?.data ?? res;
       const list = data?.posts;
       if (!Array.isArray(list) || list.length === 0) throw new Error('No posts generated');
-      setDrafts(list.map((p) => ({ ...p, original_ai_caption: p.caption, campaign_id: id, portfolio_item_id: campaign.song_id, status: 'Draft' })));
+      setDrafts(list.map((p) => ({ ...p, original_ai_caption: p.caption, campaign_id: id, portfolio_item_id: campaign.portfolio_item_id, status: 'Draft' })));
       toast({ title: `${list.length} posts generated — review below` });
     } catch (e) {
       toast({ title: 'Generation failed', description: e.message, variant: 'destructive' });
@@ -170,7 +170,7 @@ export default function CampaignDetail({ id }) {
       <div className="glass rounded-2xl p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{projectTitle(campaign.song_id)}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{projectTitle(campaign.portfolio_item_id)}</p>
             <h1 className="font-display text-2xl font-bold mt-0.5 truncate">{campaign.name}</h1>
             <p className="text-sm text-muted-foreground">{campaign.goal} · {formatDate(campaign.start_date)} → {formatDate(campaign.end_date)}</p>
             <p className="text-xs text-muted-foreground mt-1">

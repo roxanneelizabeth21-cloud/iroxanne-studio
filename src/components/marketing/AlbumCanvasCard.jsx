@@ -5,14 +5,14 @@ import DownloadFileButton from '@/components/marketing/DownloadFileButton';
 import SendCanvasToLibraryButton from '@/components/marketing/canvas/SendCanvasToLibraryButton';
 
 export default function AlbumCanvasCard({ canvas, onDelete, onDuplicate }) {
-  const slug = (canvas.title || canvas.release_title || 'canvas')
+  const slug = (canvas.title || canvas.project_title || 'canvas')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return (
     <div className="rounded-lg border border-border/60 overflow-hidden bg-card">
       <img src={canvas.image_url} alt={canvas.title || 'Album canvas'} className="w-full object-cover" />
       <div className="p-3 space-y-2">
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">{canvas.title || canvas.release_title}</p>
+          <p className="text-sm font-medium truncate">{canvas.title || canvas.project_title}</p>
           <p className="text-[11px] text-muted-foreground">
             {canvas.aspect_ratio}
             {canvas.cta ? ` · ${canvas.cta}` : ''}
@@ -23,7 +23,7 @@ export default function AlbumCanvasCard({ canvas, onDelete, onDuplicate }) {
           <Button variant="outline" size="sm" onClick={() => onDuplicate(canvas)} className="gap-1.5">
             <Copy className="h-3.5 w-3.5" /> Duplicate &amp; edit
           </Button>
-          <SendToCanvaButton imageUrl={canvas.image_url} title={canvas.title || canvas.release_title} />
+          <SendToCanvaButton imageUrl={canvas.image_url} title={canvas.title || canvas.project_title} />
           <SendCanvasToLibraryButton canvas={canvas} />
           <DownloadFileButton
             url={canvas.image_url}

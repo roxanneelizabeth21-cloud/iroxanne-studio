@@ -42,7 +42,7 @@ export default async function(req) {
     };
 
     // Resolve portfolio availability once per item (and cache the context for reuse).
-    const pids = [...new Set(stale.map((p) => p.portfolio_item_id || p.song_id).filter(Boolean))];
+    const pids = [...new Set(stale.map((p) => p.portfolio_item_id).filter(Boolean))];
     const hasItemByPid = {};
     const ctxByPid = {};
     for (const pid of pids) {
@@ -52,7 +52,7 @@ export default async function(req) {
     }
 
     const eligible = stale.filter((p) => {
-      const pid = p.portfolio_item_id || p.song_id;
+      const pid = p.portfolio_item_id;
       const has = pid ? !!hasItemByPid[pid] : false;
       if (!has) { report.skipped_no_portfolio += 1; return false; }
       return true;
@@ -63,7 +63,7 @@ export default async function(req) {
     const updates = [];
     for (const post of queue) {
       try {
-        const pid = post.portfolio_item_id || post.song_id;
+        const pid = post.portfolio_item_id;
         const generated = await regeneratePostContent(base44, post, {
           cache: { ...cache, ctx: pid ? ctxByPid[pid] : null },
         });

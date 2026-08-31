@@ -32,7 +32,7 @@ export default function MediaLibraryPicker({ source, campaigns = [], portfolioIt
       url: isClips ? it.file : it.image_url,
       title: it.title || 'Untitled',
       campaignId: it.campaign_id || '',
-      projectId: it.portfolio_item_id || (isClips ? it.linked_song_id : it.release_id) || '',
+      projectId: it.portfolio_item_id || '',
       meta: isClips
         ? [it.orientation, it.duration_seconds ? `${it.duration_seconds}s` : null].filter(Boolean).join(' · ')
         : [it.aspect_ratio, it.format].filter(Boolean).join(' · '),

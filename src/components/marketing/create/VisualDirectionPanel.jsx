@@ -98,8 +98,6 @@ Return concise plain-language values for: creative_concept, mood, subject, setti
       const res = await base44.functions.invoke('generateMarketingImage', {
         post_id: post.id,
         campaign_id: draft.campaignId || '',
-        release_id: draft.releaseId || '',
-        track_id: draft.trackId || '',
         platform: post.platform,
         format: formatForAspect(aspect),
         aspect_ratio: aspect,

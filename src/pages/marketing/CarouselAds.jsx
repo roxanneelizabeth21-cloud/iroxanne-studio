@@ -69,8 +69,8 @@ export default function CarouselAds() {
     setLaunching(true);
     const res = await base44.functions.invoke('launchCarouselAd', {
       name,
-      release_id: projectId,
-      release_title: project?.title || '',
+      portfolio_item_id: projectId,
+      project_title: project?.title || '',
       ad_account_id: form.ad_account_id,
       page_id: setup?.page?.id || '',
       primary_text: form.primary_text,

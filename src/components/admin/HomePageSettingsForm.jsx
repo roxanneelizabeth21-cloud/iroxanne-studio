@@ -106,8 +106,7 @@ export default function HomePageSettingsForm() {
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
-  // Featured project picker — stores a PortfolioItem id in featured_release_id
-  // (field name kept for backward compatibility with stored settings).
+  // Featured project picker — stores a PortfolioItem id in featured_portfolio_item_id.
   const { data: projects = [] } = useQuery({
     queryKey: ['portfolio-items-homepage'],
     queryFn: () => base44.entities.PortfolioItem.list('-date_built'),
@@ -177,7 +176,7 @@ export default function HomePageSettingsForm() {
           {/* Featured Project */}
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Featured Project Override</label>
-            <Select value={form.featured_release_id || '__none__'} onValueChange={(v) => set('featured_release_id', v === '__none__' ? '' : v)}>
+            <Select value={form.featured_portfolio_item_id || '__none__'} onValueChange={(v) => set('featured_portfolio_item_id', v === '__none__' ? '' : v)}>
               <SelectTrigger><SelectValue placeholder="Auto (first featured project)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">Auto — use featured flag</SelectItem>

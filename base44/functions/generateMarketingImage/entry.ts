@@ -114,7 +114,7 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const {
-      post_id, campaign_id, release_id, track_id, portfolio_item_id,
+      post_id, campaign_id, portfolio_item_id,
       visual_direction = {}, prompt, platform, format, aspect_ratio,
       text_overlay, reference_asset_urls, elements_to_preserve, elements_to_avoid,
       regenerate = false, variation_instruction, original_request,

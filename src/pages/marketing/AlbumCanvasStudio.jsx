@@ -111,8 +111,8 @@ export default function AlbumCanvasStudio() {
 
       await base44.entities.AlbumCanvas.create({
         title: `${release.title} — ${preset.label}`,
-        release_id: release.id,
-        release_title: release.title,
+        portfolio_item_id: release.id,
+        project_title: release.title,
         image_url: up?.file_url || up?.data?.file_url,
         aspect_ratio: preset.ratio,
         target_platform: preset.label,
@@ -140,7 +140,7 @@ export default function AlbumCanvasStudio() {
   // Editing always starts a copy: the saved card is left untouched and saving
   // creates a new one.
   const duplicate = (canvas) => {
-    setReleaseId(canvas.release_id || '');
+    setReleaseId(canvas.portfolio_item_id || '');
     setDesign({
       color: canvas.matched_color || '',
       ctaPreset: 'Custom',
