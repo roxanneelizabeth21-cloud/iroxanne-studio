@@ -246,6 +246,17 @@ export default function Hero({ projects, loading }) {
 
           </div>
 
+          {/* Hero brand graphic — iRoxanne Studio monogram.
+              The PNG ships on a solid black background; mix-blend-screen
+              drops the black and keeps only the bright logo, so it glows
+              on the dark indigo hero instead of reading as a pasted box. */}
+          <img
+            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/ff9831304_Untitled.png"
+            alt="iRoxanne Studio"
+            draggable="false"
+            className="hidden h-[200px] w-[200px] select-none object-contain mix-blend-screen md:block md:ml-auto md:h-[280px] md:w-[280px] lg:h-[340px] lg:w-[340px]"
+          />
+
         </div>
 
         {/* =========================================
