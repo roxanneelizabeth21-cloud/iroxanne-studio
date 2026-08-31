@@ -29,11 +29,11 @@ function BarCard({ title, data, dataKey = 'views', color = 'hsl(var(--primary))'
 
 export default function MarketingPerformance() {
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
 
   const withMetrics = useMemo(() => posts.filter((p) => p.manual_metrics && Object.keys(p.manual_metrics).length > 0), [posts]);
   const totals = useMemo(() => totalMetrics(withMetrics), [withMetrics]);
-  const releaseTitle = (sid) => releases.find((r) => r.id === sid)?.title || 'Standalone';
+  const projectTitle = (pid) => projects.find((r) => r.id === pid)?.title || 'Standalone';
 
   const byPlatform = useMemo(() => {
     const map = {};
@@ -46,17 +46,17 @@ export default function MarketingPerformance() {
     return Object.values(map);
   }, [withMetrics]);
 
-  const bySong = useMemo(() => {
+  const byProject = useMemo(() => {
     const map = {};
     for (const p of withMetrics) {
       const m = p.manual_metrics || {};
-      const key = p.song_id || 'none';
-      const e = map[key] = map[key] || { label: releaseTitle(p.song_id), views: 0, likes: 0 };
+      const key = p.portfolio_item_id || 'none';
+      const e = map[key] = map[key] || { label: projectTitle(p.portfolio_item_id), views: 0, likes: 0 };
       e.views += Number(m.views) || 0;
       e.likes += Number(m.likes) || 0;
     }
     return Object.values(map).sort((a, b) => b.views - a.views);
-  }, [withMetrics, releases]);
+  }, [withMetrics, projects]);
 
   const topPosts = useMemo(() => withMetrics
     .map((p) => ({ p, views: Number(p.manual_metrics?.views) || 0 }))
@@ -85,7 +85,7 @@ export default function MarketingPerformance() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <BarCard title="Views by platform" data={byPlatform} dataKey="views" color="hsl(var(--primary))" />
-        <BarCard title="Views by song" data={bySong} dataKey="views" color="hsl(var(--accent))" />
+        <BarCard title="Views by project" data={byProject} dataKey="views" color="hsl(var(--accent))" />
       </div>
 
       <section>

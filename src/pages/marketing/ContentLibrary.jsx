@@ -12,14 +12,14 @@ export default function ContentLibrary() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState({ song: '', campaign: '', platform: '', status: '', from: '', to: '' });
+  const [filters, setFilters] = useState({ project: '', campaign: '', platform: '', status: '', from: '', to: '' });
   const [selected, setSelected] = useState({});
   const [editing, setEditing] = useState(null);
   const [creating, setCreating] = useState(false);
   const [staleLoading, setStaleLoading] = useState(false);
 
-  // Re-run AI on auto-generated Draft/Pending-Review posts whose song now has real
-  // lyrics uploaded, replacing fabricated lyric lines with actual quotes.
+  // Re-run AI on auto-generated Draft/Pending-Review posts whose project now has
+  // real details filled in, replacing placeholder copy with actual project info.
   const regenerateStale = async () => {
     setStaleLoading(true);
     try {
@@ -28,8 +28,8 @@ export default function ContentLibrary() {
       toast({
         title: `Regenerated ${r.regenerated || 0} post${(r.regenerated || 0) === 1 ? '' : 's'}`,
         description: [
-          `${r.eligible || 0} had real lyrics available`,
-          r.skipped_no_lyrics ? `${r.skipped_no_lyrics} still have no lyrics` : '',
+          `${r.eligible || 0} had project details available`,
+          r.skipped_no_lyrics ? `${r.skipped_no_lyrics} still have no project details` : '',
           r.remaining ? `${r.remaining} remaining — run again` : '',
         ].filter(Boolean).join(' · '),
       });
@@ -43,13 +43,13 @@ export default function ContentLibrary() {
 
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
 
-  const releaseTitle = (sid) => releases.find((r) => r.id === sid)?.title || '';
+  const projectTitle = (pid) => projects.find((r) => r.id === pid)?.title || '';
   const campaignName = (cid) => campaigns.find((c) => c.id === cid)?.name || '';
 
   const filtered = useMemo(() => posts.filter((p) => {
-    if (filters.song && p.song_id !== filters.song) return false;
+    if (filters.project && p.portfolio_item_id !== filters.project) return false;
     if (filters.campaign && p.campaign_id !== filters.campaign) return false;
     if (filters.platform && p.platform !== filters.platform) return false;
     if (filters.status && p.status !== filters.status) return false;
@@ -117,7 +117,7 @@ export default function ContentLibrary() {
   const duplicateSelected = async () => {
     if (selectedIds.length === 0) return;
     const copies = posts.filter((p) => selectedIds.includes(p.id)).map((p) => ({
-      platform: p.platform, format: p.format, song_id: p.song_id, campaign_id: p.campaign_id,
+      platform: p.platform, format: p.format, portfolio_item_id: p.portfolio_item_id, campaign_id: p.campaign_id,
       content_bucket: p.content_bucket, publish_targets: p.publish_targets,
       caption: p.caption, hashtags: p.hashtags, hook: p.hook, cta: p.cta,
       image_prompt: p.image_prompt, image_style_preset: p.image_style_preset, video_brief: p.video_brief,
@@ -161,7 +161,7 @@ export default function ContentLibrary() {
           {filtered.length} post{filtered.length === 1 ? '' : 's'} — search, filter, or work on several at once.
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={regenerateStale} disabled={staleLoading} variant="outline" className="gap-2" title="Re-run AI on auto-generated posts now that real lyrics are uploaded">
+          <Button onClick={regenerateStale} disabled={staleLoading} variant="outline" className="gap-2" title="Re-run AI on auto-generated posts now that project details are filled in">
             {staleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {staleLoading ? 'Regenerating…' : 'Regenerate stale'}
           </Button>
@@ -176,9 +176,9 @@ export default function ContentLibrary() {
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search caption, hashtags, hook…" className="pl-9" />
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
-          <select value={filters.song} onChange={(e) => setFilters({ ...filters, song: e.target.value })} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
-            <option value="">All songs</option>
-            {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+          <select value={filters.project} onChange={(e) => setFilters({ ...filters, project: e.target.value })} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+            <option value="">All projects</option>
+            {projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
           </select>
           <select value={filters.campaign} onChange={(e) => setFilters({ ...filters, campaign: e.target.value })} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
             <option value="">All campaigns</option>
@@ -234,8 +234,8 @@ export default function ContentLibrary() {
                     <span className="text-xs text-muted-foreground ml-auto">{formatDate(p.scheduled_date)} {p.scheduled_time || ''}</span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-1">{p.hook || p.caption?.slice(0, 120) || '(empty)'}</p>
-                  {(releaseTitle(p.song_id) || campaignName(p.campaign_id)) && (
-                    <p className="text-[11px] text-muted-foreground/70 mt-0.5">{releaseTitle(p.song_id) || '—'} {campaignName(p.campaign_id) ? `· ${campaignName(p.campaign_id)}` : ''}</p>
+                  {(projectTitle(p.portfolio_item_id) || campaignName(p.campaign_id)) && (
+                    <p className="text-[11px] text-muted-foreground/70 mt-0.5">{projectTitle(p.portfolio_item_id) || '—'} {campaignName(p.campaign_id) ? `· ${campaignName(p.campaign_id)}` : ''}</p>
                   )}
                 </button>
                 <Button

@@ -12,7 +12,7 @@ const DONE = ['Posted', 'Skipped', 'Cancelled'];
 // routing there fast — no feature dumping on this screen.
 export default function MarketingHub() {
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
 
   const { dueToday, nextPost } = useMemo(() => {
     const today = dateKey(new Date());
@@ -25,7 +25,7 @@ export default function MarketingHub() {
     return { dueToday: open.filter((p) => p.scheduled_date === today).length, nextPost: upcoming[0] || null };
   }, [posts]);
 
-  const nextTitle = releases.find((r) => r.id === nextPost?.song_id)?.title || '';
+  const nextTitle = projects.find((r) => r.id === nextPost?.portfolio_item_id)?.title || '';
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">

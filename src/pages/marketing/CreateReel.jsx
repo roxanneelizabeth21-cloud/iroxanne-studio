@@ -16,13 +16,13 @@ import ReelBriefCard from '@/components/marketing/reel/ReelBriefCard';
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 
 const STEPS = [
-  { key: 'music', label: 'Music' },
+  { key: 'project', label: 'Project' },
   { key: 'clips', label: 'Clips' },
   { key: 'words', label: 'Words' },
   { key: 'brief', label: 'Brief' },
 ];
 
-const EMPTY = { hook: '', caption: '', hashtags: '', musicTrackId: '', musicStart: '', musicEnd: '' };
+const EMPTY = { hook: '', caption: '', hashtags: '' };
 
 // Create a Reel — plan a vertical short from saved clips. The reel is saved as
 // a Reel-format MarketingPost with a shot-list brief, so it lands on the
@@ -31,7 +31,7 @@ export default function CreateReel() {
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
-  const [releaseId, setReleaseId] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
   const [clipIds, setClipIds] = useState([]);
   const [form, setForm] = useState(EMPTY);
@@ -41,35 +41,26 @@ export default function CreateReel() {
 
   const goTo = (i) => { setStep(i); setMaxStep((m) => Math.max(m, i)); };
 
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: allTracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-created_date') });
   const { data: allClips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
 
-  const release = releases.find((r) => r.id === releaseId) || null;
-  const tracks = useMemo(() => allTracks.filter((t) => t.release_id === releaseId), [allTracks, releaseId]);
+  const project = projects.find((r) => r.id === projectId) || null;
 
-  // Clips filed under this release first, then everything else.
+  // Clips filed under this project first, then everything else.
   const clips = useMemo(() => {
-    const mine = allClips.filter((c) => c.linked_song_id === releaseId);
-    const rest = allClips.filter((c) => c.linked_song_id !== releaseId);
+    const mine = allClips.filter((c) => c.portfolio_item_id === projectId);
+    const rest = allClips.filter((c) => c.portfolio_item_id !== projectId);
     return [...mine, ...rest];
-  }, [allClips, releaseId]);
+  }, [allClips, projectId]);
 
   const chosenClips = clipIds.map((id) => allClips.find((c) => c.id === id)).filter(Boolean);
 
   const toggleClip = (id) =>
     setClipIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
 
-  const musicTrack = allTracks.find((t) => t.id === form.musicTrackId) || null;
-
   const brief = useMemo(() => {
-    const lines = [`Reel — ${release?.title || 'Untitled'} (vertical 9:16)`];
+    const lines = [`Reel — ${project?.title || 'Untitled'} (vertical 9:16)`];
     if (form.hook) lines.push(`Opening text on screen: ${form.hook}`);
-    if (musicTrack) {
-      const from = form.musicStart !== '' ? `${form.musicStart}s` : 'start';
-      const to = form.musicEnd !== '' ? `${form.musicEnd}s` : 'end';
-      lines.push(`Music: "${musicTrack.title}" from ${from} to ${to}`);
-    }
     lines.push('');
     lines.push('Shot list:');
     chosenClips.forEach((c, i) => {
@@ -78,7 +69,7 @@ export default function CreateReel() {
     lines.push('');
     lines.push('Assemble in CapCut or Canva at 1080x1920, then bring the finished file back into the post.');
     return lines.join('\n');
-  }, [release, form, musicTrack, chosenClips]);
+  }, [project, form, chosenClips]);
 
   const save = async () => {
     setSaving(true);
@@ -89,16 +80,13 @@ export default function CreateReel() {
         format: 'Reel',
         content_bucket: 'Loop Clip',
         requested_aspect_ratio: '9:16',
-        song_id: form.musicTrackId || releaseId,
+        portfolio_item_id: projectId || undefined,
         scheduled_date: scheduledDate || undefined,
         hook: form.hook,
         caption: form.caption,
         hashtags: form.hashtags,
         video_brief: brief,
         media_clip_id: clipIds[0] || undefined,
-        music_track_id: form.musicTrackId || undefined,
-        music_start_seconds: form.musicStart !== '' ? Number(form.musicStart) : undefined,
-        music_end_seconds: form.musicEnd !== '' ? Number(form.musicEnd) : undefined,
         status: 'Draft',
         approval_status: 'Not Reviewed',
         publish_mode: 'manual',
@@ -119,7 +107,7 @@ export default function CreateReel() {
         <PageHeading icon={Film} title="Reel saved" subtitle="Your shot list is stored on the post, ready to film and assemble." />
         <div className="glass space-y-3 rounded-2xl p-4 sm:p-5">
           <p className="flex items-center gap-2 text-sm">
-            <Check className="h-4 w-4 text-accent" /> Saved as a draft reel for {release?.title || 'your release'}.
+            <Check className="h-4 w-4 text-accent" /> Saved as a draft reel for {project?.title || 'your project'}.
           </p>
           <ReelBriefCard brief={brief} />
           <div className="flex flex-wrap gap-2">
@@ -137,7 +125,7 @@ export default function CreateReel() {
     );
   }
 
-  const canContinue = step === 0 ? !!releaseId : step === 1 ? clipIds.length > 0 : step === 2 ? !!form.caption.trim() : false;
+  const canContinue = step === 0 ? !!projectId : step === 1 ? clipIds.length > 0 : step === 2 ? !!form.caption.trim() : false;
 
   return (
     <div className="max-w-5xl space-y-4">
@@ -148,12 +136,12 @@ export default function CreateReel() {
       />
       <HowThisWorks
         steps={[
-          'Step 1 — Music: pick the release the reel is about, and when you want to post it.',
+          'Step 1 — Project: pick the project the reel is about, and when you want to post it.',
           'Step 2 — Clips: tap your clips in the order they should appear.',
-          'Step 3 — Words: add the on-screen hook, the caption, and the song section to use.',
+          'Step 3 — Words: add the on-screen hook, the caption, and the hashtags.',
           'Step 4 — Brief: save it as a draft reel with a shot list you can follow while editing.',
         ]}
-        note="Roxsan Amplify plans the reel — you assemble the video in CapCut or Canva, then attach the finished file to the post."
+        note="iRoxanne Studio plans the reel — you assemble the video in CapCut or Canva, then attach the finished file to the post."
       />
       <CanvasStepBar steps={STEPS} step={step} maxStep={maxStep} onGoTo={goTo} label="Reel steps" />
 
@@ -161,10 +149,10 @@ export default function CreateReel() {
         {step === 0 && (
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <label className={FL}>Release</label>
-              <select value={releaseId} onChange={(e) => setReleaseId(e.target.value)} aria-label="Release">
-                <option value="">Choose a release</option>
-                {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+              <label className={FL}>Project</label>
+              <select value={projectId} onChange={(e) => setProjectId(e.target.value)} aria-label="Project">
+                <option value="">Choose a project</option>
+                {projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
@@ -183,7 +171,7 @@ export default function CreateReel() {
           </div>
         )}
 
-        {step === 2 && <ReelDetailsStep form={form} set={set} tracks={tracks.length ? tracks : allTracks} />}
+        {step === 2 && <ReelDetailsStep form={form} set={set} />}
 
         {step === 3 && (
           <div className="space-y-3">
