@@ -5,7 +5,6 @@ import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import Testimonials from '@/components/home/Testimonials';
-import ClosingCTA from '@/components/home/ClosingCTA';
 import SiteFooter from '@/components/home/SiteFooter';
 
 export default function Home() {
@@ -63,7 +62,6 @@ export default function Home() {
           loading={loading}
         />
 
-        <ClosingCTA />
       </main>
 
       <SiteFooter />
