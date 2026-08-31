@@ -15,7 +15,7 @@ const LAYOUTS = [
   { value: 'cinematic', label: 'Cinematic (Full Bleed)' },
   { value: 'artist_left', label: 'Portrait Left / Text Right' },
   { value: 'artist_right', label: 'Portrait Right / Text Left' },
-  { value: 'album_cover', label: 'Showcase Hero' },
+  { value: 'project_cover', label: 'Showcase Hero' },
   { value: 'video_bg', label: 'Video Background Hero' },
 ];
 
@@ -37,7 +37,7 @@ const DEFAULTS = {
   hero_glow_intensity: 10,
   hero_overlay_opacity: 40,
   enable_background_video: false,
-  show_featured_release: true,
+  show_featured_project: true,
   show_video_preview: true,
   show_newsletter: true,
   show_gallery_preview: false,
@@ -196,7 +196,7 @@ export default function HomePageSettingsForm() {
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Studio / Profile Image</label>
             <p className="text-xs text-muted-foreground">Used in split layouts and cinematic hero.</p>
-            <MediaUploader type="image" currentUrl={form.hero_artist_image} onUpload={(url) => set('hero_artist_image', url)} placeholder="Upload studio photo" />
+            <MediaUploader type="image" currentUrl={form.hero_studio_image} onUpload={(url) => set('hero_studio_image', url)} placeholder="Upload studio photo" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hero Overlay Graphic</label>
@@ -249,7 +249,7 @@ export default function HomePageSettingsForm() {
         {activeTab === 'sections' && <div className="space-y-4">
           <p className="text-xs text-muted-foreground">Toggle homepage sections on or off.</p>
           <div className="space-y-4 p-4 border border-border/50 rounded-xl">
-            <Toggle value={form.show_featured_release} onChange={(v) => set('show_featured_release', v)} label="Show Featured Project Banner" />
+            <Toggle value={form.show_featured_project} onChange={(v) => set('show_featured_project', v)} label="Show Featured Project Banner" />
             <Toggle value={form.show_video_preview} onChange={(v) => set('show_video_preview', v)} label="Show Latest Work Section" />
             <Toggle value={form.show_newsletter} onChange={(v) => set('show_newsletter', v)} label="Show Newsletter Signup" />
             <Toggle value={form.show_gallery_preview} onChange={(v) => set('show_gallery_preview', v)} label="Show Portfolio Preview" />

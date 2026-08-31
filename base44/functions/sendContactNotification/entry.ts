@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     });
     // The intro can contain merge fields fed by a public form, so escape it.
     const emailBody = brandedEmail({
-      title: 'New fan inquiry',
+      title: 'New inquiry',
       content: `${textToHtmlParagraphs(escapeHtml(intro))}
 ${detailRows([
   ['Name', escapeHtml(name)],

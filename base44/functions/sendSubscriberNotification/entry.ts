@@ -3,13 +3,13 @@ import { sendGmail } from '../../shared/gmail.ts';
 import { brandedEmail, detailRows } from '../../shared/emailBrand.ts';
 import { renderTemplate, textToHtmlParagraphs } from '../../shared/emailTemplates.ts';
 
-// Fires on FanSubscriber create (entity automation). Sends a Gmail alert to
-// the admin (builder) so they know a new fan subscribed via /go/:slug or the
+// Fires on Subscriber create (entity automation). Sends a Gmail alert to
+// the admin (builder) so you know someone subscribed via a capture page or the
 // newsletter.
 //
 // Caller verification: this endpoint has a public URL. The entity automation
-// passes the created FanSubscriber record (body.data) and event id. We only
-// accept the call when it references a REAL FanSubscriber record created in
+// passes the created Subscriber record (body.data) and event id. We only
+// accept the call when it references a REAL Subscriber record created in
 // the last 2 minutes — so an anonymous stranger can't trip the alert by
 // hitting the URL with a fabricated payload. Anonymous direct calls with no
 // real fresh record are rejected with 401.
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     let recordOk = false;
     if (entityId) {
       try {
-        const rec = await base44.asServiceRole.entities.FanSubscriber.get(entityId);
+        const rec = await base44.asServiceRole.entities.Subscriber.get(entityId);
         const createdMs = rec?.created_date ? new Date(rec.created_date).getTime() : 0;
         recordOk = !!rec && createdMs > 0 && (Date.now() - createdMs) < 120_000;
       } catch (_e) {
@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       email, name, source, utm, signed_up: signedUp,
     });
     const emailBody = brandedEmail({
-      title: 'New fan subscriber',
+      title: 'New subscriber',
       content: `${textToHtmlParagraphs(intro)}
 ${detailRows([
   ['Email', email],

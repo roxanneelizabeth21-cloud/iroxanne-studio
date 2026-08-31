@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
-// Public landing page for the unsubscribe link in fan emails.
+// Public landing page for the unsubscribe link in subscriber emails.
 export default function Unsubscribe() {
   const email = new URLSearchParams(window.location.search).get('email') || '';
   const [state, setState] = useState('working');
@@ -15,7 +15,7 @@ export default function Unsubscribe() {
       return;
     }
     base44.functions
-      .invoke('unsubscribeFan', { email })
+      .invoke('unsubscribeSubscriber', { email })
       .then(() => setState('done'))
       .catch(() => setState('error'));
   }, [email]);

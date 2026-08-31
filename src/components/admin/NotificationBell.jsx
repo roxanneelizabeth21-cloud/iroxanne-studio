@@ -23,8 +23,8 @@ export default function NotificationBell() {
   const navigate = useNavigate();
 
   const { data: subs = [] } = useQuery({
-    queryKey: ['fan-subscribers-recent'],
-    queryFn: () => base44.entities.FanSubscriber.list('-created_date', 20),
+    queryKey: ['subscribers-recent'],
+    queryFn: () => base44.entities.Subscriber.list('-created_date', 20),
     refetchInterval: 30000,
     staleTime: 15000,
   });
@@ -48,7 +48,7 @@ export default function NotificationBell() {
 
   const markRead = () => {
     setSeen(new Date().toISOString());
-    qc.invalidateQueries({ queryKey: ['fan-subscribers-recent'] });
+    qc.invalidateQueries({ queryKey: ['subscribers-recent'] });
     qc.invalidateQueries({ queryKey: ['contact-messages-recent'] });
   };
 

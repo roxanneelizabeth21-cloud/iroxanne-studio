@@ -6,7 +6,7 @@ import { FolderKanban, Megaphone, Mail, MessageSquare, ArrowRight, Quote } from 
 export default function AdminOverview() {
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts-recent'], queryFn: () => base44.entities.MarketingPost.list('-created_date', 50) });
   const { data: portfolio = [] } = useQuery({ queryKey: ['portfolio-items-admin'], queryFn: () => base44.entities.PortfolioItem.list('-created_date') });
-  const { data: subs = [] } = useQuery({ queryKey: ['fan-subscribers-recent'], queryFn: () => base44.entities.FanSubscriber.list('-created_date', 50) });
+  const { data: subs = [] } = useQuery({ queryKey: ['subscribers-recent'], queryFn: () => base44.entities.Subscriber.list('-created_date', 50) });
   const { data: msgs = [] } = useQuery({ queryKey: ['contact-messages-recent'], queryFn: () => base44.entities.ContactMessage.list('-created_date', 50) });
 
   const cards = [

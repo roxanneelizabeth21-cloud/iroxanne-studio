@@ -1,8 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { renderTemplate, fanEmailHtml, textToHtmlParagraphs } from '../../shared/emailTemplates.ts';
+import { renderTemplate, subscriberEmailHtml, textToHtmlParagraphs } from '../../shared/emailTemplates.ts';
 import { brandedEmail, detailRows } from '../../shared/emailBrand.ts';
 import { marketingEmailHtml } from '../../shared/marketingAdmin.ts';
-import { unsubscribeUrl } from '../../shared/fanEmail.ts';
+import { unsubscribeUrl } from '../../shared/subscriberEmail.ts';
 
 // Admin-only "Send test to myself". Renders the requested template exactly the
 // way the real send does — same shell, same merge-field substitution — using
@@ -48,17 +48,17 @@ export default async function (req: Request): Promise<Response> {
 
     let html: string;
     if (key === 'fan_welcome') {
-      html = fanEmailHtml(text, unsubscribeUrl(to));
+      html = subscriberEmailHtml(text, unsubscribeUrl(to));
     } else if (key === 'admin_new_subscriber') {
       html = brandedEmail({
-        title: 'New fan subscriber',
+        title: 'New subscriber',
         content: `${textToHtmlParagraphs(text)}
 ${detailRows([['Email', vars.email], ['Name', vars.name], ['Source', vars.source], ['UTM', vars.utm], ['Signed up', vars.signed_up]])}`,
         footerNote: 'Manage all subscribers in your admin → Subscribers.',
       });
     } else if (key === 'admin_new_inquiry') {
       html = brandedEmail({
-        title: 'New fan inquiry',
+        title: 'New inquiry',
         content: `${textToHtmlParagraphs(text)}
 ${detailRows([['Name', vars.name], ['Email', vars.email], ['Inquiry Type', vars.inquiry_type], ['Subject', vars.message_subject], ['Submitted', vars.submitted]])}
 <p style="margin:22px 0 8px;color:#8B8B85;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;">Message</p>

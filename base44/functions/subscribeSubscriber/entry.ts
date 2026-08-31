@@ -1,10 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/fanEmail.ts';
-import { renderTemplate, fanEmailHtml } from '../../shared/emailTemplates.ts';
+import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/subscriberEmail.ts';
+import { renderTemplate, subscriberEmailHtml } from '../../shared/emailTemplates.ts';
 
-// Public fan-capture endpoint. Runs as service role to bypass the admin-only
-// read/update RLS on FanSubscriber — so anonymous visitors still get true
-// dedupe (existing record updated, not a duplicate created).
+// Public subscriber-capture endpoint. Runs as service role to bypass the
+// admin-only read/update RLS on Subscriber — so anonymous visitors still get
+// true dedupe (existing record updated, not a duplicate created).
 // Sends the branded welcome email and stamps welcome_sent_at on success, so a
 // later signup on a different page doesn't send it twice. A send failure must
 // never fail the signup itself.
@@ -14,15 +14,14 @@ async function sendWelcome(base44: any, email: string, name: string | undefined,
       fan_name: name || 'there',
       email,
       site_url: SITE_URL,
-      music_url: `${SITE_URL}/music`,
     });
     await base44.asServiceRole.integrations.Core.SendEmail({
       from_name: FROM_NAME,
       to: email,
       subject,
-      body: fanEmailHtml(text, unsubscribeUrl(email)),
+      body: subscriberEmailHtml(text, unsubscribeUrl(email)),
     });
-    await base44.asServiceRole.entities.FanSubscriber.update(recordId, { welcome_sent_at: new Date().toISOString() });
+    await base44.asServiceRole.entities.Subscriber.update(recordId, { welcome_sent_at: new Date().toISOString() });
     return true;
   } catch (e) {
     console.error('Welcome email failed', (e as Error).message);
@@ -52,11 +51,11 @@ export default async function(req: Request): Promise<Response> {
     const utm_medium = body?.utm_medium ? body.utm_medium.toString() : undefined;
     const utm_campaign = body?.utm_campaign ? body.utm_campaign.toString() : undefined;
 
-    // Dedupe: update existing fan's source/UTMs rather than creating a dup.
-    const existing = await base44.asServiceRole.entities.FanSubscriber.filter({ email });
+    // Dedupe: update existing subscriber's source/UTMs rather than creating a dup.
+    const existing = await base44.asServiceRole.entities.Subscriber.filter({ email });
     if (existing.length > 0) {
       const prev = existing[0];
-      const updated = await base44.asServiceRole.entities.FanSubscriber.update(prev.id, {
+      const updated = await base44.asServiceRole.entities.Subscriber.update(prev.id, {
         source_slug: source_slug || prev.source_slug,
         utm_source: utm_source || prev.utm_source,
         utm_medium: utm_medium || prev.utm_medium,
@@ -73,7 +72,7 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const now = new Date().toISOString();
-    const record = await base44.asServiceRole.entities.FanSubscriber.create({
+    const record = await base44.asServiceRole.entities.Subscriber.create({
       email,
       name,
       source_slug,

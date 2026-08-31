@@ -1,10 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.0';
-import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/fanEmail.ts';
-import { renderTemplate, fanEmailHtml } from '../../shared/emailTemplates.ts';
+import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/subscriberEmail.ts';
+import { renderTemplate, subscriberEmailHtml } from '../../shared/emailTemplates.ts';
 
-// Admin-only: sends the fan welcome email to a chosen address so the admin can
+// Admin-only: sends the subscriber welcome email to a chosen address so the admin can
 // preview exactly what a new subscriber receives. Creates no subscriber record.
-// Copy comes from the admin-editable "Fan Welcome / Confirmation" template.
+// Copy comes from the admin-editable "Subscriber Welcome / Confirmation" template.
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
   const user = await base44.auth.me();
@@ -20,14 +20,13 @@ Deno.serve(async (req) => {
     fan_name: body.name || user.full_name || 'there',
     email: to,
     site_url: SITE_URL,
-    music_url: `${SITE_URL}/music`,
-  });
+    });
 
   await base44.asServiceRole.integrations.Core.SendEmail({
     from_name: FROM_NAME,
     to,
     subject: `[Preview] ${subject}`,
-    body: fanEmailHtml(text, unsubscribeUrl(to)),
+    body: subscriberEmailHtml(text, unsubscribeUrl(to)),
   });
 
   return Response.json({ sent: true, to });

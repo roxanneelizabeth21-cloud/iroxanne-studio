@@ -5,7 +5,7 @@ import { Download, Mail, Users, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-// Admin: FanSubscriber table with CSV export.
+// Admin: Subscriber table with CSV export.
 function escapeCsv(value) {
   if (value == null) return '';
   const s = String(value);
@@ -29,15 +29,15 @@ export default function SubscribersAdmin() {
   const queryClient = useQueryClient();
 
   const { data: subscribers = [], isLoading } = useQuery({
-    queryKey: ['fan-subscribers'],
-    queryFn: () => base44.entities.FanSubscriber.list('-signup_date', 500),
+    queryKey: ['subscribers'],
+    queryFn: () => base44.entities.Subscriber.list('-signup_date', 500),
   });
 
   const handleDelete = async (subscriber) => {
     if (!window.confirm(`Remove ${subscriber.email} from your subscriber list?`)) return;
     try {
-      await base44.entities.FanSubscriber.delete(subscriber.id);
-      await queryClient.invalidateQueries({ queryKey: ['fan-subscribers'] });
+      await base44.entities.Subscriber.delete(subscriber.id);
+      await queryClient.invalidateQueries({ queryKey: ['subscribers'] });
     } catch (err) {
       window.alert('Could not delete subscriber. Please try again.');
     } finally {

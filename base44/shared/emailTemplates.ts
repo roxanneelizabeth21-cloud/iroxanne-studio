@@ -215,7 +215,7 @@ export function textToHtmlParagraphs(text: string): string {
 
 // Wraps admin-authored subscriber copy in the branded iRoxanne Studio shell, with the
 // "Book a consult" button and unsubscribe footer appended.
-export function fanEmailHtml(text: string, unsubscribeLink: string): string {
+export function subscriberEmailHtml(text: string, unsubscribeLink: string): string {
   return brandedEmail({
     content: `${textToHtmlParagraphs(text)}
 <p style="margin:24px 0 0;">${brandButton('Book a consult', `${SITE_URL}/consult`)}</p>`,
