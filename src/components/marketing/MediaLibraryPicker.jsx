@@ -42,7 +42,7 @@ export default function MediaLibraryPicker({ source, campaigns = [], portfolioIt
     .filter((r) => !campaign || r.campaignId === campaign)
     .filter((r) => !project || r.projectId === project)
     .filter((r) => !kind || mediaType(r.url) === kind),
-  [items, isClips, q, campaign, song, kind]);
+  [items, isClips, q, campaign, project, kind]);
 
   const chosen = rows.find((r) => r.id === selected) || null;
 
