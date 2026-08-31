@@ -1,26 +1,49 @@
-// iRoxanne Studio — public placeholder.
-// The full services-focused public site is planned. For now this is a simple
-// branded coming-soon screen with no music content.
+import { useEffect, useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import SiteNav from '@/components/home/SiteNav';
+import Hero from '@/components/home/Hero';
+import Services from '@/components/home/Services';
+import FeaturedWork from '@/components/home/FeaturedWork';
+import Testimonials from '@/components/home/Testimonials';
+import ClosingCTA from '@/components/home/ClosingCTA';
+import SiteFooter from '@/components/home/SiteFooter';
+
 export default function Home() {
+  const [projects, setProjects] = useState(null);
+  const [testimonials, setTestimonials] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const [proj, test] = await Promise.all([
+          base44.entities.PortfolioItem.list('-sort_order', 6).catch(() => []),
+          base44.entities.Testimonial.filter({ approved_for_use: true }, '-date', 3).catch(() => []),
+        ]);
+        if (!active) return;
+        setProjects(proj);
+        setTestimonials(test);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-6">
-      <div className="max-w-xl text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/15 border border-primary/30 mb-6">
-          <span className="font-display text-2xl font-bold text-primary">iR</span>
-        </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground">
-          iRoxanne Studio
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-          Custom apps for small businesses, solo founders, and creators.
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground/80">
-          Booking systems, marketing tools, e-commerce, client portals, and internal tools — built fast, by a real person.
-        </p>
-        <div className="mt-8 inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-xs font-medium tracking-wide uppercase">
-          New site coming soon
-        </div>
-      </div>
+    <div className="dark min-h-screen bg-background text-foreground">
+      <SiteNav />
+      <main>
+        <Hero />
+        <Services />
+        <FeaturedWork items={projects} loading={loading} />
+        <Testimonials items={testimonials} loading={loading} />
+        <ClosingCTA />
+      </main>
+      <SiteFooter />
     </div>
   );
 }
