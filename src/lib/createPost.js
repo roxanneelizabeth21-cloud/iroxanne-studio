@@ -3,14 +3,12 @@
 // local snapshot only remembers which record that is and where the owner was.
 
 export const POST_GOALS = [
-  'Promote the release',
-  'Encourage listening',
-  'Tell the story',
-  'Share a lyric',
-  'Build anticipation',
-  'Announce availability',
-  'Promote a pre-save or preorder',
-  'Reconnect with listeners',
+  'Showcase a project',
+  'Share a tech tip',
+  'Share a client win',
+  'Book a consult',
+  'Build brand awareness',
+  'Announce a new service',
   'Custom goal',
 ];
 
@@ -25,7 +23,7 @@ export function formatForAspect(aspect) {
 }
 
 export const STEPS = [
-  { key: 'music', label: 'Music' },
+  { key: 'subject', label: 'Subject' },
   { key: 'media', label: 'Media' },
   { key: 'copy', label: 'Copy' },
   { key: 'review', label: 'Review' },
@@ -33,11 +31,10 @@ export const STEPS = [
 
 // Only the active draft's ID is kept locally — never post content. The
 // MarketingPost record is the single source of truth for the whole wizard.
-const KEY = 'roxsan_create_post_draft_id';
+const KEY = 'iroxanne_create_post_draft_id';
 
 export const EMPTY_DRAFT = {
-  releaseId: '',
-  trackId: '',
+  portfolioItemId: '',
   campaignId: '',
   goal: '',
   customGoal: '',
@@ -91,6 +88,7 @@ export function draftFromPost(post) {
     ...EMPTY_DRAFT,
     ...s,
     platformIds,
+    portfolioItemId: post?.portfolio_item_id || s.portfolioItemId || '',
     campaignId: post?.campaign_id || s.campaignId || '',
     aspect: post?.requested_aspect_ratio || EMPTY_DRAFT.aspect,
   };
@@ -100,7 +98,7 @@ export function draftFromPost(post) {
 export function postPatchFromDraft(draft, step, maxStep) {
   const publishable = (draft.platformIds || []).filter((p) => PUBLISHABLE.includes(p));
   return {
-    song_id: draft.trackId || draft.releaseId || '',
+    portfolio_item_id: draft.portfolioItemId || '',
     campaign_id: draft.campaignId || '',
     platform: entityPlatform(draft.platformIds?.[0]) || 'Instagram',
     publish_targets: publishable.map(entityPlatform),
@@ -108,8 +106,7 @@ export function postPatchFromDraft(draft, step, maxStep) {
     requested_aspect_ratio: draft.aspect,
     create_post_step: step,
     create_post_state: {
-      releaseId: draft.releaseId || '',
-      trackId: draft.trackId || '',
+      portfolioItemId: draft.portfolioItemId || '',
       campaignId: draft.campaignId || '',
       goal: draft.goal || '',
       customGoal: draft.customGoal || '',

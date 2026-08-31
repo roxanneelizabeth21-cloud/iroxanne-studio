@@ -2,9 +2,9 @@ import { FIELD_LABEL } from '@/components/marketing/postEditorFields';
 import { LINK_TARGETS, defaultLinkTarget, shareablePageUrl } from '@/lib/postLink';
 
 // Chooses which link is appended at the bottom of the post's caption.
-export default function PostLinkTargetSelect({ value, onChange, release, streamLink = '' }) {
+export default function PostLinkTargetSelect({ value, onChange, release }) {
   const effective = value || defaultLinkTarget(release);
-  const preview = effective === 'Streaming link' ? streamLink : shareablePageUrl(release, effective);
+  const preview = shareablePageUrl(release, effective);
 
   return (
     <div className="space-y-1.5">
@@ -20,7 +20,7 @@ export default function PostLinkTargetSelect({ value, onChange, release, streamL
         <p className="text-[11px] text-muted-foreground break-all">{preview}</p>
       ) : effective !== 'None' ? (
         <p className="text-[11px] text-amber-600 dark:text-amber-400">
-          {release ? 'This release has no page link yet.' : 'Pick a release for this post to use its page link.'}
+          {release ? 'This project has no page link yet.' : 'Pick a project for this post to use its page link.'}
         </p>
       ) : null}
     </div>

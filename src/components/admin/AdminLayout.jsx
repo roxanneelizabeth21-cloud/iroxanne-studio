@@ -28,7 +28,7 @@ const NAV_REST = [
 
 const MARKETING_NAV = [
   { to: '/marketing', label: 'Marketing', Icon: LayoutDashboard, end: true },
-  { to: '/marketing/post', label: 'Create a Post', Icon: PenLine, subtitle: 'Choose your music, add media, create the copy, and decide when to share it.' },
+  { to: '/marketing/post', label: 'Create a Post', Icon: PenLine, subtitle: 'Pick a project, add media, create the copy, and decide when to share it.' },
   { to: '/marketing/campaigns', label: 'Campaigns', Icon: Megaphone, subtitle: 'Plan and manage campaigns' },
   { to: '/marketing/calendar', label: 'Content Calendar', Icon: CalendarDays, subtitle: 'Review, schedule and publish your content' },
   { to: '/marketing/library', label: 'All Posts', Icon: Library, subtitle: 'Every post you have created — search, filter and edit' },

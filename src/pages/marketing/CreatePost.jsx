@@ -21,20 +21,20 @@ import {
 } from '@/lib/createPost';
 import { resolveMedia } from '@/lib/postValidation';
 import { getPlatform } from '@/lib/socialPlatforms';
-import { SITE_URL, shareablePageUrl, defaultLinkTarget } from '@/lib/postLink';
+import { shareablePageUrl, defaultLinkTarget } from '@/lib/postLink';
 
 // Text fields are debounced so typing doesn't write on every keystroke.
 const TEXT_KEYS = ['customGoal', 'instruction'];
 const TEXT_DEBOUNCE = 800;
 
 const STEPS = [
-  { key: 'music', label: 'Music' },
+  { key: 'subject', label: 'Subject' },
   { key: 'media', label: 'Media' },
   { key: 'copy', label: 'Copy' },
   { key: 'review', label: 'Review' },
 ];
 
-// Create Post — one guided flow (Music → Media → Copy → Review) on top of the
+// Create Post — one guided flow (Subject → Media → Copy → Review) on top of the
 // existing marketing entities, media pickers, Final Review and scheduling.
 // A single in-progress MarketingPost is the source of truth and is saved
 // continuously; only its ID is remembered locally.
@@ -62,12 +62,9 @@ export default function CreatePost() {
 
   const { status, savedAt, queue, flush, hasUnsaved } = useDraftAutosave(useCallback(() => postRef.current?.id || '', []));
 
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: tracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
   const { data: campaigns = [] } = useQuery({ queryKey: ['campaigns'], queryFn: () => base44.entities.Campaign.list() });
-  const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: platformLinks = [] } = useQuery({ queryKey: ['music-platform-links'], queryFn: () => base44.entities.MusicPlatformLink.filter({ is_visible: true }) });
   const { data: bpList = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const brandProfile = bpList[0] || null;
 
@@ -126,25 +123,24 @@ export default function CreatePost() {
   // Wizard-state change: saved immediately, or debounced while typing.
   const patch = useCallback((fields) => {
     // Editing an earlier answer never deletes later work — it only flags it.
-    const affectsCopy = ['releaseId', 'trackId', 'goal', 'customGoal'].some((k) => k in fields);
+    const affectsCopy = ['portfolioItemId', 'goal', 'customGoal'].some((k) => k in fields);
     const extra = affectsCopy && String(postRef.current?.caption || '').trim() ? { reviewRecommended: true } : {};
-    // Choosing the music attaches that release's own preview-safe share link
-    // automatically — never a hardcoded URL, and never a manual step.
-    if ('releaseId' in fields) {
-      const rel = releases.find((r) => r.id === fields.releaseId) || null;
-      extra.link = rel ? shareablePageUrl(rel, defaultLinkTarget(rel)) : '';
+    // Choosing the project attaches its preview-safe share link automatically.
+    if ('portfolioItemId' in fields) {
+      const item = portfolioItems.find((p) => p.id === fields.portfolioItemId) || null;
+      extra.link = item ? shareablePageUrl(item, defaultLinkTarget(item)) : '';
     }
     const next = { ...draftRef.current, ...fields, ...extra };
     draftRef.current = next;
     setDraft(next);
     const debounced = Object.keys(fields).every((k) => TEXT_KEYS.includes(k));
     const send = () => queue(postPatchFromDraft(next, stepRef.current, maxStepRef.current), debounced ? TEXT_DEBOUNCE : 0);
-    if (!postRef.current?.id && (next.releaseId || next.trackId)) {
+    if (!postRef.current?.id && next.portfolioItemId) {
       ensurePost().then(send).catch((e) => toast({ title: 'Could not start the draft', description: e.message, variant: 'destructive' }));
       return;
     }
     send();
-  }, [ensurePost, queue, toast, releases]);
+  }, [ensurePost, queue, toast, portfolioItems]);
 
   // Canonical post-field change (media, copy, schedule, approval).
   const patchPost = useCallback(async (fields, deferred) => {
@@ -192,50 +188,44 @@ export default function CreatePost() {
     startFresh();
   };
 
-  const release = releases.find((r) => r.id === draft.releaseId) || null;
-  const track = tracks.find((t) => t.id === draft.trackId) || null;
+  const portfolioItem = portfolioItems.find((p) => p.id === draft.portfolioItemId) || null;
   const campaign = campaigns.find((c) => c.id === draft.campaignId) || null;
-  const songTitle = track?.title || release?.title || '';
-  const profile = songProfiles.find((s) => s.title === (track?.title || release?.title)) || null;
+  const projectTitle = portfolioItem?.title || '';
 
-  const songContext = {
-    title: songTitle,
-    releaseType: release?.release_type,
-    status: release?.status,
-    themes: (profile?.themes || []).join(', '),
-    story: profile?.song_story || release?.behind_the_scenes,
-    keyLines: profile?.key_lines || (track?.lyrics || '').slice(0, 400),
-    genre: brandProfile?.genre_blend,
+  const portfolioContext = useMemo(() => ({
+    title: projectTitle,
+    description: portfolioItem?.description || portfolioItem?.tagline || '',
+    tagline: portfolioItem?.tagline || '',
+    category: portfolioItem?.category,
+    tech: Array.isArray(portfolioItem?.tech_used) ? portfolioItem.tech_used.join(', ') : '',
+    project_url: portfolioItem?.project_url,
+    cover_image_url: portfolioItem?.cover_image_url,
     campaignName: campaign?.name,
     campaignGoal: campaign?.goal,
     imageStyleNotes: brandProfile?.image_style_notes,
-    artworkUrl: release?.cover_image_url,
-  };
+    artworkUrl: portfolioItem?.cover_image_url,
+    // compat fields for VisualDirectionPanel
+    releaseType: portfolioItem?.category,
+    status: 'released',
+    themes: Array.isArray(portfolioItem?.tech_used) ? portfolioItem.tech_used.join(', ') : '',
+    story: portfolioItem?.description || portfolioItem?.tagline || '',
+    genre: brandProfile?.genre_blend,
+  }), [portfolioItem, projectTitle, campaign, brandProfile]);
 
   const linkOptions = useMemo(() => {
     const out = [];
-    for (const l of platformLinks) {
-      if (release && l.release_id === release.id && l.url) {
-        out.push({ label: `${String(l.platform_type || 'Streaming').replace(/_/g, ' ')} link`, url: l.url });
-      }
-    }
-    for (const src of [profile?.streaming_links, brandProfile?.default_streaming_links]) {
-      String(src || '').split('\n').map((s) => s.trim()).filter(Boolean).forEach((url) => out.push({ label: url, url }));
-    }
-    if (release?.slug) {
-      out.unshift({
-        label: `${release.title} page (previews with cover art)`,
-        url: shareablePageUrl(release, defaultLinkTarget(release)),
-      });
-    }
-    out.push({ label: 'Music page', url: `${SITE_URL}/music` });
-    out.push({ label: 'Store page', url: `${SITE_URL}/shop` });
+    if (portfolioItem?.project_url) out.push({ label: 'Live project', url: portfolioItem.project_url });
+    const pageLink = shareablePageUrl(portfolioItem, 'Portfolio page');
+    if (pageLink) out.push({ label: `${projectTitle || 'Project'} page`, url: pageLink });
+    out.push({ label: 'Consult booking', url: shareablePageUrl(portfolioItem, 'Consult booking') });
+    String(brandProfile?.default_streaming_links || '').split('\n').map((s) => s.trim()).filter(Boolean)
+      .forEach((url) => out.push({ label: url, url }));
     const seen = new Set();
     return out.filter((o) => o.url && !seen.has(o.url) && seen.add(o.url));
-  }, [platformLinks, release, profile, brandProfile]);
+  }, [portfolioItem, projectTitle, brandProfile]);
 
   // Step gates.
-  const step1Ok = !!(draft.releaseId || draft.trackId) && !!effectiveGoal(draft);
+  const step1Ok = !!draft.portfolioItemId && !!effectiveGoal(draft);
   const step2Ok = !!post && !!resolveMedia(post, clips);
   const step3Ok = !!post && !!String(post.caption || '').trim();
   const canContinue = step === 0 ? step1Ok : step === 1 ? step2Ok : step === 2 ? step3Ok : false;
@@ -278,13 +268,12 @@ export default function CreatePost() {
   }
 
   if (phase === 'resume' && resumable) {
-    const rTrack = tracks.find((t) => t.id === resumable.create_post_state?.trackId);
-    const rRelease = releases.find((r) => r.id === (resumable.create_post_state?.releaseId || resumable.song_id));
+    const rItem = portfolioItems.find((p) => p.id === (resumable.create_post_state?.portfolioItemId || resumable.portfolio_item_id));
     return (
       <ResumeDraftCard
         post={resumable}
         clips={clips}
-        songTitle={rTrack?.title || rRelease?.title || ''}
+        songTitle={rItem?.title || ''}
         platformLabels={platformLabels(resumable) || resumable.platform}
         onContinue={() => startFrom(resumable)}
         onStartNew={startFresh}
@@ -299,7 +288,7 @@ export default function CreatePost() {
         result={result}
         post={post}
         clips={clips}
-        songTitle={songTitle}
+        songTitle={projectTitle}
         platformIds={draft.platformIds}
         onCreateAnother={() => { setResult(null); startFresh(); }}
       />
@@ -316,7 +305,7 @@ export default function CreatePost() {
       </div>
       <HowThisWorks
         steps={[
-          'Step 1 — Music: pick the album or song this post is about and what the post should accomplish.',
+          'Step 1 — Subject: pick the portfolio project this post is about and what the post should accomplish.',
           'Step 2 — Media: attach a picture or clip from your Media Library, or generate one.',
           'Step 3 — Copy: write or generate the caption, hashtags and the link to include.',
           'Step 4 — Review: check everything, then schedule it or publish it now.',
@@ -325,7 +314,7 @@ export default function CreatePost() {
       />
 
       {step === 0 && (
-        <StepMusic draft={draft} patch={patch} releases={releases} tracks={tracks} campaigns={campaigns} songProfiles={songProfiles} />
+        <StepMusic draft={draft} patch={patch} portfolioItems={portfolioItems} campaigns={campaigns} />
       )}
       {step === 1 && post && (
         <StepMedia
@@ -335,12 +324,12 @@ export default function CreatePost() {
           patchPost={patchPost}
           clips={clips}
           campaigns={campaigns}
-          releases={releases}
-          songContext={songContext}
+          releases={portfolioItems}
+          songContext={portfolioContext}
         />
       )}
       {step === 2 && post && (
-        <StepCopy draft={draft} patch={patch} post={post} patchPost={patchPost} linkOptions={linkOptions} songTitle={songTitle} clips={clips} />
+        <StepCopy draft={draft} patch={patch} post={post} patchPost={patchPost} linkOptions={linkOptions} songTitle={projectTitle} clips={clips} />
       )}
       {step === 3 && post && (
         <StepReview
@@ -350,7 +339,7 @@ export default function CreatePost() {
           clips={clips}
           brandProfile={brandProfile}
           campaignName={campaign?.name || ''}
-          songTitle={songTitle}
+          songTitle={projectTitle}
           onDone={finish}
           onEdit={() => goToStep(2)}
         />

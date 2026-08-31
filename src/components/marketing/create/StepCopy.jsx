@@ -14,7 +14,7 @@ const TWEAKS = [
   ['Make More Personal', 'Rewrite it more personally, in first person, warmer.'],
   ['Make Shorter', 'Rewrite it noticeably shorter and tighter.'],
   ['Make More Conversational', 'Rewrite it in a relaxed, conversational voice.'],
-  ['Try a Different Angle', 'Take a genuinely different angle on the same song and goal.'],
+  ['Try a Different Angle', 'Take a genuinely different angle on the same project and goal.'],
 ];
 
 // Step 3 — platform choice, generated or hand-written copy, and the real CTA link.
@@ -49,7 +49,7 @@ export default function StepCopy({ draft, patch, post, patchPost, linkOptions, s
         draft.platformIds.length > 1 ? ` This same copy will be used on ${draft.platformIds.map((p) => entityValue(p)).join(' and ')}.` : ''
       }`;
       const res = await base44.functions.invoke('quickCreate', {
-        song_id: draft.trackId || draft.releaseId,
+        portfolio_item_id: draft.portfolioItemId,
         platform: primary,
         note,
       });
@@ -82,8 +82,8 @@ export default function StepCopy({ draft, patch, post, patchPost, linkOptions, s
     setBusy('tweak');
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Rewrite this social caption for the artist Roxsan, about "${songTitle}". ${instruction}
-Keep it truthful: never invent lyrics, statistics, reviews, awards, chart positions, dates, quotes or links. Keep any existing link exactly as written.
+        prompt: `Rewrite this social caption for iRoxanne Studio, about "${songTitle}". ${instruction}
+Keep it truthful: never invent results, metrics, quotes, testimonials, prices or links. Keep any existing link exactly as written.
 
 Current caption:
 ${post.caption || ''}

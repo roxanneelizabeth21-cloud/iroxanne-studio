@@ -113,7 +113,7 @@ export default function StepReview({
           {post.cta && <p className="text-sm"><span className="text-muted-foreground">CTA: </span>{post.cta}</p>}
           {draft.link && <p className="text-xs break-all">{draft.link}</p>}
           <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-            <div><dt className="text-muted-foreground inline">Song / album: </dt><dd className="inline">{songTitle || '—'}</dd></div>
+            <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{songTitle || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Campaign: </dt><dd className="inline">{campaignName || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Format: </dt><dd className="inline">{post.format || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Approval: </dt><dd className="inline">{post.approval_status || 'Not Reviewed'}</dd></div>
