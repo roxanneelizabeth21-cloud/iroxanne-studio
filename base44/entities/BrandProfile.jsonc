@@ -1,0 +1,177 @@
+{
+  "name": "BrandProfile",
+  "type": "object",
+  "properties": {
+    "artist_name": {
+      "type": "string",
+      "default": "Roxsan",
+      "description": "Artist name used in generated copy \u2014 always spelled exactly this way"
+    },
+    "voice_description": {
+      "type": "string",
+      "description": "How the artist speaks to her audience (tone, register)"
+    },
+    "genre_blend": {
+      "type": "string",
+      "description": "Musical identity description"
+    },
+    "audience_description": {
+      "type": "string",
+      "description": "Who the audience is"
+    },
+    "faith_integration_notes": {
+      "type": "string",
+      "description": "When and how faith themes appear"
+    },
+    "writing_rules": {
+      "type": "string",
+      "default": "No long em dashes\nNo corporate marketing speak\nWarm, conversational, direct",
+      "description": "Hard rules, one per line \u2014 override any generic content rules where they conflict"
+    },
+    "banned_words_phrases": {
+      "type": "string",
+      "description": "Words or phrases the AI must never use"
+    },
+    "example_captions": {
+      "type": "string",
+      "description": "Captions the admin loves, for style reference"
+    },
+    "default_streaming_links": {
+      "type": "string",
+      "description": "Default streaming platform links the AI can reference"
+    },
+    "hashtag_bank": {
+      "type": "string",
+      "description": "Preferred hashtags by platform"
+    },
+    "posts_per_campaign_week": {
+      "type": "number",
+      "default": 4,
+      "description": "How many posts the daily auto-generator keeps filled in the coming 7 days for each Active campaign."
+    },
+    "posts_per_evergreen_week": {
+      "type": "number",
+      "default": 3,
+      "description": "How many posts the daily auto-generator keeps rotating per week for each released song with Evergreen switched on."
+    },
+    "mix_loop_pct": {
+      "type": "number",
+      "default": 60,
+      "description": "Target share (%) of short music loop clip posts in the generated content mix."
+    },
+    "mix_authentic_pct": {
+      "type": "number",
+      "default": 25,
+      "description": "Target share (%) of authentic/personal posts in the generated content mix."
+    },
+    "mix_cta_pct": {
+      "type": "number",
+      "default": 15,
+      "description": "Target share (%) of announcement/CTA posts in the generated content mix."
+    },
+    "instagram_profile_url": {
+      "type": "string",
+      "description": "Public Instagram profile URL (https). A profile link is NOT an authenticated publishing connection."
+    },
+    "facebook_page_url": {
+      "type": "string",
+      "description": "Public Facebook Page URL (https). A profile link is NOT an authenticated publishing connection."
+    },
+    "tiktok_profile_url": {
+      "type": "string",
+      "description": "Public TikTok profile URL (https). Used only for the manual-sharing workflow \u2014 TikTok has no publishing integration."
+    },
+    "youtube_channel_url": {
+      "type": "string",
+      "description": "Public YouTube channel URL (https). Used only for the manual-sharing workflow \u2014 YouTube has no publishing integration."
+    },
+    "image_style_notes": {
+      "type": "string",
+      "default": "No faces visible. No text or logos in image. Branding added separately in Canva.",
+      "description": "Rules for AI image prompts"
+    },
+    "image_style_presets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Preset name"
+          },
+          "prompt_suffix": {
+            "type": "string",
+            "description": "Appended to an image prompt when this preset is selected"
+          }
+        },
+        "required": [
+          "name",
+          "prompt_suffix"
+        ]
+      },
+      "description": "Reusable image style presets \u2014 appended to image prompts for a consistent look"
+    },
+    "notify_email": {
+      "type": "string",
+      "description": "Email address to send reminder/digest emails to (the admin's account email)"
+    },
+    "notify_timezone": {
+      "type": "string",
+      "default": "America/New_York",
+      "description": "IANA timezone for the admin (e.g. America/New_York). Scheduled reminder functions compute 'today' and the current time window in this zone so nudges fire at the right local time."
+    },
+    "notify_daily_posts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send a daily email + push when posts are due"
+    },
+    "notify_weekly_digest": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send a weekly digest email (Sunday evening)"
+    },
+    "notify_release_countdown": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send release countdown emails at 14/7/3/1 days out"
+    },
+    "notify_filming_nudge": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send a monthly filming nudge email with shot briefs"
+    },
+    "notify_send_time": {
+      "type": "string",
+      "default": "08:00",
+      "description": "Local time (HH:MM) to send the daily posts-due email"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this brand profile",
+      "maxLength": 1000
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

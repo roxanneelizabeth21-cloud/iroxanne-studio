@@ -1,0 +1,102 @@
+{
+  "name": "VideoTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this template is for"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "Lyric Loop",
+        "Countdown",
+        "Behind The Scenes",
+        "Announcement",
+        "Story Teaser",
+        "Performance Clip"
+      ],
+      "description": "Content type this template produces"
+    },
+    "target_length_seconds": {
+      "type": "number",
+      "description": "Target video length in seconds"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Facebook",
+          "Instagram",
+          "YouTube"
+        ]
+      },
+      "description": "Platforms this template suits"
+    },
+    "capcut_notes": {
+      "type": "string",
+      "description": "How the matching CapCut template is structured"
+    },
+    "slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "slot_name": {
+            "type": "string",
+            "description": "Machine slot identifier"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "clip",
+              "audio_cue",
+              "timestamp"
+            ],
+            "description": "Slot type"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "What the AI fills in here"
+          }
+        },
+        "required": [
+          "slot_name",
+          "type"
+        ]
+      },
+      "description": "Ordered slots the AI fills when using this template"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

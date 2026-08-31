@@ -1,0 +1,40 @@
+{
+  "name": "PageBannerImage",
+  "type": "object",
+  "properties": {
+    "page_key": {
+      "type": "string",
+      "description": "Identifier for the page this banner belongs to (e.g. music, about, videos)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Uploaded banner background image URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this banner image",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "page_key"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

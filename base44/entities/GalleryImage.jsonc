@@ -1,0 +1,153 @@
+{
+  "name": "GalleryImage",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Image title"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Image URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "promo",
+        "live",
+        "behind_the_scenes",
+        "press",
+        "personal"
+      ],
+      "default": "promo",
+      "description": "Image category"
+    },
+    "media_category": {
+      "type": "string",
+      "enum": [
+        "Cover Art",
+        "Promo",
+        "Merch",
+        "Lyric Graphic",
+        "Live",
+        "Behind the Scenes",
+        "Press",
+        "Other"
+      ],
+      "description": "What kind of asset this is inside its collection. 'Merch' covers hoodies, tees, mugs and other product shots."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "upload",
+        "ai_generated"
+      ],
+      "default": "upload",
+      "description": "How this image got into the gallery"
+    },
+    "canva_design_id": {
+      "type": "string",
+      "description": "Canva design created from this image via 'Edit in Canva'. Used to pull the edited version back into this same image instead of adding a duplicate."
+    },
+    "generation_prompt": {
+      "type": "string",
+      "description": "Final prompt sent to the image generator (AI-generated images only)"
+    },
+    "original_request": {
+      "type": "string",
+      "description": "The owner's original request or instruction that led to this image"
+    },
+    "visual_direction": {
+      "type": "object",
+      "description": "Structured visual direction used to build the prompt (visual_type, creative_concept, subject, setting, composition, lighting, mood, color_direction, text_overlay, aspect_ratio, elements_to_preserve, elements_to_avoid, reason_for_match, etc.)"
+    },
+    "platform": {
+      "type": "string",
+      "description": "Destination platform this image was composed for"
+    },
+    "format": {
+      "type": "string",
+      "description": "Content format this image was composed for (Feed Post, Reel, Story, etc.)"
+    },
+    "aspect_ratio": {
+      "type": "string",
+      "enum": [
+        "4:5",
+        "1:1",
+        "9:16",
+        "16:9"
+      ],
+      "description": "Aspect ratio the image was composed for"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "MarketingPost this image was generated for"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign this image belongs to"
+    },
+    "release_id": {
+      "type": "string",
+      "description": "MusicRelease (album or single) this image belongs to. Doubles as the media collection it is filed under."
+    },
+    "track_id": {
+      "type": "string",
+      "description": "Track this image relates to"
+    },
+    "product_id": {
+      "type": "string",
+      "description": "MerchProduct this image relates to"
+    },
+    "generation_status": {
+      "type": "string",
+      "enum": [
+        "generated",
+        "needs_revision",
+        "approved"
+      ],
+      "default": "generated",
+      "description": "Review state of a generated image. Generation never implies owner approval."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp the image was generated"
+    },
+    "variation_instruction": {
+      "type": "string",
+      "description": "The change requested when this version was regenerated"
+    },
+    "previous_version_id": {
+      "type": "string",
+      "description": "GalleryImage id of the version this one was regenerated from"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this gallery image",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "title",
+    "image_url"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

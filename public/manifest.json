@@ -1,0 +1,26 @@
+{
+  "name": "Roxsan",
+  "short_name": "Roxsan",
+  "description": "Music for the soul. Stories from the heart.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D0D",
+  "theme_color": "#0D0D0D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://media.base44.com/images/public/6a048221a7f23eb1bf35a88e/52c7dbc55_ChatGPTImageJul2202606_01_38PM.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a048221a7f23eb1bf35a88e/52c7dbc55_ChatGPTImageJul2202606_01_38PM.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["music", "entertainment"]
+}

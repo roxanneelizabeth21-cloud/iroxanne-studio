@@ -1,0 +1,157 @@
+{
+  "name": "HomePageSettings",
+  "type": "object",
+  "properties": {
+    "hero_background_image": {
+      "type": "string",
+      "description": "Hero background image URL"
+    },
+    "hero_artist_image": {
+      "type": "string",
+      "description": "Artist profile image URL for hero"
+    },
+    "hero_overlay_image": {
+      "type": "string",
+      "description": "Optional decorative overlay graphic URL"
+    },
+    "hero_title": {
+      "type": "string",
+      "description": "Hero heading text",
+      "default": "Roxsan"
+    },
+    "hero_tagline": {
+      "type": "string",
+      "description": "Hero tagline / subheading"
+    },
+    "hero_primary_button_text": {
+      "type": "string",
+      "description": "Primary CTA button label"
+    },
+    "hero_primary_button_url": {
+      "type": "string",
+      "description": "Primary CTA button URL or path"
+    },
+    "hero_secondary_button_text": {
+      "type": "string",
+      "description": "Secondary CTA button label"
+    },
+    "hero_secondary_button_url": {
+      "type": "string",
+      "description": "Secondary CTA button URL or path"
+    },
+    "featured_release_id": {
+      "type": "string",
+      "description": "ID of release to feature on homepage"
+    },
+    "homepage_social_share_image": {
+      "type": "string",
+      "description": "OG image for homepage sharing"
+    },
+    "background_video_url": {
+      "type": "string",
+      "description": "YouTube or external video URL for background"
+    },
+    "background_video_file": {
+      "type": "string",
+      "description": "Uploaded MP4 video file for background"
+    },
+    "enable_background_video": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show video in hero background"
+    },
+    "hero_layout_style": {
+      "type": "string",
+      "enum": [
+        "centered",
+        "artist_left",
+        "artist_right",
+        "cinematic",
+        "album_cover",
+        "video_bg"
+      ],
+      "default": "centered",
+      "description": "Hero layout style"
+    },
+    "hero_glow_intensity": {
+      "type": "number",
+      "default": 10,
+      "description": "Blue glow intensity (1\u201320)"
+    },
+    "hero_overlay_opacity": {
+      "type": "number",
+      "default": 40,
+      "description": "Background overlay opacity (0\u2013100)"
+    },
+    "hero_text_alignment": {
+      "type": "string",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "default": "center",
+      "description": "Hero text alignment"
+    },
+    "show_featured_release": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_video_preview": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_newsletter": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_gallery_preview": {
+      "type": "boolean",
+      "default": false
+    },
+    "streaming_spotify_url": {
+      "type": "string",
+      "description": "Spotify URL for Stream Everywhere section"
+    },
+    "streaming_apple_music_url": {
+      "type": "string",
+      "description": "Apple Music URL for Stream Everywhere section"
+    },
+    "streaming_youtube_url": {
+      "type": "string",
+      "description": "YouTube URL for Stream Everywhere section"
+    },
+    "streaming_tiktok_url": {
+      "type": "string",
+      "description": "TikTok URL for Stream Everywhere section"
+    },
+    "streaming_amazon_music_url": {
+      "type": "string",
+      "description": "Amazon Music URL for Stream Everywhere section"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for these homepage settings",
+      "maxLength": 1000
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "name": "Release",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Song or album title"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover art image URL"
+    },
+    "full_audio_file": {
+      "type": "string",
+      "description": "Full song audio file URL"
+    },
+    "audio_snippet": {
+      "type": "string",
+      "description": "Short audio snippet/preview URL"
+    },
+    "snippet_start": {
+      "type": "number",
+      "description": "Snippet start time in seconds"
+    },
+    "snippet_end": {
+      "type": "number",
+      "description": "Snippet end time in seconds"
+    },
+    "snippet_duration": {
+      "type": "number",
+      "description": "Snippet duration in seconds"
+    },
+    "release_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Release date"
+    },
+    "description": {
+      "type": "string",
+      "description": "Release description"
+    },
+    "lyrics": {
+      "type": "string",
+      "description": "Full song lyrics"
+    },
+    "spotify_url": {
+      "type": "string",
+      "description": "Spotify link"
+    },
+    "apple_music_url": {
+      "type": "string",
+      "description": "Apple Music link"
+    },
+    "youtube_url": {
+      "type": "string",
+      "description": "YouTube link"
+    },
+    "tiktok_url": {
+      "type": "string",
+      "description": "TikTok link"
+    },
+    "amazon_music_url": {
+      "type": "string",
+      "description": "Amazon Music link"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a featured release"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this release is visible on the public Music page"
+    },
+    "social_share_image": {
+      "type": "string",
+      "description": "Custom social sharing image URL (falls back to cover_image)"
+    },
+    "share_description": {
+      "type": "string",
+      "description": "Custom social sharing description (falls back to description)"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

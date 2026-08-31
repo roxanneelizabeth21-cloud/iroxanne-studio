@@ -1,0 +1,57 @@
+{
+  "name": "MerchProduct",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "shopify_product_id": {
+      "type": "string",
+      "description": "Numeric Shopify product ID for this item. When set, image generation pulls this product's live Shopify photo and uses it as the locked design reference on every image."
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in USD"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "coming_soon",
+        "sold_out"
+      ],
+      "default": "coming_soon",
+      "description": "Product availability status"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "LegalPage",
+  "type": "object",
+  "properties": {
+    "page_key": {
+      "type": "string",
+      "description": "Identifier for the legal page (e.g. 'privacy', 'terms')"
+    },
+    "title": {
+      "type": "string",
+      "description": "Page title shown in the hero / browser"
+    },
+    "content": {
+      "type": "string",
+      "description": "Page body \u2014 Markdown rendered on the public site"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the page content was last updated"
+    }
+  },
+  "required": [
+    "page_key"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

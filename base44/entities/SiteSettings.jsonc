@@ -1,0 +1,58 @@
+{
+  "name": "SiteSettings",
+  "type": "object",
+  "properties": {
+    "page_music_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_videos_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_about_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_gallery_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_store_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_contact_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "page_press_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for these site settings",
+      "maxLength": 1000
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

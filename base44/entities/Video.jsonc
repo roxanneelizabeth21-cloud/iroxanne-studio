@@ -1,0 +1,64 @@
+{
+  "name": "Video",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Video title"
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Thumbnail image URL"
+    },
+    "youtube_url": {
+      "type": "string",
+      "description": "YouTube video URL"
+    },
+    "optional_video_file": {
+      "type": "string",
+      "description": "Optional direct MP4 video file URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Video description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "music_video",
+        "lyric_video",
+        "reel",
+        "behind_the_scenes",
+        "live"
+      ],
+      "default": "music_video",
+      "description": "Type of video content"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a featured video"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "name": "Campaign",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "song_id": {
+      "type": "string",
+      "description": "ID of the Release (song/album) this campaign promotes"
+    },
+    "release_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Release date the campaign builds toward"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign end date"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Campaign goal, e.g. Pre-release buzz, Release week push, Catalog re-promotion"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Planning",
+        "Active",
+        "Completed",
+        "Archived"
+      ],
+      "default": "Planning",
+      "description": "Campaign status"
+    },
+    "default_image_style_preset": {
+      "type": "string",
+      "description": "Optional default image style preset applied to all generated image prompts in this campaign"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about the campaign"
+    }
+  },
+  "required": [
+    "name",
+    "song_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

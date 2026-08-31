@@ -1,0 +1,175 @@
+{
+  "name": "MusicRelease",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Release title"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL slug used by public landing pages (e.g. dont-get-it-twisted)"
+    },
+    "artist_name": {
+      "type": "string",
+      "default": "ROXSAN",
+      "description": "Artist name displayed on the landing page"
+    },
+    "release_type": {
+      "type": "string",
+      "description": "Release type, e.g. Single or Album"
+    },
+    "label": {
+      "type": "string",
+      "default": "Roxsan Music",
+      "description": "Record label"
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Cover artwork image URL"
+    },
+    "hero_image_url": {
+      "type": "string",
+      "description": "Optional hero background image URL"
+    },
+    "youtube_embed_url": {
+      "type": "string",
+      "description": "YouTube embed URL for promo video section"
+    },
+    "apple_embed_url": {
+      "type": "string",
+      "description": "Optional Apple Music embed URL. Shown only on upcoming releases, below the pre-save button"
+    },
+    "apple_preorder_url": {
+      "type": "string",
+      "description": "Optional Apple Music pre-order URL shown on the /go/:slug thank-you state"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this release page is live on the site (inactive slugs redirect to /music)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "released",
+        "upcoming"
+      ],
+      "default": "released",
+      "description": "Released = streaming buttons; Upcoming = coming-soon badge + email capture + pre-save links"
+    },
+    "previews_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether any tracks on this release are playable publicly"
+    },
+    "snippet_mode": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "manual_only"
+      ],
+      "default": "auto",
+      "description": "Auto: tracks without a configured snippet play a 30-second preview. Manual only: only configured snippets play."
+    },
+    "release_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Release date"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Subtitle line shown under the title on the landing page"
+    },
+    "theme_preset": {
+      "type": "string",
+      "enum": [
+        "gold",
+        "teal",
+        "rose",
+        "custom"
+      ],
+      "default": "gold",
+      "description": "Color theme preset applied to the landing page"
+    },
+    "show_email_capture": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to show the email capture section on the landing page"
+    },
+    "show_in_nav": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this release appears in the navbar Music dropdown"
+    },
+    "nav_sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order in the navbar Music dropdown"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a featured release on the homepage"
+    },
+    "audio_snippet": {
+      "type": "string",
+      "description": "Short audio snippet/preview URL"
+    },
+    "snippet_start": {
+      "type": "number",
+      "description": "Snippet start time in seconds"
+    },
+    "snippet_end": {
+      "type": "number",
+      "description": "Snippet end time in seconds"
+    },
+    "snippet_duration": {
+      "type": "number",
+      "description": "Snippet duration in seconds"
+    },
+    "social_share_image": {
+      "type": "string",
+      "description": "Custom social sharing image URL (falls back to cover_image_url)"
+    },
+    "share_description": {
+      "type": "string",
+      "description": "Custom social sharing description (falls back to description)"
+    },
+    "behind_the_scenes": {
+      "type": "string",
+      "description": "Personal 'Behind the Song' story from Roxsan for this specific release. Shown on /release/:slug and /go/:slug when set; the section is hidden when empty."
+    },
+    "calendar_event_id": {
+      "type": "string",
+      "description": "Google Calendar event ID for this release's date sync (managed by the syncReleaseToCalendar automation)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this release (also used as tagline fallback)",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "title",
+    "slug"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

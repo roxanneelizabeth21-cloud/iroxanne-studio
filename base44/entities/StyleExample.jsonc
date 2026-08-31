@@ -1,0 +1,63 @@
+{
+  "name": "StyleExample",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Reference to the MarketingPost this example was captured from"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "Facebook",
+        "Instagram",
+        "YouTube",
+        "TikTok"
+      ],
+      "description": "Platform the example is for"
+    },
+    "original_caption": {
+      "type": "string",
+      "description": "The AI's original generated caption"
+    },
+    "final_caption": {
+      "type": "string",
+      "description": "The admin-approved final caption"
+    },
+    "was_edited": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if the final caption differs from the AI's original"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this style example",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "platform"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

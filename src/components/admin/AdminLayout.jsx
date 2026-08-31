@@ -1,0 +1,254 @@
+import { useState, useEffect } from 'react';
+import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Home, Music, Film, Image, User, LayoutDashboard, Eye, Mail, MessageSquare, ScrollText, ListMusic, Link2, FileText,
+  Megaphone, Bot, ArrowLeft, ChevronLeft, Menu, Sun, PenLine, LayoutTemplate, CalendarDays, Library, Clapperboard, BarChart3, UserCircle, ChevronDown, Palette, ToggleLeft,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import NotificationBell from './NotificationBell';
+import BrandLogo from '@/components/BrandLogo';
+import StrategistHeaderButton from './StrategistHeaderButton';
+import MarketingBackButton from '@/components/marketing/MarketingBackButton';
+
+const NAV_TOP = [
+  { to: '/admin', label: 'Overview', Icon: Home, end: true },
+  { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
+];
+
+const MUSIC_NAV = [
+  { to: '/admin/music', label: 'Music', Icon: Music },
+  { to: '/admin/songs', label: 'Songs', Icon: ListMusic },
+  { to: '/admin/artist-links', label: 'Artist Links', Icon: Link2 },
+  { to: '/admin/lyrics-export', label: 'Lyrics Export', Icon: FileText },
+];
+
+const NAV_REST = [
+  { to: '/admin/videos', label: 'Videos', Icon: Film },
+  { to: '/admin/gallery', label: 'Gallery', Icon: Image },
+  { to: '/admin/bio', label: 'Bio', Icon: User },
+  { to: '/admin/pages', label: 'Pages', Icon: LayoutDashboard },
+  { to: '/admin/banners', label: 'Banners', Icon: Image },
+  { to: '/admin/promo-banners', label: 'Promo Banners', Icon: Megaphone },
+  { to: '/admin/visitors', label: 'Visitors', Icon: Eye },
+  { to: '/admin/subscribers', label: 'Subscribers', Icon: Mail },
+  { to: '/admin/messages', label: 'Messages', Icon: MessageSquare },
+  { to: '/admin/email-templates', label: 'Email Templates', Icon: Mail },
+  { to: '/admin/legal', label: 'Legal', Icon: ScrollText },
+];
+
+const MARKETING_NAV = [
+  { to: '/marketing', label: 'Marketing', Icon: LayoutDashboard, end: true },
+  { to: '/marketing/post', label: 'Create a Post', Icon: PenLine, subtitle: 'Choose your music, add media, create the copy, and decide when to share it.' },
+  { to: '/marketing/campaigns', label: 'Campaigns', Icon: Megaphone, subtitle: 'Plan and manage campaigns' },
+  { to: '/marketing/calendar', label: 'Content Calendar', Icon: CalendarDays, subtitle: 'Review, schedule and publish your content' },
+  { to: '/marketing/library', label: 'All Posts', Icon: Library, subtitle: 'Every post you have created — search, filter and edit' },
+  { to: '/marketing/media', label: 'Media Library', Icon: Image, subtitle: 'Reusable graphics and videos' },
+  { to: '/marketing/canvas', label: 'Create a Canvas', Icon: Palette, subtitle: 'Pick a release, design the card, and save it.' },
+  { to: '/marketing/carousel-ads', label: 'Carousel Ads', Icon: Megaphone, subtitle: 'Paid Meta carousel ads for your track highlights' },
+  { to: '/marketing/meta-ads', label: 'All Meta Ads', Icon: BarChart3, subtitle: 'Every ad in your Meta ad accounts and how it is doing' },
+  { to: '/marketing/templates', label: 'Templates', Icon: LayoutTemplate, subtitle: 'Reusable content templates' },
+  { to: '/marketing/clips', label: 'Clips', Icon: Clapperboard, subtitle: 'Short videos ready to use in posts' },
+  { to: '/marketing/controls', label: 'Automation Controls', Icon: ToggleLeft, subtitle: 'Switch campaigns and song rotation on or off in one place' },
+  { to: '/marketing/brand', label: 'Brand', Icon: UserCircle, subtitle: 'Brand profile, voice and connections' },
+];
+
+// Pages kept for existing links and workflows, but no longer primary destinations.
+const MARKETING_SECONDARY = [
+  { to: '/marketing/strategist', label: 'Roxsan Amplify', Icon: Bot, subtitle: 'Chat with your marketing agent' },
+  { to: '/marketing/today', label: 'Today', Icon: Sun, subtitle: "Today's posts and daily workflow" },
+  { to: '/marketing/performance', label: 'Performance', Icon: BarChart3, subtitle: 'Post and campaign analytics' },
+];
+
+function useMarketingHeader(pathname) {
+  if (!pathname.startsWith('/marketing')) return null;
+  const all = [...MARKETING_SECONDARY, ...MARKETING_NAV];
+  const match = all.find((m) => (m.end ? pathname === m.to : pathname === m.to || pathname.startsWith(`${m.to}/`)));
+  return match || null;
+}
+
+function SidebarContent({ onNavigate }) {
+  const location = useLocation();
+  const onMarketing = location.pathname.startsWith('/marketing');
+  const [marketingOpen, setMarketingOpen] = useState(onMarketing);
+  useEffect(() => { if (onMarketing) setMarketingOpen(true); }, [onMarketing]);
+  const onMusic = MUSIC_NAV.some((m) => location.pathname === m.to);
+  const [musicOpen, setMusicOpen] = useState(onMusic);
+  useEffect(() => { if (onMusic) setMusicOpen(true); }, [onMusic]);
+
+  return (
+    <div className="flex flex-col h-full">
+      <Link to="/" onClick={onNavigate} className="flex items-center gap-2 px-4 h-16 border-b border-border/40 shrink-0 hover:bg-secondary/40 transition-colors">
+        <BrandLogo className="h-9 w-9" />
+        <span className="font-display text-lg font-semibold">Admin</span>
+      </Link>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Inbox</span>
+        <NotificationBell />
+      </div>
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
+        {NAV_TOP.map((n) => (
+          <NavLink
+            key={n.to}
+            to={n.to}
+            end={n.end}
+            onClick={onNavigate}
+            className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
+          >
+            <n.Icon className="h-4 w-4 shrink-0" /> {n.label}
+          </NavLink>
+        ))}
+
+        <div className="pt-3 relative">
+          <button
+            onClick={() => setMusicOpen((v) => !v)}
+            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-xs uppercase tracking-wider text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+          >
+            <Music className="h-4 w-4 shrink-0" /> Music
+          </button>
+          <button
+            onClick={() => setMusicOpen((v) => !v)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            aria-label={musicOpen ? 'Collapse music' : 'Expand music'}
+          >
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', musicOpen && 'rotate-180')} />
+          </button>
+          {musicOpen && (
+            <div className="mt-0.5 space-y-0.5">
+              {MUSIC_NAV.map((n) => (
+                <NavLink
+                  key={n.to}
+                  to={n.to}
+                  onClick={onNavigate}
+                  className={({ isActive }) => `flex items-center gap-2.5 pl-8 pr-3 py-1.5 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
+                >
+                  <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {NAV_REST.map((n) => (
+          <NavLink
+            key={n.to}
+            to={n.to}
+            end={n.end}
+            onClick={onNavigate}
+            className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
+          >
+            <n.Icon className="h-4 w-4 shrink-0" /> {n.label}
+          </NavLink>
+        ))}
+
+        <div className="pt-3 relative">
+          <button
+            onClick={() => setMarketingOpen((v) => !v)}
+            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-xs uppercase tracking-wider text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            aria-expanded={marketingOpen}
+          >
+            <Megaphone className="h-4 w-4 shrink-0" /> Marketing
+          </button>
+          <button
+            onClick={() => setMarketingOpen((v) => !v)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            aria-label={marketingOpen ? 'Collapse marketing' : 'Expand marketing'}
+          >
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', marketingOpen && 'rotate-180')} />
+          </button>
+          {marketingOpen && (
+            <div className="mt-0.5 space-y-0.5">
+              {MARKETING_NAV.map((n) => (
+                <NavLink
+                  key={n.to}
+                  to={n.to}
+                  end={n.end}
+                  onClick={onNavigate}
+                  className={({ isActive }) => `flex items-center gap-2.5 pl-8 pr-3 py-1.5 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
+                >
+                  <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+      </nav>
+      <div className="border-t border-border/40 p-2 space-y-0.5 shrink-0">
+        <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
+          <ArrowLeft className="h-4 w-4 shrink-0" /> Back to site
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminLayout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const mktHeader = useMarketingHeader(location.pathname);
+  const showAdminBack = location.pathname !== '/admin';
+
+  return (
+    <div className="min-h-screen flex bg-background">
+      <aside className="hidden lg:flex w-60 shrink-0 border-r border-border/40 bg-sidebar flex-col fixed inset-y-0 left-0 z-30">
+        <SidebarContent />
+      </aside>
+
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-40">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
+          <aside className="absolute left-0 inset-y-0 w-64 bg-sidebar border-r border-border/40 flex flex-col">
+            <SidebarContent onNavigate={() => setMobileOpen(false)} />
+          </aside>
+        </div>
+      )}
+
+      <div className="flex-1 lg:ml-60 min-w-0 flex flex-col">
+        <header
+          className="lg:hidden border-b border-border/40 bg-sidebar sticky top-0 z-20"
+          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+        >
+          <div className="flex items-center justify-between h-14 px-4">
+          <div className="flex items-center gap-1">
+            <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors no-select" aria-label="Open menu">
+              <Menu className="h-5 w-5" />
+            </button>
+            {showAdminBack && (
+              <button
+                onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/admin'))}
+                className="p-2 rounded-lg hover:bg-secondary/50 transition-colors no-select"
+                aria-label="Back"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+          <span className="font-display font-semibold">Admin</span>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+          </div>
+          </div>
+        </header>
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl w-full mx-auto">
+          {mktHeader && (
+            <div className="relative mb-6 flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2 min-w-0">
+                <MarketingBackButton />
+                <div className="min-w-0">
+                <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+                  <mktHeader.Icon className="h-5 w-5 text-primary" /> {mktHeader.label}
+                </h1>
+                {mktHeader.subtitle && <p className="text-sm text-muted-foreground mt-1">{mktHeader.subtitle}</p>}
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <StrategistHeaderButton />
+              </div>
+            </div>
+          )}
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}

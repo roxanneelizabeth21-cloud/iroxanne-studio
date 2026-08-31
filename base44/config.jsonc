@@ -1,0 +1,10 @@
+{
+  "name": "Roxsan Music",
+  "description": "Roxsan is a singer-songwriter blending country, pop, and island soul. Stream her latest singles and albums, watch music videos, read her story, and join the fan list for exclusive updates. Music for the soul, stories from the heart.",
+  "site": {
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "serveCommand": "npm run dev",
+    "outputDirectory": "./dist"
+  }
+}

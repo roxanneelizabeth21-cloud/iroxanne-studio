@@ -1,0 +1,62 @@
+{
+  "name": "ContactMessage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Sender name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Sender email"
+    },
+    "inquiry_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "collaboration",
+        "media",
+        "booking",
+        "other"
+      ],
+      "default": "general",
+      "description": "Type of inquiry"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Message subject"
+    },
+    "message": {
+      "type": "string",
+      "description": "Message body"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this contact message",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "message"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

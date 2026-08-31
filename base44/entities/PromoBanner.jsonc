@@ -1,0 +1,106 @@
+{
+  "name": "PromoBanner",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Internal admin label for this promo banner"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this banner is shown publicly"
+    },
+    "target_pages": {
+      "type": "string",
+      "description": "Comma-separated page keys to show on. Valid keys: shop, home, music, release, all"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Bold top line of the banner"
+    },
+    "subtext": {
+      "type": "string",
+      "description": "Second line of the banner (supporting text)"
+    },
+    "cta_text": {
+      "type": "string",
+      "description": "Call-to-action button label"
+    },
+    "cta_url": {
+      "type": "string",
+      "description": "URL the banner links to (internal path like /release/those-old-hymns or external https URL)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Optional thumbnail image URL shown on the left of the banner"
+    },
+    "background_style": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "gold",
+        "teal",
+        "custom"
+      ],
+      "default": "dark",
+      "description": "Background style preset for the banner"
+    },
+    "background_color": {
+      "type": "string",
+      "description": "Custom background hex color (used only when background_style is 'custom')"
+    },
+    "dismissible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether visitors can close the banner. Dismissal is remembered per device via localStorage keyed to the banner id."
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional date the banner starts showing (YYYY-MM-DD). Banner is hidden before this date."
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional date the banner stops showing (YYYY-MM-DD). Banner is visible through this date, then auto-hides."
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order when multiple banners are active on one page (lower shows first)"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.is_active": true
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

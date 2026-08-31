@@ -1,0 +1,100 @@
+{
+  "name": "PageVisit",
+  "type": "object",
+  "properties": {
+    "landing_page": {
+      "type": "string",
+      "description": "First page visited in the session"
+    },
+    "current_page": {
+      "type": "string",
+      "description": "Page currently being viewed"
+    },
+    "referrer_url": {
+      "type": "string",
+      "description": "Referrer URL - where the visitor came from"
+    },
+    "source": {
+      "type": "string",
+      "description": "Classified traffic source (e.g. Instagram, Google, Direct / None)"
+    },
+    "medium": {
+      "type": "string",
+      "description": "Traffic medium (e.g. Social, Search, Email, None)"
+    },
+    "campaign": {
+      "type": "string",
+      "description": "Campaign name from UTM parameters"
+    },
+    "utm_source": {
+      "type": "string",
+      "description": "Raw utm_source parameter"
+    },
+    "utm_medium": {
+      "type": "string",
+      "description": "Raw utm_medium parameter"
+    },
+    "utm_campaign": {
+      "type": "string",
+      "description": "Raw utm_campaign parameter"
+    },
+    "utm_content": {
+      "type": "string",
+      "description": "Raw utm_content parameter"
+    },
+    "utm_term": {
+      "type": "string",
+      "description": "Raw utm_term parameter"
+    },
+    "device_type": {
+      "type": "string",
+      "description": "Device type: Mobile, Desktop, Tablet"
+    },
+    "browser": {
+      "type": "string",
+      "description": "Browser name"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO timestamp of the visit"
+    },
+    "visitor_id": {
+      "type": "string",
+      "description": "Anonymous persistent visitor ID stored in browser localStorage"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Browser session ID stored in sessionStorage"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description for this page visit record",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "current_page"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

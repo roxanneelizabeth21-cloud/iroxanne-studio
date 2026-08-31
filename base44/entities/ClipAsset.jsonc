@@ -1,0 +1,93 @@
+{
+  "name": "ClipAsset",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Clip title"
+    },
+    "file": {
+      "type": "string",
+      "description": "Uploaded video or image file URL"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "My Footage",
+        "Stock",
+        "Canva Export",
+        "Adobe Stock"
+      ],
+      "default": "My Footage",
+      "description": "Where the clip came from"
+    },
+    "media_category": {
+      "type": "string",
+      "enum": [
+        "Cover Art",
+        "Promo",
+        "Merch",
+        "Lyric Graphic",
+        "Live",
+        "Behind the Scenes",
+        "Press",
+        "Other"
+      ],
+      "description": "What kind of asset this is inside its collection. 'Merch' covers hoodies, tees, mugs and other product footage."
+    },
+    "moods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Mood / scene tags (e.g. Beach, Sunset, Worship, Studio)"
+    },
+    "linked_song_id": {
+      "type": "string",
+      "description": "MusicRelease (album or single) this clip belongs to. Doubles as the media collection it is filed under."
+    },
+    "orientation": {
+      "type": "string",
+      "enum": [
+        "Vertical 9:16",
+        "Horizontal",
+        "Square"
+      ],
+      "default": "Vertical 9:16",
+      "description": "Clip orientation"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Clip duration in seconds (optional)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about this clip"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

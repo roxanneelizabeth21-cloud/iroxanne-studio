@@ -1,0 +1,48 @@
+{
+  "name": "EmailTemplate",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Stable template key matching a definition in shared/emailTemplates.ts (e.g. fan_welcome)"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Admin-edited subject line. Blank falls back to the built-in default."
+    },
+    "body": {
+      "type": "string",
+      "description": "Admin-edited body text with {merge_field} placeholders. Blank falls back to the built-in default."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional internal note about this template",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0D0D0D" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Roxsan" />
+
+    <!-- Primary Meta -->
+    <title>Roxsan Music</title>
+    <meta name="description" content="RoxSan is a songwriter and storyteller blending country-pop warmth with contemporary Christian depth — music written from real life, faith, and hope. Her album Those Old Hymns: Reimagined, Vol. 1 arrives September 18, 2026. Stream her music, pre-save the album, and shop official merch at iroxanne.com." />
+    <meta name="author" content="Roxsan" />
+    <meta name="keywords" content="Roxsan, music, country pop, singer songwriter, new music, streaming" />
+
+    <!-- Open Graph / Facebook / Discord / LinkedIn / iMessage -->
+    <meta property="og:type" content="music.musician" />
+    <meta property="og:site_name" content="Roxsan Music" />
+    <meta property="og:title" content="Roxsan Music" />
+    <meta property="og:description" content="RoxSan is a songwriter and storyteller blending country-pop warmth with contemporary Christian depth — music written from real life, faith, and hope. Her album Those Old Hymns: Reimagined, Vol. 1 arrives September 18, 2026. Stream her music, pre-save the album, and shop official merch at iroxanne.com." />
+    <meta property="og:url" content="https://iroxanne.com" />
+    <meta property="og:image" content="https://media.base44.com/images/public/6a048221a7f23eb1bf35a88e/fa7a93756_FBFallback-1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Roxsan Music" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Roxsan Music" />
+    <meta name="twitter:description" content="RoxSan is a songwriter and storyteller blending country-pop warmth with contemporary Christian depth — music written from real life, faith, and hope. Her album Those Old Hymns: Reimagined, Vol. 1 arrives September 18, 2026. Stream her music, pre-save the album, and shop official merch at iroxanne.com." />
+    <meta name="twitter:image" content="https://media.base44.com/images/public/6a048221a7f23eb1bf35a88e/fa7a93756_FBFallback-1200x630.png" />
+    <meta name="twitter:image:alt" content="Roxsan Music" />
+
+    <!-- PWA / Mobile -->
+    <link rel="manifest" href="/functions/serveManifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://base44.app/api/apps/6a048221a7f23eb1bf35a88e/files/mp/public/6a048221a7f23eb1bf35a88e/13ee774b0_apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="https://base44.app/api/apps/6a048221a7f23eb1bf35a88e/files/mp/public/6a048221a7f23eb1bf35a88e/44159b9f6_favicon-96x96.png" />
+    <link rel="icon" type="image/svg+xml" href="https://base44.app/api/apps/6a048221a7f23eb1bf35a88e/files/mp/public/6a048221a7f23eb1bf35a88e/6e5304017_favicon.svg" />
+    <link rel="shortcut icon" href="https://base44.app/api/apps/6a048221a7f23eb1bf35a88e/files/mp/public/6a048221a7f23eb1bf35a88e/f30fef880_favicon.ico" />
+    <meta name="msapplication-TileColor" content="#0D0D0D" />
+
+    <!-- Meta domain verification: iroxanne.com -->
+    <meta name="facebook-domain-verification" content="2gcj9r75y8ysbc5nksayhfo1ue0lcc" />
+
+    <!-- Meta Pixels: Roxsan Music 1723587952279278 + 1861327020888244 -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1723587952279278');
+      fbq('init', '1861327020888244');
+      fbq('track', 'PageView');
+    </script>
+    <!-- End Meta Pixel Code -->
+
+    <!-- OneSignal Web Push (Typical Site, SDK v16) -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        // Route-based prompt suppression: do not initialize OneSignal on
+        // ad-traffic capture pages (/go/:slug) or admin/marketing routes.
+        // Only public content pages initialize -> dashboard-managed slidedown.
+        var path = window.location.pathname;
+        var suppressed =
+          path.indexOf("/go/") === 0 ||
+          path === "/MusicAdmin" ||
+          path === "/admin" ||
+          path.indexOf("/admin/") === 0 ||
+          path === "/AdminMusicLinks" ||
+          path === "/marketing" ||
+          path.indexOf("/marketing/") === 0;
+        if (suppressed) return;
+        await OneSignal.init({
+          appId: "207bf919-30c4-4afd-9c71-db07a4258f24",
+          allowLocalhostAsSecureOrigin: true
+        });
+        // v16 slidedown prompt — shows the native push permission request once
+        // per browser. OneSignal suppresses repeat prompts automatically.
+        try { await OneSignal.Slidedown.promptPush(); } catch (e) {}
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Meta Pixel: Roxsan Music, ID 1723587952279278 -->
+    <noscript>
+      <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1723587952279278&ev=PageView&noscript=1" alt="" />
+    </noscript>
+    <!-- Meta Pixel: additional pixel, ID 1861327020888244 -->
+    <noscript>
+      <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1861327020888244&ev=PageView&noscript=1" alt="" />
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Apply saved theme on load — fall back to system preference when no choice saved
+      (function() {
+        var saved = localStorage.getItem('roxy-theme');
+        var dark;
+        if (saved === 'dark' || saved === 'light') {
+          dark = saved === 'dark';
+        } else {
+          dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
+  </body>
+</html>

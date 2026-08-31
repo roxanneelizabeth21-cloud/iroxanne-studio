@@ -1,0 +1,149 @@
+{
+  "name": "CarouselAd",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Internal name of this carousel ad"
+    },
+    "release_id": {
+      "type": "string",
+      "description": "MusicRelease this track highlight ad promotes"
+    },
+    "track_id": {
+      "type": "string",
+      "description": "Track being highlighted, when a single track was chosen"
+    },
+    "release_title": {
+      "type": "string",
+      "description": "Release/track title at launch time"
+    },
+    "ad_account_id": {
+      "type": "string",
+      "description": "Meta ad account id used (without the act_ prefix)"
+    },
+    "page_id": {
+      "type": "string",
+      "description": "Facebook Page the ad runs from"
+    },
+    "primary_text": {
+      "type": "string",
+      "description": "Primary text shown above the carousel"
+    },
+    "destination_url": {
+      "type": "string",
+      "description": "Landing URL every slide links to"
+    },
+    "cta_type": {
+      "type": "string",
+      "description": "Meta call-to-action button type, e.g. LISTEN_NOW"
+    },
+    "daily_budget_usd": {
+      "type": "number",
+      "description": "Daily budget in USD set on the ad set"
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Two-letter country codes targeted"
+    },
+    "age_min": {
+      "type": "number"
+    },
+    "age_max": {
+      "type": "number"
+    },
+    "slides": {
+      "type": "array",
+      "description": "Carousel cards in order",
+      "items": {
+        "type": "object",
+        "properties": {
+          "image_url": {
+            "type": "string"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "library",
+              "release",
+              "ai"
+            ],
+            "description": "How the slide was built"
+          }
+        },
+        "required": [
+          "image_url"
+        ]
+      }
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Meta campaign id"
+    },
+    "adset_id": {
+      "type": "string",
+      "description": "Meta ad set id"
+    },
+    "creative_id": {
+      "type": "string",
+      "description": "Meta ad creative id"
+    },
+    "ad_id": {
+      "type": "string",
+      "description": "Meta ad id"
+    },
+    "delivery_status": {
+      "type": "string",
+      "enum": [
+        "Paused",
+        "Active",
+        "Failed"
+      ],
+      "default": "Paused",
+      "description": "Status the ad was created with in Meta. Paused means it is not spending yet."
+    },
+    "launch_error": {
+      "type": "string",
+      "description": "Error returned by Meta on the last failed launch attempt"
+    },
+    "launched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the ad was created in Meta"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "FacebookPageConnection",
+  "type": "object",
+  "properties": {
+    "page_id": {
+      "type": "string",
+      "description": "Facebook Page ID resolved from the Graph API for the authenticated Facebook user"
+    },
+    "page_name": {
+      "type": "string",
+      "description": "Page name as returned by the Graph API (never used for matching)"
+    },
+    "page_token": {
+      "type": "string",
+      "description": "Page access token returned by the Graph API. Admin-only; never exposed to the frontend."
+    },
+    "fb_user_id": {
+      "type": "string",
+      "description": "Authenticated Facebook user ID the token belongs to"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Page tasks reported by the Graph API, when available"
+    },
+    "resolved_via": {
+      "type": "string",
+      "enum": [
+        "me_accounts",
+        "page_id_lookup"
+      ],
+      "description": "How the Page was located in the Graph API response"
+    },
+    "connected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this Page connection was resolved and stored"
+    }
+  },
+  "required": [
+    "page_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
