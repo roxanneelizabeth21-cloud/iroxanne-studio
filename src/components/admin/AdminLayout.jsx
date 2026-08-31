@@ -34,7 +34,7 @@ const MARKETING_NAV = [
   { to: '/marketing/library', label: 'All Posts', Icon: Library, subtitle: 'Every post you have created — search, filter and edit' },
   { to: '/marketing/media', label: 'Media Library', Icon: Image, subtitle: 'Reusable graphics and videos' },
   { to: '/marketing/canvas', label: 'Case Study Canvas', Icon: Palette, subtitle: 'Pick a portfolio project, design the card, and save it.' },
-  { to: '/marketing/carousel-ads', label: 'Carousel Ads', Icon: Megaphone, subtitle: 'Paid Meta carousel ads for your track highlights' },
+  { to: '/marketing/carousel-ads', label: 'Carousel Ads', Icon: Megaphone, subtitle: 'Paid Meta carousel ads for your portfolio projects' },
   { to: '/marketing/meta-ads', label: 'All Meta Ads', Icon: BarChart3, subtitle: 'Every ad in your Meta ad accounts and how it is doing' },
   { to: '/marketing/templates', label: 'Templates', Icon: LayoutTemplate, subtitle: 'Reusable content templates' },
   { to: '/marketing/clips', label: 'Clips', Icon: Clapperboard, subtitle: 'Short videos ready to use in posts' },

@@ -15,7 +15,7 @@ import LaunchedAdsList from '@/components/marketing/ads/LaunchedAdsList';
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 
 const STEPS = [
-  { key: 'track', label: 'Track' },
+  { key: 'track', label: 'Project' },
   { key: 'slides', label: 'Slides' },
   { key: 'audience', label: 'Budget' },
   { key: 'launch', label: 'Launch' },
@@ -25,7 +25,7 @@ const DEFAULTS = {
   ad_account_id: '',
   primary_text: '',
   destination_url: '',
-  cta_type: 'LISTEN_NOW',
+  cta_type: 'LEARN_MORE',
   daily_budget_usd: 10,
   countries: 'US',
   age_min: 18,
@@ -36,8 +36,7 @@ export default function CarouselAds() {
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
-  const [releaseId, setReleaseId] = useState('');
-  const [trackId, setTrackId] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [name, setName] = useState('');
   const [slides, setSlides] = useState([]);
   const [form, setForm] = useState(DEFAULTS);
@@ -50,25 +49,19 @@ export default function CarouselAds() {
     queryKey: ['meta-ads-setup'],
     queryFn: async () => (await base44.functions.invoke('metaAdsAccounts', {})).data,
   });
-  const { data: releases = [] } = useQuery({
-    queryKey: ['music-releases'],
-    queryFn: () => base44.entities.MusicRelease.list('-release_date'),
-  });
-  const { data: tracks = [] } = useQuery({
-    queryKey: ['tracks', releaseId],
-    queryFn: () => base44.entities.Track.filter({ release_id: releaseId }),
-    enabled: !!releaseId,
+  const { data: portfolioItems = [] } = useQuery({
+    queryKey: ['portfolio-items'],
+    queryFn: () => base44.entities.PortfolioItem.list('-sort_order'),
   });
 
-  const release = useMemo(() => releases.find((r) => r.id === releaseId) || null, [releases, releaseId]);
+  const project = useMemo(() => portfolioItems.find((r) => r.id === projectId) || null, [portfolioItems, projectId]);
 
-  const chooseRelease = (id) => {
-    const rel = releases.find((r) => r.id === id);
-    setReleaseId(id);
-    setTrackId('');
-    if (rel) {
-      setName((n) => n || `${rel.title} — Carousel`);
-      set('destination_url', rel.slug ? `https://iroxanne.com/release/${rel.slug}` : '');
+  const chooseProject = (id) => {
+    const item = portfolioItems.find((r) => r.id === id);
+    setProjectId(id);
+    if (item) {
+      setName((n) => n || `${item.title} — Carousel`);
+      set('destination_url', item.project_url || (item.slug ? `https://iroxanne.com/portfolio/${item.slug}` : ''));
     }
   };
 
@@ -76,9 +69,8 @@ export default function CarouselAds() {
     setLaunching(true);
     const res = await base44.functions.invoke('launchCarouselAd', {
       name,
-      release_id: releaseId,
-      track_id: trackId,
-      release_title: tracks.find((t) => t.id === trackId)?.title || release?.title || '',
+      release_id: projectId,
+      release_title: project?.title || '',
       ad_account_id: form.ad_account_id,
       page_id: setup?.page?.id || '',
       primary_text: form.primary_text,
@@ -116,14 +108,14 @@ export default function CarouselAds() {
   }
 
   const canLaunch = !launching && slides.length >= 2 && !!form.ad_account_id && !!name && !!form.destination_url;
-  const canContinue = step === 0 ? !!releaseId && !!name : step === 1 ? slides.length >= 2 : step === 2 ? !!form.ad_account_id : false;
+  const canContinue = step === 0 ? !!projectId && !!name : step === 1 ? slides.length >= 2 : step === 2 ? !!form.ad_account_id : false;
 
   return (
     <div className="max-w-5xl space-y-4">
       <HowThisWorks
         steps={[
-          'Step 1 — Track: choose the release or song the ad is about and name the ad.',
-          'Step 2 — Slides: add two to ten images from your library, your cover art, or generate them.',
+          'Step 1 — Project: choose the portfolio project the ad is about and name the ad.',
+          'Step 2 — Slides: add two to ten images from your library, the project screenshots, or generate them.',
           'Step 3 — Budget: pick the ad account, daily budget, countries and age range.',
           'Step 4 — Launch: create it paused to check it in Meta first, or set it live right away.',
         ]}
@@ -135,30 +127,23 @@ export default function CarouselAds() {
         <div className="glass rounded-2xl p-4 sm:p-5 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <label className={FL}>Release</label>
-              <select value={releaseId} onChange={(e) => chooseRelease(e.target.value)} aria-label="Release">
-                <option value="">Choose a release</option>
-                {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label className={FL}>Track (optional)</label>
-              <select value={trackId} onChange={(e) => setTrackId(e.target.value)} aria-label="Track" disabled={!releaseId}>
-                <option value="">Whole release</option>
-                {tracks.map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
+              <label className={FL}>Project</label>
+              <select value={projectId} onChange={(e) => chooseProject(e.target.value)} aria-label="Project">
+                <option value="">Choose a project</option>
+                {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
               </select>
             </div>
           </div>
           <div className="space-y-1.5">
             <label className={FL}>Ad name</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Track name — Carousel" />
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Project name — Carousel" />
           </div>
         </div>
       )}
 
       {step === 1 && (
         <div className="glass rounded-2xl p-4 sm:p-5 space-y-4">
-          <SlideBuilder release={release} trackId={trackId} releases={releases} onAdd={(added) => setSlides((s) => [...s, ...added].slice(0, 10))} />
+          <SlideBuilder project={project} portfolioItems={portfolioItems} onAdd={(added) => setSlides((s) => [...s, ...added].slice(0, 10))} />
           <SlideList slides={slides} onChange={setSlides} />
         </div>
       )}

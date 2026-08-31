@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 
-// Generates one square slide per lyric line, color-matched to the release's own
-// artwork context. Each generated image is saved to the Media Library too.
-export default function AiSlidePanel({ releaseId, trackId, onAdd }) {
+// Generates one square slide per highlight line, color-matched to the project's
+// screenshot palette. Each generated image is saved to the Media Library too.
+export default function AiSlidePanel({ projectId, onAdd }) {
   const [lines, setLines] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -21,13 +21,12 @@ export default function AiSlidePanel({ releaseId, trackId, onAdd }) {
     const made = [];
     for (const line of list) {
       const res = await base44.functions.invoke('generateMarketingImage', {
-        release_id: releaseId || '',
-        track_id: trackId || '',
+        portfolio_item_id: projectId || '',
         platform: 'Instagram',
         format: 'Feed Post',
         aspect_ratio: '1:1',
         text_overlay: line,
-        prompt: `A carousel slide for a paid ad highlighting this track. Feature the line as the only text, set against a cinematic scene that matches the song's mood and the release artwork palette.`,
+        prompt: `A carousel slide for a paid ad highlighting this project. Feature the line as the only text, set against a clean, modern scene that matches the app's brand and screenshot palette.`,
         original_request: 'Meta Ads carousel slide',
       }).catch((e) => ({ data: { ok: false, error: e.message } }));
       if (res?.data?.ok && res.data.image_url) {
@@ -49,7 +48,7 @@ export default function AiSlidePanel({ releaseId, trackId, onAdd }) {
         value={lines}
         onChange={(e) => setLines(e.target.value)}
         rows={4}
-        placeholder={'One line per slide, e.g.\nSome day, one day, maybe\nOut now on every platform'}
+        placeholder={'One line per slide, e.g.\nBookings made simple\nSee how it works'}
       />
       <Button type="button" size="sm" onClick={generate} disabled={busy} className="gap-1.5">
         {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
