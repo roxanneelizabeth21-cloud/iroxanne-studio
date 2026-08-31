@@ -15,17 +15,7 @@ const NAV_TOP = [
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
 ];
 
-const MUSIC_NAV = [
-  { to: '/admin/music', label: 'Music', Icon: Music },
-  { to: '/admin/songs', label: 'Songs', Icon: ListMusic },
-  { to: '/admin/artist-links', label: 'Artist Links', Icon: Link2 },
-  { to: '/admin/lyrics-export', label: 'Lyrics Export', Icon: FileText },
-];
-
 const NAV_REST = [
-  { to: '/admin/videos', label: 'Videos', Icon: Film },
-  { to: '/admin/gallery', label: 'Gallery', Icon: Image },
-  { to: '/admin/bio', label: 'Bio', Icon: User },
   { to: '/admin/pages', label: 'Pages', Icon: LayoutDashboard },
   { to: '/admin/banners', label: 'Banners', Icon: Image },
   { to: '/admin/promo-banners', label: 'Promo Banners', Icon: Megaphone },
@@ -43,7 +33,7 @@ const MARKETING_NAV = [
   { to: '/marketing/calendar', label: 'Content Calendar', Icon: CalendarDays, subtitle: 'Review, schedule and publish your content' },
   { to: '/marketing/library', label: 'All Posts', Icon: Library, subtitle: 'Every post you have created — search, filter and edit' },
   { to: '/marketing/media', label: 'Media Library', Icon: Image, subtitle: 'Reusable graphics and videos' },
-  { to: '/marketing/canvas', label: 'Create a Canvas', Icon: Palette, subtitle: 'Pick a release, design the card, and save it.' },
+  { to: '/marketing/canvas', label: 'Case Study Canvas', Icon: Palette, subtitle: 'Pick a portfolio project, design the card, and save it.' },
   { to: '/marketing/carousel-ads', label: 'Carousel Ads', Icon: Megaphone, subtitle: 'Paid Meta carousel ads for your track highlights' },
   { to: '/marketing/meta-ads', label: 'All Meta Ads', Icon: BarChart3, subtitle: 'Every ad in your Meta ad accounts and how it is doing' },
   { to: '/marketing/templates', label: 'Templates', Icon: LayoutTemplate, subtitle: 'Reusable content templates' },
@@ -71,10 +61,6 @@ function SidebarContent({ onNavigate }) {
   const onMarketing = location.pathname.startsWith('/marketing');
   const [marketingOpen, setMarketingOpen] = useState(onMarketing);
   useEffect(() => { if (onMarketing) setMarketingOpen(true); }, [onMarketing]);
-  const onMusic = MUSIC_NAV.some((m) => location.pathname === m.to);
-  const [musicOpen, setMusicOpen] = useState(onMusic);
-  useEffect(() => { if (onMusic) setMusicOpen(true); }, [onMusic]);
-
   return (
     <div className="flex flex-col h-full">
       <Link to="/" onClick={onNavigate} className="flex items-center gap-2 px-4 h-16 border-b border-border/40 shrink-0 hover:bg-secondary/40 transition-colors">
@@ -97,36 +83,6 @@ function SidebarContent({ onNavigate }) {
             <n.Icon className="h-4 w-4 shrink-0" /> {n.label}
           </NavLink>
         ))}
-
-        <div className="pt-3 relative">
-          <button
-            onClick={() => setMusicOpen((v) => !v)}
-            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-xs uppercase tracking-wider text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-          >
-            <Music className="h-4 w-4 shrink-0" /> Music
-          </button>
-          <button
-            onClick={() => setMusicOpen((v) => !v)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-            aria-label={musicOpen ? 'Collapse music' : 'Expand music'}
-          >
-            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', musicOpen && 'rotate-180')} />
-          </button>
-          {musicOpen && (
-            <div className="mt-0.5 space-y-0.5">
-              {MUSIC_NAV.map((n) => (
-                <NavLink
-                  key={n.to}
-                  to={n.to}
-                  onClick={onNavigate}
-                  className={({ isActive }) => `flex items-center gap-2.5 pl-8 pr-3 py-1.5 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
-                >
-                  <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
-                </NavLink>
-              ))}
-            </div>
-          )}
-        </div>
 
         {NAV_REST.map((n) => (
           <NavLink
