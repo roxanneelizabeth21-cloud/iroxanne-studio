@@ -6,9 +6,9 @@
       "type": "string",
       "description": "Campaign name"
     },
-    "song_id": {
+    "portfolio_item_id": {
       "type": "string",
-      "description": "ID of the PortfolioItem this campaign promotes. Field name kept for backward compatibility; semantically references PortfolioItem."
+      "description": "ID of the PortfolioItem this campaign promotes."
     },
     "release_date": {
       "type": "string",
@@ -51,7 +51,7 @@
   },
   "required": [
     "name",
-    "song_id"
+    "portfolio_item_id"
   ],
   "rls": {
     "create": {

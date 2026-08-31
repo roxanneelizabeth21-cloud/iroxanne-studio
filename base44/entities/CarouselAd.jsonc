@@ -6,21 +6,17 @@
       "type": "string",
       "description": "Internal name of this carousel ad"
     },
-    "release_id": {
+    "portfolio_item_id": {
       "type": "string",
-      "description": "PortfolioItem this carousel ad promotes. Field name kept for backward compatibility."
+      "description": "PortfolioItem this carousel ad promotes."
     },
-    "track_id": {
+    "project_title": {
       "type": "string",
-      "description": "Optional specific PortfolioItem highlight featured in the ad. Field name kept for backward compatibility."
-    },
-    "release_title": {
-      "type": "string",
-      "description": "Project / highlight title at launch time. Field name kept for backward compatibility."
+      "description": "Project title at launch time."
     },
     "ad_account_id": {
       "type": "string",
-      "description": "Meta ad account id used (without the act_ prefix)"
+      "description": "Meta ad account id used (without the ACT_ prefix)"
     },
     "page_id": {
       "type": "string",

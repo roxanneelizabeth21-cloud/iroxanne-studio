@@ -6,13 +6,13 @@
       "type": "string",
       "description": "Name of this canvas card"
     },
-    "release_id": {
+    "portfolio_item_id": {
       "type": "string",
-      "description": "PortfolioItem this case-study canvas was built from. Field name kept for backward compatibility."
+      "description": "PortfolioItem this case-study canvas was built from."
     },
-    "release_title": {
+    "project_title": {
       "type": "string",
-      "description": "Project title at the time the canvas was built. Field name kept for backward compatibility."
+      "description": "Project title at the time the canvas was built."
     },
     "image_url": {
       "type": "string",

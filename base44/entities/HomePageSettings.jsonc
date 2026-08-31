@@ -39,9 +39,9 @@
       "type": "string",
       "description": "Secondary CTA button URL or path"
     },
-    "featured_release_id": {
+    "featured_portfolio_item_id": {
       "type": "string",
-      "description": "ID of PortfolioItem to feature as the homepage project override. Field name kept for backward compatibility with stored settings."
+      "description": "ID of PortfolioItem to feature as the homepage project override."
     },
     "homepage_social_share_image": {
       "type": "string",
@@ -96,7 +96,7 @@
     "show_featured_release": {
       "type": "boolean",
       "default": true,
-      "description": "Show the featured project banner on the homepage. Field name kept for backward compatibility."
+      "description": "Show the featured project banner on the homepage."
     },
     "show_video_preview": {
       "type": "boolean",

@@ -44,10 +44,6 @@
       "type": "string",
       "description": "PortfolioItem this clip belongs to. The media collection it is filed under."
     },
-    "linked_song_id": {
-      "type": "string",
-      "description": "Legacy grouping field \u2014 superseded by portfolio_item_id. The Media Library reads portfolio_item_id first and falls back to this."
-    },
     "orientation": {
       "type": "string",
       "enum": [
