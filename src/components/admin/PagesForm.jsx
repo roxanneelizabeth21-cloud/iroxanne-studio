@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 
 const PAGES = [
-  { key: 'page_music_enabled', label: 'Music', path: '/music' },
-  { key: 'page_videos_enabled', label: 'Videos', path: '/videos' },
   { key: 'page_about_enabled', label: 'About', path: '/about' },
   { key: 'page_gallery_enabled', label: 'Gallery', path: '/gallery' },
   { key: 'page_contact_enabled', label: 'Contact', path: '/contact' },

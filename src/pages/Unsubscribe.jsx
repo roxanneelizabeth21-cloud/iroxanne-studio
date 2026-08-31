@@ -35,7 +35,7 @@ export default function Unsubscribe() {
             <CheckCircle2 className="h-10 w-10 mx-auto text-primary" />
             <h1 className="font-display text-2xl">You've been unsubscribed</h1>
             <p className="text-muted-foreground">
-              {email} won't receive any more emails from Roxsan Music. Sorry to see you go — you're always welcome back.
+              {email} won't receive any more emails from iRoxanne Studio. Sorry to see you go — you're always welcome back.
             </p>
           </>
         )}

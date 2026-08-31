@@ -2,14 +2,6 @@
   "name": "SiteSettings",
   "type": "object",
   "properties": {
-    "page_music_enabled": {
-      "type": "boolean",
-      "default": true
-    },
-    "page_videos_enabled": {
-      "type": "boolean",
-      "default": true
-    },
     "page_about_enabled": {
       "type": "boolean",
       "default": true
