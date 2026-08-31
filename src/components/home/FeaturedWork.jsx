@@ -6,7 +6,7 @@ export default function FeaturedWork({ items, loading }) {
     <section id="work" className="mx-auto max-w-6xl border-t border-white/5 px-6 py-20">
       <div>
         <h2 className="font-sans text-3xl font-bold tracking-tight">Selected work</h2>
-        <p className="mt-2 text-muted-foreground">Real apps, built for real businesses.</p>
+        <p className="mt-2 text-muted-foreground">I build for anyone.</p>
       </div>
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {(loading ? Array.from({ length: 3 }) : items).map((item, i) => (
