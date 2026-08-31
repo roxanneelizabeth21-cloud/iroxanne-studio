@@ -29,24 +29,24 @@ export const DEFAULT_STYLE_PRESETS = [
 // Five starter video templates seeded into the Templates page on first load.
 export const DEFAULT_TEMPLATES = [
   {
-    name: 'Chorus Loop',
-    description: 'Short looping clip built around the song chorus with lyric text on screen.',
+    name: 'Demo Loop',
+    description: 'Short looping clip built around a screen recording of the app in action.',
     content_type: 'Demo Loop',
     target_length_seconds: 12,
     platforms: ['Instagram', 'YouTube', 'Facebook'],
-    capcut_notes: 'Loop template: seamless end-to-start cut, lyric text timed to the beat, audio fades match.',
+    capcut_notes: 'Loop template: seamless end-to-start cut, on-screen text timed to the beat, text fades match.',
     slots: [
-      { slot_name: 'hook_text_frame_one', type: 'text', instructions: 'Bold on-screen text for frame one — provocative line or lyric' },
-      { slot_name: 'lyric_lines', type: 'text', instructions: 'Timed lyric lines synced to the loop' },
-      { slot_name: 'clip', type: 'clip', instructions: 'The clip/footage to drop in' },
-      { slot_name: 'audio_start_timestamp', type: 'timestamp', instructions: 'Song section + start time, e.g. "chorus, approx 0:45"' },
-      { slot_name: 'audio_end_timestamp', type: 'timestamp', instructions: 'End time of the loop, e.g. "0:57"' },
+      { slot_name: 'hook_text_frame_one', type: 'text', instructions: 'Bold on-screen text for frame one — a result, a question, or a direct address to the viewer' },
+      { slot_name: 'key_points', type: 'text', instructions: 'The 2–3 key features or moments to show on screen' },
+      { slot_name: 'clip', type: 'clip', instructions: 'The screen recording / footage to drop in' },
+      { slot_name: 'screen_start_timestamp', type: 'timestamp', instructions: 'Where the recording should start, e.g. "open the booking calendar, approx 0:03"' },
+      { slot_name: 'screen_end_timestamp', type: 'timestamp', instructions: 'End time of the loop, e.g. "0:12"' },
       { slot_name: 'loop_note', type: 'text', instructions: 'How the loop should seam together' },
     ],
   },
   {
-    name: 'Release Countdown',
-    description: 'Countdown post building to release day.',
+    name: 'Launch Countdown',
+    description: 'Countdown post building to a project launch day.',
     content_type: 'Countdown',
     target_length_seconds: 10,
     platforms: ['Instagram', 'Facebook', 'YouTube'],
@@ -55,11 +55,11 @@ export const DEFAULT_TEMPLATES = [
       { slot_name: 'countdown_text', type: 'text', instructions: 'The countdown numbers / copy on screen' },
       { slot_name: 'hook_text', type: 'text', instructions: 'Frame-one bold text' },
       { slot_name: 'clip', type: 'clip', instructions: 'Footage behind the countdown' },
-      { slot_name: 'audio_cue', type: 'audio_cue', instructions: 'Song section + timestamp for the beat drop' },
+      { slot_name: 'audio_cue', type: 'audio_cue', instructions: 'Section + timestamp for the beat drop' },
     ],
   },
   {
-    name: 'Story Behind the Song',
+    name: 'Behind the Build',
     description: 'Direct-to-camera, behind-the-scenes. Admin\'s own footage only.',
     content_type: 'Behind The Scenes',
     target_length_seconds: 25,
@@ -72,30 +72,30 @@ export const DEFAULT_TEMPLATES = [
     ],
   },
   {
-    name: 'Release Day',
-    description: 'Release-day announcement pushing streaming links.',
+    name: 'Launch Day',
+    description: 'Launch-day announcement pushing the live project link.',
     content_type: 'Announcement',
     target_length_seconds: 15,
     platforms: ['Instagram', 'Facebook', 'YouTube'],
-    capcut_notes: 'Announcement template with streaming-link overlay and album art reveal.',
+    capcut_notes: 'Announcement template with project-link overlay and screenshot reveal.',
     slots: [
       { slot_name: 'announcement_text', type: 'text', instructions: 'The announcement copy' },
-      { slot_name: 'streaming_cta', type: 'text', instructions: 'Streaming-link call to action' },
+      { slot_name: 'project_cta', type: 'text', instructions: 'Project-link call to action' },
       { slot_name: 'clip', type: 'clip', instructions: 'Footage for the announcement' },
-      { slot_name: 'audio_start_timestamp', type: 'timestamp', instructions: 'Song section + start time' },
+      { slot_name: 'screen_start_timestamp', type: 'timestamp', instructions: 'Where the recording should start' },
     ],
   },
   {
-    name: 'Lyric Teaser',
-    description: 'Quick story teaser built around a single lyric line.',
+    name: 'Feature Teaser',
+    description: 'Quick story teaser built around a single feature highlight.',
     content_type: 'Story Teaser',
     target_length_seconds: 8,
     platforms: ['Instagram', 'YouTube', 'Facebook'],
     capcut_notes: 'Single-text overlay story template with quick cut.',
     slots: [
-      { slot_name: 'single_lyric_text', type: 'text', instructions: 'The single lyric line on screen' },
+      { slot_name: 'single_highlight_text', type: 'text', instructions: 'The single feature line on screen' },
       { slot_name: 'clip', type: 'clip', instructions: 'Mood footage for the teaser' },
-      { slot_name: 'audio_start_timestamp', type: 'timestamp', instructions: 'Song section + start time' },
+      { slot_name: 'screen_start_timestamp', type: 'timestamp', instructions: 'Where the recording should start' },
     ],
   },
 ];
@@ -278,9 +278,7 @@ export function formatDuration(seconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-export const RELEASE_STATUSES = ['Unreleased', 'Upcoming', 'Released'];
-
-// Build a single paste-ready string: caption + hashtags + optional streaming link.
+// Build a single paste-ready string: caption + hashtags + optional link.
 // Used by the "Copy Everything" button on the Today view, Quick Create, and post editor.
 export function buildPasteReady(post, link) {
   const parts = [];

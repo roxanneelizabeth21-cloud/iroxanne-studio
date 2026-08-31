@@ -31,7 +31,7 @@ export default function PostEditorContentTab({ form, set, instruction, setInstru
           <label className={FIELD_LABEL}>Hashtags</label>
           <CopyBtn label="Hashtags" getText={() => form.hashtags} />
         </div>
-        <Textarea value={form.hashtags} onChange={(e) => set('hashtags', e.target.value)} rows={2} placeholder="#roxsan #newmusic" />
+        <Textarea value={form.hashtags} onChange={(e) => set('hashtags', e.target.value)} rows={2} placeholder="#iroxanne #customapps" />
       </div>
 
       <div className="space-y-1.5">
@@ -43,7 +43,7 @@ export default function PostEditorContentTab({ form, set, instruction, setInstru
 
       <div className="glass rounded-xl p-3 space-y-2">
         <label className={FIELD_LABEL}>Regenerate with AI</label>
-        <Input value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="e.g. make it more playful / shorter / lead with the lyric" />
+        <Input value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="e.g. make it more playful / shorter / lead with the hook" />
         <Button type="button" variant="secondary" onClick={regenerate} disabled={regenerating} className="w-full gap-2">
           {regenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           {regenerating ? 'Regenerating…' : 'Regenerate'}

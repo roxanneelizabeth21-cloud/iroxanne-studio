@@ -33,8 +33,8 @@ export default function HubBrandConnections({ brandProfile, activeCampaign }) {
           <p className="text-sm font-medium mt-0.5">{completion}% complete</p>
         </div>
         <div className={CELL}>
-          <p className="text-xs text-muted-foreground">Artist identity</p>
-          <p className="text-sm font-medium mt-0.5 truncate">{brandProfile?.artist_name || 'Roxsan'}</p>
+          <p className="text-xs text-muted-foreground">Studio identity</p>
+          <p className="text-sm font-medium mt-0.5 truncate">{brandProfile?.artist_name || 'iRoxanne Studio'}</p>
         </div>
         <div className={`${CELL} sm:col-span-2`}>
           <p className="text-xs text-muted-foreground">Active campaign visual direction</p>

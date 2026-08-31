@@ -10,15 +10,15 @@ import {
   detectBrowser,
 } from '@/lib/analytics';
 
-// In-app page visit tracker for Roxsan Music.
+// In-app page visit tracker for iRoxanne Studio.
 // Fires on every route change and logs a PageVisit record via the logPageVisit backend function.
 // Anonymous visitors are supported (the function uses the service role).
 // Captures UTM parameters, referrer-based source classification, device/browser info,
 // and session-level landing page attribution.
 
-const ATTRIBUTION_KEY = 'roxsan-attribution';
-const VISITOR_KEY = 'roxsan-visitor-id';
-const SESSION_KEY = 'roxsan-session-id';
+const ATTRIBUTION_KEY = 'iroxanne-attribution';
+const VISITOR_KEY = 'iroxanne-visitor-id';
+const SESSION_KEY = 'iroxanne-session-id';
 
 function getSessionAttribution() {
   try {

@@ -35,7 +35,7 @@ function wrap(ctx, text, maxWidth) {
   return lines;
 }
 
-// Renders the Apple Music for Artists promo card: one flat colour panel matched
+// Renders the case-study promo card: one flat colour panel matched
 // to the cover art, the text set at the bottom of that panel, and the artwork
 // filling the rest of the card edge to edge — two tones, nothing else.
 export async function drawAlbumCanvas({ coverUrl, title = '', artist = '', color = '#8a8580', ratio = '9:16', cta = '', subtext = '', services = [], width, height }) {
@@ -50,7 +50,7 @@ export async function drawAlbumCanvas({ coverUrl, title = '', artist = '', color
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, w, h);
 
-  // Dark ink on light panels, light ink on dark ones — Apple's two-tone rule.
+  // Dark ink on light panels, light ink on dark ones — the two-tone rule.
   const lightPanel = relativeLuminance(hexToRgb(color)) > 0.42;
   const ink = lightPanel ? '#141414' : '#ffffff';
   const inkSoft = withAlpha(ink, lightPanel ? 0.55 : 0.7);
@@ -93,7 +93,7 @@ export async function drawAlbumCanvas({ coverUrl, title = '', artist = '', color
   const textH = headLines.length * lineH + bodyLines.length * bodyLineH + markRow;
 
   const textX = landscape ? artX + artSize + pad : Math.round(w / 2);
-  // Portrait sets the text at the top of the colour panel (Apple's promote card
+  // Portrait sets the text at the top of the colour panel (the promote card
   // hierarchy); landscape centres it beside the artwork.
   const textTop = landscape ? Math.round((h - textH) / 2) : pad;
 

@@ -34,7 +34,7 @@ export default function ManualShareDialog({
   const download = async () => {
     if (!media) return;
     setBusy('download');
-    const ok = await downloadFile(media.url, `roxsan-post.${media.type === 'video' ? 'mp4' : 'jpg'}`);
+    const ok = await downloadFile(media.url, `iroxanne-post.${media.type === 'video' ? 'mp4' : 'jpg'}`);
     setBusy('');
     if (!ok) toast({ title: 'Download failed', variant: 'destructive' });
   };
@@ -42,10 +42,10 @@ export default function ManualShareDialog({
   const deviceShare = async () => {
     setBusy('share');
     try {
-      const payload = { title: post.hook || 'Roxsan', text, url: shareUrl };
+      const payload = { title: post.hook || 'iRoxanne Studio', text, url: shareUrl };
       if (media && navigator.canShare) {
         try {
-          const file = await fetchVideoFile(media.url, media.type === 'video' ? 'roxsan-post.mp4' : 'roxsan-post.jpg');
+          const file = await fetchVideoFile(media.url, media.type === 'video' ? 'iroxanne-post.mp4' : 'iroxanne-post.jpg');
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({ ...payload, files: [file] });
             toast({ title: 'Opened your device share sheet' });

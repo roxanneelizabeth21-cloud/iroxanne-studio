@@ -1,4 +1,4 @@
-// Analytics helper functions for the Roxsan Music visitor tracking system.
+// Analytics helper functions for the iRoxanne Studio visitor tracking system.
 
 // --- Tracking helpers (client-side, used by PageVisitTracker) ---
 

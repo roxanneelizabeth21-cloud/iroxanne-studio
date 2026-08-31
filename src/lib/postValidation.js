@@ -1,4 +1,4 @@
-// Media + workflow validation for the Roxsan Amplify visual content calendar.
+// Media + workflow validation for the iRoxanne Studio content calendar.
 // A post is only eligible for approval, scheduling, sharing or publishing when it
 // has REAL media: media_file_url (working file) or media_clip_id → ClipAsset.file.
 // An image_prompt, a caption, a planned visual direction or a placeholder never count.
@@ -9,7 +9,7 @@ export const MEDIA_MISSING_MESSAGE =
   'This post needs a graphic or video before it can be approved, scheduled, shared, or published.';
 
 export const DRAFT_SHARE_WARNING =
-  'This post is still a draft. Sharing it outside Roxsan Amplify will not mark it as published.';
+  'This post is still a draft. Sharing it outside the app will not mark it as published.';
 
 // Statuses that lock a post in its historical calendar position.
 export const LOCKED_STATUSES = ['Posted', 'Partially Published'];

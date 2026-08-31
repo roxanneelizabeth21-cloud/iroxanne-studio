@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { buildPasteReady, copyText } from '@/lib/marketing';
 
-// CopyEverythingButton — copies caption + hashtags + optional streaming link as one
+// CopyEverythingButton — copies caption + hashtags + optional link as one
 // paste-ready block. Used on the Today view, Quick Create, and the post editor drawer.
 export default function CopyEverythingButton({ post, link, label = 'Copy Everything', size = 'default', variant = 'default', className = '' }) {
   const { toast } = useToast();

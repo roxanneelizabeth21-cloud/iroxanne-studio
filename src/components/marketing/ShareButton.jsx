@@ -20,7 +20,7 @@ export default function ShareButton({ platform, media, caption, postUrl, hook })
       // Mobile + video + native file share → native share sheet.
       if (isVideo && mediaUrl && canShareVideoFile()) {
         try {
-          await nativeShareVideo(mediaUrl, 'roxsan-post.mp4', caption, hook || caption);
+          await nativeShareVideo(mediaUrl, 'iroxanne-post.mp4', caption, hook || caption);
           toast({ title: 'Opened share sheet' });
           return;
         } catch (e) {
@@ -30,7 +30,7 @@ export default function ShareButton({ platform, media, caption, postUrl, hook })
       }
 
       const copied = await copyText(caption);
-      const downloaded = isVideo && mediaUrl ? await downloadFile(mediaUrl, 'roxsan-post.mp4') : false;
+      const downloaded = isVideo && mediaUrl ? await downloadFile(mediaUrl, 'iroxanne-post.mp4') : false;
 
       if (platform === 'Facebook') {
         window.open(facebookShareUrl(postUrl, caption), '_blank', 'noopener,noreferrer');

@@ -16,7 +16,7 @@ export default function useCanvasPreview({ release, color, preset, cta, subtext,
     drawAlbumCanvas({
       coverUrl: release.cover_image_url,
       title: release.title,
-      artist: release.artist_name || 'ROXSAN',
+      artist: release.artist_name || 'iRoxanne Studio',
       color,
       ratio: preset.ratio,
       width: preset.w,

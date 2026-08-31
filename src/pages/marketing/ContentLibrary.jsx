@@ -29,7 +29,6 @@ export default function ContentLibrary() {
         title: `Regenerated ${r.regenerated || 0} post${(r.regenerated || 0) === 1 ? '' : 's'}`,
         description: [
           `${r.eligible || 0} had project details available`,
-          r.skipped_no_lyrics ? `${r.skipped_no_lyrics} still have no project details` : '',
           r.remaining ? `${r.remaining} remaining — run again` : '',
         ].filter(Boolean).join(' · '),
       });

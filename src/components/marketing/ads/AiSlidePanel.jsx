@@ -14,7 +14,7 @@ export default function AiSlidePanel({ projectId, onAdd }) {
   const generate = async () => {
     const list = lines.split('\n').map((l) => l.trim()).filter(Boolean).slice(0, 8);
     if (!list.length) {
-      toast({ title: 'Add at least one line', description: 'One lyric or highlight line per row.' });
+      toast({ title: 'Add at least one line', description: 'One highlight line per row.' });
       return;
     }
     setBusy(true);

@@ -1,5 +1,5 @@
-// Background colour picker for the promo card — the same idea as Apple Music
-// for Artists: a row of swatches pulled from the cover art, one selected.
+// Background colour picker for the promo card — a row of swatches pulled from
+// the cover image, one selected.
 export default function ColorSwatchPicker({ colors = [], value, onPick }) {
   return (
     <div className="grid grid-cols-5 gap-2 max-w-[240px]" role="radiogroup" aria-label="Background colour">

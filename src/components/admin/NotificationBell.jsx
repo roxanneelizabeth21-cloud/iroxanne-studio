@@ -7,7 +7,7 @@ import { base44 } from '@/api/base44Client';
 // In-admin notification bell. Polls recent subscribers + contact messages and
 // shows an unread badge against a "last seen" timestamp stored in localStorage.
 // Opening the dropdown marks everything read.
-const SEEN_KEY = 'roxsan_admin_notif_seen';
+const SEEN_KEY = 'iroxanne_admin_notif_seen';
 
 function getSeen() {
   try { return localStorage.getItem(SEEN_KEY) || null; } catch { return null; }

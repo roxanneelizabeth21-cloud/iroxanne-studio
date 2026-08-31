@@ -70,7 +70,7 @@ export default function PostPublishPanel({ post: postProp }) {
     if (!media?.url) return;
     setDownloading(true);
     const ext = media.type === 'video' ? 'mp4' : 'jpg';
-    const ok = await downloadFile(media.url, `roxsan-${(post.platform || 'post').toLowerCase()}.${ext}`);
+    const ok = await downloadFile(media.url, `iroxanne-${(post.platform || 'post').toLowerCase()}.${ext}`);
     setDownloading(false);
     if (!ok) toast({ title: 'Download failed', variant: 'destructive' });
   };

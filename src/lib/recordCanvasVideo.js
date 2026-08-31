@@ -1,5 +1,5 @@
 // Records a still promo card into a short silent looping video with a slow
-// zoom (Ken Burns) so it reads as intentional motion on Spotify Canvas / Reels.
+// zoom (Ken Burns) so it reads as intentional motion on Reels and Stories.
 // MP4 is used when the browser can encode it, otherwise WebM.
 const MIME_CANDIDATES = [
   'video/mp4;codecs=avc1.42E01E',

@@ -40,7 +40,7 @@ export async function downloadFile(url, filename) {
     const objUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = objUrl;
-    a.download = filename || 'roxsan-post';
+    a.download = filename || 'iroxanne-post';
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -56,7 +56,7 @@ export async function fetchVideoFile(url, filename) {
   const res = await fetch(url, { mode: 'cors' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const blob = await res.blob();
-  return new File([blob], filename || 'roxsan-post.mp4', { type: blob.type || 'video/mp4' });
+  return new File([blob], filename || 'iroxanne-post.mp4', { type: blob.type || 'video/mp4' });
 }
 
 // Open the native mobile share sheet with a video file + caption.

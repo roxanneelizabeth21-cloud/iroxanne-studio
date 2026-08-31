@@ -21,7 +21,7 @@ export default function HubAmplify({ suggestions = [] }) {
         className="flex flex-col sm:flex-row gap-2"
         onSubmit={(e) => { e.preventDefault(); go(prompt); }}
       >
-        <label htmlFor="amplify-prompt" className="sr-only">Ask Roxsan Amplify</label>
+        <label htmlFor="amplify-prompt" className="sr-only">Ask the Strategist</label>
         <Input
           id="amplify-prompt"
           value={prompt}
@@ -29,7 +29,7 @@ export default function HubAmplify({ suggestions = [] }) {
           placeholder="Ask for a plan, a caption, or an idea"
         />
         <Button type="submit" className="gap-1.5 shrink-0">
-          <Bot className="h-4 w-4" aria-hidden="true" /> Ask Amplify
+          <Bot className="h-4 w-4" aria-hidden="true" /> Ask the Strategist
         </Button>
       </form>
 
@@ -49,7 +49,7 @@ export default function HubAmplify({ suggestions = [] }) {
       )}
 
       <button type="button" onClick={() => go('')} className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-        Open Roxsan Amplify <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+        Open the Strategist <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
     </div>
   );

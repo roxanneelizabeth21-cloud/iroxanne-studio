@@ -1,6 +1,6 @@
 // Remembers the pages actually visited inside the app, so a back arrow can
 // return to the previous page the owner was on (not just the raw browser entry).
-const KEY = 'roxsan_visit_stack';
+const KEY = 'iroxanne_visit_stack';
 const MAX = 20;
 
 function read() {

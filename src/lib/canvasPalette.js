@@ -1,7 +1,7 @@
 import { hexToRgb, rgbToHex, mix, lighten, darken, relativeLuminance } from '@/lib/colorUtils';
 
-// Builds the swatch palette for a promo card, the way Apple Music for Artists
-// does it: every swatch is pulled from the cover art itself, then muted, so the
+// Builds the swatch palette for a promo card. Every swatch is pulled from the
+// cover image itself, then muted, so the
 // panel colour and the artwork always read as one two-tone card.
 
 function loadImage(url) {
@@ -39,7 +39,7 @@ async function topColors(url, count) {
     .map((b) => rgbToHex(b.r / b.n, b.g / b.n, b.b / b.n));
 }
 
-// Apple's swatches are never fully saturated — they are the art's colour pulled
+// The swatches are never fully saturated — they are the image's colour pulled
 // toward its own grey, so text stays readable on top of them.
 const muted = (hex, amount = 0.22) => {
   const { r, g, b } = hexToRgb(hex);

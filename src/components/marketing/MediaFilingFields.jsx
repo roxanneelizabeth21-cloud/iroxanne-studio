@@ -5,8 +5,8 @@ import { Loader2, FolderOpen } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { MEDIA_CATEGORIES } from '@/lib/mediaCategories';
 
-// Lets the owner file one media asset into a collection (album or single) and
-// give it an asset kind, so campaigns can pull "Those Old Hymns · Merch".
+// Lets the owner file one media asset into a project collection and give it an
+// asset kind, so campaigns can pull a project's assets.
 export default function MediaFilingFields({ asset, portfolioItems = [] }) {
   const { toast } = useToast();
   const qc = useQueryClient();

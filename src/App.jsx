@@ -53,7 +53,7 @@ const AuthenticatedApp = () => {
   // get stuck in a redirect loop.
   useEffect(() => {
     if (authError?.type !== 'auth_required') return;
-    const key = 'roxsan_login_redirect_ts';
+    const key = 'iroxanne_login_redirect_ts';
     const now = Date.now();
     const last = Number(sessionStorage.getItem(key) || 0);
     if (now - last < 10000) return; // within 10s = loop; stop hammering

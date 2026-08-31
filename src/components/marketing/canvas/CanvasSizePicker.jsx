@@ -1,6 +1,6 @@
 import { CANVAS_PRESETS, presetSizeLabel } from '@/lib/canvasPresets';
 
-// One grouped dropdown for the delivery size — streaming specs first, social after.
+// One grouped dropdown for the delivery size — delivery specs first, social after.
 export default function CanvasSizePicker({ presetId, onPick, note }) {
   const groups = [...new Set(CANVAS_PRESETS.map((p) => p.group))];
   return (

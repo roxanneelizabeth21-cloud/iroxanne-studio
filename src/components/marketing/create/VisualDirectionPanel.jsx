@@ -31,7 +31,7 @@ const CHOICES = [
   { key: 'with_text', label: 'Image with approved text' },
 ];
 
-// Builds a plain-language Visual Direction from the real song/campaign context,
+// Builds a plain-language Visual Direction from the real project/campaign context,
 // then generates a real image through the existing generateMarketingImage function.
 export default function VisualDirectionPanel({ draft, post, songContext, aspect, onAttached }) {
   const { toast } = useToast();
@@ -50,22 +50,22 @@ export default function VisualDirectionPanel({ draft, post, songContext, aspect,
     setBusy('suggest');
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an art director for the recording artist Roxsan. Propose ONE visual direction for a single social image.
+        prompt: `You are an art director for the app-development studio iRoxanne Studio. Propose ONE visual direction for a single social image.
 
-Song or release: ${songContext.title || 'untitled'}
-Release type: ${songContext.releaseType || ''}
-Release status: ${songContext.status || ''}
+Project: ${songContext.title || 'untitled'}
+Project type: ${songContext.releaseType || ''}
+Project status: ${songContext.status || ''}
 Themes: ${songContext.themes || ''}
 Story: ${songContext.story || ''}
-Real lyric lines: ${songContext.keyLines || ''}
-Genre / musical identity: ${songContext.genre || ''}
+Key details / highlights: ${songContext.keyLines || ''}
+Project category / identity: ${songContext.genre || ''}
 Campaign: ${songContext.campaignName || ''} ${songContext.campaignGoal || ''}
 Post goal: ${effectiveGoal(draft)}
 Owner instruction: ${draft.instruction || 'none'}
 Aspect ratio: ${aspect}
 Brand image rules: ${songContext.imageStyleNotes || ''}
 
-Vary the aesthetic to suit THIS release specifically. Avoid repeating generic worship-stock clichés (back-facing silhouettes, sunsets over clouds, empty roads) unless the song truly calls for it. Never invent lyrics: only quote the real lyric lines above, and only if a text overlay genuinely helps.
+Vary the aesthetic to suit THIS project specifically. Avoid repeating generic stock clichés (generic mockups, flat backgrounds, empty screenshots) unless the project truly calls for it. Never invent quotes or metrics: only use the real details above, and only if a text overlay genuinely helps.
 Return concise plain-language values for: creative_concept, mood, subject, setting, composition, lighting, color_direction, text_overlay (empty string when the image should be text-free), reason_for_match.`,
         response_json_schema: DIRECTION_SCHEMA,
       });

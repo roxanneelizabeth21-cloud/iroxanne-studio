@@ -29,7 +29,7 @@ import {
 import { pageUrl, defaultLinkTarget, consultBookingUrl } from '@/lib/postLink';
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const VIEW_KEY = 'roxsan-cal-view';
+const VIEW_KEY = 'iroxanne-cal-view';
 const EMPTY_FILTERS = {
   campaign: '', platform: '', status: '', project: '', media: '', approval: '', flag: '', from: '', to: '', q: '',
 };

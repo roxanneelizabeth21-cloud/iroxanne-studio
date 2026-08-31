@@ -2,10 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import CanvasPreview from './CanvasPreview';
 import ColorSwatchPicker from './ColorSwatchPicker';
-import { serviceColor } from '@/lib/canvasServiceIcons';
 
-const CTA_PRESETS = ['Out now', 'Streaming everywhere', 'Pre-save now', 'Listen now', 'Link in bio', 'Custom'];
-const SERVICES = ['Spotify', 'Apple Music', 'YouTube', 'Amazon Music', 'Deezer', 'Tidal', 'Pandora'];
+const CTA_PRESETS = ['Book a consult', 'See the work', 'Start your project', 'Link in bio', 'Custom'];
+const SERVICES = ['Base44', 'Stripe', 'Resend', 'Airtable', 'Notion', 'Slack', 'Google'];
 
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 
@@ -50,11 +49,10 @@ export default function CanvasStepDesign({ design, patch, preset, palette, color
           </div>
 
           <div className="space-y-1.5">
-            <span className={FL}>Platform marks</span>
+            <span className={FL}>Tech / tools used</span>
             <div className="flex flex-wrap gap-1.5">
               {SERVICES.map((s) => (
                 <Button key={s} type="button" size="sm" variant={design.services.includes(s) ? 'default' : 'outline'} onClick={() => toggleService(s)}>
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: serviceColor(s) }} aria-hidden="true" />
                   {s}
                 </Button>
               ))}
