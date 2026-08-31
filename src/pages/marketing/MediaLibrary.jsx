@@ -28,7 +28,7 @@ export default function MediaLibrary() {
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
+  const { data: releases = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
 
   const assets = useMemo(() => {
     const imageAssets = images.map((g) => ({
@@ -123,9 +123,9 @@ export default function MediaLibrary() {
           'Upload your graphics and videos here once, and they become reusable on every post.',
           'Bring finished designs across with Import from Canva.',
           'Narrow things down with the search box and the filters below it.',
-          'Tap any tile to see where that piece of media has been used and to file it under a song.',
+          'Tap any tile to see where that piece of media has been used and to file it under a project.',
         ]}
-        note="Everything is filed under the release it belongs to, so a song's artwork, promos and merch shots stay together."
+        note="Everything is filed under the project it belongs to, so a project's screenshots and promos stay together."
       />
 
       <div className="flex flex-wrap items-center gap-2 justify-between">
@@ -159,8 +159,8 @@ export default function MediaLibrary() {
           <option value="">All campaigns</option>
           {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <select value={filters.song} onChange={(e) => setFilters({ ...filters, song: e.target.value })} aria-label="Filter by song or release">
-          <option value="">All songs</option>
+        <select value={filters.song} onChange={(e) => setFilters({ ...filters, song: e.target.value })} aria-label="Filter by project">
+          <option value="">All projects</option>
           {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} aria-label="Filter by type of asset">

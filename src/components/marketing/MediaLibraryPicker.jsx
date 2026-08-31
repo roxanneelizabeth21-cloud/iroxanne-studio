@@ -66,8 +66,8 @@ export default function MediaLibraryPicker({ source, campaigns = [], releases = 
           </select>
         )}
         {!!releases.length && (
-          <select value={song} onChange={(e) => setSong(e.target.value)} aria-label="Filter by song or release">
-            <option value="">All songs</option>
+          <select value={song} onChange={(e) => setSong(e.target.value)} aria-label="Filter by project">
+            <option value="">All projects</option>
             {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
           </select>
         )}

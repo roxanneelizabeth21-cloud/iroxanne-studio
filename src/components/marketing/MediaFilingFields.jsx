@@ -35,7 +35,7 @@ export default function MediaFilingFields({ asset, releases = [] }) {
         <FolderOpen className="h-3.5 w-3.5" /> Filing {saving && <Loader2 className="h-3 w-3 animate-spin" />}
       </p>
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground" htmlFor="media-collection">Collection (album or single)</label>
+        <label className="text-xs text-muted-foreground" htmlFor="media-collection">Project</label>
         <select
           id="media-collection"
           value={collection}
@@ -46,7 +46,7 @@ export default function MediaFilingFields({ asset, releases = [] }) {
         >
           <option value="">Unfiled</option>
           {releases.map((r) => (
-            <option key={r.id} value={r.id}>{r.title}{/album/i.test(r.release_type || '') ? ' (Album)' : ' (Single)'}</option>
+            <option key={r.id} value={r.id}>{r.title}</option>
           ))}
         </select>
       </div>

@@ -168,7 +168,7 @@ export default function MediaAssetDetail({ asset, open, onOpenChange, posts = []
         <div className="mt-4">
           <Row label="Type" value={asset.kind === 'video' ? 'Video' : 'Image'} />
           <Row label="Campaign" value={campaignName} />
-          <Row label="Song or release" value={songTitle} />
+          <Row label="Project" value={songTitle} />
           <Row label="Format" value={asset.format} />
           <Row label="Composed for" value={asset.aspect_ratio} />
           <Row label="Generated from" value={asset.generation_prompt} />

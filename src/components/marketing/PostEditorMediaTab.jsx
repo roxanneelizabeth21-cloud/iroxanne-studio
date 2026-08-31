@@ -10,11 +10,10 @@ import GenerateImagePanel from '@/components/marketing/GenerateImagePanel';
 import ColorMatchedVideoPreview from '@/components/marketing/ColorMatchedVideoPreview';
 import TemplateSlots from '@/components/marketing/TemplateSlots';
 import ClipSuggester from '@/components/marketing/ClipSuggester';
-import MusicSnippetPicker from '@/components/marketing/MusicSnippetPicker';
 
 export default function PostEditorMediaTab({
   form, set, setForm, presets, templates, currentTemplate, changeTemplate, changeSlot,
-  selectClip, clips, allTracks, uploadMedia, uploading, release,
+  selectClip, clips, uploadMedia, uploading, release,
 }) {
   const isVideo = isVideoFormat(form.format);
   const [captionOpen, setCaptionOpen] = useState(false);
@@ -71,7 +70,6 @@ export default function PostEditorMediaTab({
       {/* Media attachment */}
       <div className="space-y-2">
         <label className={FIELD_LABEL}>Media attachment</label>
-        <p className="text-[11px] text-muted-foreground">The video file itself should include any music. Music-snippet fields below are metadata reference for you, not for rendering.</p>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1.5">
             <label className="text-[11px] text-muted-foreground">Clip from library</label>
@@ -118,15 +116,6 @@ export default function PostEditorMediaTab({
         )}
       </div>
 
-      {/* Music snippet (metadata only) */}
-      <MusicSnippetPicker
-        tracks={allTracks}
-        trackId={form.music_track_id}
-        start={form.music_start_seconds}
-        end={form.music_end_seconds}
-        onChange={(patch) => setForm((f) => ({ ...f, ...patch }))}
-        label="Music snippet (metadata)"
-      />
     </div>
   );
 }

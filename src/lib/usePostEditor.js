@@ -23,12 +23,7 @@ export function usePostEditor(post, onDone) {
   const { data: templates = [] } = useQuery({ queryKey: ['video-templates'], queryFn: () => base44.entities.VideoTemplate.list('-created_date') });
   const { data: brandProfile } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const presets = (brandProfile && brandProfile[0]?.image_style_presets) || [];
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
-  const { data: platformLinks = [] } = useQuery({ queryKey: ['music-platform-links'], queryFn: () => base44.entities.MusicPlatformLink.filter({ is_visible: true }) });
-  const { data: allTracks = [] } = useQuery({ queryKey: ['all-tracks'], queryFn: () => base44.entities.Track.list() });
-  const { data: songProfiles = [] } = useQuery({ queryKey: ['song-profiles'], queryFn: () => base44.entities.SongProfile.list() });
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: merchProducts = [] } = useQuery({ queryKey: ['merch-products'], queryFn: () => base44.entities.MerchProduct.list() });
   const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
 
   useEffect(() => {
@@ -87,10 +82,6 @@ export function usePostEditor(post, onDone) {
   };
 
   const currentTemplate = form ? templates.find((t) => t.id === form.template_id) || null : null;
-  const track = form ? allTracks.find((t) => t.id === form.song_id) : null;
-  const release = form
-    ? releases.find((r) => r.id === form.song_id) || releases.find((r) => r.id === track?.release_id) || null
-    : null;
   const portfolioItem = form ? portfolioItems.find((p) => p.id === form.portfolio_item_id) || null : null;
   const appendedLink = form ? shareablePageUrl(portfolioItem, form.link_target || defaultLinkTarget(portfolioItem)) : '';
 
@@ -242,8 +233,8 @@ export function usePostEditor(post, onDone) {
   return {
     form, set, setForm, saving, regenerating, instruction, setInstruction,
     showMetrics, setShowMetrics, metrics, setMetrics, uploading,
-    templates, presets, clips, allTracks, currentTemplate, release,
-    releases, merchProducts, portfolioItems, portfolioItem,
+    templates, presets, clips, currentTemplate,
+    portfolioItems, portfolioItem,
     appendedLink,
     changeTemplate, changeSlot, selectClip, uploadMedia,
     save, markPosted, regenerate, del,

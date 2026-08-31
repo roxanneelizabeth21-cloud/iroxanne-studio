@@ -77,10 +77,9 @@ export default function PostEditor() {
               changeSlot={ed.changeSlot}
               selectClip={ed.selectClip}
               clips={ed.clips}
-              allTracks={ed.allTracks}
               uploadMedia={ed.uploadMedia}
               uploading={ed.uploading}
-              release={ed.release}
+              release={ed.portfolioItem}
             />
           </PostEditorSection>
 

@@ -1,7 +1,6 @@
-import { collectionLabel } from '@/lib/mediaCategories';
 import MediaTile from '@/components/marketing/MediaTile';
 
-// Groups the library into collections — each album or single, then Unfiled —
+// Groups the library into collections — each project, then Unfiled —
 // so browsing feels like folders instead of one endless wall of images.
 export default function MediaCollectionGroups({ assets, releases, onSelect }) {
   const byId = new Map(releases.map((r) => [r.id, r]));
@@ -14,7 +13,7 @@ export default function MediaCollectionGroups({ assets, releases, onSelect }) {
   const ordered = [...groups.entries()].sort((a, b) => {
     if (!a[0]) return 1;
     if (!b[0]) return -1;
-    return collectionLabel(byId.get(a[0])).localeCompare(collectionLabel(byId.get(b[0])));
+    return String(byId.get(a[0])?.title || '').localeCompare(String(byId.get(b[0])?.title || ''));
   });
 
   return (
@@ -22,7 +21,7 @@ export default function MediaCollectionGroups({ assets, releases, onSelect }) {
       {ordered.map(([releaseId, items]) => (
         <section key={releaseId || 'unfiled'}>
           <h3 className="text-sm font-medium mb-2">
-            {collectionLabel(byId.get(releaseId))}
+            {byId.get(releaseId)?.title || 'Unfiled'}
             <span className="ml-2 text-xs text-muted-foreground">{items.length}</span>
           </h3>
           <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 list-none p-0">
