@@ -17,10 +17,10 @@ export default async function(req) {
     const ks = dateKey(weekStart);
     const ke = dateKey(weekEnd);
 
-    const [posts, campaigns, songProfiles] = await Promise.all([
+    const [posts, campaigns, portfolioItems] = await Promise.all([
       base44.asServiceRole.entities.MarketingPost.list('-created_date', 500),
       base44.asServiceRole.entities.Campaign.list(),
-      base44.asServiceRole.entities.SongProfile.list(),
+      base44.asServiceRole.entities.PortfolioItem.list(),
     ]);
 
     const inRange = (dateStr, a, b) => {
@@ -33,10 +33,10 @@ export default async function(req) {
     const scheduledThisWeek = (posts || []).filter((p) => p.status !== 'Posted' && p.status !== 'Skipped' && inRange(p.scheduled_date, today, weekEnd));
     const nearingEnd = (campaigns || []).filter((c) => c.status === 'Active' && c.end_date && inRange(c.end_date, today, addDays(today, 14)));
 
-    // Songs with low remaining content: Released profiles with < 4 non-skipped posts in the last 30 days.
+    // Featured portfolio items with low recent content: < 4 non-skipped posts in the last 30 days.
     const since30 = addDays(today, -30).getTime();
-    const lowContent = (songProfiles || []).filter((s) => s.release_status === 'Released').filter((s) => {
-      const count = (posts || []).filter((p) => p.status !== 'Skipped' && (p.song_id === s.song_id || String(p.caption || '').toLowerCase().includes(String(s.title || '').toLowerCase())) && new Date((p.scheduled_date || '') + 'T00:00:00').getTime() >= since30).length;
+    const lowContent = (portfolioItems || []).filter((s) => s.featured).filter((s) => {
+      const count = (posts || []).filter((p) => p.status !== 'Skipped' && p.portfolio_item_id === s.id && new Date((p.scheduled_date || '') + 'T00:00:00').getTime() >= since30).length;
       return count < 4;
     });
 
@@ -50,7 +50,7 @@ export default async function(req) {
       rows.push(...nearingEnd.map((c) => `${c.name} — ends ${c.end_date}`));
     }
     if (lowContent.length) {
-      rows.push({ text: 'Songs with low recent content (consider a boost):', strong: true, bullet: false });
+      rows.push({ text: 'Portfolio items with low recent content (consider a boost):', strong: true, bullet: false });
       rows.push(...lowContent.map((s) => s.title));
     }
 
@@ -68,7 +68,7 @@ export default async function(req) {
       linkLabel: 'Open the Content Suite',
     });
 
-    await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject, body, from_name: 'Roxsan' });
+    await base44.asServiceRole.integrations.Core.SendEmail({ to: ns.email, subject, body, from_name: 'iRoxanne Studio' });
     return Response.json({ sent: true, completed: completedLastWeek.length, scheduled: scheduledThisWeek.length });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

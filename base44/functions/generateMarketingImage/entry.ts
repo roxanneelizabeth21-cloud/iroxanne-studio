@@ -66,12 +66,12 @@ function buildPrompt(input) {
 
   if (context && Object.keys(context).length) {
     p += 'CONTENT CONTEXT (guides the visual — do not render this text into the image)\n';
-    p += line('Song / release', context.song_title);
-    p += line('Release type', context.release_type);
-    p += line('Genre / musical style', context.genre);
-    p += line('Song themes', context.themes);
-    p += line('Song story', context.song_story);
-    p += line('Featured lyric', context.key_lines);
+    p += line('Project', context.project_title);
+    p += line('Category', context.category);
+    p += line('Service / style', context.genre);
+    p += line('Tech used', context.tech_used);
+    p += line('Project description', context.project_description);
+    p += line('Tagline', context.tagline);
     p += line('Campaign', context.campaign_name);
     p += line('Campaign goal', context.campaign_goal);
     p += line('Post hook', context.hook);
@@ -115,7 +115,7 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const {
-      post_id, campaign_id, release_id, track_id, product_id, shopify_product_id,
+      post_id, campaign_id, release_id, track_id, product_id, shopify_product_id, portfolio_item_id,
       visual_direction = {}, prompt, platform, format, aspect_ratio,
       text_overlay, reference_asset_urls, elements_to_preserve, elements_to_avoid,
       regenerate = false, variation_instruction, original_request,
@@ -138,27 +138,21 @@ export default async function (req) {
     const effPlatform = platform || post?.platform || '';
     const effFormat = format || post?.format || '';
     const effCampaignId = campaign_id || post?.campaign_id || '';
-    const effReleaseId = release_id || post?.song_id || '';
+    const effPortfolioItemId = portfolio_item_id || post?.portfolio_item_id || '';
 
     const campaign = effCampaignId ? await base44.entities.Campaign.get(effCampaignId).catch(() => null) : null;
-    const release = effReleaseId ? await base44.entities.MusicRelease.get(effReleaseId).catch(() => null) : null;
-    const track = track_id ? await base44.entities.Track.get(track_id).catch(() => null) : null;
+    const portfolioItem = effPortfolioItemId ? await base44.entities.PortfolioItem.get(effPortfolioItemId).catch(() => null) : null;
     const product = product_id ? await base44.entities.MerchProduct.get(product_id).catch(() => null) : null;
 
-    let songProfile = null;
-    if (release?.title) {
-      const matches = await base44.entities.SongProfile.filter({ title: release.title }).catch(() => []);
-      songProfile = matches?.[0] || null;
-    }
     const brand = (await base44.entities.BrandProfile.list().catch(() => []))?.[0] || null;
 
     const context = {
-      song_title: track?.title || release?.title || songProfile?.title || product?.name,
-      release_type: release?.release_type,
+      project_title: portfolioItem?.title || product?.name,
+      category: portfolioItem?.category,
       genre: brand?.genre_blend,
-      themes: songProfile?.themes,
-      song_story: songProfile?.song_story || release?.behind_the_scenes,
-      key_lines: songProfile?.key_lines || track?.lyrics?.slice(0, 400),
+      tech_used: portfolioItem?.tech_used,
+      project_description: portfolioItem?.description,
+      tagline: portfolioItem?.tagline,
       campaign_name: campaign?.name,
       campaign_goal: campaign?.goal,
       hook: post?.hook,
@@ -224,7 +218,7 @@ export default async function (req) {
 
     // --- Save into the existing Gallery library ---
     const media = await base44.entities.GalleryImage.create({
-      title: `${context.song_title || 'Roxsan'} — ${visual_direction.visual_type || 'marketing image'}${aspect ? ` (${aspect})` : ''}`,
+      title: `${context.project_title || 'iRoxanne Studio'} — ${visual_direction.visual_type || 'marketing image'}${aspect ? ` (${aspect})` : ''}`,
       image_url,
       category: 'promo',
       source: 'ai_generated',
@@ -236,8 +230,8 @@ export default async function (req) {
       aspect_ratio: aspect,
       post_id: post?.id || '',
       campaign_id: effCampaignId,
-      release_id: effReleaseId,
-      track_id: track_id || '',
+      release_id: '',
+      track_id: '',
       product_id: product_id || '',
       generation_status: 'generated',
       generated_at: new Date().toISOString(),
