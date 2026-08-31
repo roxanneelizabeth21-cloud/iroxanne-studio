@@ -1,112 +1,119 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { X, ArrowRight } from 'lucide-react';
+import { X } from 'lucide-react';
 
-// Visual style presets for the banner background + CTA. Keeps the banner on-brand
-// (gold/teal/black) regardless of the page it's rendered on.
-function getStyle(banner) {
-  switch (banner.background_style) {
-    case 'gold':
-      return {
-        background: 'linear-gradient(135deg, #C59F59, #A67B3F)',
-        color: '#1a1208',
-        muted: 'rgba(26,18,8,0.72)',
-        ctaBg: '#0D0D0D',
-        ctaColor: '#C59F59',
-      };
-    case 'teal':
-      return {
-        background: 'linear-gradient(135deg, #28A49C, #1B575D)',
-        color: '#ffffff',
-        muted: 'rgba(255,255,255,0.82)',
-        ctaBg: '#C59F59',
-        ctaColor: '#0D0D0D',
-      };
-    case 'custom':
-      return {
-        background: banner.background_color || '#0D0D0D',
-        color: '#ffffff',
-        muted: 'rgba(255,255,255,0.78)',
-        ctaBg: '#C59F59',
-        ctaColor: '#0D0D0D',
-      };
-    case 'dark':
-    default:
-      return {
-        background: '#0D0D0D',
-        color: '#f5f5f5',
-        muted: 'rgba(245,245,245,0.72)',
-        ctaBg: '#C59F59',
-        ctaColor: '#0D0D0D',
-      };
+// Dismissible promotional banner. Renders a single PromoBanner entity.
+// Used by the PromoBanners admin form as a live preview and (when wired up)
+// by a public banner stack. Dismissal is remembered per device via
+// localStorage, keyed to the banner id; previews without an id stay in-memory
+// so the admin preview doesn't get stuck dismissed.
+
+const SURFACES = {
+  dark: {
+    background: 'linear-gradient(90deg, #0D0D0D 0%, #1b1b1b 100%)',
+    text: '#ffffff',
+  },
+  gold: {
+    background: 'linear-gradient(90deg, #c9a227 0%, #e8c873 100%)',
+    text: '#1a1408',
+  },
+  teal: {
+    background: 'linear-gradient(90deg, #0f3d3a 0%, #176f66 100%)',
+    text: '#ffffff',
+  },
+};
+
+export default function PromoBanner({ banner = {} }) {
+  const b = banner || {};
+  const key = b.id ? `promo-banner-dismissed:${b.id}` : null;
+  const [dismissed, setDismissed] = useState(() => {
+    if (!key || !b.dismissible) return false;
+    try {
+      return localStorage.getItem(key) === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  if (dismissed) return null;
+
+  // Date window check (only when dates are set).
+  const today = new Date();
+  if (b.start_date && new Date(b.start_date) > today) return null;
+  if (b.end_date) {
+    const end = new Date(b.end_date);
+    end.setHours(23, 59, 59, 999);
+    if (end < today) return null;
   }
-}
 
-// Single promo banner. The entire banner is clickable to cta_url (internal path
-// uses react-router Link; external uses <a target=_blank>). A dismissible banner
-// shows an X that calls onDismiss — the caller persists dismissal per device.
-export default function PromoBanner({ banner, onDismiss }) {
-  if (!banner) return null;
-  const s = getStyle(banner);
-  const url = banner.cta_url || '';
-  const isExternal = /^https?:\/\//i.test(url);
+  const style = b.background_style === 'custom'
+    ? { background: b.background_color || '#0D0D0D', color: '#ffffff' }
+    : (SURFACES[b.background_style] || SURFACES.dark);
 
-  const Wrapper = url ? (isExternal ? 'a' : Link) : 'div';
-  const wrapperProps = url
-    ? isExternal
-      ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
-      : { to: url }
-    : {};
+  const cta = b.cta_url;
+  const isExternal = /^https?:\/\//i.test(cta || '');
+
+  const dismiss = () => {
+    setDismissed(true);
+    if (key) {
+      try { localStorage.setItem(key, '1'); } catch { /* ignore */ }
+    }
+  };
 
   return (
-    <div className="w-full" style={{ background: s.background, color: s.color }}>
-      <div className="relative max-w-6xl mx-auto px-4 py-3 sm:py-3.5">
-        <Wrapper {...wrapperProps} className="flex flex-col sm:flex-row items-center sm:items-center gap-3 sm:gap-4 w-full text-center sm:text-left">
-          {banner.image_url ? (
-            <img
-              src={banner.image_url}
-              alt=""
-              className="w-[60px] h-[60px] rounded-lg object-cover shrink-0"
-            />
-          ) : null}
-          <div className="flex-1 min-w-0">
-            {banner.headline ? (
-              <p className="font-semibold text-sm sm:text-base leading-tight truncate">
-                {banner.headline}
-              </p>
-            ) : null}
-            {banner.subtext ? (
-              <p className="text-xs sm:text-sm leading-tight truncate" style={{ color: s.muted }}>
-                {banner.subtext}
-              </p>
-            ) : null}
-          </div>
-          {banner.cta_text ? (
-            <span
-              className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shrink-0"
-              style={{ background: s.ctaBg, color: s.ctaColor }}
-            >
-              {banner.cta_text}
-              <ArrowRight className="h-3.5 w-3.5" />
-            </span>
-          ) : null}
-        </Wrapper>
+    <div
+      style={style}
+      className="relative flex items-center gap-4 px-5 py-4 w-full"
+      role="region"
+      aria-label={b.title || 'Promotional banner'}
+    >
+      {b.image_url && (
+        <img
+          src={b.image_url}
+          alt=""
+          className="hidden sm:block h-12 w-12 shrink-0 rounded-md object-cover"
+        />
+      )}
 
-        {banner.dismissible && onDismiss ? (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDismiss();
-            }}
-            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1.5 rounded-full hover:bg-white/10 transition-colors"
-            style={{ color: s.color }}
-            aria-label="Dismiss banner"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
+      <div className="flex-1 min-w-0">
+        {b.headline && (
+          <p className="font-semibold text-sm sm:text-base leading-tight">{b.headline}</p>
+        )}
+        {b.subtext && (
+          <p className="text-xs sm:text-sm opacity-80 leading-snug mt-0.5">{b.subtext}</p>
+        )}
       </div>
+
+      {b.cta_text && cta && (
+        isExternal ? (
+          <a
+            href={cta}
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold bg-white/15 hover:bg-white/25 transition-colors"
+          >
+            {b.cta_text}
+          </a>
+        ) : (
+          <Link
+            to={cta}
+            className="shrink-0 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold bg-white/15 hover:bg-white/25 transition-colors"
+          >
+            {b.cta_text}
+          </Link>
+        )
+      )}
+
+      {b.dismissible && (
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label="Dismiss banner"
+          className="shrink-0 rounded-full p-1.5 opacity-70 hover:opacity-100 transition-opacity"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
