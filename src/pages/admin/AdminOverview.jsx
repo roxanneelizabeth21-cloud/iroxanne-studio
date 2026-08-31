@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Music, Film, Mail, MessageSquare, Megaphone, ArrowRight } from 'lucide-react';
+import { FolderKanban, Megaphone, Mail, MessageSquare, ArrowRight, Quote } from 'lucide-react';
 
 export default function AdminOverview() {
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list('-created_date') });
-  const { data: videos = [] } = useQuery({ queryKey: ['videos-admin'], queryFn: () => base44.entities.Video.list('-created_date') });
+  const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts-recent'], queryFn: () => base44.entities.MarketingPost.list('-created_date', 50) });
+  const { data: portfolio = [] } = useQuery({ queryKey: ['portfolio-items-admin'], queryFn: () => base44.entities.PortfolioItem.list('-created_date') });
   const { data: subs = [] } = useQuery({ queryKey: ['fan-subscribers-recent'], queryFn: () => base44.entities.FanSubscriber.list('-created_date', 50) });
   const { data: msgs = [] } = useQuery({ queryKey: ['contact-messages-recent'], queryFn: () => base44.entities.ContactMessage.list('-created_date', 50) });
 
   const cards = [
-    { to: '/admin/music', label: 'Releases', count: releases.length, Icon: Music },
-    { to: '/admin/videos', label: 'Videos', count: videos.length, Icon: Film },
+    { to: '/marketing/library', label: 'Posts', count: posts.length, Icon: Megaphone },
+    { to: '/marketing', label: 'Projects', count: portfolio.length, Icon: FolderKanban },
     { to: '/admin/subscribers', label: 'Subscribers', count: subs.length, Icon: Mail },
     { to: '/admin/messages', label: 'Messages', count: msgs.length, Icon: MessageSquare },
   ];
@@ -20,7 +20,7 @@ export default function AdminOverview() {
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Manage your media, subscribers, and site content.</p>
+        <p className="text-sm text-muted-foreground">Manage your portfolio, marketing content, and inquiries.</p>
       </div>
 
       <Link to="/marketing" className="block glass rounded-2xl p-5 hover:border-primary/40 transition-colors group">
