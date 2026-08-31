@@ -7,11 +7,11 @@ import { MEDIA_CATEGORIES } from '@/lib/mediaCategories';
 
 // Lets the owner file one media asset into a collection (album or single) and
 // give it an asset kind, so campaigns can pull "Those Old Hymns · Merch".
-export default function MediaFilingFields({ asset, releases = [] }) {
+export default function MediaFilingFields({ asset, portfolioItems = [] }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [saving, setSaving] = useState(false);
-  const [collection, setCollection] = useState(asset.song_id || '');
+  const [collection, setCollection] = useState(asset.project_id || '');
   const [category, setCategory] = useState(asset.media_category || '');
 
   const save = async (patch) => {
@@ -41,11 +41,11 @@ export default function MediaFilingFields({ asset, releases = [] }) {
           value={collection}
           onChange={(e) => {
             setCollection(e.target.value);
-            save({ image: { release_id: e.target.value }, video: { linked_song_id: e.target.value } });
+            save({ image: { portfolio_item_id: e.target.value }, video: { portfolio_item_id: e.target.value } });
           }}
         >
           <option value="">Unfiled</option>
-          {releases.map((r) => (
+          {portfolioItems.map((r) => (
             <option key={r.id} value={r.id}>{r.title}</option>
           ))}
         </select>

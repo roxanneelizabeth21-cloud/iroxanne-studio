@@ -14,7 +14,7 @@ import AttachedMediaPreview from '@/components/marketing/AttachedMediaPreview';
 // record before reporting success, and pushes the fresh record back up so the
 // drawer and the calendar card update without a refresh. Removing media never
 // deletes the underlying GalleryImage or ClipAsset.
-export default function AttachMediaPanel({ post, clips = [], galleryImages = [], campaigns = [], releases = [], onAttached }) {
+export default function AttachMediaPanel({ post, clips = [], galleryImages = [], campaigns = [], portfolioItems = [], onAttached }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [busy, setBusy] = useState('');
@@ -170,7 +170,7 @@ export default function AttachMediaPanel({ post, clips = [], galleryImages = [],
         <MediaLibraryPicker
           source={picker}
           campaigns={campaigns}
-          releases={releases}
+          portfolioItems={portfolioItems}
           busy={busy === 'attach'}
           onAttach={(raw) => (picker === 'clips' ? attachClip(raw) : attachGalleryImage(raw))}
           onCancel={() => setPicker('')}

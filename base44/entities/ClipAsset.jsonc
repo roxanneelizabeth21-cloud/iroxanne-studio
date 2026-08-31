@@ -42,9 +42,13 @@
       },
       "description": "Mood / scene tags (e.g. Beach, Sunset, Worship, Studio)"
     },
+    "portfolio_item_id": {
+      "type": "string",
+      "description": "PortfolioItem this clip belongs to. The media collection it is filed under."
+    },
     "linked_song_id": {
       "type": "string",
-      "description": "MusicRelease (album or single) this clip belongs to. Doubles as the media collection it is filed under."
+      "description": "Legacy grouping field \u2014 superseded by portfolio_item_id. The Media Library reads portfolio_item_id first and falls back to this."
     },
     "orientation": {
       "type": "string",

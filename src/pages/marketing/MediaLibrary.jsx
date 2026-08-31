@@ -22,13 +22,13 @@ export default function MediaLibrary() {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [selected, setSelected] = useState(null);
   const [canvaOpen, setCanvaOpen] = useState(false);
-  const [filters, setFilters] = useState({ q: '', type: '', campaign: '', song: '', category: '' });
+  const [filters, setFilters] = useState({ q: '', type: '', campaign: '', project: '', category: '' });
 
   const { data: images = [] } = useQuery({ queryKey: ['gallery-images'], queryFn: () => base44.entities.GalleryImage.list('-created_date') });
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
-  const { data: releases = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
+  const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-date_built') });
 
   const assets = useMemo(() => {
     const imageAssets = images.map((g) => ({
@@ -39,7 +39,7 @@ export default function MediaLibrary() {
       title: g.title || 'Untitled image',
       source: g.source === 'ai_generated' ? 'Generated image' : 'Uploaded image',
       campaign_id: g.campaign_id || '',
-      song_id: g.release_id || g.track_id || '',
+      project_id: g.portfolio_item_id || g.release_id || '',
       format: g.format || '',
       aspect_ratio: g.aspect_ratio || '',
       generation_prompt: g.generation_prompt || '',
@@ -57,7 +57,7 @@ export default function MediaLibrary() {
         title: c.title || 'Untitled video',
         source: 'Video clip',
         campaign_id: '',
-        song_id: c.linked_song_id || '',
+        project_id: c.portfolio_item_id || c.linked_song_id || '',
         format: c.orientation || '',
         aspect_ratio: c.orientation || '',
         generation_prompt: '',
@@ -70,7 +70,7 @@ export default function MediaLibrary() {
   const visible = assets.filter((a) => {
     if (filters.type && a.kind !== filters.type) return false;
     if (filters.campaign && a.campaign_id !== filters.campaign) return false;
-    if (filters.song && a.song_id !== filters.song) return false;
+    if (filters.project && a.project_id !== filters.project) return false;
     if (filters.category && a.media_category !== filters.category) return false;
     if (filters.q && !a.title.toLowerCase().includes(filters.q.toLowerCase())) return false;
     return true;
@@ -159,9 +159,9 @@ export default function MediaLibrary() {
           <option value="">All campaigns</option>
           {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <select value={filters.song} onChange={(e) => setFilters({ ...filters, song: e.target.value })} aria-label="Filter by project">
+        <select value={filters.project} onChange={(e) => setFilters({ ...filters, project: e.target.value })} aria-label="Filter by project">
           <option value="">All projects</option>
-          {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+          {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} aria-label="Filter by type of asset">
           <option value="">All asset types</option>
@@ -176,7 +176,7 @@ export default function MediaLibrary() {
           <p className="text-sm text-muted-foreground mt-1">Upload a graphic or video, and it becomes reusable across every post.</p>
         </div>
       ) : (
-        <MediaCollectionGroups assets={visible} releases={releases} onSelect={setSelected} />
+        <MediaCollectionGroups assets={visible} portfolioItems={portfolioItems} onSelect={setSelected} />
       )}
 
       <CanvaImportDialog
@@ -191,7 +191,7 @@ export default function MediaLibrary() {
         onOpenChange={(o) => !o && setSelected(null)}
         posts={posts}
         campaigns={campaigns}
-        releases={releases}
+        portfolioItems={portfolioItems}
       />
     </div>
   );

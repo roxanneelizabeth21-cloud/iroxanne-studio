@@ -51,7 +51,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
         source_type: 'Stock',
         media_category: 'Promo',
         orientation: draft.aspect === '9:16' ? 'Vertical 9:16' : draft.aspect === '1:1' ? 'Square' : 'Horizontal',
-        linked_song_id: draft.portfolioItemId || '',
+        portfolio_item_id: draft.portfolioItemId || '',
         notes: 'AI generated in Create a Post',
       });
       await patchPost({ ...urlAttachPatch(url), requested_aspect_ratio: draft.aspect });
@@ -93,7 +93,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
           file: url,
           source_type: 'My Footage',
           orientation: draft.aspect === '9:16' ? 'Vertical 9:16' : draft.aspect === '1:1' ? 'Square' : 'Horizontal',
-          linked_song_id: draft.portfolioItemId || '',
+          portfolio_item_id: draft.portfolioItemId || '',
         });
         await patchPost({ ...clipAttachPatch(clip), requested_aspect_ratio: draft.aspect });
       } else {
@@ -102,7 +102,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
           image_url: url,
           category: 'promo',
           source: 'upload',
-          release_id: draft.portfolioItemId || '',
+          portfolio_item_id: draft.portfolioItemId || '',
           campaign_id: draft.campaignId || '',
           aspect_ratio: draft.aspect,
         });

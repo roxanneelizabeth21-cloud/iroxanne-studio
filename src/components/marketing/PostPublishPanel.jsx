@@ -37,7 +37,6 @@ export default function PostPublishPanel({ post: postProp }) {
   useEffect(() => { setMode(post?.publish_mode || 'manual'); }, [post?.id, post?.publish_mode]);
 
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
   const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
   const { data: brandProfiles = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const { data: galleryImages = [] } = useQuery({ queryKey: ['gallery-images'], queryFn: () => base44.entities.GalleryImage.list('-created_date', 200) });
@@ -83,7 +82,7 @@ export default function PostPublishPanel({ post: postProp }) {
         clips={clips}
         galleryImages={galleryImages}
         campaigns={campaigns}
-        releases={releases}
+        portfolioItems={portfolioItems}
         onAttached={(updated) => setFresh(updated)}
       />
       {media.error && !media.hasMedia && <p className="text-xs text-destructive">{media.error}</p>}

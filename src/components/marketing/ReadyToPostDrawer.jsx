@@ -54,7 +54,6 @@ export default function ReadyToPostDrawer({ post: postProp, open, onOpenChange, 
   const canAutoPublish = ['Facebook', 'Instagram'].includes(post?.platform);
 
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
   const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
   const { data: brandProfile } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const { data: galleryImages = [] } = useQuery({ queryKey: ['gallery-images'], queryFn: () => base44.entities.GalleryImage.list('-created_date', 200) });
@@ -127,7 +126,7 @@ export default function ReadyToPostDrawer({ post: postProp, open, onOpenChange, 
               clips={clips}
               galleryImages={galleryImages}
               campaigns={campaigns}
-              releases={releases}
+              portfolioItems={portfolioItems}
               onAttached={(updated) => setFresh(updated)}
             />
             {media.error && !media.hasMedia && (

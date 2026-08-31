@@ -9,11 +9,11 @@ import { mediaType } from '@/lib/postMedia';
 // Visual picker for the Gallery and the Clips library. Selecting a card only
 // selects it — attaching is an explicit, clearly labelled action, so a tap that
 // lands on a scrolling list can never look like a completed attachment.
-export default function MediaLibraryPicker({ source, campaigns = [], releases = [], busy, onAttach, onCancel }) {
+export default function MediaLibraryPicker({ source, campaigns = [], portfolioItems = [], busy, onAttach, onCancel }) {
   const isClips = source === 'clips';
   const [q, setQ] = useState('');
   const [campaign, setCampaign] = useState('');
-  const [song, setSong] = useState('');
+  const [project, setProject] = useState('');
   const [kind, setKind] = useState('');
   const [selected, setSelected] = useState(null);
   const [previewing, setPreviewing] = useState(null);
@@ -32,7 +32,7 @@ export default function MediaLibraryPicker({ source, campaigns = [], releases = 
       url: isClips ? it.file : it.image_url,
       title: it.title || 'Untitled',
       campaignId: it.campaign_id || '',
-      songId: isClips ? it.linked_song_id || '' : it.release_id || '',
+      projectId: it.portfolio_item_id || (isClips ? it.linked_song_id : it.release_id) || '',
       meta: isClips
         ? [it.orientation, it.duration_seconds ? `${it.duration_seconds}s` : null].filter(Boolean).join(' · ')
         : [it.aspect_ratio, it.format].filter(Boolean).join(' · '),
@@ -40,7 +40,7 @@ export default function MediaLibraryPicker({ source, campaigns = [], releases = 
     .filter((r) => r.url)
     .filter((r) => !q || r.title.toLowerCase().includes(q.toLowerCase()))
     .filter((r) => !campaign || r.campaignId === campaign)
-    .filter((r) => !song || r.songId === song)
+    .filter((r) => !project || r.projectId === project)
     .filter((r) => !kind || mediaType(r.url) === kind),
   [items, isClips, q, campaign, song, kind]);
 
@@ -65,10 +65,10 @@ export default function MediaLibraryPicker({ source, campaigns = [], releases = 
             {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         )}
-        {!!releases.length && (
-          <select value={song} onChange={(e) => setSong(e.target.value)} aria-label="Filter by project">
+        {!!portfolioItems.length && (
+          <select value={project} onChange={(e) => setProject(e.target.value)} aria-label="Filter by project">
             <option value="">All projects</option>
-            {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+            {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
           </select>
         )}
         {isClips && (

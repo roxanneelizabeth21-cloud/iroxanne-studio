@@ -2,11 +2,11 @@ import MediaTile from '@/components/marketing/MediaTile';
 
 // Groups the library into collections — each project, then Unfiled —
 // so browsing feels like folders instead of one endless wall of images.
-export default function MediaCollectionGroups({ assets, releases, onSelect }) {
-  const byId = new Map(releases.map((r) => [r.id, r]));
+export default function MediaCollectionGroups({ assets, portfolioItems, onSelect }) {
+  const byId = new Map(portfolioItems.map((r) => [r.id, r]));
   const groups = new Map();
   assets.forEach((a) => {
-    const key = byId.has(a.song_id) ? a.song_id : '';
+    const key = byId.has(a.project_id) ? a.project_id : '';
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(a);
   });

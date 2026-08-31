@@ -87,13 +87,17 @@
       "type": "string",
       "description": "Campaign this image belongs to"
     },
+    "portfolio_item_id": {
+      "type": "string",
+      "description": "PortfolioItem this image belongs to. The media collection it is filed under."
+    },
     "release_id": {
       "type": "string",
-      "description": "MusicRelease (album or single) this image belongs to. Doubles as the media collection it is filed under."
+      "description": "Legacy grouping field \u2014 superseded by portfolio_item_id. Still written by the Case Study Canvas and Carousel Ads flows; the Media Library reads portfolio_item_id first and falls back to this."
     },
     "track_id": {
       "type": "string",
-      "description": "Track this image relates to"
+      "description": "Legacy \u2014 reserved for the Carousel Ads flow. Not used by the Media Library."
     },
     "product_id": {
       "type": "string",

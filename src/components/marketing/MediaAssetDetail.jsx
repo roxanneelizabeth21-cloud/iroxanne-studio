@@ -27,7 +27,7 @@ function Row({ label, value }) {
 
 // Focused detail panel for one media asset: full preview, where it's used, and
 // the actions that matter — attach, download, share.
-export default function MediaAssetDetail({ asset, open, onOpenChange, posts = [], campaigns = [], releases = [] }) {
+export default function MediaAssetDetail({ asset, open, onOpenChange, posts = [], campaigns = [], portfolioItems = [] }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [attachTo, setAttachTo] = useState('');
@@ -147,7 +147,7 @@ export default function MediaAssetDetail({ asset, open, onOpenChange, posts = []
   };
 
   const campaignName = campaigns.find((c) => c.id === asset.campaign_id)?.name || '';
-  const songTitle = releases.find((r) => r.id === asset.song_id)?.title || '';
+  const projectTitle = portfolioItems.find((r) => r.id === asset.project_id)?.title || '';
 
   return (
     <Sheet open={open} onOpenChange={(o) => { if (!o) { setCanvaUrl(''); setDesignId(''); } onOpenChange(o); }}>
@@ -168,14 +168,14 @@ export default function MediaAssetDetail({ asset, open, onOpenChange, posts = []
         <div className="mt-4">
           <Row label="Type" value={asset.kind === 'video' ? 'Video' : 'Image'} />
           <Row label="Campaign" value={campaignName} />
-          <Row label="Project" value={songTitle} />
+          <Row label="Project" value={projectTitle} />
           <Row label="Format" value={asset.format} />
           <Row label="Composed for" value={asset.aspect_ratio} />
           <Row label="Generated from" value={asset.generation_prompt} />
           <Row label="Used by" value={usedBy.length ? `${usedBy.length} post${usedBy.length === 1 ? '' : 's'}` : 'Not used yet'} />
         </div>
 
-        <MediaFilingFields key={asset.id} asset={asset} releases={releases} />
+        <MediaFilingFields key={asset.id} asset={asset} portfolioItems={portfolioItems} />
 
         <div className="mt-4 space-y-2">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide" htmlFor="attach-post">Attach to post</label>
