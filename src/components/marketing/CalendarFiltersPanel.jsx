@@ -4,7 +4,7 @@ import DateField from '@/components/marketing/DateField';
 
 // The calendar's advanced filters, hidden until the owner opens them. Selections
 // are held by the calendar page, so closing the panel never clears them.
-export default function CalendarFiltersPanel({ filters, setFilters, campaigns, releases, onClear, activeCount }) {
+export default function CalendarFiltersPanel({ filters, setFilters, campaigns, projects, onClear, activeCount }) {
   const set = (patch) => setFilters({ ...filters, ...patch });
 
   return (
@@ -14,9 +14,9 @@ export default function CalendarFiltersPanel({ filters, setFilters, campaigns, r
           <option value="">All campaigns</option>
           {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <select value={filters.song} onChange={(e) => set({ song: e.target.value })} aria-label="Filter by song or release">
-          <option value="">All songs</option>
-          {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+        <select value={filters.project} onChange={(e) => set({ project: e.target.value })} aria-label="Filter by project">
+          <option value="">All projects</option>
+          {projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select value={filters.platform} onChange={(e) => set({ platform: e.target.value })} aria-label="Filter by platform">
           <option value="">All platforms</option>

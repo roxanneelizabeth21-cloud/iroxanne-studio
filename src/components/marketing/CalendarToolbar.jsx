@@ -49,7 +49,7 @@ export default function CalendarToolbar({
           <Input
             value={filters.q}
             onChange={(e) => setFilters({ ...filters, q: e.target.value })}
-            placeholder="Search captions, campaigns, songs"
+            placeholder="Search captions, campaigns, projects"
             aria-label="Search posts"
             className="pl-8"
           />

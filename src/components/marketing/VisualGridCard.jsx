@@ -1,4 +1,4 @@
-import { Play, Lock, Clock, Megaphone, Music2, Zap, ExternalLink, GripVertical } from 'lucide-react';
+import { Play, Lock, Clock, Megaphone, Briefcase, Zap, ExternalLink, GripVertical } from 'lucide-react';
 import { STATUS_STYLES } from '@/lib/marketing';
 import { mediaState, isLocked, displayTime, publishTargets, platformResult, shortTimezone } from '@/lib/postValidation';
 import PlatformBadges from '@/components/marketing/PlatformBadges';
@@ -51,7 +51,7 @@ function MediaArea({ post, state, playing, onPlay }) {
 // A vertical visual-calendar card: date header, large media, then status /
 // platform / media-type / campaign / share actions.
 export default function VisualGridCard({
-  post, clips = [], campaignName, releaseTitle, timezone, brandProfile,
+  post, clips = [], campaignName, projectTitle, timezone, brandProfile,
   onOpen, onShare, onPublish, onManual, onMore, onDelete, playing, onPlay,
   draggable = true, onDragStart, onDragEnd, dragHandleProps, dragging = false, moving = false,
 }) {
@@ -143,16 +143,16 @@ export default function VisualGridCard({
           )}
         </div>
 
-        {(campaignName || releaseTitle) && (
+        {(campaignName || projectTitle) && (
           <div className="space-y-0.5">
             {campaignName && (
               <p className="text-[10px] text-muted-foreground flex items-center gap-1 truncate">
                 <Megaphone className="h-2.5 w-2.5 shrink-0" aria-hidden="true" /> {campaignName}
               </p>
             )}
-            {releaseTitle && (
+            {projectTitle && (
               <p className="text-[10px] text-muted-foreground flex items-center gap-1 truncate">
-                <Music2 className="h-2.5 w-2.5 shrink-0" aria-hidden="true" /> {releaseTitle}
+                <Briefcase className="h-2.5 w-2.5 shrink-0" aria-hidden="true" /> {projectTitle}
               </p>
             )}
           </div>

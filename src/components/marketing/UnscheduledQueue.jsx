@@ -6,7 +6,7 @@ import PlatformBadges from '@/components/marketing/PlatformBadges';
 
 // Posts with no scheduled date. Published, cancelled, skipped posts never appear here.
 export default function UnscheduledQueue({
-  posts, clips = [], campaignName, releaseTitle, onOpen, onMove, onDragStart, onDragEnd, dragHandleProps, dragId,
+  posts, clips = [], campaignName, projectTitle, onOpen, onMove, onDragStart, onDragEnd, dragHandleProps, dragId,
 }) {
   return (
     <div className="glass rounded-2xl p-3 space-y-2">
@@ -57,7 +57,7 @@ export default function UnscheduledQueue({
                   <p className="text-[11px] line-clamp-2">{p.hook || p.caption || p.format}</p>
                   <div className="flex items-center gap-1"><PlatformBadges post={p} /><span className="text-[10px] text-muted-foreground">{p.status}</span></div>
                   {campaignName(p) && <p className="text-[10px] text-muted-foreground truncate">{campaignName(p)}</p>}
-                  {releaseTitle(p) && <p className="text-[10px] text-muted-foreground truncate">{releaseTitle(p)}</p>}
+                  {projectTitle(p) && <p className="text-[10px] text-muted-foreground truncate">{projectTitle(p)}</p>}
                   <p className="text-[10px] text-muted-foreground">Created {new Date(p.created_date).toLocaleDateString()}</p>
                   <MediaStatusBadge post={p} clips={clips} />
                 </div>

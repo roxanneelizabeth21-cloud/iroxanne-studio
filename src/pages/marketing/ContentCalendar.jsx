@@ -26,11 +26,12 @@ import {
 import {
   monthMatrix, weekRange, dateKey, postsByDate, STATUS_STYLES, formatDate, POST_STATUSES,
 } from '@/lib/marketing';
+import { pageUrl, defaultLinkTarget, consultBookingUrl } from '@/lib/postLink';
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const VIEW_KEY = 'roxsan-cal-view';
 const EMPTY_FILTERS = {
-  campaign: '', platform: '', status: '', song: '', media: '', approval: '', flag: '', from: '', to: '', q: '',
+  campaign: '', platform: '', status: '', project: '', media: '', approval: '', flag: '', from: '', to: '', q: '',
 };
 
 const VIEWS = [
@@ -75,17 +76,18 @@ export default function ContentCalendar() {
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: campaigns = [] } = useQuery({ queryKey: ['marketing-campaigns'], queryFn: () => base44.entities.Campaign.list() });
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list() });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
   const { data: brandProfiles = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
 
   const brandProfile = brandProfiles[0];
   const timezone = schedulingTimezone(brandProfile);
   const postShareUrl = (p) => {
-    const slug = p && releases.find((r) => r.id === p.song_id)?.slug;
-    return slug ? `${window.location.origin}/release/${slug}` : `${window.location.origin}/music`;
+    const item = p && projects.find((r) => r.id === p.portfolio_item_id);
+    const target = p?.link_target || defaultLinkTarget(item);
+    return pageUrl(item, target) || consultBookingUrl();
   };
   const campaignName = (p) => campaigns.find((c) => c.id === p?.campaign_id)?.name || '';
-  const releaseTitle = (p) => releases.find((r) => r.id === p?.song_id)?.title || '';
+  const projectTitle = (p) => projects.find((r) => r.id === p?.portfolio_item_id)?.title || '';
 
   // Reminder links (?post=<id>) open that post's page directly.
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function ContentCalendar() {
     if (filters.campaign && p.campaign_id !== filters.campaign) return false;
     if (filters.platform && !publishTargets(p).includes(filters.platform) && p.platform !== filters.platform) return false;
     if (filters.status && p.status !== filters.status) return false;
-    if (filters.song && p.song_id !== filters.song) return false;
+    if (filters.project && p.portfolio_item_id !== filters.project) return false;
     if (filters.media === 'has' && !hasValidMedia(p, clips)) return false;
     if (filters.media === 'none' && hasValidMedia(p, clips)) return false;
     if (filters.approval && (p.approval_status || 'Not Reviewed') !== filters.approval) return false;
@@ -161,11 +163,11 @@ export default function ContentCalendar() {
     if (filters.to && (!p.scheduled_date || p.scheduled_date > filters.to)) return false;
     if (filters.q) {
       const q = filters.q.toLowerCase();
-      const hay = [p.caption, p.hook, p.cta, campaignName(p), releaseTitle(p)].filter(Boolean).join(' ').toLowerCase();
+      const hay = [p.caption, p.hook, p.cta, campaignName(p), projectTitle(p)].filter(Boolean).join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
-  }), [posts, filters, clips, campaigns, releases]); // eslint-disable-line react-hooks/exhaustive-deps
+  }), [posts, filters, clips, campaigns, projects]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scheduled = useMemo(
     () => filtered.filter((p) => p.scheduled_date).sort((a, b) => (
@@ -245,7 +247,7 @@ export default function ContentCalendar() {
     post: p,
     clips,
     campaignName: campaignName(p),
-    releaseTitle: releaseTitle(p),
+    projectTitle: projectTitle(p),
     timezone,
     brandProfile,
     onOpen: () => openPost(p),
@@ -310,7 +312,7 @@ export default function ContentCalendar() {
             filters={filters}
             setFilters={setFilters}
             campaigns={campaigns}
-            releases={releases}
+            projects={projects}
             activeCount={activeFilterCount}
             onClear={() => setFilters({ ...EMPTY_FILTERS, q: filters.q })}
           />
@@ -483,7 +485,7 @@ export default function ContentCalendar() {
             posts={unscheduled}
             clips={clips}
             campaignName={campaignName}
-            releaseTitle={releaseTitle}
+            projectTitle={projectTitle}
             onOpen={(p) => openPost(p)}
             onMove={(p) => setMovingPost(p)}
             onDragStart={startDrag}
@@ -510,7 +512,7 @@ export default function ContentCalendar() {
           onOpenChange={(o) => !o && setReview(null)}
           onEdit={(p) => openPost(p)}
           campaignName={campaignName(review.post)}
-          releaseTitle={releaseTitle(review.post)}
+          projectTitle={projectTitle(review.post)}
           timezone={timezone}
         />
       )}

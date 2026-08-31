@@ -15,17 +15,17 @@ import { MEDIA_CATEGORIES, guessCategory } from '@/lib/mediaCategories';
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 const SIZE_WARN = 60 * 1024 * 1024; // 60MB gentle warning threshold
 
-function UploadForm({ releases, onDone }) {
+function UploadForm({ projects, onDone }) {
   const { toast } = useToast();
   const qc = useQueryClient();
-  const [rows, setRows] = useState([]); // {file, title, source_type, moods, orientation, linked_song_id, notes}
+  const [rows, setRows] = useState([]); // {file, title, source_type, moods, orientation, portfolio_item_id, notes}
   const [busy, setBusy] = useState(false);
   const inputRef = useRef(null);
 
   const addFiles = (files) => {
     const next = [...files].map((f) => ({
       file: f, title: f.name.replace(/\.[^.]+$/, ''),
-      source_type: 'My Footage', moods: [], orientation: 'Vertical 9:16', linked_song_id: '', notes: '',
+      source_type: 'My Footage', moods: [], orientation: 'Vertical 9:16', portfolio_item_id: '', notes: '',
       media_category: guessCategory(f.name),
     }));
     setRows((r) => [...r, ...next]);
@@ -51,7 +51,7 @@ function UploadForm({ releases, onDone }) {
           file: file_url,
           source_type: r.source_type,
           moods: r.moods,
-          linked_song_id: r.linked_song_id || undefined,
+          portfolio_item_id: r.portfolio_item_id || undefined,
           media_category: r.media_category || undefined,
           orientation: r.orientation,
           notes: r.notes.trim(),
@@ -100,10 +100,10 @@ function UploadForm({ releases, onDone }) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground">Linked song (optional)</label>
-                  <select value={r.linked_song_id} onChange={(e) => setRow(i, 'linked_song_id', e.target.value)} className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm">
+                  <label className="text-[10px] text-muted-foreground">Project (optional)</label>
+                  <select value={r.portfolio_item_id} onChange={(e) => setRow(i, 'portfolio_item_id', e.target.value)} className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm">
                     <option value="">None</option>
-                    {releases.map((rl) => <option key={rl.id} value={rl.id}>{rl.title}</option>)}
+                    {projects.map((rl) => <option key={rl.id} value={rl.id}>{rl.title}</option>)}
                   </select>
                 </div>
                 <div>
@@ -139,23 +139,23 @@ export default function ClipLibrary() {
   const [q, setQ] = useState('');
   const [fMood, setFMood] = useState('');
   const [fSource, setFSource] = useState('');
-  const [fSong, setFSong] = useState('');
+  const [fProject, setFProject] = useState('');
   const [fOrient, setFOrient] = useState('');
   const [fType, setFType] = useState('');
   const [fKind, setFKind] = useState('');
-  const [groupBy, setGroupBy] = useState('album');
+  const [groupBy, setGroupBy] = useState('project');
   const [showUpload, setShowUpload] = useState(false);
 
   const { data: clips = [], isLoading } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
-  const { data: releases = [] } = useQuery({ queryKey: ['releases-admin'], queryFn: () => base44.entities.MusicRelease.list('-created_date') });
+  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list('-created_date') });
 
-  const songTitle = (id) => releases.find((r) => r.id === id)?.title || '';
+  const projectTitle = (id) => projects.find((r) => r.id === id)?.title || '';
 
   const filtered = clips.filter((c) => {
     if (q && !(`${c.title} ${c.notes} ${(c.moods || []).join(' ')}`.toLowerCase().includes(q.toLowerCase()))) return false;
     if (fMood && !(c.moods || []).includes(fMood)) return false;
     if (fSource && c.source_type !== fSource) return false;
-    if (fSong && c.linked_song_id !== fSong) return false;
+    if (fProject && c.portfolio_item_id !== fProject) return false;
     if (fOrient && c.orientation !== fOrient) return false;
     if (fType && (c.media_category || '') !== fType) return false;
     if (fKind && (isVideoFile(c.file) ? 'video' : 'image') !== fKind) return false;
@@ -167,8 +167,8 @@ export default function ClipLibrary() {
     if (groupBy === 'none') return [{ key: 'all', label: `All clips (${filtered.length})`, items: filtered }];
     const map = new Map();
     for (const c of filtered) {
-      const label = groupBy === 'album'
-        ? (songTitle(c.linked_song_id) || 'Unfiled — no album or song')
+      const label = groupBy === 'project'
+        ? (projectTitle(c.portfolio_item_id) || 'Unfiled — no project')
         : groupBy === 'type'
           ? (c.media_category || 'Untyped')
           : isVideoFile(c.file) ? 'Videos' : 'Images';
@@ -195,9 +195,9 @@ export default function ClipLibrary() {
     <div className="space-y-4">
       <HowThisWorks
         steps={[
-          'Add clips with the Add clips button, then tag each one with its moods, orientation and song.',
+          'Add clips with the Add clips button, then tag each one with its moods, orientation and project.',
           'Vertical 9:16 clips work best — they are what reels and stories need.',
-          'Use the filters to find the right clip by mood, source, song or shape.',
+          'Use the filters to find the right clip by mood, source, project or shape.',
           'Tagged clips get matched automatically when you build a video post or a reel.',
         ]}
         note="Canva exports and stock footage belong here too — anything you would reuse in a video."
@@ -209,7 +209,7 @@ export default function ClipLibrary() {
         </Button>
       </div>
 
-      {showUpload && <UploadForm releases={releases} onDone={() => setShowUpload(false)} />}
+      {showUpload && <UploadForm projects={projects} onDone={() => setShowUpload(false)} />}
 
       {/* Filters */}
       <div className="glass rounded-xl p-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 items-center">
@@ -223,8 +223,8 @@ export default function ClipLibrary() {
         <select value={fSource} onChange={(e) => setFSource(e.target.value)} className="h-8 rounded-md border border-input bg-background px-2 text-sm">
           <option value="">All sources</option>{CLIP_SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={fSong} onChange={(e) => setFSong(e.target.value)} className="h-8 rounded-md border border-input bg-background px-2 text-sm">
-          <option value="">All songs</option>{releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+        <select value={fProject} onChange={(e) => setFProject(e.target.value)} className="h-8 rounded-md border border-input bg-background px-2 text-sm">
+          <option value="">All projects</option>{projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select value={fOrient} onChange={(e) => setFOrient(e.target.value)} className="h-8 rounded-md border border-input bg-background px-2 text-sm">
           <option value="">All orientations</option>{ORIENTATIONS.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -238,7 +238,7 @@ export default function ClipLibrary() {
           <option value="image">Images only</option>
         </select>
         <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)} aria-label="Group by" className="h-8 rounded-md border border-input bg-background px-2 text-sm">
-          <option value="album">Group by album or song</option>
+          <option value="project">Group by project</option>
           <option value="type">Group by clip type</option>
           <option value="kind">Group by video or image</option>
           <option value="none">No grouping</option>
@@ -258,7 +258,7 @@ export default function ClipLibrary() {
             <div key={g.key} className="space-y-2">
               <h2 className="font-display text-sm font-semibold">{g.label}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {g.items.map((c) => <ClipCard key={c.id} clip={c} releases={releases} onDelete={del} />)}
+                {g.items.map((c) => <ClipCard key={c.id} clip={c} projects={projects} onDelete={del} />)}
               </div>
             </div>
           ))}

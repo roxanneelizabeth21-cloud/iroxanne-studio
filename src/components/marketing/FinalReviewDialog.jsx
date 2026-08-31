@@ -34,7 +34,7 @@ function PlatformRow({ platform, state, error, url }) {
 // Final Review — opening this NEVER publishes. Only "Confirm and Publish"
 // invokes the real publishPostToSocial function.
 export default function FinalReviewDialog({
-  post, clips = [], platforms = [], open, onOpenChange, onEdit, campaignName, releaseTitle, timezone,
+  post, clips = [], platforms = [], open, onOpenChange, onEdit, campaignName, projectTitle, timezone,
 }) {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -108,7 +108,7 @@ export default function FinalReviewDialog({
 
           <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
             <div><dt className="text-muted-foreground inline">Campaign: </dt><dd className="inline">{campaignName || '—'}</dd></div>
-            <div><dt className="text-muted-foreground inline">Song / release: </dt><dd className="inline">{releaseTitle || '—'}</dd></div>
+            <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{projectTitle || '—'}</dd></div>
             <div><dt className="text-muted-foreground inline">Format: </dt><dd className="inline">{post.format}</dd></div>
             <div><dt className="text-muted-foreground inline">Approval: </dt><dd className="inline">{post.approval_status || 'Not Reviewed'}</dd></div>
             <div className="col-span-2">

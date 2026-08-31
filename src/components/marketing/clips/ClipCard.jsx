@@ -8,9 +8,9 @@ import ClipThumb, { isVideoFile } from '@/components/marketing/ClipThumb';
 import { formatDuration } from '@/lib/marketing';
 import { MEDIA_CATEGORIES } from '@/lib/mediaCategories';
 
-// One clip in the library: shows what it is (video or image, album/song, type)
+// One clip in the library: shows what it is (video or image, project, type)
 // and lets that filing be corrected inline.
-export default function ClipCard({ clip, releases, onDelete }) {
+export default function ClipCard({ clip, projects, onDelete }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [saving, setSaving] = useState(false);
@@ -48,14 +48,14 @@ export default function ClipCard({ clip, releases, onDelete }) {
         <p className="text-xs font-medium truncate">{clip.title}</p>
         <p className="text-[10px] text-muted-foreground truncate">{clip.orientation} · {clip.source_type}</p>
         <select
-          value={clip.linked_song_id || ''}
+          value={clip.portfolio_item_id || ''}
           disabled={saving}
-          aria-label="Album or song"
-          onChange={(e) => save({ linked_song_id: e.target.value })}
+          aria-label="Project"
+          onChange={(e) => save({ portfolio_item_id: e.target.value })}
           className="h-7 text-[11px]"
         >
-          <option value="">Unfiled album/song</option>
-          {releases.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+          <option value="">Unfiled project</option>
+          {projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select
           value={clip.media_category || ''}
