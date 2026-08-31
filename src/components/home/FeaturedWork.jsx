@@ -5,7 +5,7 @@ export default function FeaturedWork({ items, loading }) {
   return (
     <section id="work" className="mx-auto max-w-6xl border-t border-border px-6 py-20">
       <div>
-        <h2 className="font-sans text-3xl font-bold tracking-tight">Selected work</h2>
+        <h2 className="font-sans text-3xl font-bold tracking-tight">Our work</h2>
         <p className="mt-2 text-muted-foreground">I build for anyone.</p>
       </div>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
