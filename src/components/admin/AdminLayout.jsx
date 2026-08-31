@@ -38,13 +38,13 @@ const MARKETING_NAV = [
   { to: '/marketing/meta-ads', label: 'All Meta Ads', Icon: BarChart3, subtitle: 'Every ad in your Meta ad accounts and how it is doing' },
   { to: '/marketing/templates', label: 'Templates', Icon: LayoutTemplate, subtitle: 'Reusable content templates' },
   { to: '/marketing/clips', label: 'Clips', Icon: Clapperboard, subtitle: 'Short videos ready to use in posts' },
-  { to: '/marketing/controls', label: 'Automation Controls', Icon: ToggleLeft, subtitle: 'Switch campaigns and song rotation on or off in one place' },
+  { to: '/marketing/controls', label: 'Automation Controls', Icon: ToggleLeft, subtitle: 'Switch campaigns and project rotation on or off in one place' },
   { to: '/marketing/brand', label: 'Brand', Icon: UserCircle, subtitle: 'Brand profile, voice and connections' },
 ];
 
 // Pages kept for existing links and workflows, but no longer primary destinations.
 const MARKETING_SECONDARY = [
-  { to: '/marketing/strategist', label: 'Roxsan Amplify', Icon: Bot, subtitle: 'Chat with your marketing agent' },
+  { to: '/marketing/strategist', label: 'Strategist', Icon: Bot, subtitle: 'Chat with your marketing agent' },
   { to: '/marketing/today', label: 'Today', Icon: Sun, subtitle: "Today's posts and daily workflow" },
   { to: '/marketing/performance', label: 'Performance', Icon: BarChart3, subtitle: 'Post and campaign analytics' },
 ];

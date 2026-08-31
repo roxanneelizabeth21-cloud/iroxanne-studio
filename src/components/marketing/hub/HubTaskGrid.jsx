@@ -3,10 +3,10 @@ import { Image, FileText, Film, Megaphone, FolderOpen, TrendingUp } from 'lucide
 
 // The hub's only job: six clear entry points, nothing competing.
 const TASKS = [
-  { to: '/marketing/canvas', icon: Image, title: 'Create a Canvas', desc: 'A colour-matched promo card from your cover art' },
+  { to: '/marketing/canvas', icon: Image, title: 'Case Study Canvas', desc: 'A colour-matched case-study card from your project screenshots' },
   { to: '/marketing/post', icon: FileText, title: 'Create a Post', desc: 'One post, guided end to end' },
   { to: '/marketing/reel', icon: Film, title: 'Create a Reel', desc: 'Plan a short video from your clips' },
-  { to: '/marketing/campaigns', icon: Megaphone, title: 'Create a Campaign', desc: 'A full release plan on the calendar' },
+  { to: '/marketing/campaigns', icon: Megaphone, title: 'Create a Campaign', desc: 'A full project campaign on the calendar' },
   { to: '/marketing/media', icon: FolderOpen, title: 'Media Library', desc: 'All your images and clips, by category' },
   { to: '/marketing/performance', icon: TrendingUp, title: 'Performance', desc: "How posts are doing, and what's ready to promote" },
 ];

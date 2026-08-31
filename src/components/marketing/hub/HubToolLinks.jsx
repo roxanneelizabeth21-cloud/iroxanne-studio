@@ -7,7 +7,6 @@ const LINKS = [
   { to: '/marketing/clips', label: 'Clips' },
   { to: '/marketing/templates', label: 'Templates' },
   { to: '/marketing/brand', label: 'Brand' },
-  { to: '/admin/songs', label: 'Song Profiles' },
   { to: '/marketing/meta-ads', label: 'Meta Ads' },
   { to: '/marketing/carousel-ads', label: 'Carousel Ads' },
   { to: '/marketing/strategist', label: 'Strategist' },

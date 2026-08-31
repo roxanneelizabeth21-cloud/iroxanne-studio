@@ -14,7 +14,7 @@ export default function CanvasStepSave({ release, design, preset, cta, preview, 
       <CanvasPreview preview={preview} rendering={rendering} />
 
       <dl className="grid gap-1 text-sm sm:grid-cols-2">
-        <div><dt className="text-muted-foreground inline">Release: </dt><dd className="inline">{release?.title || '—'}</dd></div>
+        <div><dt className="text-muted-foreground inline">Project: </dt><dd className="inline">{release?.title || '—'}</dd></div>
         <div><dt className="text-muted-foreground inline">Built for: </dt><dd className="inline">{preset?.label}</dd></div>
         <div><dt className="text-muted-foreground inline">Size: </dt><dd className="inline">{preset ? `${preset.ratio} · ${preset.w}×${preset.h}` : '—'}</dd></div>
         <div><dt className="text-muted-foreground inline">Call to action: </dt><dd className="inline">{cta || 'None'}</dd></div>
