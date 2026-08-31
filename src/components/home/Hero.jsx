@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import HeroOrbital from '@/components/home/HeroOrbital';
 
 export default function Hero({ projects, loading }) {
   const trustNames = !loading
@@ -19,7 +20,7 @@ export default function Hero({ projects, loading }) {
     <section
       className="
         relative isolate overflow-hidden
-        bg-background
+        bg-[#15162B]
         pt-[82px]
       "
     >
@@ -60,81 +61,8 @@ export default function Hero({ projects, loading }) {
         "
       />
 
-      {/* =========================================
-          LARGE LIGHT ORBITS
-          This recreates the right-side visual
-          from the top-left concept.
-      ========================================== */}
-
-      <div className="pointer-events-none absolute inset-0 hidden lg:block">
-
-        {/* outer faint orbit */}
-        <div
-          className="
-            absolute
-            right-[-185px] top-[135px]
-            h-[330px] w-[770px]
-            rotate-[-13deg]
-            rounded-[50%]
-            border border-[#B45991]/22
-          "
-        />
-
-        {/* large purple orbit */}
-        <div
-          className="
-            absolute
-            right-[-125px] top-[165px]
-            h-[260px] w-[650px]
-            rotate-[-13deg]
-            rounded-[50%]
-            border border-[#A95394]/45
-            shadow-[0_0_18px_rgba(169,83,148,0.20)]
-          "
-        />
-
-        {/* primary bright rose orbit */}
-        <div
-          className="
-            absolute
-            right-[-70px] top-[200px]
-            h-[205px] w-[555px]
-            rotate-[-13deg]
-            rounded-[50%]
-            border border-[#E06B81]/75
-            shadow-[0_0_14px_rgba(224,107,129,0.45),0_0_38px_rgba(209,71,94,0.20)]
-          "
-        />
-
-        {/* brightest inner orbit */}
-        <div
-          className="
-            absolute
-            right-[-5px] top-[236px]
-            h-[135px] w-[435px]
-            rotate-[-13deg]
-            rounded-[50%]
-            border border-[#FF987D]/70
-            shadow-[0_0_12px_rgba(255,152,125,0.65),0_0_30px_rgba(209,71,94,0.30)]
-          "
-        />
-
-        {/* brightest arc highlight */}
-        <div
-          className="
-            absolute
-            right-[40px] top-[258px]
-            h-[91px] w-[345px]
-            rotate-[-13deg]
-            rounded-[50%]
-            border-r-[2px]
-            border-t-[2px]
-            border-[#FFD0BF]/85
-            blur-[0.2px]
-            drop-shadow-[0_0_8px_rgba(255,170,150,0.8)]
-          "
-        />
-      </div>
+      {/* Abstract luminous orbital artwork (right side). No logo / text / icon. */}
+      <HeroOrbital />
 
       {/* =========================================
           HERO CONTENT
@@ -159,7 +87,7 @@ export default function Hero({ projects, loading }) {
                 text-[50px] font-semibold
                 leading-[0.98]
                 tracking-[-0.045em]
-                text-foreground
+                text-[#F4F2F0]
                 sm:text-[62px]
                 md:text-[72px]
                 lg:text-[76px]
@@ -192,7 +120,7 @@ export default function Hero({ projects, loading }) {
               className="
                 mt-7 max-w-[460px]
                 text-[15px] leading-7
-                text-muted-foreground
+                text-white/58
                 sm:text-base
               "
             >
@@ -228,13 +156,13 @@ export default function Hero({ projects, loading }) {
                 variant="outline"
                 className="
                   h-11 rounded-lg
-                  border-border
+                  border-white/20
                   bg-transparent
                   px-6
-                  text-[13px] font-semibold text-foreground
-                  hover:border-primary/40
-                  hover:bg-muted
-                  hover:text-foreground
+                  text-[13px] font-semibold text-white
+                  hover:border-white/30
+                  hover:bg-white/[0.05]
+                  hover:text-white
                 "
               >
                 <a href="#work">
@@ -246,19 +174,6 @@ export default function Hero({ projects, loading }) {
 
           </div>
 
-          {/* Hero brand graphic — iRoxanne Studio monogram.
-              The PNG ships on a solid black background; mix-blend-screen
-              drops the black and keeps only the bright logo, so it glows
-              on the dark indigo hero instead of reading as a pasted box. */}
-          <img
-            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/ff9831304_Untitled.png"
-            alt="iRoxanne Studio"
-            draggable="false"
-            className="hidden h-[200px] w-[200px] select-none object-contain mix-blend-screen dark:block md:block md:ml-auto md:h-[280px] md:w-[280px] lg:h-[340px] lg:w-[340px]"
-            />
-            <span className="hidden select-none text-right md:block md:ml-auto dark:hidden">
-            <span className="ir-gradient-text font-display text-6xl font-semibold tracking-tight lg:text-8xl">iRoxanne</span>
-            </span>
 
         </div>
 
@@ -270,7 +185,7 @@ export default function Hero({ projects, loading }) {
 
           {trustNames.length > 0 ? (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground/60">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
                 Selected work
               </p>
 
@@ -287,7 +202,7 @@ export default function Hero({ projects, loading }) {
                     key={name}
                     className="
                       text-sm font-semibold
-                      tracking-wide text-muted-foreground
+                      tracking-wide text-white/35
                     "
                   >
                     {name}
@@ -297,7 +212,7 @@ export default function Hero({ projects, loading }) {
             </>
           ) : (
             <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground/60">
+              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-white/28">
                 Designed for businesses ready to work smarter
               </p>
 
@@ -306,7 +221,7 @@ export default function Hero({ projects, loading }) {
                   flex flex-wrap items-center justify-center
                   gap-x-8 gap-y-3
                   text-[12px] font-medium
-                  text-muted-foreground
+                  text-white/32
                 "
               >
                 <span>Custom Apps</span>
@@ -332,7 +247,7 @@ export default function Hero({ projects, loading }) {
           h-px
           bg-gradient-to-r
           from-transparent
-          via-border
+          via-white/10
           to-transparent
         "
       />

@@ -7,7 +7,7 @@ export default function SiteNav() {
     <header
       className="
         absolute inset-x-0 top-0 z-50
-        border-b border-border/40
+        border-b border-white/[0.04]
         bg-transparent
       "
     >
@@ -24,53 +24,50 @@ export default function SiteNav() {
             src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/7380fe8cf_CodexImageAug31202603_50_41PM.png"
             alt="iRoxanne Studio"
             draggable="false"
-            className="hidden h-12 w-auto object-contain mix-blend-screen dark:block md:h-14"
+            className="h-12 w-auto object-contain mix-blend-screen md:h-14"
           />
-          <span className="font-sans text-xl font-semibold tracking-tight text-foreground dark:hidden">
-            <span className="ir-gradient-text">iR</span>oxanne Studio
-          </span>
         </a>
 
         {/* Desktop navigation */}
         <nav className="hidden items-center gap-9 md:flex">
           <a
             href="#services"
-            className="text-[13px] font-medium text-muted-foreground transition hover:text-foreground"
+            className="text-[13px] font-medium text-white/65 transition hover:text-white"
           >
             Services
           </a>
 
           <a
             href="#work"
-            className="text-[13px] font-medium text-muted-foreground transition hover:text-foreground"
+            className="text-[13px] font-medium text-white/65 transition hover:text-white"
           >
             Work
           </a>
 
           <a
             href="#process"
-            className="text-[13px] font-medium text-muted-foreground transition hover:text-foreground"
+            className="text-[13px] font-medium text-white/65 transition hover:text-white"
           >
             Process
           </a>
 
           <a
             href="#about"
-            className="text-[13px] font-medium text-muted-foreground transition hover:text-foreground"
+            className="text-[13px] font-medium text-white/65 transition hover:text-white"
           >
             About
           </a>
 
           <a
             href="/contact"
-            className="text-[13px] font-medium text-muted-foreground transition hover:text-foreground"
+            className="text-[13px] font-medium text-white/65 transition hover:text-white"
           >
             Contact
           </a>
         </nav>
 
         <div className="flex items-center gap-3">
-          <ThemeToggle />
+          <div className="text-white/75"><ThemeToggle /></div>
           <Button
             asChild
             className="
@@ -95,8 +92,8 @@ export default function SiteNav() {
             aria-label="Open navigation"
             className="
               flex h-10 w-10 items-center justify-center
-              rounded-lg border border-border
-              bg-muted
+              rounded-lg border border-white/10
+              bg-white/[0.04]
               md:hidden
             "
           >
