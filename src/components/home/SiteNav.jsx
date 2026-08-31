@@ -26,9 +26,12 @@ export default function SiteNav() {
             draggable="false"
             className="hidden h-12 w-auto object-contain mix-blend-screen dark:block md:h-14"
           />
-          <span className="font-sans text-xl font-semibold tracking-tight text-foreground dark:hidden">
-            <span className="ir-gradient-text">iR</span>oxanne Studio
-          </span>
+          <img
+            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/3c870c3bc_CodexImageAug31202605_02_37PM.png"
+            alt="iRoxanne Studio"
+            draggable="false"
+            className="h-12 w-auto rounded-lg object-contain dark:hidden md:h-14"
+          />
         </a>
 
         {/* Desktop navigation */}
