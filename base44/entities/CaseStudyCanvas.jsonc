@@ -1,0 +1,94 @@
+{
+  "name": "CaseStudyCanvas",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Name of this canvas card"
+    },
+    "portfolio_item_id": {
+      "type": "string",
+      "description": "PortfolioItem this case-study canvas was built from."
+    },
+    "project_title": {
+      "type": "string",
+      "description": "Project title at the time the canvas was built."
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Rendered canvas image URL"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Short silent slow-zoom video of the same card (MP4 when the browser can encode it, otherwise WebM)"
+    },
+    "video_format": {
+      "type": "string",
+      "description": "File format of video_url, e.g. mp4 or webm"
+    },
+    "aspect_ratio": {
+      "type": "string",
+      "enum": [
+        "4:5",
+        "1:1",
+        "3:4",
+        "9:16",
+        "16:9"
+      ],
+      "default": "9:16",
+      "description": "Aspect ratio the card was rendered at"
+    },
+    "target_platform": {
+      "type": "string",
+      "description": "Which platform spec the canvas was built for"
+    },
+    "pixel_size": {
+      "type": "string",
+      "description": "Exact rendered pixel size, e.g. 1080x1920"
+    },
+    "matched_color": {
+      "type": "string",
+      "description": "Hex color pulled from the project image and used across the card"
+    },
+    "cta": {
+      "type": "string",
+      "description": "Call-to-action line printed on the card"
+    },
+    "subtext": {
+      "type": "string",
+      "description": "Optional extra line printed under the call-to-action. Blank leaves the card laid out with one line only."
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Service / tech badges shown on the card (e.g. platforms or tools used)"
+    }
+  },
+  "required": [
+    "image_url"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

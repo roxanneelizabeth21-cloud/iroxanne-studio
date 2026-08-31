@@ -14,7 +14,7 @@ export const CANVAS_PRESETS = [
     note: 'Portrait 9:16 at 1080×1920 — the portrait promo card shape. Works for Stories and Reels.',
   },
   {
-    id: 'spotify_canvas',
+    id: 'showcase_loop',
     label: 'Vertical loop 9:16',
     group: 'Showcase sizes',
     platform: 'All platforms',

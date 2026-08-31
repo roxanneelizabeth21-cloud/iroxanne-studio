@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Music, Film, Image, Plus, Pencil, Trash2, Star } from 'lucide-react';
+import { Film, Image, Plus, Pencil, Trash2, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -38,10 +38,6 @@ export function useAdminMutations() {
     qc.invalidateQueries({ queryKey: ['all-releases'] });
     qc.invalidateQueries({ queryKey: ['all-videos'] });
     qc.invalidateQueries({ queryKey: ['gallery'] });
-    qc.invalidateQueries({ queryKey: ['all-tracks'] });
-    qc.invalidateQueries({ queryKey: ['music-releases-admin'] });
-    qc.invalidateQueries({ queryKey: ['music-releases-nav'] });
-    qc.invalidateQueries({ queryKey: ['music-release'] });
   };
   const handleDelete = async (type, item) => {
     if (!confirm(`Delete "${item.title || item.name}"?`)) return;
@@ -74,42 +70,6 @@ function Thumb({ src, alt, Icon }) {
     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-secondary/60">
       {src ? <img src={src} alt={alt} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Icon className="h-5 w-5 text-muted-foreground/40" /></div>}
     </div>
-  );
-}
-
-export function ReleaseRow({ release, onEdit, onDelete }) {
-  return (
-    <RowShell>
-      <Thumb src={release.cover_image} alt={release.title} Icon={Music} />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="font-medium text-sm truncate">{release.title}</p>
-          {release.featured && <Star className="h-3.5 w-3.5 text-yellow-500 shrink-0 fill-yellow-500" />}
-          {release.audio_snippet && <span className="text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary shrink-0">Snippet</span>}
-        </div>
-        <p className="text-xs text-muted-foreground">{release.release_date || 'No date'}</p>
-      </div>
-      <RowActions onEdit={() => onEdit(release)} onDelete={() => onDelete(release)} />
-    </RowShell>
-  );
-}
-
-export function MusicReleaseRow({ release, onEdit, onDelete }) {
-  return (
-    <RowShell>
-      <Thumb src={release.cover_image_url} alt={release.title} Icon={Music} />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-medium text-sm truncate">{release.title}</p>
-          <span className={`text-xs px-1.5 py-0.5 rounded shrink-0 ${release.status === 'upcoming' ? 'bg-amber-500/15 text-amber-600' : 'bg-primary/10 text-primary'}`}>
-            {release.status === 'upcoming' ? 'Upcoming' : 'Released'}
-          </span>
-          {release.show_in_nav === false && <span className="text-xs px-1.5 py-0.5 rounded bg-secondary text-muted-foreground shrink-0">Hidden from nav</span>}
-        </div>
-        <p className="text-xs text-muted-foreground truncate">/release/{release.slug}</p>
-      </div>
-      <RowActions onEdit={() => onEdit(release)} onDelete={() => onDelete(release)} />
-    </RowShell>
   );
 }
 

@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
-import { drawAlbumCanvas } from '@/lib/drawAlbumCanvas';
+import { drawProjectCanvas } from '@/lib/drawProjectCanvas';
 
 // Renders a live color-matched canvas preview at the chosen platform's real size.
-export default function useCanvasPreview({ release, color, preset, cta, subtext, services }) {
+export default function useCanvasPreview({ project, color, preset, cta, subtext, services }) {
   const [preview, setPreview] = useState('');
   const [rendering, setRendering] = useState(false);
 
   useEffect(() => {
-    if (!release?.cover_image_url || !preset) {
+    if (!project?.cover_image_url || !preset) {
       setPreview('');
       return;
     }
     let cancelled = false;
     setRendering(true);
-    drawAlbumCanvas({
-      coverUrl: release.cover_image_url,
-      title: release.title,
-      artist: release.artist_name || 'iRoxanne Studio',
+    drawProjectCanvas({
+      coverUrl: project.cover_image_url,
+      title: project.title,
+      studioName: project.studio_name || 'iRoxanne Studio',
       color,
       ratio: preset.ratio,
       width: preset.w,
@@ -30,7 +30,7 @@ export default function useCanvasPreview({ release, color, preset, cta, subtext,
       .catch(() => { if (!cancelled) setPreview(''); })
       .finally(() => { if (!cancelled) setRendering(false); });
     return () => { cancelled = true; };
-  }, [release, color, preset, cta, subtext, services]);
+  }, [project, color, preset, cta, subtext, services]);
 
   return { preview, rendering };
 }

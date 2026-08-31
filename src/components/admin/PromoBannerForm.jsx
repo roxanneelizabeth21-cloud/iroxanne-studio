@@ -9,8 +9,6 @@ import PromoBanner from '@/components/PromoBanner';
 const PAGE_OPTIONS = [
   { key: 'all', label: 'All pages' },
   { key: 'home', label: 'Home' },
-  { key: 'music', label: 'Music' },
-  { key: 'release', label: 'Release' },
 ];
 
 const STYLE_OPTIONS = [

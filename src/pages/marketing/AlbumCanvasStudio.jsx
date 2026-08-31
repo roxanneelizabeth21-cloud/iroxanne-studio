@@ -13,13 +13,13 @@ import CanvasStepSave from '@/components/marketing/canvas/CanvasStepSave';
 import AlbumCanvasCard from '@/components/marketing/AlbumCanvasCard';
 import useCanvasPreview from '@/hooks/useCanvasPreview';
 import { useDominantColor } from '@/hooks/useDominantColor';
-import { drawAlbumCanvas } from '@/lib/drawAlbumCanvas';
+import { drawProjectCanvas } from '@/lib/drawProjectCanvas';
 import { recordCanvasVideo } from '@/lib/recordCanvasVideo';
 import { getCanvasPreset } from '@/lib/canvasPresets';
 import { paletteFromCover } from '@/lib/canvasPalette';
 
 const CANVAS_STEPS = [
-  { key: 'release', label: 'Project' },
+  { key: 'project', label: 'Project' },
   { key: 'design', label: 'Design' },
   { key: 'save', label: 'Save' },
 ];
@@ -34,7 +34,7 @@ export default function AlbumCanvasStudio() {
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
-  const [releaseId, setReleaseId] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [design, setDesign] = useState({ ...EMPTY_DESIGN });
   const [saving, setSaving] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
@@ -44,36 +44,36 @@ export default function AlbumCanvasStudio() {
     queryFn: () => base44.entities.PortfolioItem.list('-date_built'),
   });
   const { data: canvases = [], isLoading } = useQuery({
-    queryKey: ['album-canvases'],
-    queryFn: () => base44.entities.AlbumCanvas.list('-created_date'),
+    queryKey: ['case-study-canvases'],
+    queryFn: () => base44.entities.CaseStudyCanvas.list('-created_date'),
   });
 
   // Map portfolio items into the release-like shape the canvas renderer expects.
-  const releases = useMemo(
+  const projects = useMemo(
     () => allItems
       .filter((r) => r.cover_image_url)
       .map((r) => ({
         id: r.id,
         title: r.title,
         cover_image_url: r.cover_image_url,
-        artist_name: 'iRoxanne Studio',
+        studio_name: 'iRoxanne Studio',
         release_type: r.category,
         status: 'released',
         release_date: r.date_built,
       })),
     [allItems]
   );
-  const release = releases.find((r) => r.id === releaseId) || null;
-  const { dominant } = useDominantColor(release?.cover_image_url);
+  const project = projects.find((r) => r.id === projectId) || null;
+  const { dominant } = useDominantColor(project?.cover_image_url);
   const { data: palette = [] } = useQuery({
-    queryKey: ['canvas-palette', release?.cover_image_url],
-    queryFn: () => paletteFromCover(release.cover_image_url),
-    enabled: !!release?.cover_image_url,
+    queryKey: ['canvas-palette', project?.cover_image_url],
+    queryFn: () => paletteFromCover(project.cover_image_url),
+    enabled: !!project?.cover_image_url,
   });
   const color = design.color || palette[0] || dominant || '#8a8580';
   const cta = design.ctaPreset === 'Custom' ? design.customCta : design.ctaPreset;
   const preset = getCanvasPreset('promo_portrait');
-  const { preview, rendering } = useCanvasPreview({ release, color, preset, cta, subtext: design.subtext, services: design.services });
+  const { preview, rendering } = useCanvasPreview({ project, color, preset, cta, subtext: design.subtext, services: design.services });
 
   const patch = (fields) => setDesign((d) => ({ ...d, ...fields }));
 
@@ -82,15 +82,15 @@ export default function AlbumCanvasStudio() {
     setMaxStep((m) => Math.max(m, next));
   };
 
-  const canContinue = step === 0 ? !!releaseId : step === 1 ? !!preview : false;
+  const canContinue = step === 0 ? !!projectId : step === 1 ? !!preview : false;
 
   const save = async () => {
     setSaving(true);
     try {
-      const canvas = await drawAlbumCanvas({
-        coverUrl: release.cover_image_url,
-        title: release.title,
-        artist: release.artist_name || 'iRoxanne Studio',
+      const canvas = await drawProjectCanvas({
+        coverUrl: project.cover_image_url,
+        title: project.title,
+        studioName: project.studio_name || 'iRoxanne Studio',
         color, ratio: preset.ratio, width: preset.w, height: preset.h, safeBottom: preset.safeBottom,
         cta, subtext: design.subtext, services: design.services,
       });
@@ -109,10 +109,10 @@ export default function AlbumCanvasStudio() {
         videoFormat = video.ext;
       }
 
-      await base44.entities.AlbumCanvas.create({
-        title: `${release.title} — ${preset.label}`,
-        portfolio_item_id: release.id,
-        project_title: release.title,
+      await base44.entities.CaseStudyCanvas.create({
+        title: `${project.title} — ${preset.label}`,
+        portfolio_item_id: project.id,
+        project_title: project.title,
         image_url: up?.file_url || up?.data?.file_url,
         aspect_ratio: preset.ratio,
         target_platform: preset.label,
@@ -125,10 +125,10 @@ export default function AlbumCanvasStudio() {
         video_format: videoFormat,
       });
       toast({ title: videoUrl ? `Canvas saved as PNG + ${videoFormat.toUpperCase()}` : 'Canvas saved' });
-      qc.invalidateQueries({ queryKey: ['album-canvases'] });
+      qc.invalidateQueries({ queryKey: ['case-study-canvases'] });
       setStep(0);
       setMaxStep(0);
-      setReleaseId('');
+      setProjectId('');
       setDesign({ ...EMPTY_DESIGN });
     } catch (e) {
       toast({ title: 'Could not save the canvas', description: e.message, variant: 'destructive' });
@@ -140,7 +140,7 @@ export default function AlbumCanvasStudio() {
   // Editing always starts a copy: the saved card is left untouched and saving
   // creates a new one.
   const duplicate = (canvas) => {
-    setReleaseId(canvas.portfolio_item_id || '');
+    setProjectId(canvas.portfolio_item_id || '');
     setDesign({
       color: canvas.matched_color || '',
       ctaPreset: 'Custom',
@@ -155,8 +155,8 @@ export default function AlbumCanvasStudio() {
   };
 
   const remove = async (canvas) => {
-    await base44.entities.AlbumCanvas.delete(canvas.id);
-    qc.invalidateQueries({ queryKey: ['album-canvases'] });
+    await base44.entities.CaseStudyCanvas.delete(canvas.id);
+    qc.invalidateQueries({ queryKey: ['case-study-canvases'] });
   };
 
   return (
@@ -183,14 +183,14 @@ export default function AlbumCanvasStudio() {
           />
 
           {step === 0 && (
-            <CanvasStepRelease releases={releases} releaseId={releaseId} onPick={setReleaseId} />
+            <CanvasStepRelease releases={projects} releaseId={projectId} onPick={setProjectId} />
           )}
           {step === 1 && (
             <CanvasStepDesign design={design} patch={patch} preset={preset} palette={palette} color={color} preview={preview} rendering={rendering} />
           )}
           {step === 2 && (
             <CanvasStepSave
-              release={release}
+              release={project}
               design={design}
               preset={preset}
               cta={cta}

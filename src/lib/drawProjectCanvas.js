@@ -14,7 +14,7 @@ function loadImage(url) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Cover art could not be loaded'));
+    img.onerror = () => reject(new Error('Cover image could not be loaded'));
     img.src = url;
   });
 }
@@ -36,9 +36,9 @@ function wrap(ctx, text, maxWidth) {
 }
 
 // Renders the case-study promo card: one flat colour panel matched
-// to the cover art, the text set at the bottom of that panel, and the artwork
+// to the cover image, the text set at the bottom of that panel, and the artwork
 // filling the rest of the card edge to edge — two tones, nothing else.
-export async function drawAlbumCanvas({ coverUrl, title = '', artist = '', color = '#8a8580', ratio = '9:16', cta = '', subtext = '', services = [], width, height }) {
+export async function drawProjectCanvas({ coverUrl, title = '', studioName = '', color = '#8a8580', ratio = '9:16', cta = '', subtext = '', services = [], width, height }) {
   const fallback = CANVAS_SIZES[ratio] || CANVAS_SIZES['9:16'];
   const w = width || fallback.w;
   const h = height || fallback.h;
@@ -79,7 +79,7 @@ export async function drawAlbumCanvas({ coverUrl, title = '', artist = '', color
   const colWidth = landscape ? w - artSize - pad * 3 : w - pad * 2;
   const headline = String(title);
   // The extra line is optional — left blank, the card lays out exactly as before.
-  const subLines = [`by ${artist}`, cta, subtext].filter(Boolean);
+  const subLines = [`by ${studioName}`, cta, subtext].filter(Boolean);
 
   const bodySize = Math.round(titleSize * 0.62);
   const bodyLineH = Math.round(bodySize * 1.35);

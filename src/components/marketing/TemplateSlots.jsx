@@ -51,7 +51,7 @@ export default function TemplateSlots({ template, slotValues, onChange }) {
               <label className={FL}>{prettify(s.slot_name)} <span className="text-muted-foreground/60 normal-case">· {s.type}</span></label>
               <SlotCopy getText={() => sv[s.slot_name] || ''} />
             </div>
-            {s.type === 'text' && (s.slot_name === 'lyric_lines' || s.slot_name === 'key_points' || s.slot_name === 'talking_points') ? (
+            {s.type === 'text' && (s.slot_name === 'key_points' || s.slot_name === 'talking_points') ? (
               <Textarea value={sv[s.slot_name] || ''} onChange={(e) => onChange(s.slot_name, e.target.value)} rows={2} placeholder={s.instructions || ''} />
             ) : (
               <Input value={sv[s.slot_name] || ''} onChange={(e) => onChange(s.slot_name, e.target.value)} placeholder={s.instructions || ''} />
