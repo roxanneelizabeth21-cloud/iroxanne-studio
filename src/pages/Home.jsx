@@ -4,6 +4,8 @@ import { base44 } from '@/api/base44Client';
 import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 import FeaturedWork from '@/components/home/FeaturedWork';
+import Process from '@/components/home/Process';
+import About from '@/components/home/About';
 import Testimonials from '@/components/home/Testimonials';
 import SiteFooter from '@/components/home/SiteFooter';
 
@@ -56,6 +58,10 @@ export default function Home() {
           items={projects}
           loading={loading}
         />
+
+        <Process />
+
+        <About />
 
         <Testimonials
           items={testimonials}

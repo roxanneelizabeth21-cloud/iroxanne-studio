@@ -28,6 +28,7 @@ import LegalPage from '@/pages/LegalPage';
 import Unsubscribe from '@/pages/Unsubscribe';
 import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
+import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
       <Route path="/terms" element={<LegalPage />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/quote" element={<GetQuote />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
