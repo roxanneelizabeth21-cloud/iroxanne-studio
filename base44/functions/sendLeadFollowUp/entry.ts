@@ -9,8 +9,12 @@ export default async function(req) {
     const leadId = body.lead_id || body.id || body.entity_id;
     if (!leadId) return Response.json({ error: 'Missing lead_id' }, { status: 400 });
 
-    const lead = await base44.asServiceRole.entities.Lead.get(leadId);
-    if (!lead) return Response.json({ skipped: true, reason: 'not found' });
+    let lead;
+    try {
+      lead = await base44.asServiceRole.entities.Lead.get(leadId);
+    } catch {
+      return Response.json({ skipped: true, reason: 'not found' });
+    }
 
     // Only nudge if the lead is still waiting (no proposal sent, not won/lost)
     if (!['new', 'contacted'].includes(lead.status)) {

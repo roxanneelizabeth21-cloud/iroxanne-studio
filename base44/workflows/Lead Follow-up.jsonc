@@ -1,0 +1,66 @@
+{
+  "name": "Lead Follow-up",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "lead_followup",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "notify": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendLeadNotification",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "wait_two_days",
+          "x-base44": {
+            "title": "Notify admin + welcome client",
+            "description": "Immediate email to studio and client"
+          }
+        }
+      },
+      {
+        "wait_two_days": {
+          "wait": "P2D",
+          "then": "follow_up",
+          "x-base44": {
+            "title": "Wait 2 days",
+            "description": "Durable pause before nudge"
+          }
+        }
+      },
+      {
+        "follow_up": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendLeadFollowUp",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send follow-up nudge",
+            "description": "Only if lead still new/contacted"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Lead"
+    }
+  },
+  "description": "When a new quote request (Lead) is created, immediately notify the admin + welcome the client, then wait 2 days and send a gentle follow-up nudge if the lead hasn't progressed."
+}
