@@ -30,6 +30,7 @@ import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
 import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
+import CaseStudy from '@/pages/CaseStudy';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
@@ -99,6 +100,7 @@ const AuthenticatedApp = () => {
       <Route path="/quote" element={<GetQuote />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
+      <Route path="/work/:slug" element={<CaseStudy />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />

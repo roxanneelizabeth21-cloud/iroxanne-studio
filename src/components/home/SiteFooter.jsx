@@ -5,7 +5,11 @@ export default function SiteFooter() {
         <span className="font-sans font-semibold text-foreground">
           <span className="ir-gradient-text">iR</span>oxanne Studio
         </span>
-        <span>We build apps. You grow.</span>
+        <div className="flex items-center gap-4">
+          <a href="/privacy" className="hover:text-foreground">Privacy</a>
+          <a href="/terms" className="hover:text-foreground">Terms</a>
+          <a href="/contact" className="hover:text-foreground">Contact</a>
+        </div>
         <span>© {new Date().getFullYear()} iRoxanne Studio</span>
       </div>
     </footer>
