@@ -182,35 +182,10 @@ export default function GetQuote() {
         estimated_price_high: estimate.priceHigh,
       });
 
-      // Confirmation email to the client (Core.SendEmail integration).
-      // Reaching a non-registered address requires a connected custom domain
-      // on a paid plan; a failure here must not roll back the saved Lead.
-      try {
-        await base44.integrations.Core.SendEmail({
-          to: form.email,
-          subject: "We've got your project details!",
-          body: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #4C2A63 0%, #7A3D5C 50%, #C97064 100%); padding: 40px 20px; text-align: center; border-radius: 10px 10px 0 0;">
-              <h1 style="color: white; margin: 0; font-size: 28px;">Thanks, ${form.name.split(' ')[0] || 'there'}!</h1>
-            </div>
-            <div style="padding: 40px 20px; background: #f9f9f9;">
-              <p style="font-size: 16px; color: #333; line-height: 1.6;">We've received your project details. We'll review everything and follow up within 2 business days with a custom proposal.</p>
-              <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #4C2A63;">
-                <p style="margin: 0; color: #666;"><strong>What you told us:</strong></p>
-                <p style="margin: 10px 0 0 0; color: #333; white-space: pre-wrap;">${form.quick_pitch}</p>
-              </div>
-              <p style="font-size: 16px; color: #333; line-height: 1.6; margin-top: 30px;">Talk soon,<br><strong>iRoxanne Studio</strong></p>
-            </div>
-            <div style="padding: 20px; text-align: center; background: #333; color: white; font-size: 12px; border-radius: 0 0 10px 10px;">
-              <p style="margin: 0;">© 2025 iRoxanne Studio. All rights reserved.</p>
-            </div>
-          </div>
-        `,
-        });
-      } catch (emailError) {
-        console.warn('Confirmation email could not be sent:', emailError);
-      }
+      // The client confirmation + admin notification emails are sent
+      // automatically by the "Lead Follow-up" workflow (entity trigger on
+      // Lead.create), which calls sendLeadNotification — so nothing to run
+      // here on submit.
 
       // Internal Gmail notification is now handled automatically by the
       // "Notify Quote Requested" workflow (entity trigger on Lead.create with

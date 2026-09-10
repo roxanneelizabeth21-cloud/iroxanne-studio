@@ -25,6 +25,9 @@ export default async function(req) {
 
     const esc = (v) => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const row = (label, val) => val ? `<tr><td style="padding:6px 12px;color:#8B8B85;font-size:13px;vertical-align:top;">${label}</td><td style="padding:6px 12px;font-size:14px;">${esc(val)}</td></tr>` : '';
+    const arr = (a) => Array.isArray(a) ? a.join(', ') : (a || '');
+    const BUDGET_LABELS = { under_5k:'Under $5,000','5k_10k':'$5,000 – $10,000','10k_20k':'$10,000 – $20,000','20k_50k':'$20,000 – $50,000','50k_plus':'$50,000+',not_sure:'Not sure yet' };
+    const PRICING_LABELS = { fixed:'Fixed project price', hourly:'Hourly', not_sure:'Not sure' };
 
     // 1) Admin notification
     if (adminEmail) {
@@ -48,18 +51,34 @@ export default async function(req) {
       }).catch((e) => console.log('admin notify failed', e?.message));
     }
 
-    // 2) Client welcome
+    // 2) Client welcome — single rich confirmation reflecting what they submitted.
     if (lead.email) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';
+      const summary = [
+        row('Business', lead.business_name),
+        row('What it does', lead.quick_pitch),
+        row('The problem', lead.problem_to_solve),
+        row('Must-have features', arr(lead.must_have_features)),
+        row('Integrations needed', arr(lead.integrations_needed)),
+        row('Budget', BUDGET_LABELS[lead.budget_range] || lead.budget_range),
+        row('Pricing preference', PRICING_LABELS[lead.pricing_model_preference] || lead.pricing_model_preference),
+        row('Ideal launch', lead.ideal_launch_date),
+        row('Needs training', lead.training_needed ? 'Yes' : ''),
+        row('Wants ongoing support', lead.ongoing_support_needed ? 'Yes' : ''),
+      ].join('');
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: lead.email,
-        subject: 'Thanks for your request — iRoxanne Studio',
+        subject: "We've got your project details — iRoxanne Studio",
         html: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;">
-          <h2 style="color:#4A3755;">Hi ${esc(firstName)},</h2>
-          <p style="color:#3a3a35;font-size:15px;line-height:1.6;">Thanks for reaching out to iRoxanne Studio! I received your project details and I'll review them personally — no bots, no agency hand-offs.</p>
-          <p style="color:#3a3a35;font-size:15px;line-height:1.6;">Expect a personal reply within 1 business day with next steps and a rough estimate. In the meantime, feel free to browse some of the apps I've built.</p>
-          <p style="margin-top:18px;"><a href="https://iroxannestudio.com" style="background:#4A3755;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;">See my work</a></p>
-          <p style="color:#8B8B85;font-size:13px;margin-top:24px;">— Roxanne, iRoxanne Studio</p>
+          <div style="background:linear-gradient(135deg,#4C2A63 0%,#7A3D5C 50%,#C97064 100%);padding:36px 24px;text-align:center;border-radius:12px 12px 0 0;">
+            <h1 style="color:#fff;margin:0;font-size:26px;">Thanks, ${esc(firstName)}!</h1>
+          </div>
+          <div style="padding:30px 24px;background:#FFFFFF;border:1px solid #ECE6DC;border-top:none;border-radius:0 0 12px 12px;">
+            <p style="color:#3a3a35;font-size:15px;line-height:1.6;margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
+            ${summary ? `<p style="margin:0 0 8px;color:#8B8B85;font-size:13px;font-weight:600;">What you told me:</p><table style="width:100%;border-collapse:collapse;background:#F7F5F0;border-left:4px solid #4C2A63;border-radius:8px;overflow:hidden;">${summary}</table>` : ''}
+            <p style="margin:22px 0 0;"><a href="https://iroxannestudio.com" style="display:inline-block;background:#4A3755;color:#fff;padding:11px 20px;border-radius:8px;text-decoration:none;font-size:14px;">See my work</a></p>
+            <p style="color:#8B8B85;font-size:13px;margin-top:24px;">— Roxanne, iRoxanne Studio</p>
+          </div>
         </div>`,
       }).catch((e) => console.log('client welcome failed', e?.message));
     }
