@@ -68,7 +68,7 @@ export default async function(req) {
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
               <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
               <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
-              <p style="margin:0 0 16px;color:#8B8B85;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`,
+              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`,
             footerNote: 'iRoxanne Studio — one builder, not an agency.',
           }),
         }).catch((e) => console.log('client sign email failed', e?.message));
@@ -83,7 +83,7 @@ export default async function(req) {
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
-              <p style="margin:0 0 16px;color:#8B8B85;font-size:13px;">An invoice is waiting for the deposit. Payments aren't connected yet — collect it offline or wire Stripe next.</p>
+              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">An invoice is waiting for the deposit. Payments aren't connected yet — collect it offline or wire Stripe next.</p>
               <p>${brandButton('Open contracts', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));

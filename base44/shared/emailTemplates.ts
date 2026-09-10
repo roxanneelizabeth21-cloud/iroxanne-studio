@@ -5,7 +5,7 @@
 // empty email.
 import { brandedEmail, brandButton } from './emailBrand.ts';
 
-export const SITE_URL = 'https://iroxanne.com';
+export const SITE_URL = 'https://iroxannestudio.com';
 
 export type TemplateDef = {
   key: string;
@@ -219,7 +219,7 @@ export function subscriberEmailHtml(text: string, unsubscribeLink: string): stri
   return brandedEmail({
     content: `${textToHtmlParagraphs(text)}
 <p style="margin:24px 0 0;">${brandButton('Book a consult', `${SITE_URL}/consult`)}</p>`,
-    footerNote: `You're receiving this because you signed up at <a href="${SITE_URL}" style="color:#8B8B85;">iroxanne.com</a>.<br>
-<a href="${unsubscribeLink}" style="color:#8B8B85;text-decoration:underline;">Unsubscribe</a>`,
+    footerNote: `You're receiving this because you signed up at <a href="${SITE_URL}" style="color:#8B7B95;">iroxannestudio.com</a>.<br>
+<a href="${unsubscribeLink}" style="color:#8B7B95;text-decoration:underline;">Unsubscribe</a>`,
   });
 }

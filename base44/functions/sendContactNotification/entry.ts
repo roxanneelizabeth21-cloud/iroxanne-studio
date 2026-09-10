@@ -65,8 +65,8 @@ ${detailRows([
   ['Subject', escapeHtml(subject)],
   ['Submitted', createdAt],
 ])}
-<p style="margin:22px 0 8px;color:#8B8B85;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;">Message</p>
-<div style="white-space:pre-wrap;background:#F7F5F0;border-radius:10px;padding:16px;">${escapeHtml(message)}</div>`,
+<p style="margin:22px 0 8px;color:#8B7B95;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;">Message</p>
+<div style="white-space:pre-wrap;background:#F5EFF8;border-radius:10px;padding:16px;">${escapeHtml(message)}</div>`,
       footerNote: `Reply directly to this email to respond to ${escapeHtml(name)}.`,
     });
 
