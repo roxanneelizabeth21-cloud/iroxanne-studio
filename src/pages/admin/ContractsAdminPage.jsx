@@ -90,8 +90,34 @@ export default function ContractsAdminPage() {
         access_token: token,
         sent_at: new Date().toISOString(),
       });
-      await navigator.clipboard.writeText(link);
-      toast({ title: 'Contract link copied', description: 'Send it to your client.' });
+      await navigator.clipboard.writeText(link).catch(() => {});
+      let emailed = false;
+      if (contract.client_email) {
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: contract.client_email,
+            subject: `Your project agreement — ${contract.project_title || 'iRoxanne Studio'}`,
+            html: `<div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;">
+              <div style="background:#0D0D0D;padding:24px;text-align:center;border-radius:12px 12px 0 0;">
+                <span style="font-family:Georgia,serif;font-size:22px;color:#C5A059;font-weight:600;">iRoxanne Studio</span>
+              </div>
+              <div style="padding:28px 24px;background:#fff;border:1px solid #ECE6DC;border-top:none;border-radius:0 0 12px 12px;">
+                <p style="margin:0 0 14px;font-size:16px;color:#1D2A2B;">Hi ${contract.client_name?.split(' ')[0] || 'there'},</p>
+                <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#1D2A2B;">Your agreement for <strong>${contract.project_title || 'your project'}</strong> is ready to review and sign. Tap below to open it, read the scope and terms, and sign online.</p>
+                <p style="margin:24px 0 12px;"><a href="${link}" style="display:inline-block;background:#C5A059;color:#0D0D0D;text-decoration:none;font-weight:600;font-size:15px;padding:13px 28px;border-radius:8px;">Review &amp; sign agreement</a></p>
+                <p style="margin:0;font-size:13px;color:#8B8B85;">This link is private to you — please don't forward it.</p>
+              </div>
+            </div>`,
+          });
+          emailed = true;
+        } catch (e) {
+          console.warn('contract email failed', e);
+        }
+      }
+      toast({
+        title: emailed ? 'Agreement sent' : 'Contract link copied',
+        description: emailed ? `Emailed to ${contract.client_email}.` : 'Email failed — paste the copied link manually.',
+      });
       await load();
     } catch (e) {
       toast({ title: 'Failed to generate link', variant: 'destructive' });

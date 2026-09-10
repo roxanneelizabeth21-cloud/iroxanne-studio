@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 // Public, token-verified access for a client to view and e-sign their contract.
 // No user auth — the access_token in the contract link is the credential.
@@ -29,6 +30,65 @@ export default async function(req) {
         signer_name: signerName.trim(),
         signer_ip: ip
       });
+
+      // Post-sign: create an invoice (deposit + balance tracking) and notify
+      // the client + admin. Payments aren't wired yet — Stripe is the last
+      // piece — so the invoice is created pending and updated once a gateway
+      // is connected or the deposit is recorded offline.
+      const moneyFmt = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
+      const total = typeof updated.price_total === 'number' ? updated.price_total : 0;
+      const deposit = typeof updated.deposit_amount === 'number' ? updated.deposit_amount : 0;
+
+      try {
+        const existing = await base44.asServiceRole.entities.Invoice.filter({ contract_id: id }).catch(() => []);
+        if (!existing || existing.length === 0) {
+          await base44.asServiceRole.entities.Invoice.create({
+            contract_id: id,
+            client_name: updated.client_name || '',
+            client_email: updated.client_email,
+            project_title: updated.project_title,
+            amount_total: total,
+            deposit_amount: deposit,
+            deposit_status: deposit > 0 ? 'pending' : 'waived',
+            balance_amount: Math.max(total - deposit, 0),
+            balance_status: total - deposit > 0 ? 'pending' : 'waived',
+            status: 'open',
+          }).catch((e) => console.log('invoice create failed', e?.message));
+        }
+      } catch (e) { console.log('invoice step failed', e?.message); }
+
+      const firstName = (updated.signer_name || updated.client_name || '').split(' ')[0] || 'there';
+
+      if (updated.client_email) {
+        await base44.asServiceRole.integrations.Core.SendEmail({
+          to: updated.client_email,
+          subject: 'Agreement signed — iRoxanne Studio',
+          html: brandedEmail({
+            title: `You're all signed in, ${esc(firstName)}!`,
+            content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
+              <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
+              <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
+              <p style="margin:0 0 16px;color:#8B8B85;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`,
+            footerNote: 'iRoxanne Studio — one builder, not an agency.',
+          }),
+        }).catch((e) => console.log('client sign email failed', e?.message));
+      }
+
+      const adminEmail = await resolveAdminEmail(base44).catch(() => '');
+      if (adminEmail) {
+        await base44.asServiceRole.integrations.Core.SendEmail({
+          to: adminEmail,
+          subject: `Contract signed — ${updated.project_title}`,
+          html: brandedEmail({
+            title: 'Contract signed',
+            content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
+              <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
+              <p style="margin:0 0 16px;color:#8B8B85;font-size:13px;">An invoice is waiting for the deposit. Payments aren't connected yet — collect it offline or wire Stripe next.</p>
+              <p>${brandButton('Open contracts', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
+          }),
+        }).catch((e) => console.log('admin sign email failed', e?.message));
+      }
+
       return Response.json({ contract: updated });
     }
 

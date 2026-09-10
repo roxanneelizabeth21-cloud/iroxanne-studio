@@ -50,3 +50,18 @@ export function brandedEmail({
   </table>
 </body></html>`;
 }
+
+// HTML-escape a value for safe interpolation into email HTML.
+export function esc(v: unknown): string {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Resolve the studio admin notification email: BrandProfile.notify_email,
+// otherwise the first admin user on the account.
+export async function resolveAdminEmail(base44: any): Promise<string> {
+  const brand = await base44.asServiceRole.entities.BrandProfile.list().catch(() => []);
+  if (brand[0]?.notify_email) return brand[0].notify_email;
+  const users = await base44.asServiceRole.entities.User.list().catch(() => []);
+  const admin = users.find((u: any) => u.role === 'admin') || users[0];
+  return admin?.email || '';
+}

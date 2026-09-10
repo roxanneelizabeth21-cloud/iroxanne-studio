@@ -1,0 +1,143 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "description": "Contract this invoice belongs to"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client / signer name"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Client email"
+    },
+    "project_title": {
+      "type": "string",
+      "description": "Project / app name"
+    },
+    "amount_total": {
+      "type": "number",
+      "description": "Total contract value (USD)"
+    },
+    "deposit_amount": {
+      "type": "number",
+      "description": "Deposit due at signing (USD)"
+    },
+    "deposit_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "waived"
+      ],
+      "default": "pending",
+      "description": "Deposit collection state"
+    },
+    "deposit_paid_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the deposit was collected"
+    },
+    "deposit_method": {
+      "type": "string",
+      "description": "How the deposit was collected: stripe, offline, etc."
+    },
+    "balance_amount": {
+      "type": "number",
+      "description": "Remaining balance after deposit (USD)"
+    },
+    "balance_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "partial",
+        "paid",
+        "waived"
+      ],
+      "default": "pending",
+      "description": "Balance collection state"
+    },
+    "balance_paid_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount of the balance collected so far (USD)"
+    },
+    "milestones": {
+      "type": "array",
+      "description": "Optional milestone-based payment schedule",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "paid"
+            ],
+            "default": "pending"
+          }
+        },
+        "required": [
+          "label",
+          "amount"
+        ]
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "deposit_paid",
+        "paid",
+        "overdue",
+        "cancelled"
+      ],
+      "default": "open",
+      "description": "Overall invoice lifecycle status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "client_email",
+    "project_title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@ import AdminOverview from '@/pages/admin/AdminOverview';
 import HomepageAdminPage from '@/pages/admin/HomepageAdminPage';
 import PortfolioAdminPage from '@/pages/admin/PortfolioAdminPage';
 import ContractsAdminPage from '@/pages/admin/ContractsAdminPage';
+import InvoicesAdminPage from '@/pages/admin/InvoicesAdminPage';
 import SitePageVisibility from '@/pages/admin/SitePageVisibility';
 import BannersAdminPage from '@/pages/admin/BannersAdminPage';
 import PromoBannersAdminPage from '@/pages/admin/PromoBannersAdminPage';
@@ -106,6 +107,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
         <Route path="/admin/contracts" element={<ContractsAdminPage />} />
+        <Route path="/admin/invoices" element={<InvoicesAdminPage />} />
         <Route path="/admin/pages" element={<SitePageVisibility />} />
         <Route path="/admin/banners" element={<BannersAdminPage />} />
         <Route path="/admin/promo-banners" element={<PromoBannersAdminPage />} />
