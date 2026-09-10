@@ -14,6 +14,7 @@ const NAV_TOP = [
   { to: '/admin', label: 'Overview', Icon: Home, end: true },
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
   { to: '/admin/portfolio', label: 'Portfolio', Icon: LayoutDashboard },
+  { to: '/admin/contracts', label: 'Contracts', Icon: FileText },
 ];
 
 const NAV_REST = [

@@ -1,0 +1,134 @@
+{
+  "name": "PricingSettings",
+  "type": "object",
+  "properties": {
+    "rate_per_hour": {
+      "type": "number",
+      "default": 65,
+      "description": "Blended $/hr used by the quote estimator and proposal builder"
+    },
+    "pricing_mode": {
+      "type": "string",
+      "enum": [
+        "custom_quote",
+        "fixed_packages",
+        "packages_addons"
+      ],
+      "default": "custom_quote",
+      "description": "How pricing is presented to clients. custom_quote = write a price per project; fixed_packages = set tiers; packages_addons = tiers plus selectable add-ons."
+    },
+    "packages": {
+      "type": "array",
+      "description": "Service packages / tiers shown when pricing_mode is fixed_packages or packages_addons",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Package name e.g. Starter"
+          },
+          "price": {
+            "type": "number",
+            "description": "Fixed price (USD)"
+          },
+          "description": {
+            "type": "string",
+            "description": "What's included"
+          },
+          "highlight": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this package is highlighted/recommended"
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      }
+    },
+    "addons": {
+      "type": "array",
+      "description": "Optional add-ons selectable on top of a package (packages_addons mode)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      }
+    },
+    "default_deposit_mode": {
+      "type": "string",
+      "enum": [
+        "fixed_percent",
+        "tiered",
+        "custom_amount"
+      ],
+      "default": "fixed_percent",
+      "description": "How the deposit amount is determined by default on a new contract"
+    },
+    "default_deposit_percent": {
+      "type": "number",
+      "default": 50,
+      "description": "Deposit percentage when default_deposit_mode is fixed_percent (e.g. 50 = 50%)"
+    },
+    "tiered_deposit_percents": {
+      "type": "object",
+      "description": "Deposit % by project tier when default_deposit_mode is tiered",
+      "properties": {
+        "small": {
+          "type": "number",
+          "default": 50
+        },
+        "standard": {
+          "type": "number",
+          "default": 40
+        },
+        "enterprise": {
+          "type": "number",
+          "default": 33
+        }
+      }
+    },
+    "standard_terms": {
+      "type": "string",
+      "description": "Default terms & conditions text pre-filled on new contracts"
+    },
+    "stripe_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether Stripe checkout is wired up for deposit collection. Until true, deposits are marked pay-offline."
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

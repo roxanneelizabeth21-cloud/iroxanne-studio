@@ -1,0 +1,167 @@
+{
+  "name": "Contract",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string",
+      "description": "Lead this contract was generated from (optional)"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client / signer name"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Client email \u2014 where the contract link is sent"
+    },
+    "project_title": {
+      "type": "string",
+      "description": "Project / app name"
+    },
+    "scope_summary": {
+      "type": "string",
+      "description": "Plain-language description of what will be built / delivered",
+      "maxLength": 4000
+    },
+    "pricing_mode": {
+      "type": "string",
+      "enum": [
+        "custom_quote",
+        "fixed_packages",
+        "packages_addons"
+      ],
+      "default": "custom_quote",
+      "description": "How the price on this contract was determined"
+    },
+    "selected_package": {
+      "type": "string",
+      "description": "Name of the package selected, when pricing_mode is a package mode"
+    },
+    "line_items": {
+      "type": "array",
+      "description": "Itemized pricing lines (custom quotes and add-ons)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "description",
+          "amount"
+        ]
+      }
+    },
+    "price_total": {
+      "type": "number",
+      "description": "Total contract price (USD)"
+    },
+    "deposit_mode": {
+      "type": "string",
+      "enum": [
+        "fixed_percent",
+        "tiered",
+        "custom_amount"
+      ],
+      "default": "fixed_percent",
+      "description": "How the deposit amount was determined for this contract"
+    },
+    "deposit_amount": {
+      "type": "number",
+      "description": "Deposit due at signing (USD)"
+    },
+    "payment_schedule": {
+      "type": "string",
+      "description": "Agreed payment schedule e.g. 50% upfront, 50% on launch"
+    },
+    "terms": {
+      "type": "string",
+      "description": "Terms & conditions text the client agrees to",
+      "maxLength": 8000
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "signed",
+        "deposit_paid",
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Contract lifecycle status"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Unguessable token required to view/sign the contract via the public client page. Generated on send."
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signer_name": {
+      "type": "string",
+      "description": "Typed name used as the e-signature"
+    },
+    "signer_ip": {
+      "type": "string",
+      "description": "IP captured at signing for audit"
+    },
+    "estimated_tier": {
+      "type": "string",
+      "description": "Project tier carried over from the Lead estimate (small/standard/enterprise)"
+    },
+    "stripe_checkout_url": {
+      "type": "string",
+      "description": "Stripe Checkout session URL for the deposit (set when Stripe is wired)"
+    },
+    "stripe_payment_intent": {
+      "type": "string",
+      "description": "Stripe Payment Intent id for the deposit"
+    },
+    "deposit_paid_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "client_email",
+    "project_title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

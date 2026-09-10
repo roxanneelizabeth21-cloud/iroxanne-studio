@@ -1,0 +1,228 @@
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Trash2 } from 'lucide-react';
+
+const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
+
+export default function ContractForm({ initial, settings, onSave, saving }) {
+  const [form, setForm] = useState(() => buildInitial(initial, settings));
+
+  useEffect(() => {
+    setForm(buildInitial(initial, settings));
+  }, [initial]);
+
+  const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
+
+  const total = (form.line_items || []).reduce((sum, li) => sum + money(li.amount), 0);
+
+  const addLine = () =>
+    setForm((p) => ({ ...p, line_items: [...(p.line_items || []), { description: '', quantity: 1, amount: 0 }] }));
+  const removeLine = (i) =>
+    setForm((p) => ({ ...p, line_items: (p.line_items || []).filter((_, idx) => idx !== i) }));
+  const updateLine = (i, field, value) =>
+    setForm((p) => ({
+      ...p,
+      line_items: (p.line_items || []).map((li, idx) => (idx === i ? { ...li, [field]: value } : li)),
+    }));
+
+  const computeDeposit = (price, mode) => {
+    const p = money(price);
+    if (mode === 'fixed_percent') {
+      const pct = settings?.default_deposit_percent ?? 50;
+      return Math.round((p * pct) / 100);
+    }
+    if (mode === 'tiered') {
+      const tier = form.estimated_tier || 'small';
+      const pct = settings?.tiered_deposit_percents?.[tier] ?? 50;
+      return Math.round((p * pct) / 100);
+    }
+    return form.deposit_amount || 0;
+  };
+
+  const submit = () => {
+    const payload = {
+      ...form,
+      price_total: total,
+      deposit_amount: form.deposit_mode === 'custom_amount' ? form.deposit_amount : computeDeposit(total, form.deposit_mode),
+    };
+    onSave(payload);
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label>Client name</Label>
+          <Input value={form.client_name || ''} onChange={(e) => update('client_name', e.target.value)} placeholder="Jane Smith" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Client email *</Label>
+          <Input type="email" value={form.client_email || ''} onChange={(e) => update('client_email', e.target.value)} placeholder="jane@business.com" />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Project title *</Label>
+        <Input value={form.project_title || ''} onChange={(e) => update('project_title', e.target.value)} placeholder="Booking & scheduling app" />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Scope of work</Label>
+        <Textarea
+          rows={4}
+          value={form.scope_summary || ''}
+          onChange={(e) => update('scope_summary', e.target.value)}
+          placeholder="Describe what will be built and delivered..."
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label>Pricing mode</Label>
+          <Select value={form.pricing_mode} onValueChange={(v) => update('pricing_mode', v)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="custom_quote">Custom quote (itemized)</SelectItem>
+              <SelectItem value="fixed_packages">Fixed package</SelectItem>
+              <SelectItem value="packages_addons">Package + add-ons</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Payment schedule</Label>
+          <Input value={form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
+        </div>
+      </div>
+
+      {settings?.packages?.length > 0 && form.pricing_mode !== 'custom_quote' && (
+        <div className="space-y-1.5">
+          <Label>Selected package</Label>
+          <Select value={form.selected_package || ''} onValueChange={(v) => update('selected_package', v)}>
+            <SelectTrigger><SelectValue placeholder="Choose a package" /></SelectTrigger>
+            <SelectContent>
+              {settings.packages.map((pkg) => (
+                <SelectItem key={pkg.name} value={pkg.name}>{pkg.name} — ${pkg.price.toLocaleString()}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label>Line items</Label>
+          <Button type="button" variant="outline" size="sm" onClick={addLine} className="gap-1">
+            <Plus className="h-3.5 w-3.5" /> Add line
+          </Button>
+        </div>
+        {(form.line_items || []).map((li, i) => (
+          <div key={i} className="flex gap-2 items-end">
+            <Input
+              className="flex-1"
+              value={li.description}
+              onChange={(e) => updateLine(i, 'description', e.target.value)}
+              placeholder="Description"
+            />
+            <Input
+              type="number"
+              className="w-28"
+              value={li.amount}
+              onChange={(e) => updateLine(i, 'amount', Number(e.target.value))}
+              placeholder="Amount"
+            />
+            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive" onClick={() => removeLine(i)}>
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ))}
+        {(!form.line_items || form.line_items.length === 0) && (
+          <p className="text-xs text-muted-foreground">No line items — total will be $0 unless you add some.</p>
+        )}
+        <div className="flex justify-between rounded-lg bg-secondary/40 px-4 py-2.5 text-sm">
+          <span className="font-semibold">Total</span>
+          <span className="font-bold text-primary">${total.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label>Deposit</Label>
+          <Select value={form.deposit_mode} onValueChange={(v) => update('deposit_mode', v)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fixed_percent">Fixed % of total</SelectItem>
+              <SelectItem value="tiered">% by project tier</SelectItem>
+              <SelectItem value="custom_amount">Custom amount</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Deposit amount</Label>
+          <Input
+            type="number"
+            disabled={form.deposit_mode !== 'custom_amount'}
+            value={form.deposit_mode === 'custom_amount' ? (form.deposit_amount || 0) : computeDeposit(total, form.deposit_mode)}
+            onChange={(e) => update('deposit_amount', Number(e.target.value))}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Terms &amp; conditions</Label>
+        <Textarea
+          rows={5}
+          value={form.terms || ''}
+          onChange={(e) => update('terms', e.target.value)}
+          placeholder="Standard terms, scope boundaries, revision policy, etc."
+        />
+      </div>
+
+      <div className="flex justify-end pt-2 border-t border-border">
+        <Button onClick={submit} disabled={saving || !form.client_email || !form.project_title}>
+          {saving ? 'Saving...' : 'Save Contract'}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function buildInitial(initial, settings) {
+  if (initial && initial.id) {
+    return { ...initial };
+  }
+  return {
+    lead_id: initial?.lead_id || '',
+    client_name: initial?.client_name || initial?.name || '',
+    client_email: initial?.client_email || initial?.email || '',
+    project_title: initial?.project_title || initial?.quick_pitch?.slice(0, 60) || '',
+    scope_summary: initial?.scope_summary || buildScopeFromLead(initial),
+    pricing_mode: settings?.pricing_mode || 'custom_quote',
+    selected_package: '',
+    line_items: initial?.estimated_price_low
+      ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
+      : [],
+    deposit_mode: settings?.default_deposit_mode || 'fixed_percent',
+    deposit_amount: 0,
+    payment_schedule: initial?.payment_schedule_preference === 'thirds'
+      ? 'Split across 3 milestones'
+      : initial?.payment_schedule_preference === 'full_upfront'
+      ? 'Full amount upfront'
+      : '50% upfront, 50% on launch',
+    terms: settings?.standard_terms || '',
+    estimated_tier: initial?.estimated_tier || 'small',
+  };
+}
+
+function buildScopeFromLead(lead) {
+  if (!lead) return '';
+  const parts = [];
+  if (lead.quick_pitch) parts.push(lead.quick_pitch);
+  if (lead.must_have_features?.length) parts.push(`Must-have features: ${lead.must_have_features.join(', ')}`);
+  if (lead.integrations_needed?.length) parts.push(`Integrations: ${lead.integrations_needed.join(', ')}`);
+  if (lead.estimated_tier) parts.push(`Estimated tier: ${lead.estimated_tier} (${lead.estimated_hours_low}–${lead.estimated_hours_high} hrs)`);
+  return parts.join('\n\n');
+}

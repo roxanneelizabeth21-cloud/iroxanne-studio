@@ -15,6 +15,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import AdminOverview from '@/pages/admin/AdminOverview';
 import HomepageAdminPage from '@/pages/admin/HomepageAdminPage';
 import PortfolioAdminPage from '@/pages/admin/PortfolioAdminPage';
+import ContractsAdminPage from '@/pages/admin/ContractsAdminPage';
 import SitePageVisibility from '@/pages/admin/SitePageVisibility';
 import BannersAdminPage from '@/pages/admin/BannersAdminPage';
 import PromoBannersAdminPage from '@/pages/admin/PromoBannersAdminPage';
@@ -27,6 +28,7 @@ import LegalPage from '@/pages/LegalPage';
 import Unsubscribe from '@/pages/Unsubscribe';
 import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
+import ContractSign from '@/pages/ContractSign';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
@@ -94,10 +96,12 @@ const AuthenticatedApp = () => {
       <Route path="/terms" element={<LegalPage />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/quote" element={<GetQuote />} />
+      <Route path="/contract/:id" element={<ContractSign />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
+        <Route path="/admin/contracts" element={<ContractsAdminPage />} />
         <Route path="/admin/pages" element={<SitePageVisibility />} />
         <Route path="/admin/banners" element={<BannersAdminPage />} />
         <Route path="/admin/promo-banners" element={<PromoBannersAdminPage />} />
