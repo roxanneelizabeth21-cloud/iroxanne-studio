@@ -3,7 +3,7 @@
 // features, integrations, and compliance needs. Intentionally simple —
 // it gives the studio a ballpark to frame the follow-up proposal, not a quote.
 
-const RATE = 85; // blended $/hr
+const RATE = 65; // blended $/hr
 
 const INTEGRATION_HOURS = {
   'Payments (Stripe/Square)': 12,
