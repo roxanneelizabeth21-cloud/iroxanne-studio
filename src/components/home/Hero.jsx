@@ -1,9 +1,9 @@
 import { ArrowRight } from 'lucide-react';
 
-// TODO: Replace with the Base44 media URL once Roxanne uploads the headshot
-const HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
+const FALLBACK = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
 
-export default function Hero({ projects, loading }) {
+export default function Hero({ projects, loading, headshotUrl }) {
+  const headshot = headshotUrl || FALLBACK;
   const trustNames = !loading
     ? (projects || []).map((p) => p.business_name || p.client_name || p.title).filter(Boolean).slice(0, 6)
     : [];
@@ -50,7 +50,7 @@ export default function Hero({ projects, loading }) {
               <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-[#C9A84C]/15 via-transparent to-[#2D2A4A]/8 blur-sm" />
               <div className="relative overflow-hidden rounded-[24px] shadow-[0_24px_64px_rgba(45,42,74,0.12)]">
                 <img
-                  src={HEADSHOT_URL}
+                  src={headshot}
                   alt="Roxanne — iRoxanne Studio"
                   className="w-[280px] lg:w-[320px] xl:w-[350px] aspect-[3/4] object-cover object-top"
                 />
