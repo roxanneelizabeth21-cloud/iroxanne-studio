@@ -24,8 +24,8 @@ Implemented in the existing Base44 app, without publishing the site or sending c
 - Entity schema and portfolio record readbacks confirmed the saved changes.
 - Tests use mocks; live browser, live email delivery, simultaneous request handling, and real payment-provider callbacks have not been verified.
 
-## Still deferred
-Payment-provider setup and automatic payment reconciliation. No payment provider was connected.
+## Stripe status
+Base44 added Stripe checkout, a hosted invoice page, webhook verification and invoice/payment/milestone synchronization during this pass. The owner supplied Base44's report that production webhook tests passed and test records were cleaned up. Live account claiming/keys remain pending according to that report.
 ## Added September 12
 - Contract signing supports typed names or drawn PNG signatures with name, consent and timestamp. The signature is visible on the signed agreement.
 - Contracts → New/Edit has a target date and standard/rush schedule selection. Dates under 30 days away suggest the editable rush addendum. Master rush wording is in Pricing Settings; each agreement saves its own wording. Signed agreements cannot be edited through the admin form.
@@ -34,4 +34,5 @@ Payment-provider setup and automatic payment reconciliation. No payment provider
 - Reminder function/controls are implemented, but hourly Workflow activation remains unverified. See payment-reminder-activation.md for the exact final setup request.
 - Existing invoices were not opted into reminders. No real client emails were sent in these tests.
 - Production build, changed-file ESLint and 6 additional mocked delivery test groups passed, alongside the earlier 16 workflow tests. Browser interactions and the live scheduled dispatch still require verification.
-- Separate payment-provider changes appeared in the shared app during this pass and were preserved; their readiness is outside this verification.
+- Base44's simultaneous Stripe changes were preserved. Four combined in-memory tests passed: Stripe deposit/milestone/final payments feed the reminder amounts, replayed payments are recognized, and signatures/rush terms/handoff state are retained. This is separate from Base44's reported production webhook test.
+- Remaining setup: claim the Stripe account or configure live keys, and activate/verify the hourly reminder Workflow.
