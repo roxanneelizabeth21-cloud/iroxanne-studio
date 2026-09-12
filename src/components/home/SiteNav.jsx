@@ -1,105 +1,47 @@
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import ThemeToggle from '@/components/ThemeToggle';
+import { Menu, X, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+
+const NAV_LINKS = [
+  { label: 'Work', href: '#work' },
+  { label: 'Process', href: '#process' },
+  { label: 'About', href: '#about' },
+  { label: 'Contact', href: '/contact' },
+];
 
 export default function SiteNav() {
+  const [open, setOpen] = useState(false);
   return (
-    <header
-      className="
-        absolute inset-x-0 top-0 z-50
-        border-b border-border/40
-        bg-transparent
-      "
-    >
-      <div
-        className="
-          mx-auto flex h-[82px] max-w-7xl
-          items-center justify-between
-          px-5 md:px-8
-        "
-      >
-        {/* Transparent logo, left */}
-        <a href="/" className="flex shrink-0 items-center">
-          <img
-            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/7380fe8cf_CodexImageAug31202603_50_41PM.png"
-            alt="iRoxanne Studio"
-            draggable="false"
-            className="hidden h-12 w-auto object-contain mix-blend-screen dark:block md:h-14"
-          />
-          <img
-            src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/3c870c3bc_CodexImageAug31202605_02_37PM.png"
-            alt="iRoxanne Studio"
-            draggable="false"
-            className="h-12 w-auto rounded-lg object-contain dark:hidden md:h-14"
-          />
-        </a>
-
-        {/* Desktop navigation */}
-        <nav className="hidden items-center gap-9 md:flex">
-          <a
-            href="#work"
-            className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
-          >
-            Work
+    <>
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+      <header className="fixed inset-x-0 top-0 z-50 bg-[#FAF7F0]/80 backdrop-blur-xl border-b border-[#2D2A4A]/5">
+        <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 md:px-8">
+          <a href="/" className="flex shrink-0 items-center gap-2.5">
+            <span className="h-9 w-9 rounded-full bg-[#2D2A4A] flex items-center justify-center text-white font-semibold text-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>R</span>
+            <span className="text-[15px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>iRoxanne Studio</span>
           </a>
-
-          <a
-            href="#process"
-            className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
-          >
-            Process
-          </a>
-
-          <a
-            href="#about"
-            className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
-          >
-            About
-          </a>
-
-          <a
-            href="/contact"
-            className="text-[13px] font-medium text-foreground/65 transition hover:text-foreground"
-          >
-            Contact
-          </a>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <div className="text-foreground/75"><ThemeToggle /></div>
-          <Button
-            asChild
-            className="
-              hidden h-10 rounded-lg border-0 px-5
-              bg-gradient-to-r
-              from-[#8A4266]
-              via-[#D1475E]
-              to-[#FF6C47]
-              text-xs font-semibold text-white
-              shadow-[0_8px_28px_rgba(209,71,94,0.26)]
-              transition hover:brightness-110
-              sm:inline-flex
-            "
-          >
-            <a href="/quote">
-              Get a Quote
+          <nav className="hidden items-center gap-8 md:flex">
+            {NAV_LINKS.map((l) => (
+              <a key={l.label} href={l.href} className="text-[13px] font-medium text-[#2D2A4A]/55 transition hover:text-[#2D2A4A]" style={{ fontFamily: "'Inter', sans-serif" }}>{l.label}</a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3">
+            <a href="/quote" className="hidden sm:inline-flex items-center gap-2 h-10 px-5 rounded-full bg-[#2D2A4A] text-white text-[13px] font-semibold transition hover:bg-[#3D3A5A] shadow-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Get a Quote <ArrowRight className="h-3.5 w-3.5" />
             </a>
-          </Button>
-
-          <button
-            type="button"
-            aria-label="Open navigation"
-            className="
-              flex h-10 w-10 items-center justify-center
-              rounded-lg border border-border
-              bg-muted
-              md:hidden
-            "
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+            <button type="button" onClick={() => setOpen(!open)} aria-label="Menu" className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2D2A4A]/10 md:hidden">
+              {open ? <X className="h-5 w-5 text-[#2D2A4A]" /> : <Menu className="h-5 w-5 text-[#2D2A4A]" />}
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+        {open && (
+          <div className="md:hidden border-t border-[#2D2A4A]/5 bg-[#FAF7F0] px-5 pb-6 pt-4 space-y-4">
+            {NAV_LINKS.map((l) => (
+              <a key={l.label} href={l.href} onClick={() => setOpen(false)} className="block text-base font-medium text-[#2D2A4A]/70 hover:text-[#2D2A4A]">{l.label}</a>
+            ))}
+            <a href="/quote" className="block text-center py-3 rounded-full bg-[#2D2A4A] text-white text-sm font-semibold">Get a Quote</a>
+          </div>
+        )}
+      </header>
+    </>
   );
 }
