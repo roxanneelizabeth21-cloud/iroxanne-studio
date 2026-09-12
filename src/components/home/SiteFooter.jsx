@@ -6,10 +6,10 @@ export default function SiteFooter() {
       {/* CTA band */}
       <div className="mx-auto max-w-6xl px-5 md:px-8 py-12 text-center">
         <h2 className="text-[30px] md:text-[36px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Ready to build something?
+          Have an idea you’d like to explore?
         </h2>
         <p className="mt-3 text-[15px] text-[#2D2A4A]/45 max-w-md mx-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Tell me about your business and I'll put together a free proposal, usually within 2 business days.
+          Tell me a little about what you have in mind. It is okay if you are still figuring it out; we can talk through the next steps together.
         </p>
         <a href="/quote" className="inline-flex items-center gap-2 mt-7 h-12 px-8 rounded-full bg-[#2D2A4A] text-white text-[14px] font-semibold transition hover:bg-[#3D3A5A] shadow-[0_8px_32px_rgba(45,42,74,0.15)]" style={{ fontFamily: "'Inter', sans-serif" }}>
           Get a free quote <ArrowRight className="h-4 w-4" />
