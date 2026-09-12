@@ -2,6 +2,11 @@
   "name": "Testimonial",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this testimonial",
+      "maxLength": 1000
+    },
     "client_name": {
       "type": "string",
       "description": "Client name. Only shown publicly when approved_for_use is true and client_anonymous is false."

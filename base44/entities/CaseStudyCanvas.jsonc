@@ -2,6 +2,11 @@
   "name": "CaseStudyCanvas",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this case study canvas",
+      "maxLength": 1000
+    },
     "title": {
       "type": "string",
       "description": "Name of this canvas card"

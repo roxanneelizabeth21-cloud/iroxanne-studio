@@ -2,6 +2,11 @@
   "name": "ClientIntake",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this intake record",
+      "maxLength": 1000
+    },
     "contract_id": {
       "type": "string",
       "description": "Linked Contract ID"

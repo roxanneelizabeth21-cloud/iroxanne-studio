@@ -2,6 +2,11 @@
   "name": "CallSettings",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for these call settings",
+      "maxLength": 1000
+    },
     "enabled": {
       "type": "boolean",
       "default": false

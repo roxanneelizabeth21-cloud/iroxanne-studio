@@ -2,6 +2,11 @@
   "name": "Lead",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this lead",
+      "maxLength": 1000
+    },
     "email": {
       "type": "string",
       "description": "Lead email address"

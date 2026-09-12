@@ -39,6 +39,7 @@ import ProposalView from '@/pages/ProposalView';
 import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
 import CaseStudy from '@/pages/CaseStudy';
+import About from '@/pages/About';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
@@ -108,6 +109,7 @@ const AuthenticatedApp = () => {
       <Route path="/quote" element={<GetQuote />} />
       <Route path="/book-call" element={<BookCall />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/about" element={<About />} />
       <Route path="/contract/:id" element={<ContractSign />} />
       <Route path="/invoice/:id" element={<InvoicePay />} />
       <Route path="/handoff/:id" element={<ProjectHandoff />} />

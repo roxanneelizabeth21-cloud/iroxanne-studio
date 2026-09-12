@@ -2,6 +2,11 @@
   "name": "PricingSettings",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for these pricing settings",
+      "maxLength": 1000
+    },
     "rate_per_hour": {
       "type": "number",
       "default": 65,

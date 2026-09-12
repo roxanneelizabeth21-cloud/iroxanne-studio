@@ -2,6 +2,11 @@
   "name": "PromoBanner",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this promo banner",
+      "maxLength": 1000
+    },
     "title": {
       "type": "string",
       "description": "Internal admin label for this promo banner"

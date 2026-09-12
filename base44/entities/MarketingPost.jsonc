@@ -2,6 +2,11 @@
   "name": "MarketingPost",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this marketing post",
+      "maxLength": 1000
+    },
     "campaign_id": {
       "type": "string",
       "description": "ID of the Campaign this post belongs to (optional \u2014 posts can be standalone)"

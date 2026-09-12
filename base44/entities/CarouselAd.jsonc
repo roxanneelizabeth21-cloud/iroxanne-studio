@@ -2,6 +2,11 @@
   "name": "CarouselAd",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this carousel ad",
+      "maxLength": 1000
+    },
     "name": {
       "type": "string",
       "description": "Internal name of this carousel ad"

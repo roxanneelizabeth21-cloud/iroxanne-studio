@@ -2,6 +2,11 @@
   "name": "FacebookPageConnection",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this Facebook Page connection",
+      "maxLength": 1000
+    },
     "page_id": {
       "type": "string",
       "description": "Facebook Page ID resolved from the Graph API for the authenticated Facebook user"
