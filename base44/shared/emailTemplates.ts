@@ -1,225 +1,97 @@
-// Admin-editable email copy. Every automated email the app sends gets its
-// subject + body text from here: the saved EmailTemplate record when the admin
-// has edited it, otherwise the built-in default below. A blank saved field
-// always falls back to the default, so an empty template can never send an
-// empty email.
-import { brandedEmail, brandButton } from './emailBrand.ts';
+/**
+ * Shared branded email template for all iRoxanne Studio transactional emails.
+ * One design system: plum header, gold accent, cream body, consistent footer.
+ */
 
-export const SITE_URL = 'https://iroxannestudio.com';
+export function brandedEmail({ recipientFirstName, headline, body, ctaText, ctaUrl, footerNote }) {
+  const name = recipientFirstName || 'there';
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#FAF7F0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:32px 20px;">
 
-export type TemplateDef = {
-  key: string;
-  name: string;
-  description: string;
-  audience: string;
-  body_label: string;
-  merge_fields: { field: string; note: string }[];
-  subject: string;
-  body: string;
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#2D2A4A 0%,#4A3F6B 100%);border-radius:16px 16px 0 0;padding:28px 32px 24px;">
+    <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-transform:uppercase;">iRoxanne Studio</p>
+    <h1 style="margin:0;font-size:22px;font-weight:600;color:#fff;font-family:Georgia,'Cormorant Garamond',serif;">${headline}</h1>
+  </div>
+  <!-- Gold accent bar -->
+  <div style="height:3px;background:linear-gradient(90deg,#C9A84C 0%,#E8D5A0 50%,#C9A84C 100%);"></div>
+
+  <!-- Body -->
+  <div style="background:#ffffff;padding:32px 32px 28px;border-left:1px solid rgba(45,42,74,0.06);border-right:1px solid rgba(45,42,74,0.06);">
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#2D2A4A;">Hi ${name},</p>
+    ${body}
+    ${ctaText && ctaUrl ? `
+    <div style="text-align:center;margin:28px 0 8px;">
+      <a href="${ctaUrl}" style="display:inline-block;background:#2D2A4A;color:#fff;font-weight:600;padding:14px 32px;border-radius:50px;text-decoration:none;font-size:14px;letter-spacing:0.01em;">${ctaText}</a>
+    </div>` : ''}
+  </div>
+
+  <!-- Footer -->
+  <div style="background:#FAF7F0;border:1px solid rgba(45,42,74,0.06);border-top:none;border-radius:0 0 16px 16px;padding:20px 32px;text-align:center;">
+    ${footerNote ? `<p style="margin:0 0 12px;font-size:12px;color:rgba(45,42,74,0.4);line-height:1.5;">${footerNote}</p>` : ''}
+    <p style="margin:0;font-size:11px;color:rgba(45,42,74,0.3);">iRoxanne Studio &middot; Custom apps for small businesses</p>
+  </div>
+
+</div>
+</body>
+</html>`;
+}
+
+export const EMAIL_TEMPLATES = {
+  quoteConfirmation: (name) => brandedEmail({
+    recipientFirstName: name,
+    headline: 'We got your project details',
+    body: `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Thanks for reaching out. I've received your project details and I'm reviewing them now.</p>
+    <p style="margin:0;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">I'll follow up within <strong style="color:#2D2A4A;">2 business days</strong> with a custom proposal. If you have any questions in the meantime, reply to this email.</p>`,
+    footerNote: 'You submitted a quote request at iRoxanne Studio.',
+  }),
+
+  contractSent: (name, projectTitle, contractUrl) => brandedEmail({
+    recipientFirstName: name,
+    headline: `Your agreement for ${projectTitle}`,
+    body: `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Your project agreement is ready to review and sign. Take a look at the scope, pricing, and terms — then sign electronically when you're ready.</p>
+    <p style="margin:0;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Once signed, I'll send you a content intake form so we can get started right away.</p>`,
+    ctaText: 'Review & Sign',
+    ctaUrl: contractUrl,
+    footerNote: 'This agreement was prepared by iRoxanne Studio.',
+  }),
+
+  intakeSent: (name, projectTitle, intakeUrl) => brandedEmail({
+    recipientFirstName: name,
+    headline: `Let's get started on ${projectTitle}`,
+    body: `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">To build your app as fast and accurately as possible, I need your content — text, images, documents, and details about how your business works.</p>
+    <p style="margin:0;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">I've set up a form organized by page. Fill in what you can, upload your files, and save your progress anytime. The more you provide upfront, the faster I can deliver.</p>`,
+    ctaText: 'Fill Out Your Intake Form',
+    ctaUrl: intakeUrl,
+    footerNote: 'You can save and return to this form anytime using the same link.',
+  }),
+
+  depositRequest: (name, projectTitle, amount, paymentUrl) => brandedEmail({
+    recipientFirstName: name,
+    headline: `Deposit request — ${projectTitle}`,
+    body: `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Your project is ready to begin. The deposit to start work is:</p>
+    <div style="text-align:center;margin:20px 0;">
+      <span style="font-size:32px;font-weight:700;color:#2D2A4A;font-family:Georgia,'Cormorant Garamond',serif;">$${amount}</span>
+    </div>
+    <p style="margin:0;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Click below to pay securely. Once the deposit is received, I'll start building.</p>`,
+    ctaText: 'Pay Now',
+    ctaUrl: paymentUrl,
+    footerNote: 'This deposit request was sent by iRoxanne Studio.',
+  }),
+
+  balanceRequest: (name, projectTitle, amount, paymentUrl) => brandedEmail({
+    recipientFirstName: name,
+    headline: `Final balance — ${projectTitle}`,
+    body: `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Your project is complete and ready for handoff. The remaining balance is:</p>
+    <div style="text-align:center;margin:20px 0;">
+      <span style="font-size:32px;font-weight:700;color:#2D2A4A;font-family:Georgia,'Cormorant Garamond',serif;">$${amount}</span>
+    </div>
+    <p style="margin:0;font-size:15px;line-height:1.7;color:rgba(45,42,74,0.65);">Once paid, I'll hand over all access and deliverables.</p>`,
+    ctaText: 'Pay Final Balance',
+    ctaUrl: paymentUrl,
+    footerNote: 'This payment request was sent by iRoxanne Studio.',
+  }),
 };
-
-export const TEMPLATE_DEFS: TemplateDef[] = [
-  {
-    key: 'fan_welcome',
-    name: 'Subscriber Welcome / Confirmation',
-    description: 'Sent to a subscriber right after they join the list (newsletter or any capture page). Sent once per subscriber.',
-    audience: 'The subscriber who just joined',
-    body_label: 'Email body — one paragraph per blank line. A “Book a consult” button and unsubscribe link are added automatically.',
-    merge_fields: [
-      { field: '{fan_name}', note: "The subscriber's first name, or “there” when they didn't give one" },
-      { field: '{email}', note: "The subscriber's email address" },
-      { field: '{site_url}', note: 'Your public site link' },
-    ],
-    subject: 'Welcome to the iRoxanne Studio list',
-    body: `Hi {fan_name},
-
-Thanks for joining the iRoxanne Studio list — glad to have you here.
-
-Here's what you'll get from me: notes on apps I'm building, the occasional behind-the-build story, and first looks at new work. No spam, and never more than you'd want.
-
-If you've got an idea you're thinking about building, you can always book a free consult from the link below.
-
-Talk soon,
-iRoxanne Studio`,
-  },
-  {
-    key: 'admin_new_subscriber',
-    name: 'New Subscriber Alert',
-    description: 'Sent to you the moment someone subscribes anywhere on the site. The subscriber detail table is added automatically below your text.',
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the subscriber details.',
-    merge_fields: [
-      { field: '{email}', note: "The new subscriber's email" },
-      { field: '{name}', note: 'Their name, or — when blank' },
-      { field: '{source}', note: 'Capture slug or “newsletter”' },
-      { field: '{utm}', note: 'UTM source / medium / campaign' },
-      { field: '{signed_up}', note: 'When they signed up' },
-    ],
-    subject: 'New Subscriber — {email}',
-    body: 'A new subscriber just joined the iRoxanne Studio list.',
-  },
-  {
-    key: 'admin_new_inquiry',
-    name: 'New Contact Inquiry',
-    description: 'Sent to you when someone submits the website contact form. Their details and full message are added automatically below your text.',
-    audience: 'You (admin) — replying goes straight back to the inquirer',
-    body_label: 'Intro line shown above the inquiry details.',
-    merge_fields: [
-      { field: '{name}', note: 'Name they entered' },
-      { field: '{email}', note: 'Their email address' },
-      { field: '{inquiry_type}', note: 'Inquiry type they picked' },
-      { field: '{message_subject}', note: 'Subject line they entered' },
-      { field: '{submitted}', note: 'When the form was submitted' },
-    ],
-    subject: 'New Inquiry — {message_subject}',
-    body: 'You received a new message from the iRoxanne Studio website contact form.',
-  },
-  {
-    key: 'admin_daily_posts',
-    name: 'Daily Posts Due',
-    description: "Sent to you each morning when marketing posts are scheduled for that day. The list of posts is added automatically below your text.",
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the list of today’s posts.',
-    merge_fields: [
-      { field: '{count}', note: 'How many posts are due today' },
-      { field: '{plural}', note: '“s” when there is more than one post' },
-      { field: '{date}', note: "Today's date" },
-    ],
-    subject: 'You have {count} post{plural} today',
-    body: "Today, {date} — here's what's queued to post:",
-  },
-  {
-    key: 'admin_post_time',
-    name: 'Post Time Reminder',
-    description: "Sent to you at a post's scheduled time as a nudge that it's time to post. The list of posts is added automatically below your text.",
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the list of posts going live now.',
-    merge_fields: [
-      { field: '{count}', note: 'How many posts are due in this window' },
-      { field: '{plural}', note: '“s” when there is more than one post' },
-      { field: '{date}', note: "Today's date" },
-      { field: '{time}', note: 'The scheduled time window' },
-    ],
-    subject: "It's time to post ({count})",
-    body: "It's time to post — {date} {time}:",
-  },
-  {
-    key: 'admin_weekly_digest',
-    name: 'Weekly Marketing Digest',
-    description: 'Sent to you weekly with last week’s completed posts and the week ahead. The summary rows are added automatically below your text.',
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the weekly summary.',
-    merge_fields: [
-      { field: '{week_start}', note: 'Start of the reporting range' },
-      { field: '{week_end}', note: 'End of the reporting range' },
-      { field: '{completed_count}', note: 'Posts completed last week' },
-      { field: '{scheduled_count}', note: 'Posts scheduled this week' },
-    ],
-    subject: 'Weekly marketing digest',
-    body: "A snapshot of last week and what's ahead ({week_start} → {week_end}).",
-  },
-  {
-    key: 'admin_release_countdown',
-    name: 'Launch Countdown',
-    description: 'Sent to you 14, 7, 3 and 1 days before a campaign launch date. The per-project status rows are added automatically below your text.',
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the countdown details.',
-    merge_fields: [
-      { field: '{date}', note: "Today's date" },
-      { field: '{count}', note: 'How many projects are in a countdown window' },
-    ],
-    subject: 'Launch countdown update',
-    body: 'Where each upcoming launch stands today, {date}.',
-  },
-  {
-    key: 'admin_publish_failed',
-    name: 'Auto-Publish Failure Alert',
-    description: 'Sent to you when an auto-scheduled post fails to publish to Facebook or Instagram. The failing posts and their errors are added automatically below your text.',
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the failed posts.',
-    merge_fields: [
-      { field: '{count}', note: 'How many posts failed' },
-      { field: '{plural}', note: '“s” when more than one failed' },
-    ],
-    subject: '{count} auto-publish{plural} failed',
-    body: 'These posts stayed in Ready so you can fix the issue and publish manually or retry:',
-  },
-  {
-    key: 'admin_filming_nudge',
-    name: 'Monthly Filming Nudge',
-    description: 'Sent to you monthly with an AI-generated shot list for one filming session. The shot briefs are added automatically below your text.',
-    audience: 'You (admin)',
-    body_label: 'Intro line shown above the shot list.',
-    merge_fields: [
-      { field: '{count}', note: 'How many shots are in the list' },
-    ],
-    subject: "This month's filming list — one sitting, ~1 hour",
-    body: 'One sitting, ~1 hour. Film these, then drop the clips into the Clip Library — the auto-generator will match them to posts for you.',
-  },
-];
-
-export function defForKey(key: string): TemplateDef | null {
-  return TEMPLATE_DEFS.find((d) => d.key === key) || null;
-}
-
-// Replaces {merge_field} tokens. Unknown or empty values render as an empty
-// string so a stray token never leaks braces into a real email.
-export function fillTokens(text: string, vars: Record<string, any>): string {
-  return String(text || '').replace(/\{(\w+)\}/g, (_m, k) => {
-    const v = vars ? vars[k] : undefined;
-    return v == null ? '' : String(v);
-  });
-}
-
-// Loads a template's effective subject/body: saved value when non-blank,
-// otherwise the built-in default.
-export async function loadTemplate(base44: any, key: string) {
-  const def = defForKey(key);
-  if (!def) throw new Error(`Unknown email template: ${key}`);
-  let rec: any = null;
-  try {
-    const list = await base44.asServiceRole.entities.EmailTemplate.filter({ key });
-    rec = list && list[0] ? list[0] : null;
-  } catch {
-    rec = null;
-  }
-  const savedSubject = String(rec?.subject || '').trim();
-  const savedBody = String(rec?.body || '').trim();
-  return {
-    def,
-    subject: savedSubject || def.subject,
-    body: savedBody || def.body,
-    usedDefaultSubject: !savedSubject,
-    usedDefaultBody: !savedBody,
-  };
-}
-
-// Loads + merges in one step. Returns the final subject and body text.
-export async function renderTemplate(base44: any, key: string, vars: Record<string, any>) {
-  const t = await loadTemplate(base44, key);
-  return {
-    def: t.def,
-    subject: fillTokens(t.subject, vars).trim() || fillTokens(t.def.subject, vars),
-    text: fillTokens(t.body, vars).trim() || fillTokens(t.def.body, vars),
-  };
-}
-
-export function textToHtmlParagraphs(text: string): string {
-  return String(text || '')
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => `<p style="margin:0 0 16px;">${p.replace(/\n/g, '<br>')}</p>`)
-    .join('\n');
-}
-
-// Wraps admin-authored subscriber copy in the branded iRoxanne Studio shell, with the
-// "Book a consult" button and unsubscribe footer appended.
-export function subscriberEmailHtml(text: string, unsubscribeLink: string): string {
-  return brandedEmail({
-    content: `${textToHtmlParagraphs(text)}
-<p style="margin:24px 0 0;">${brandButton('Book a consult', `${SITE_URL}/consult`)}</p>`,
-    footerNote: `You're receiving this because you signed up at <a href="${SITE_URL}" style="color:#8B7B95;">iroxannestudio.com</a>.<br>
-<a href="${unsubscribeLink}" style="color:#8B7B95;text-decoration:underline;">Unsubscribe</a>`,
-  });
-}
