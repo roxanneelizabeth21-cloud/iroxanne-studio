@@ -10,6 +10,7 @@ import CanvaImportDialog from '@/components/marketing/CanvaImportDialog';
 import MediaCollectionGroups from '@/components/marketing/MediaCollectionGroups';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
 import { MEDIA_CATEGORIES } from '@/lib/mediaCategories';
+import { STUDIO_SERVICE_ID, STUDIO_SERVICE_ITEM } from '@/lib/marketing';
 
 // Media Library — reusable media in one visual place. Gallery images, uploads and
 // generated images come from the existing GalleryImage records; general videos come
@@ -161,6 +162,7 @@ export default function MediaLibrary() {
         </select>
         <select value={filters.project} onChange={(e) => setFilters({ ...filters, project: e.target.value })} aria-label="Filter by project">
           <option value="">All projects</option>
+          <option value={STUDIO_SERVICE_ID}>{STUDIO_SERVICE_ITEM.title}</option>
           {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
         </select>
         <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} aria-label="Filter by type of asset">
