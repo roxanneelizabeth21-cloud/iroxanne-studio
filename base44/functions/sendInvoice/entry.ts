@@ -7,7 +7,7 @@ const money = (n: unknown) => (typeof n === 'number' ? `$${n.toLocaleString()}` 
 
 function getBaseUrl(req: Request) {
   const url = new URL(req.url);
-  return url.origin.includes('base44') ? url.origin : 'https://iroxanne.com';
+  return url.origin.includes('base44') ? url.origin : 'https://iroxannestudio.base44.app';
 }
 
 // Admin-only: email the client their invoice — total, what's been paid, what's
