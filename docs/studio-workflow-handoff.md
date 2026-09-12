@@ -26,5 +26,12 @@ Implemented in the existing Base44 app, without publishing the site or sending c
 
 ## Still deferred
 Payment-provider setup and automatic payment reconciliation. No payment provider was connected.
-Scheduled automatic payment requests, drawn signatures, rush-specific contract templates, and detailed delivery checklists are not included in this pass.
-Existing contract wording remains the owner's wording.
+## Added September 12
+- Contract signing supports typed names or drawn PNG signatures with name, consent and timestamp. The signature is visible on the signed agreement.
+- Contracts → New/Edit has a target date and standard/rush schedule selection. Dates under 30 days away suggest the editable rush addendum. Master rush wording is in Pricing Settings; each agreement saves its own wording. Signed agreements cannot be edited through the admin form.
+- Contracts → Handoff checklist includes 12 items spanning scope, testing, launch, access, documentation, training and support. Customize required items and client-visible notes; keep internal notes separate. Save and create a private link, collect client acceptance or follow-up, then mark delivered. Reopening requires acceptance again.
+- Invoices → Payment reminders has opt-in controls, stage, start time, frequency, limit and pause. The backend stops after payment or cancellation and pauses uncertain sends.
+- Reminder function/controls are implemented, but hourly Workflow activation remains unverified. See payment-reminder-activation.md for the exact final setup request.
+- Existing invoices were not opted into reminders. No real client emails were sent in these tests.
+- Production build, changed-file ESLint and 6 additional mocked delivery test groups passed, alongside the earlier 16 workflow tests. Browser interactions and the live scheduled dispatch still require verification.
+- Separate payment-provider changes appeared in the shared app during this pass and were preserved; their readiness is outside this verification.
