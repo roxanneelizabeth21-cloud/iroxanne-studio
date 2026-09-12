@@ -38,6 +38,7 @@ const send=mocks({status:'draft',client_email:'test@example.test',project_title:
 const fn=load('base44/functions/sendProposal/entry.ts',send.bindings);const start=Date.now();const res=await fn(request({proposal_id:'abc123'}));assert.equal(res.status,200);const expiry=new Date(send.writes[0].expires_at).getTime();assert.ok(expiry-start>=72*3600000&&expiry-start<72*3600000+10000);checks++;console.log('PASS 72-hour expiry starts on send');
 
 const live=mocks({});
+for (const name of ['Invoice','Payment','Contract']) live.client.entities[name]={...live.client.entities[name]};
 let invoice={id:'inv',amount_total:1500,deposit_amount:750,deposit_status:'pending',balance_status:'pending',balance_amount:750,contract_id:'c',status:'open'};
 let contract={id:'c',status:'signed'};let ledger=[];
 live.client.entities.Invoice.get=async()=>({...invoice});
