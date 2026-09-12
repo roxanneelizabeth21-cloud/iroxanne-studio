@@ -11,6 +11,7 @@ import SlideBuilder from '@/components/marketing/ads/SlideBuilder';
 import SlideList from '@/components/marketing/ads/SlideList';
 import AdSettingsPanel from '@/components/marketing/ads/AdSettingsPanel';
 import LaunchedAdsList from '@/components/marketing/ads/LaunchedAdsList';
+import { STUDIO_SERVICE_ID, STUDIO_SERVICE_ITEM } from '@/lib/marketing';
 
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 
@@ -130,6 +131,7 @@ export default function CarouselAds() {
               <label className={FL}>Project</label>
               <select value={projectId} onChange={(e) => chooseProject(e.target.value)} aria-label="Project">
                 <option value="">Choose a project</option>
+                <option value={STUDIO_SERVICE_ID}>{STUDIO_SERVICE_ITEM.title}</option>
                 {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
               </select>
             </div>
