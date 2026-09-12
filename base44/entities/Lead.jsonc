@@ -56,43 +56,11 @@
     },
     "quick_pitch": {
       "type": "string",
-      "description": "2-3 sentence summary of what the app needs to do"
-    },
-    "business_model": {
-      "type": "string",
-      "description": "How the business operates today and who the customers are"
+      "description": "2-3 sentence summary of what the client needs built"
     },
     "problem_to_solve": {
       "type": "string",
       "description": "Problem or pain point driving the project"
-    },
-    "initial_users": {
-      "type": "string",
-      "description": "Expected users at launch"
-    },
-    "projected_growth": {
-      "type": "string",
-      "description": "Growth expected in 12 months"
-    },
-    "competitors": {
-      "type": "string",
-      "description": "Competitors and what they do well or poorly"
-    },
-    "primary_workflows": {
-      "type": "string",
-      "description": "Top workflows users need to complete"
-    },
-    "user_types": {
-      "type": "string",
-      "description": "Who uses the app and whether they need different views"
-    },
-    "data_to_collect": {
-      "type": "string",
-      "description": "Information the app must capture and store"
-    },
-    "reports_needed": {
-      "type": "string",
-      "description": "What needs to appear in dashboards/reports"
     },
     "must_have_features": {
       "type": "array",
@@ -106,11 +74,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Features that are fine to launch without"
-    },
-    "out_of_scope": {
-      "type": "string",
-      "description": "Explicitly out of scope"
+      "description": "Features that are fine to add later"
     },
     "existing_tools": {
       "type": "string",
@@ -123,10 +87,6 @@
       },
       "description": "Integrations the lead will need"
     },
-    "compliance_needs": {
-      "type": "string",
-      "description": "Compliance/legal requirements (HIPAA, GDPR, PCI, none)"
-    },
     "design_style": {
       "type": "string",
       "description": "Preferred design style"
@@ -135,26 +95,9 @@
       "type": "string",
       "description": "Links to sites/apps the lead likes"
     },
-    "device_focus": {
-      "type": "string",
-      "description": "Device focus (mobile-first, desktop-first, both, not sure)"
-    },
-    "accessibility_needs": {
-      "type": "string",
-      "description": "Accessibility needs, if any"
-    },
     "ideal_launch_date": {
       "type": "string",
       "description": "Ideal launch date or timeframe"
-    },
-    "revision_expectations": {
-      "type": "string",
-      "description": "Number of revision rounds expected"
-    },
-    "training_needed": {
-      "type": "boolean",
-      "default": false,
-      "description": "Whether the team needs training/documentation"
     },
     "ongoing_support_needed": {
       "type": "boolean",
@@ -164,26 +107,17 @@
     "budget_range": {
       "type": "string",
       "enum": [
-        "under_5k",
-        "5k_10k",
-        "10k_20k",
-        "20k_50k",
-        "50k_plus",
+        "under_1500",
+        "1500_3000",
+        "3000_5000",
+        "5000_plus",
         "not_sure"
       ],
       "description": "Selected budget range"
     },
-    "pricing_model_preference": {
-      "type": "string",
-      "description": "Preferred pricing model (fixed, hourly, not_sure)"
-    },
-    "payment_schedule_preference": {
-      "type": "string",
-      "description": "Preferred payment schedule"
-    },
     "estimated_tier": {
       "type": "string",
-      "description": "Auto-estimated project tier (small, standard, enterprise)"
+      "description": "Auto-estimated project tier (starter, business, custom)"
     },
     "estimated_hours_low": {
       "type": "number",
