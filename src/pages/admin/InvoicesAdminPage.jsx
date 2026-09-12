@@ -1,127 +1,102 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Receipt, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Receipt, Plus, Send } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-
-const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
-
-const DEPOSIT_STYLES = {
-  pending: 'bg-amber-500/10 text-amber-700',
-  paid: 'bg-green-500/10 text-green-700',
-  waived: 'bg-secondary text-muted-foreground',
-};
-
+const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
   const { toast } = useToast();
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [invoices,setInvoices] = useState([]);
+  const [payments,setPayments] = useState([]);
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState('');
+  const [editing,setEditing] = useState(null);
+  const [form,setForm] = useState({});
+  const [sending,setSending] = useState(null);
+  const [busy,setBusy] = useState(false);
+  const inFlight = useRef(false);
   const load = async () => {
-    setLoading(true);
+    setLoading(true); setError('');
     try {
-      const list = await base44.entities.Invoice.list('-created_date', 100).catch(() => []);
-      setInvoices(list);
-    } finally {
-      setLoading(false);
-    }
+      const [i,p] = await Promise.all([base44.entities.Invoice.list('-created_date',100),base44.entities.Payment.list('-created_date',1000)]);
+      setInvoices(i); setPayments(p);
+    } catch(e) { setError(e.message || 'Could not load invoices.'); }
+    finally { setLoading(false); }
   };
-
-  useEffect(() => { load(); }, []);
-
-  const markDepositPaid = async (inv) => {
+  useEffect(()=>{ load(); },[]);
+  const remaining = (i,k) => k==='deposit'
+    ? (['paid','waived'].includes(i.deposit_status) ? 0 : Math.max(0,Number(i.deposit_amount||0)-Number(i.deposit_paid_amount||0)))
+    : (i.balance_status==='waived' || i.balance_status==='paid' ? 0 : Math.max(0,Number(i.balance_amount||0)-Number(i.balance_paid_amount||0)));
+  const openPayment = i => {
+    const kind = remaining(i,'deposit')>0 ? 'deposit':'balance';
+    setEditing(i);
+    setForm({kind,amount:remaining(i,kind),method:'transfer',reference:'',request_id:crypto.randomUUID(),notify_client:false});
+  };
+  const save = async e => {
+    e.preventDefault();
+    if(inFlight.current) return;
+    inFlight.current=true; setBusy(true);
     try {
-      const balanceDone = inv.balance_amount <= 0 || inv.balance_status === 'paid' || inv.balance_status === 'waived';
-      await base44.entities.Invoice.update(inv.id, {
-        deposit_status: 'paid',
-        deposit_paid_at: new Date().toISOString(),
-        deposit_method: 'offline',
-        status: balanceDone ? 'paid' : 'deposit_paid',
-      });
-      toast({ title: 'Deposit marked paid' });
-      await load();
-    } catch (e) {
-      toast({ title: 'Failed', description: e.message, variant: 'destructive' });
-    }
+      const res=await base44.functions.invoke('recordPayment',{invoice_id:editing.id,...form,amount:Number(form.amount)});
+      const data=res.data || res;
+      if(data.error) throw new Error(data.error);
+      toast({title:'Payment recorded',description:data.receipt_sent?'Receipt emailed to the client.':'Payment history and balance updated.'});
+      setEditing(null); await load();
+    } catch(e) {toast({title:'Could not record payment',description:e.message,variant:'destructive'});}
+    finally {inFlight.current=false;setBusy(false);}
   };
-
-  const markBalancePaid = async (inv) => {
-    try {
-      const depositDone = inv.deposit_status === 'paid' || inv.deposit_status === 'waived';
-      await base44.entities.Invoice.update(inv.id, {
-        balance_status: 'paid',
-        balance_paid_amount: inv.balance_amount,
-        status: depositDone ? 'paid' : 'deposit_paid',
-      });
-      toast({ title: 'Balance marked paid' });
-      await load();
-    } catch (e) {
-      toast({ title: 'Failed', description: e.message, variant: 'destructive' });
-    }
+  const send = async () => {
+    if(inFlight.current) return;
+    inFlight.current=true;setBusy(true);
+    try{
+      const res=await base44.functions.invoke('sendInvoice',{invoice_id:sending.invoice.id,which:sending.which});
+      const data=res.data || res;
+      if(data.error || !data.sent) throw new Error(data.error || 'Email was not sent. Please try again.');
+      toast({title:'Payment request sent',description:sending.invoice.client_email});
+      setSending(null); await load();
+    }catch(e){toast({title:'Could not send request',description:e.message,variant:'destructive'});}
+    finally{inFlight.current=false;setBusy(false);}
   };
-
-  return (
-    <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold flex items-center gap-2">
-        <Receipt className="h-6 w-6 text-primary" /> Invoices
-      </h1>
-
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-        {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
-        {!loading && invoices.length === 0 && (
-          <p className="text-sm text-muted-foreground">No invoices yet. They're created automatically when a client signs a contract.</p>
-        )}
-        {invoices.map((inv) => {
-          const balanceDone = inv.balance_amount <= 0 || inv.balance_status === 'paid' || inv.balance_status === 'waived';
-          const depositOpen = inv.deposit_status === 'pending';
-          const balanceOpen = inv.balance_amount > 0 && inv.balance_status !== 'paid' && inv.balance_status !== 'waived';
-          return (
-            <div key={inv.id} className="rounded-xl bg-secondary/40 p-4 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{inv.project_title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{inv.client_name || inv.client_email}</p>
-                </div>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">{inv.status}</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm items-start">
-                <div>
-                  <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="font-semibold">{money(inv.amount_total)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Deposit</p>
-                  <p className="font-semibold">{money(inv.deposit_amount)}</p>
-                  <span className={`mt-0.5 inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded ${DEPOSIT_STYLES[inv.deposit_status] || ''}`}>{inv.deposit_status}</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Balance</p>
-                  <p className="font-semibold">{money(inv.balance_amount)}</p>
-                  <span className="mt-0.5 inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{inv.balance_status}</span>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {depositOpen && (
-                    <Button size="sm" variant="outline" onClick={() => markDepositPaid(inv)} className="gap-1 h-7 text-xs">
-                      <CheckCircle2 className="h-3 w-3" /> Deposit paid
-                    </Button>
-                  )}
-                  {balanceOpen && (
-                    <Button size="sm" variant="outline" onClick={() => markBalancePaid(inv)} className="gap-1 h-7 text-xs">
-                      <CheckCircle2 className="h-3 w-3" /> Balance paid
-                    </Button>
-                  )}
-                  {inv.deposit_status !== 'pending' && !balanceOpen && (
-                    <p className="text-xs text-green-600">Settled</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+  return <div className="space-y-6">
+    <div><h1 className="font-display text-3xl font-semibold flex items-center gap-2"><Receipt className="h-6 w-6 text-primary"/>Invoices & Payments</h1>
+    <p className="text-sm text-muted-foreground mt-2">Track deposits and balances for every signed project. Record payments after you receive them.</p></div>
+    {error && <p role="alert" className="text-destructive">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
+    {loading && <p role="status">Loading invoices…</p>}
+    {!loading && !error && !invoices.length && <div className="rounded-2xl bg-card border p-8">Invoices appear here when a client signs their agreement.</div>}
+    {invoices.map(i=><section key={i.id} className="rounded-2xl border border-border bg-card p-5 space-y-4">
+      <div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-display text-xl font-semibold">{i.project_title}</h2><p className="text-sm text-muted-foreground">{i.client_name || i.client_email}</p></div><span className="text-sm font-medium text-primary">{i.status?.replaceAll('_',' ')}</span></div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div><p className="text-xs text-muted-foreground">Project total</p><p className="font-semibold">{money(i.amount_total)}</p></div>
+        <div><p className="text-xs text-muted-foreground">Deposit remaining</p><p className="font-semibold">{money(remaining(i,'deposit'))}</p><p className="text-xs">{i.deposit_status}</p></div>
+        <div><p className="text-xs text-muted-foreground">Balance remaining</p><p className="font-semibold">{money(remaining(i,'balance'))}</p><p className="text-xs">{i.balance_status}</p></div>
+        <div><p className="text-xs text-muted-foreground">Due date</p><p>{i.due_date || 'Per agreement'}</p></div>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Online payments (Stripe) aren't connected yet — use “Deposit paid” to record a payment you collected offline (Square, cash, transfer). When Stripe is wired, a Pay Deposit button will appear on the client's signed agreement and update these invoices automatically.
-      </p>
-    </div>
-  );
+      {i.status!=='cancelled' && <div className="flex flex-wrap gap-2">
+        {(remaining(i,'deposit')+remaining(i,'balance'))>0 && <Button onClick={()=>openPayment(i)} className="gap-1"><Plus className="h-4 w-4"/>Record payment</Button>}
+        {remaining(i,'deposit')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'deposit'})} className="gap-1"><Send className="h-4 w-4"/>Request deposit</Button>}
+        {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
+        <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
+      </div>}
+      <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
+        {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><strong>{money(p.amount)}</strong></div>)}
+        {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
+      </div></details>
+    </section>)}
+    <p className="text-xs text-muted-foreground">Payment-provider integration is pending. Recording a payment updates your records; it does not charge the client or mark the project delivered.</p>
+    <Dialog open={!!editing} onOpenChange={o=>!busy&&!o&&setEditing(null)}><DialogContent><DialogHeader><DialogTitle>Record received payment</DialogTitle><DialogDescription>{editing?.project_title} — enter money you have already received.</DialogDescription></DialogHeader>
+      <form onSubmit={save} className="space-y-4">
+        <div><Label htmlFor="payment-kind">Payment stage</Label><select id="payment-kind" className="w-full border rounded-md p-2 bg-background" value={form.kind} onChange={e=>setForm({...form,kind:e.target.value,amount:remaining(editing,e.target.value)})}><option value="deposit">Deposit</option><option value="balance">Balance</option></select></div>
+        <div><Label htmlFor="payment-amount">Amount received ($)</Label><Input id="payment-amount" type="number" min="0.01" step="0.01" required max={editing?remaining(editing,form.kind):undefined} value={form.amount ?? ''} onChange={e=>setForm({...form,amount:e.target.value})}/></div>
+        <div><Label htmlFor="payment-method">Payment method</Label><select id="payment-method" className="w-full border rounded-md p-2 bg-background" value={form.method} onChange={e=>setForm({...form,method:e.target.value})}>{methods.map(m=><option key={m} value={m}>{m}</option>)}</select></div>
+        <div><Label htmlFor="payment-reference">Receipt or reference number</Label><Input id="payment-reference" value={form.reference||''} onChange={e=>setForm({...form,reference:e.target.value})}/></div>
+        <label className="flex gap-2 text-sm"><input type="checkbox" checked={!!form.notify_client} onChange={e=>setForm({...form,notify_client:e.target.checked})}/>Email the client a receipt</label>
+        <Button type="submit" disabled={busy}>{busy?'Saving…':'Save payment'}</Button>
+      </form>
+    </DialogContent></Dialog>
+    <Dialog open={!!sending} onOpenChange={o=>!busy&&!o&&setSending(null)}><DialogContent><DialogHeader><DialogTitle>Send {sending?.which==='statement'?'statement':sending?.which+' request'}</DialogTitle><DialogDescription>This emails {sending?.invoice.client_email} the current amount and your saved payment instructions.</DialogDescription></DialogHeader><Button onClick={send} disabled={busy}>{busy?'Sending…':'Send email'}</Button></DialogContent></Dialog>
+  </div>;
 }
