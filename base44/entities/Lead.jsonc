@@ -110,7 +110,8 @@
         "under_1500",
         "1500_3000",
         "3000_5000",
-        "5000_plus",
+        "5000_8000",
+        "8000_plus",
         "not_sure"
       ],
       "description": "Selected budget range"
