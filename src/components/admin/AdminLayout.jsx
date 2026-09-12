@@ -147,6 +147,11 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const mktHeader = useMarketingHeader(location.pathname);
   const showAdminBack = location.pathname !== '/admin';
+  useEffect(() => {
+    document.body.classList.toggle('studio-admin-theme', location.pathname.startsWith('/admin'));
+    return () => document.body.classList.remove('studio-admin-theme');
+  }, [location.pathname]);
+
 
   return (
     <div className="min-h-screen flex bg-background">

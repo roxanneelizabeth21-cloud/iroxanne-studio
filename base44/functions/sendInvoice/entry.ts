@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { paymentSummary } from '../../shared/paymentSummary.ts';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
 
@@ -29,19 +30,22 @@ export default async function (req: Request) {
     }
     if (!invoice.client_email) return Response.json({ error: 'Invoice has no client email' }, { status: 400 });
 
-    const total = typeof invoice.amount_total === 'number' ? invoice.amount_total : 0;
-    const deposit = typeof invoice.deposit_amount === 'number' ? invoice.deposit_amount : 0;
-    const depositPaid = invoice.deposit_status === 'paid' || invoice.deposit_status === 'waived';
-    const balancePaidAmt = typeof invoice.balance_paid_amount === 'number' ? invoice.balance_paid_amount : 0;
-    const paidSoFar = (depositPaid ? deposit : 0) + balancePaidAmt;
-    const outstanding = Math.max(total - paidSoFar, 0);
+    if (!['deposit','balance','statement'].includes(which)) return Response.json({error:'Invalid request type'},{status:400});
+    if (invoice.status === 'cancelled') return Response.json({error:'This invoice is cancelled'},{status:409});
+    const payments = await base44.entities.Payment.filter({invoice_id}, '-created_date', 1000);
+    const summary = paymentSummary(invoice,payments);
+    const total = summary.total;
+    const deposit = summary.deposit;
+    const paidSoFar = summary.paid;
+    const outstanding = summary.outstanding;
 
     // Payment instructions come from PricingSettings so Roxanne can change them
     // in one place without a redeploy.
     const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
       const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
     const payInstructions: string = settings?.payment_instructions || '';
-    const payLink: string = settings?.payment_link || '';
+    const rawLink = settings?.payment_link || '';
+    const payLink = /^https:\/\//i.test(rawLink) ? rawLink : '';
 
     const firstName = (invoice.client_name || '').split(' ')[0] || 'there';
 
@@ -50,11 +54,11 @@ export default async function (req: Request) {
     let amountDue = outstanding;
     if (which === 'deposit') {
       title = `Your deposit is ready, ${esc(firstName)}`;
-      amountDue = depositPaid ? 0 : deposit;
+      amountDue = summary.depositOutstanding;
       lead = `<p style="margin:0 0 16px;">Here's the deposit for <strong>${esc(invoice.project_title)}</strong>. Once it's in, your build slot is locked and I start work.</p>`;
     } else if (which === 'balance') {
       title = `Final balance — ${esc(invoice.project_title)}`;
-      amountDue = Math.max(total - deposit - balancePaidAmt, 0);
+      amountDue = summary.balanceOutstanding;
       lead = `<p style="margin:0 0 16px;">Your build is wrapping up. Here's the remaining balance for <strong>${esc(invoice.project_title)}</strong>.</p>`;
     } else {
       title = `Invoice — ${esc(invoice.project_title)}`;

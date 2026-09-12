@@ -83,46 +83,14 @@ export default function ContractsAdminPage() {
 
   const handleSend = async (contract) => {
     if (!['draft', 'sent'].includes(contract.status)) return;
-    const token = contract.access_token || Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
-    const link = `${window.location.origin}/contract/${contract.id}?t=${token}`;
     try {
-      await base44.entities.Contract.update(contract.id, {
-        status: 'sent',
-        access_token: token,
-        sent_at: new Date().toISOString(),
-      });
-      await navigator.clipboard.writeText(link).catch(() => {});
-      let emailed = false;
-      if (contract.client_email) {
-        try {
-          await base44.integrations.Core.SendEmail({
-            to: contract.client_email,
-            subject: `Your project agreement — ${contract.project_title || 'iRoxanne Studio'}`,
-            html: `<div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;">
-              <div style="background:#0D0D0D;padding:24px;text-align:center;border-radius:12px 12px 0 0;">
-                <span style="font-family:Georgia,serif;font-size:22px;color:#C5A059;font-weight:600;">iRoxanne Studio</span>
-              </div>
-              <div style="padding:28px 24px;background:#fff;border:1px solid #ECE6DC;border-top:none;border-radius:0 0 12px 12px;">
-                <p style="margin:0 0 14px;font-size:16px;color:#1D2A2B;">Hi ${contract.client_name?.split(' ')[0] || 'there'},</p>
-                <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#1D2A2B;">Your agreement for <strong>${contract.project_title || 'your project'}</strong> is ready to review and sign. Tap below to open it, read the scope and terms, and sign online.</p>
-                <p style="margin:24px 0 12px;"><a href="${link}" style="display:inline-block;background:#C5A059;color:#0D0D0D;text-decoration:none;font-weight:600;font-size:15px;padding:13px 28px;border-radius:8px;">Review &amp; sign agreement</a></p>
-                <p style="margin:0;font-size:13px;color:#8B8B85;">This link is private to you — please don't forward it.</p>
-              </div>
-            </div>`,
-          });
-          emailed = true;
-        } catch (e) {
-          console.warn('contract email failed', e);
-        }
-      }
-      toast({
-        title: emailed ? 'Agreement sent' : 'Contract link copied',
-        description: emailed ? `Emailed to ${contract.client_email}.` : 'Email failed — paste the copied link manually.',
-      });
+      const result = await base44.functions.invoke('sendContract', { contract_id: contract.id });
+      const data = result.data || result;
+      if (data.error) throw new Error(data.error);
+      await navigator.clipboard.writeText(data.link).catch(() => {});
+      toast({ title: data.sent ? 'Agreement sent' : 'Email failed; link copied', description: data.sent ? contract.client_email : 'You can retry sending.' });
       await load();
-    } catch (e) {
-      toast({ title: 'Failed to generate link', variant: 'destructive' });
-    }
+    } catch (e) { toast({ title: 'Could not send agreement', description: e.message, variant: 'destructive' }); }
   };
 
   const saveSettings = async (s) => {
@@ -293,6 +261,11 @@ function PricingSettingsCard({ settings, onSave }) {
           <Input type="number" value={s.default_deposit_percent} onChange={(e) => update('default_deposit_percent', Number(e.target.value))} />
         </div>
       </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5"><Label>Proposal validity (days from sending)</Label><Input type="number" min="1" value={s.proposal_valid_days ?? 3} onChange={e=>update('proposal_valid_days',Number(e.target.value))}/><p className="text-xs text-muted-foreground">3 days = 72 hours.</p></div>
+        <div className="space-y-1.5"><Label>Invoice due days</Label><Input type="number" min="1" value={s.invoice_due_days ?? 7} onChange={e=>update('invoice_due_days',Number(e.target.value))}/></div>
+      </div>
+      <div className="space-y-1.5"><Label>Payment instructions shown in emails</Label><Textarea value={s.payment_instructions || ''} onChange={e=>update('payment_instructions',e.target.value)} placeholder="Tell clients how to arrange their deposit or balance payment." /></div>
       {/* Packages */}
       {(s.pricing_mode === 'fixed_packages' || s.pricing_mode === 'packages_addons') && (
         <div className="space-y-3">

@@ -64,6 +64,9 @@
       "type": "string",
       "maxLength": 1000,
       "description": "Internal notes"
+    },
+    "request_id": {
+      "type": "string"
     }
   },
   "required": [

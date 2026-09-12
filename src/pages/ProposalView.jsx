@@ -62,7 +62,7 @@ export default function ProposalView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F0]">
+      <div className="studio-surface min-h-screen flex items-center justify-center bg-[#FAF7F0]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -70,7 +70,7 @@ export default function ProposalView() {
 
   if (error && !proposal) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F0] px-4">
+      <div className="studio-surface min-h-screen flex items-center justify-center bg-[#FAF7F0] px-4">
         <div className="max-w-md text-center">
           <p className="text-lg font-semibold text-foreground">{error}</p>
           <p className="mt-2 text-sm text-muted-foreground">If you copied this link, make sure it's complete.</p>
@@ -91,7 +91,7 @@ export default function ProposalView() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] py-10 px-4">
+    <div className="studio-surface min-h-screen bg-[#FAF7F0] py-10 px-4">
       <div className="max-w-3xl mx-auto">
         <BrandedPageHeader
           title="Project Proposal"

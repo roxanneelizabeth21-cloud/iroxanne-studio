@@ -239,3 +239,16 @@
     padding-bottom: var(--safe-bottom);
   }
 }
+/* Studio administration and client proposals share the approved neutral palette. */
+body.studio-admin-theme, .studio-surface {
+  --background: 42 50% 96%; --foreground: 294 31% 15%;
+  --card: 40 38% 99%; --card-foreground: 294 31% 15%;
+  --popover: 40 38% 99%; --popover-foreground: 294 31% 15%;
+  --primary: 294 31% 15%; --primary-foreground: 42 50% 96%;
+  --secondary: 39 27% 91%; --secondary-foreground: 294 31% 15%;
+  --muted: 39 22% 92%; --muted-foreground: 287 12% 39%;
+  --accent: 42 39% 85%; --accent-foreground: 294 31% 15%;
+  --border: 39 23% 83%; --input: 39 23% 83%; --ring: 42 40% 48%;
+  --sidebar-background: 40 38% 94%; --sidebar-foreground: 294 31% 15%;
+  color: hsl(var(--foreground)); background: hsl(var(--background));
+}
