@@ -7,7 +7,7 @@ export default function About({ headshotUrl }) {
         <div className="grid md:grid-cols-[0.7fr_1.3fr] gap-12 lg:gap-16 items-start">
           {/* Left: photo + name */}
           <div>
-            <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)]">
+            <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)] max-w-[200px] sm:max-w-[240px]">
               <img
                 src={headshotUrl || FALLBACK_HEADSHOT_URL}
                 alt="Roxanne"
