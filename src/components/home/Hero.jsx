@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 
-const LOGO_3D = 'https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/7380fe8cf_CodexImageAug31202603_50_41PM.png';
+// TODO: Replace with the Base44 media URL once Roxanne uploads the headshot
+const HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
 
 export default function Hero({ projects, loading }) {
   const trustNames = !loading
@@ -10,11 +11,11 @@ export default function Hero({ projects, loading }) {
   return (
     <section className="relative overflow-hidden bg-[#FAF7F0] pt-[72px]">
       {/* Subtle warm glows */}
-      <div className="pointer-events-none absolute right-[-10%] top-[10%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/6 blur-[120px]" />
-      <div className="pointer-events-none absolute left-[-5%] bottom-[5%] h-[400px] w-[400px] rounded-full bg-[#2D2A4A]/4 blur-[100px]" />
+      <div className="pointer-events-none absolute right-[5%] top-[15%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/5 blur-[120px]" />
+      <div className="pointer-events-none absolute left-[-5%] bottom-[10%] h-[300px] w-[300px] rounded-full bg-[#2D2A4A]/3 blur-[80px]" />
 
-      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-16 pb-20 md:pt-24 md:pb-28 lg:pt-28 lg:pb-32">
-        <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-16 items-center">
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-16 pb-16 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28">
+        <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-14 items-center">
           {/* Left — copy */}
           <div>
             <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -22,7 +23,7 @@ export default function Hero({ projects, loading }) {
             </p>
 
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
-                className="text-[#2D2A4A] text-[44px] sm:text-[54px] md:text-[60px] lg:text-[70px] font-semibold">
+                className="text-[#2D2A4A] text-[44px] sm:text-[54px] md:text-[58px] lg:text-[68px] font-semibold">
               Your vision,{' '}
               <span className="italic font-medium">built</span>{' '}
               into software that runs your business.
@@ -42,14 +43,21 @@ export default function Hero({ projects, loading }) {
             </div>
           </div>
 
-          {/* Right — 3D logo mark */}
+          {/* Right — headshot */}
           <div className="hidden md:flex items-center justify-center">
-            <img
-              src={LOGO_3D}
-              alt=""
-              draggable="false"
-              className="w-[260px] lg:w-[320px] xl:w-[360px] object-contain drop-shadow-[0_24px_64px_rgba(138,66,102,0.18)] select-none"
-            />
+            <div className="relative">
+              {/* Decorative accent behind the photo */}
+              <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-[#C9A84C]/15 via-transparent to-[#2D2A4A]/8 blur-sm" />
+              <div className="relative overflow-hidden rounded-[24px] shadow-[0_24px_64px_rgba(45,42,74,0.12)]">
+                <img
+                  src={HEADSHOT_URL}
+                  alt="Roxanne — iRoxanne Studio"
+                  className="w-[280px] lg:w-[320px] xl:w-[350px] aspect-[3/4] object-cover object-top"
+                />
+                {/* Subtle gold bottom edge */}
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#C9A84C]/0 via-[#C9A84C]/40 to-[#C9A84C]/0" />
+              </div>
+            </div>
           </div>
         </div>
 
