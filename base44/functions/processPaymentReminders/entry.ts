@@ -36,14 +36,14 @@ export default async function(req: Request) {
         await db.Invoice.update(invoice.id,{reminder_state:'sending',reminder_error:'',reminder_last_attempt_at:now.toISOString()});
         try {
           const money=(n:number)=>n.toLocaleString('en-US',{style:'currency',currency:'USD'});
-          const link=/^https:\/\//i.test(settings.payment_link||'')?settings.payment_link:'';
+          const link=invoice.access_token ? 'https://iroxannestudio.base44.app/invoice/'+encodeURIComponent(invoice.id)+'?t='+encodeURIComponent(invoice.access_token) : (/^https:\/\//i.test(settings.payment_link||'')?settings.payment_link:'');
           const html=brandedEmail({title:'A friendly payment reminder',content:
             '<p>Hello '+esc(invoice.client_name||'there')+',</p><p>This is a reminder about the '+stage+' for <strong>'+esc(invoice.project_title)+'</strong>.</p>'+
             detailRows([['Amount remaining',money(due)],['Paid to date',money(summary.paid)],['Due date',esc(invoice.due_date||'Per your agreement')]])+
             (link?'<p>'+brandButton('Pay online',link)+'</p>':'')+
             (settings.payment_instructions?'<p>'+esc(settings.payment_instructions).replace(/\n/g,'<br/>')+'</p>':'<p>Please reply to arrange payment.</p>')+
             '<p>If you have just paid, thank you. Please reply with the payment reference so I can update your record.</p>'});
-          await base44.asServiceRole.integrations.Core.SendEmail({to:invoice.client_email,subject:'Payment reminder — '+invoice.project_title,body:html,from_name:'iRoxanne Studio'});
+          await base44.asServiceRole.integrations.Core.SendEmail({to:invoice.client_email,subject:'Payment reminder — '+invoice.project_title,html});
           const count=(invoice.reminder_sent_count||0)+1;
           const limit=Math.max(1,Math.min(10,invoice.reminder_max_count||3));
           const interval=Math.max(1,Math.min(30,invoice.reminder_interval_days||7));
