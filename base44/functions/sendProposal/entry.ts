@@ -1,0 +1,78 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { requireAdmin } from '../../shared/marketingAdmin.ts';
+import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
+
+function generateToken() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 48; i++) token += chars[Math.floor(Math.random() * chars.length)];
+  return token;
+}
+
+function getBaseUrl(req: Request) {
+  const url = new URL(req.url);
+  return url.origin.includes('base44') ? url.origin : 'https://iroxanne.com';
+}
+
+// Admin-only: generate the access token, mark the proposal sent, and email the
+// client a branded link to the public proposal page.
+export default async function (req: Request) {
+  try {
+    const base44 = createClientFromRequest(req);
+    const guard = await requireAdmin(base44);
+    if (!guard.ok) return guard.response;
+
+    const { proposal_id } = await req.json();
+    if (!proposal_id) return Response.json({ error: 'proposal_id is required' }, { status: 400 });
+
+    let proposal;
+    try {
+      proposal = await base44.entities.Proposal.get(proposal_id);
+    } catch {
+      return Response.json({ error: 'Proposal not found' }, { status: 404 });
+    }
+    if (!proposal.client_email) return Response.json({ error: 'Proposal has no client email' }, { status: 400 });
+
+    // Reuse the existing token on resend so old links keep working.
+    const token = proposal.access_token || generateToken();
+    const updated = await base44.entities.Proposal.update(proposal_id, {
+      access_token: token,
+      status: proposal.status === 'draft' ? 'sent' : proposal.status,
+      sent_at: new Date().toISOString(),
+    });
+
+    const link = `${getBaseUrl(req)}/proposal/${proposal_id}?t=${token}`;
+    const firstName = (proposal.client_name || '').split(' ')[0] || 'there';
+    const moneyFmt = (n: unknown) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '');
+
+    let emailed = false;
+    try {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: proposal.client_email,
+        subject: `Your project proposal — ${proposal.project_title || 'iRoxanne Studio'}`,
+        html: brandedEmail({
+          title: `Your proposal is ready, ${esc(firstName)}`,
+          content: `<p style="margin:0 0 16px;">I've put together a proposal for <strong>${esc(proposal.project_title)}</strong>${proposal.business_name ? ` for ${esc(proposal.business_name)}` : ''} — what I'll build, what it costs, and how we'd work together.</p>
+            ${typeof proposal.price_total === 'number' ? `<p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total investment: ${moneyFmt(proposal.price_total)}</p>` : ''}
+            ${proposal.valid_until ? `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">This proposal is valid through ${esc(proposal.valid_until)}.</p>` : ''}
+            <p style="margin:0 0 20px;">Open it below to review the full scope. If it looks right, you can accept online and I'll send your agreement to sign.</p>
+            <p>${brandButton('Review your proposal', link)}</p>
+            <p style="margin:16px 0 0;font-size:13px;color:#8B7B95;">This link is private to you — please don't forward it.</p>`,
+          footerNote: 'iRoxanne Studio — one builder, not an agency.',
+        }),
+      });
+      emailed = true;
+    } catch (e) {
+      console.log('proposal email failed', (e as Error)?.message);
+    }
+
+    // Move the lead along if this proposal came from one.
+    if (proposal.lead_id) {
+      await base44.asServiceRole.entities.Lead.update(proposal.lead_id, { status: 'proposal_sent' }).catch(() => {});
+    }
+
+    return Response.json({ proposal: updated, link, sent: emailed });
+  } catch (error) {
+    return Response.json({ error: (error as Error).message }, { status: 500 });
+  }
+}
