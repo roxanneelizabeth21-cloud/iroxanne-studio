@@ -10,8 +10,8 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       {heroBackgroundImage && (
         <>
           <div
-            className="pointer-events-none absolute inset-0 bg-cover bg-no-repeat opacity-40"
-            style={{ backgroundImage: `url(${heroBackgroundImage})`, backgroundPosition: 'center top' }}
+            className="pointer-events-none absolute inset-0 bg-no-repeat opacity-40"
+            style={{ backgroundImage: `url(${heroBackgroundImage})`, backgroundPosition: 'right center', backgroundSize: '38%' }}
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/80 via-[#FAF7F0]/50 to-[#FAF7F0]" />
         </>
