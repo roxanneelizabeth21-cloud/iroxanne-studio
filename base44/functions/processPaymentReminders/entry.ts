@@ -11,10 +11,14 @@ export default async function(req: Request) {
     const settingsList=await db.PricingSettings.list('-updated_date');
     const settings=settingsList.find((s:any)=>s.packages?.length)||settingsList[0]||{};
     let sent=0,skipped=0,failed=0;
-    // Pagination ensures older invoices are considered too.
+    const candidates=[];
+    // Read a stable candidate list before any flags are changed.
     for(let offset=0;offset<10000;offset+=100) {
       const invoices=await db.Invoice.filter({reminder_enabled:true},'created_date',100,offset);
-      for(const row of invoices) {
+      candidates.push(...invoices);
+      if(invoices.length<100)break;
+    }
+      for(const row of candidates) {
         const invoice=await db.Invoice.get(row.id);
         if(invoice.reminder_state==='sending' || invoice.reminder_state==='error'){skipped++;continue;}
         const payments=await db.Payment.filter({invoice_id:invoice.id},'-created_date',1000);
@@ -50,8 +54,6 @@ export default async function(req: Request) {
           failed++;
         }
       }
-      if(invoices.length<100)break;
-    }
     return Response.json({sent,skipped,failed});
   }catch(e){return Response.json({error:(e as Error).message},{status:500});}
 }

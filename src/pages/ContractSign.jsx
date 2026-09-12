@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
 
+import SignaturePad from '@/components/SignaturePad';
+
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
 export default function ContractSign() {
@@ -18,6 +20,8 @@ export default function ContractSign() {
   const [error, setError] = useState('');
   const [signerName, setSignerName] = useState('');
   const [agree, setAgree] = useState(false);
+  const [signatureMode,setSignatureMode] = useState('typed');
+  const [signatureImage,setSignatureImage] = useState('');
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
 
@@ -44,7 +48,7 @@ export default function ContractSign() {
     setSigning(true);
     setError('');
     try {
-      const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree });
+      const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree, signatureMode, signatureImage });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else { setSigned(true); setContract(data.contract); }
@@ -75,7 +79,7 @@ export default function ContractSign() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] py-10 px-4">
+    <div className="studio-surface min-h-screen bg-[#FAF7F0] py-10 px-4">
       <div className="max-w-3xl mx-auto">
         <BrandedPageHeader
           title="Project Agreement"
@@ -149,10 +153,13 @@ export default function ContractSign() {
             </div>
           )}
 
+          {contract.target_launch_date && <p className="text-sm">Target launch date: {contract.target_launch_date}</p>}
+          {contract.contract_variant === 'rush' && <div><h2 className="font-semibold mb-2">Rush schedule addendum</h2><p className="text-sm whitespace-pre-wrap leading-6">{contract.rush_terms}</p></div>}
           {signed ? (
             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 text-center">
               <CheckCircle2 className="h-10 w-10 mx-auto text-green-500 mb-2" />
               <p className="font-semibold text-foreground">Agreement signed</p>
+              {contract.signature_mode === 'drawn' && contract.signature_image && <img src={contract.signature_image} alt="Recorded signature" className="max-w-full w-72 mx-auto bg-[#FAF7F0] rounded-lg" />}
               <p className="text-sm text-muted-foreground mt-1">
                 Signed by {contract.signer_name} on {contract.signed_at ? new Date(contract.signed_at).toLocaleString() : ''}.
               </p>
@@ -163,7 +170,7 @@ export default function ContractSign() {
           ) : (
             <div className="border-t border-border pt-5 space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground">Type your full legal name to sign</label>
+                <label className="text-sm font-medium text-foreground">Full legal name</label>
                 <Input
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
@@ -171,6 +178,7 @@ export default function ContractSign() {
                   className="mt-1.5"
                 />
               </div>
+              <fieldset className="space-y-3"><legend className="text-sm font-medium">Signature method</legend><div className="flex gap-5">{['typed','drawn'].map(mode=><label key={mode} className="flex gap-2"><input type="radio" name="signature-method" checked={signatureMode===mode} onChange={()=>setSignatureMode(mode)} />{mode==='typed'?'Type my signature':'Draw my signature'}</label>)}</div>{signatureMode==='drawn' && <SignaturePad onChange={setSignatureImage} disabled={signing}/>}</fieldset>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -179,13 +187,13 @@ export default function ContractSign() {
                   className="mt-1 h-4 w-4 rounded border-border"
                 />
                 <span className="text-sm text-muted-foreground">
-                  I have read and agree to the scope, investment, and terms above. My typed name serves as my electronic signature.
+                  I have read and agree to the scope, investment, and terms above. My {signatureMode === 'drawn' ? 'drawn signature' : 'typed name'} serves as my electronic signature.
                 </span>
               </label>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button
                 onClick={handleSign}
-                disabled={!signerName.trim() || !agree || signing}
+                disabled={!signerName.trim() || !agree || signing || (signatureMode==='drawn' && !signatureImage)}
                 className="w-full h-11"
               >
                 {signing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}

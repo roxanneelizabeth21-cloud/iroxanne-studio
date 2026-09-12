@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 
+import { isRushDate, RUSH_TERMS } from '../../../base44/shared/studioDelivery';
+
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 
 export default function ContractForm({ initial, settings, onSave, saving }) {
@@ -63,6 +65,12 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         <Input value={form.project_title || ''} onChange={(e) => update('project_title', e.target.value)} placeholder="Booking & scheduling app" />
       </div>
 
+      <div className="grid sm:grid-cols-2 gap-4">
+        <label className="space-y-1.5 text-sm">Target launch date<Input type="date" value={form.target_launch_date || ''} onChange={e=>setForm(p=>({...p,target_launch_date:e.target.value,contract_variant:isRushDate(e.target.value)?'rush':'standard',rush_terms:p.rush_terms || settings?.rush_terms || RUSH_TERMS}))}/></label>
+        <label className="space-y-1.5 text-sm">Contract schedule<select className="w-full rounded-md border bg-background p-2" value={form.contract_variant || 'standard'} onChange={e=>update('contract_variant',e.target.value)}><option value="standard">Standard</option><option value="rush">Rush / expedited</option></select></label>
+      </div>
+      <p className="text-xs text-muted-foreground">Dates under 30 days away select rush terms. You can change the selection. Pricing stays as entered below.</p>
+      {form.contract_variant==='rush' && <label className="block text-sm space-y-2">Rush schedule addendum<Textarea rows={7} maxLength={8000} value={form.rush_terms || ''} onChange={e=>update('rush_terms',e.target.value)}/></label>}
       <div className="space-y-1.5">
         <Label>Scope of work</Label>
         <Textarea
@@ -163,7 +171,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       </div>
 
       <div className="flex justify-end pt-2 border-t border-border">
-        <Button onClick={submit} disabled={saving || !form.client_email || !form.project_title}>
+        <Button onClick={submit} disabled={saving || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
           {saving ? 'Saving...' : 'Save Contract'}
         </Button>
       </div>
@@ -173,7 +181,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
 function buildInitial(initial, settings) {
   if (initial && initial.id && initial.quick_pitch === undefined && initial.client_email) {
-    return { ...initial };
+    return { contract_variant:'standard',rush_terms:settings?.rush_terms || RUSH_TERMS,...initial };
   }
   return {
     lead_id: initial?.lead_id || initial?.id || '',
@@ -189,6 +197,8 @@ function buildInitial(initial, settings) {
     deposit_amount: 0,
     payment_schedule: '50% upfront, 50% on launch',
     terms: settings?.standard_terms || '',
+    contract_variant: 'standard',
+    rush_terms: settings?.rush_terms || RUSH_TERMS,
     estimated_tier: initial?.estimated_tier || 'starter',
   };
 }

@@ -101,6 +101,10 @@
       "type": "number",
       "default": 3,
       "description": "Default number of days a new proposal stays valid"
+    },
+    "rush_terms": {
+      "type": "string",
+      "maxLength": 8000
     }
   },
   "required": [],

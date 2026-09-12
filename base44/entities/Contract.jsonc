@@ -144,6 +144,97 @@
     "delivered_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "signature_mode": {
+      "type": "string",
+      "enum": [
+        "typed",
+        "drawn"
+      ],
+      "default": "typed"
+    },
+    "signature_image": {
+      "type": "string",
+      "maxLength": 180000
+    },
+    "target_launch_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "contract_variant": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "rush"
+      ],
+      "default": "standard"
+    },
+    "rush_terms": {
+      "type": "string",
+      "maxLength": 8000
+    },
+    "handoff_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready",
+        "accepted",
+        "changes_requested"
+      ],
+      "default": "draft"
+    },
+    "handoff_token": {
+      "type": "string"
+    },
+    "handoff_internal_notes": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "handoff_client_notes": {
+      "type": "string",
+      "maxLength": 3000
+    },
+    "handoff_ack_name": {
+      "type": "string"
+    },
+    "handoff_ack_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "handoff_ack_ip": {
+      "type": "string"
+    },
+    "handoff_ack_user_agent": {
+      "type": "string"
+    },
+    "handoff_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "completed_at": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

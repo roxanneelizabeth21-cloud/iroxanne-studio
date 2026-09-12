@@ -31,6 +31,7 @@ import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
 import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
+import ProjectHandoff from '@/pages/ProjectHandoff';
 import ProposalView from '@/pages/ProposalView';
 import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
@@ -104,6 +105,7 @@ const AuthenticatedApp = () => {
       <Route path="/quote" element={<GetQuote />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
+      <Route path="/handoff/:id" element={<ProjectHandoff />} />
       <Route path="/proposal/:id" element={<ProposalView />} />
       <Route path="/intake/:id" element={<ClientIntakeForm />} />
       <Route path="/work/:slug" element={<CaseStudy />} />
