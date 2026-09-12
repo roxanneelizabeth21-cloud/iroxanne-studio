@@ -4,7 +4,7 @@ export default function SiteFooter() {
   return (
     <footer className="bg-[#FAF7F0] border-t border-[#2D2A4A]/6">
       {/* CTA band */}
-      <div className="mx-auto max-w-6xl px-5 md:px-8 py-16 text-center">
+      <div className="mx-auto max-w-6xl px-5 md:px-8 py-12 text-center">
         <h2 className="text-[30px] md:text-[36px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Ready to build something?
         </h2>

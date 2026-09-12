@@ -2,7 +2,7 @@ const FALLBACK_HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpe
 
 export default function About({ headshotUrl }) {
   return (
-    <section id="about" className="bg-white py-24 px-5 md:px-8">
+    <section id="about" className="bg-white py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="grid md:grid-cols-[0.7fr_1.3fr] gap-12 lg:gap-16 items-start">
           {/* Left — photo + name */}

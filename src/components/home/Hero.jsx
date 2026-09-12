@@ -5,7 +5,6 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
     ? (projects || [])
         .map((p) => p.business_name || p.client_name || p.title)
         .filter(Boolean)
-        .filter((name) => !/eventflow/i.test(name))
         .slice(0, 6)
     : [];
 
@@ -23,7 +22,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       <div className="pointer-events-none absolute right-[5%] top-[15%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/5 blur-[120px]" />
       <div className="pointer-events-none absolute left-[-5%] bottom-[10%] h-[300px] w-[300px] rounded-full bg-[#2D2A4A]/3 blur-[80px]" />
 
-      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-2 pb-16 md:pt-4 md:pb-20 lg:pt-6 lg:pb-24">
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-2 pb-10 md:pt-3 md:pb-14 lg:pt-4 lg:pb-16">
         <div className="max-w-[1000px]">
           <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
             Custom apps for small businesses
@@ -51,7 +50,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
         </div>
 
         {/* Value strip */}
-        <div className="mt-24 pt-8 border-t border-[#2D2A4A]/8">
+        <div className="mt-14 pt-6 border-t border-[#2D2A4A]/8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
               <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>7+</p>
@@ -74,7 +73,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
 
         {/* Trust strip */}
         {trustNames.length > 0 && (
-          <div className="mt-12 flex flex-wrap items-center justify-start gap-x-8 gap-y-3">
+          <div className="mt-8 flex flex-wrap items-center justify-start gap-x-8 gap-y-3">
             {trustNames.map((name) => (
               <span key={name} className="text-[13px] font-medium text-[#2D2A4A]/30 tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{name}</span>
             ))}

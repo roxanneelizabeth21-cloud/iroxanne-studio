@@ -2,13 +2,13 @@ export default function Testimonials({ items, loading }) {
   const list = (items || []).slice(0, 3);
   if (!loading && list.length === 0) return null;
   return (
-    <section className="bg-[#2D2A4A] py-24 px-5 md:px-8">
+    <section className="bg-[#2D2A4A] py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#C9A84C] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Client words</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-white tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           What it's like to work together
         </h2>
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {list.map((t) => {
             const anonymous = t.client_anonymous || !t.client_name;
             const name = anonymous ? 'A recent client' : t.client_name;

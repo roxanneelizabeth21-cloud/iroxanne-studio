@@ -8,14 +8,14 @@ const STEPS = [
 
 export default function Process() {
   return (
-    <section id="process" className="bg-[#FAF7F0] py-24 px-5 md:px-8">
+    <section id="process" className="bg-[#FAF7F0] py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Three steps to your custom app
         </h2>
 
-        <div className="mt-14 grid gap-0 md:grid-cols-3">
+        <div className="mt-10 grid gap-0 md:grid-cols-3">
           {STEPS.map((step, i) => (
             <div key={step.title} className="relative pl-10 md:pl-0 md:pr-8 pb-12 md:pb-0">
               {/* Vertical connector (mobile) */}

@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 export default function FeaturedWork({ items, loading }) {
   if (!loading && (!items || items.length === 0)) return null;
   return (
-    <section id="work" className="bg-white py-24 px-5 md:px-8">
+    <section id="work" className="bg-white py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Selected work</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
@@ -14,7 +14,7 @@ export default function FeaturedWork({ items, loading }) {
           Every project replaces a stack of tools with one custom platform — designed, built, and launched in weeks.
         </p>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {(loading ? Array.from({ length: 3 }) : items).map((item, i) => {
             const hasCaseStudy = !!item?.slug;
             const inner = (

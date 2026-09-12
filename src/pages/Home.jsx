@@ -23,7 +23,7 @@ export default function Home() {
       try {
         const [proj, test, settings] = await Promise.all([
           base44.entities.PortfolioItem
-            .list('-sort_order', 6)
+            .list('-sort_order', 10)
             .catch(() => []),
 
           base44.entities.Testimonial
@@ -41,7 +41,7 @@ export default function Home() {
 
         if (!active) return;
 
-        setProjects(proj);
+        setProjects((proj || []).filter((p) => !/eventflow/i.test(p.title || p.client_name || p.business_name || '')));
         setTestimonials(test);
         setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
         setHeroBackgroundImage(settings?.[0]?.hero_background_image || null);
