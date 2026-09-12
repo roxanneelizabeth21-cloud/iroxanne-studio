@@ -20,7 +20,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       <div className="pointer-events-none absolute left-[-5%] bottom-[10%] h-[300px] w-[300px] rounded-full bg-[#2D2A4A]/3 blur-[80px]" />
 
       <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-2 pb-16 md:pt-4 md:pb-20 lg:pt-6 lg:pb-24">
-        <div className="max-w-[680px]">
+        <div className="max-w-[1000px]">
           <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
             Custom apps for small businesses
           </p>
@@ -32,7 +32,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
             into software that runs your business.
           </h1>
 
-          <p className="mt-7 max-w-[500px] text-[15.5px] leading-[1.7] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <p className="mt-7 max-w-[640px] text-[15.5px] leading-[1.7] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
             I design and build complete business apps — booking platforms, e-commerce suites, client portals, admin dashboards — custom to how you work. One person. No agency markup. Ready in weeks.
           </p>
 
