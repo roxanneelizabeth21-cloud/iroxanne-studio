@@ -1,0 +1,274 @@
+{
+  "name": "ClientIntake",
+  "type": "object",
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "description": "Linked Contract ID"
+    },
+    "lead_id": {
+      "type": "string",
+      "description": "Linked Lead ID"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Unguessable token for public form access"
+    },
+    "project_tier": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "business",
+        "custom"
+      ],
+      "description": "Which intake form variant to show"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "submitted",
+        "reviewed"
+      ],
+      "default": "pending",
+      "description": "Intake lifecycle"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "project_title": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short tagline or slogan"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email_for_site": {
+      "type": "string",
+      "description": "Contact email to display on the site (may differ from client email)"
+    },
+    "address": {
+      "type": "string"
+    },
+    "social_links": {
+      "type": "object",
+      "description": "Social media URLs keyed by platform (instagram, facebook, tiktok, youtube, linkedin, etc.)"
+    },
+    "brand_colors": {
+      "type": "string",
+      "description": "Hex codes or color names, comma-separated"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Uploaded logo file URL"
+    },
+    "headshot_url": {
+      "type": "string",
+      "description": "Uploaded headshot/portrait URL"
+    },
+    "design_notes": {
+      "type": "string",
+      "description": "Fonts, style preferences, mood, inspiration links"
+    },
+    "page_home": {
+      "type": "object",
+      "description": "Home page content",
+      "properties": {
+        "hero_headline": {
+          "type": "string"
+        },
+        "hero_subtext": {
+          "type": "string"
+        },
+        "hero_cta_text": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "string",
+          "description": "Any additional sections or text for the home page"
+        },
+        "hero_image_url": {
+          "type": "string"
+        }
+      }
+    },
+    "page_about": {
+      "type": "object",
+      "description": "About page content",
+      "properties": {
+        "bio": {
+          "type": "string",
+          "description": "About paragraph(s) \u2014 who you are, your story, your mission"
+        },
+        "credentials": {
+          "type": "string",
+          "description": "Certifications, awards, years in business"
+        },
+        "photo_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "page_services": {
+      "type": "object",
+      "description": "Services page content",
+      "properties": {
+        "services_text": {
+          "type": "string",
+          "description": "Full list of services with descriptions, pricing if public"
+        },
+        "packages_text": {
+          "type": "string",
+          "description": "Package tiers or bundles if applicable"
+        }
+      }
+    },
+    "page_gallery": {
+      "type": "object",
+      "description": "Gallery / portfolio content",
+      "properties": {
+        "photo_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Gallery images"
+        },
+        "captions": {
+          "type": "string",
+          "description": "Captions or descriptions for gallery images"
+        },
+        "categories": {
+          "type": "string",
+          "description": "How to organize the gallery (e.g. by event type, product type)"
+        }
+      }
+    },
+    "page_testimonials": {
+      "type": "object",
+      "description": "Testimonials",
+      "properties": {
+        "testimonials_text": {
+          "type": "string",
+          "description": "Client quotes with names and context"
+        }
+      }
+    },
+    "page_contact": {
+      "type": "object",
+      "description": "Contact page preferences",
+      "properties": {
+        "preferred_contact_method": {
+          "type": "string"
+        },
+        "contact_form_fields": {
+          "type": "string",
+          "description": "What fields the contact form should have"
+        },
+        "office_hours": {
+          "type": "string"
+        }
+      }
+    },
+    "page_legal": {
+      "type": "object",
+      "description": "Legal content \u2014 terms, agreements, policies",
+      "properties": {
+        "terms_text": {
+          "type": "string"
+        },
+        "privacy_text": {
+          "type": "string"
+        },
+        "refund_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "documents_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Uploaded documents \u2014 contracts, checklists, agreements, templates the client currently uses"
+    },
+    "documents_notes": {
+      "type": "string",
+      "description": "What each uploaded document is and how it's used"
+    },
+    "workflow_description": {
+      "type": "string",
+      "description": "Custom tier: describe what happens when a client books/buys/signs up \u2014 the full process step by step"
+    },
+    "user_roles": {
+      "type": "string",
+      "description": "Custom tier: who uses the app and what each role can do (admin, client, staff, etc.)"
+    },
+    "data_tracked": {
+      "type": "string",
+      "description": "Custom tier: what data you currently track in spreadsheets, notebooks, etc."
+    },
+    "business_rules": {
+      "type": "string",
+      "description": "Custom tier: pricing rules, deposit %, rush fees, discounts, deadlines, etc."
+    },
+    "existing_tools": {
+      "type": "string",
+      "description": "Custom tier: tools currently in use (Square, QuickBooks, Google Sheets, etc.) and what to replace vs. integrate"
+    },
+    "automations_wanted": {
+      "type": "string",
+      "description": "Custom tier: what should happen automatically (emails, status changes, reminders, calculations)"
+    },
+    "additional_pages": {
+      "type": "string",
+      "description": "Any other pages or sections not covered above"
+    },
+    "additional_notes": {
+      "type": "string",
+      "description": "Anything else the client wants to communicate"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal notes from the admin review"
+    }
+  },
+  "required": [
+    "access_token"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": true,
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
