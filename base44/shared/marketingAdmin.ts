@@ -275,6 +275,9 @@ export function portfolioSection(item: any): string {
     item.cover_image_url ? `- Cover screenshot: ${item.cover_image_url}` : '',
     shots.length ? `- Additional screenshots: ${shots.join(', ')}` : '',
     `- Featured: ${item.featured ? 'yes' : 'no'}`,
+    item.saas_replacement_value ? `- SaaS replacement value: ${item.saas_replacement_value}` : '',
+    item.project_tier ? `- Project tier: ${item.project_tier}` : '',
+    item.marketing_features ? `\nDETAILED FEATURES & BENEFITS (use these for specific, compelling copy — reference real capabilities, not generic claims):\n${item.marketing_features}` : '',
   ].filter(Boolean).join('\n');
 }
 
