@@ -15,9 +15,8 @@ export default function SiteNav() {
       <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
       <header className="fixed inset-x-0 top-0 z-50 bg-[#FAF7F0]/80 backdrop-blur-xl border-b border-[#2D2A4A]/5">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 md:px-8">
-          <a href="/" className="flex shrink-0 items-center gap-2.5">
-            <span className="h-9 w-9 rounded-full bg-[#2D2A4A] flex items-center justify-center text-white font-semibold text-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>R</span>
-            <span className="text-[15px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>iRoxanne Studio</span>
+          <a href="/" className="flex shrink-0 items-center">
+            <img src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/3c870c3bc_CodexImageAug31202605_02_37PM.png" alt="iRoxanne Studio" draggable="false" className="h-10 w-auto object-contain md:h-11" />
           </a>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map((l) => (
