@@ -10,8 +10,8 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       {heroBackgroundImage && (
         <>
           <div
-            className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-            style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+            className="pointer-events-none absolute inset-0 bg-cover bg-no-repeat opacity-40"
+            style={{ backgroundImage: `url(${heroBackgroundImage})`, backgroundPosition: 'center top' }}
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/80 via-[#FAF7F0]/50 to-[#FAF7F0]" />
         </>
@@ -19,7 +19,7 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       <div className="pointer-events-none absolute right-[5%] top-[15%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/5 blur-[120px]" />
       <div className="pointer-events-none absolute left-[-5%] bottom-[10%] h-[300px] w-[300px] rounded-full bg-[#2D2A4A]/3 blur-[80px]" />
 
-      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-20 pb-20 md:pt-28 md:pb-28 lg:pt-36 lg:pb-32">
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-2 pb-16 md:pt-4 md:pb-20 lg:pt-6 lg:pb-24">
         <div className="max-w-[680px]">
           <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
             Custom apps for small businesses
