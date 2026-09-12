@@ -6,7 +6,7 @@
 const DEFAULT_RATE = 65; // blended $/hr — overridden by PricingSettings when available
 
 const INTEGRATION_HOURS = {
-  'Payments (Stripe/Square)': 5,
+  'Payments (Stripe/Square/Wix)': 5,
   'Gmail / Google Calendar': 3,
   'Zapier': 2,
   'Email marketing (SendGrid/Mailchimp)': 4,
