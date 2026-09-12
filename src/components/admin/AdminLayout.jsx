@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Home, Music, Film, Image, User, LayoutDashboard, Eye, Mail, MessageSquare, ScrollText, ListMusic, Link2, FileText,
+  Home, Image, LayoutDashboard, Eye, Mail, MessageSquare, ScrollText, FileText,
   Megaphone, Bot, ArrowLeft, ChevronLeft, Menu, Sun, PenLine, LayoutTemplate, CalendarDays, Library, Clapperboard, BarChart3, UserCircle, ChevronDown, Palette, ToggleLeft, Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
