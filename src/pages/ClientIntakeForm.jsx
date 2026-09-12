@@ -286,6 +286,7 @@ export default function ClientIntakeForm() {
           </Button>
         </div>
         <p className="text-xs text-center text-gray-500 dark:text-gray-500">You can save your progress and come back anytime using this same link.</p>
+        <BrandedFooter />
       </div>
     </div>
   );
