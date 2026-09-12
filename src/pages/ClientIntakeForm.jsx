@@ -17,25 +17,25 @@ const SECTION_ORDER = {
 };
 
 const SECTION_LABELS = {
-  basics: 'Business Info', brand: 'Brand & Design', home: 'Home Page',
+  basics: 'Your Idea / Business', brand: 'Brand & Design', home: 'Home Page',
   about: 'About Page', services: 'Services & Pricing', gallery: 'Gallery / Portfolio',
   testimonials: 'Testimonials', contact: 'Contact Info', legal: 'Legal & Policies',
-  workflow: 'How Your Business Works', data: 'Data & Automations', documents: 'Documents & Templates', notes: 'Anything Else',
+  workflow: 'How Your App Could Work', data: 'Data & Automations', documents: 'Documents & Templates', notes: 'Anything Else',
 };
 
 const SECTION_DESCRIPTIONS = {
-  basics: 'The essentials — name, tagline, contact details, socials.',
-  brand: 'Logo, colors, fonts, and design direction.',
+  basics: 'Share what you know. A working name is enough; contact details and socials for your new project can come later.',
+  brand: 'Share existing branding or describe what you like. No logo or colors yet? Tell me you need help choosing.',
   home: 'Hero section — the first thing visitors see.',
   about: 'Your story, bio, and credentials.',
   services: 'What you offer, descriptions, and pricing (if public).',
-  gallery: 'Photos of your work — upload as many as you have.',
-  testimonials: 'Client quotes and reviews.',
+  gallery: 'Upload any relevant photos you already have. Starting out with no portfolio? Leave this section blank.',
+  testimonials: 'Existing client quotes and reviews, if you have them. New projects can skip this section.',
   contact: 'How clients should reach you.',
   legal: 'Terms, privacy policy, refund policy — paste if you have them.',
-  workflow: 'Walk us through what happens when a client books, buys, or signs up. The more detail here, the faster we build.',
-  data: 'What you track today, what should be automated, and which tools to integrate or replace.',
-  documents: 'Upload your existing contracts, checklists, agreements, intake forms — anything you currently use on paper or in docs.',
+  workflow: 'Describe what you imagine someone doing in your app. You do not need an existing business process or a technical plan.',
+  data: 'What you might need to keep track of or automate. It is fine to ask for recommendations.',
+  documents: 'Upload documents you already have, if any. Leave this blank if you are starting from scratch.',
   notes: 'Anything else you want us to know.',
 };
 
@@ -156,18 +156,18 @@ export default function ClientIntakeForm() {
         <div className="text-center mb-6">
           <BrandedPageHeader
             title="Content Intake"
-            subtitle={`${TIER_LABELS[tier]} Project — fill in each section with your content, upload files, and save anytime.`}
+            subtitle={`${TIER_LABELS[tier]} Project — share what you know, skip what you do not have, and save anytime.`}
             projectTitle={intake.project_title}
             clientName={intake.client_name}
           />
-          <div className="flex justify-end mb-2"><PrintButton /></div>
+          <p className="text-sm text-[#2D2A4A] mt-4">An early idea is enough. You do not need a logo, website, customers, finished copy, or a feature list. Write “not sure yet” wherever you need guidance.</p><div className="flex justify-end mb-2"><PrintButton /></div>
         </div>
 
         {sections.includes('basics') && (
           <Section id="basics" label={SECTION_LABELS.basics} description={SECTION_DESCRIPTIONS.basics} open={!!openSections.basics} onToggle={() => toggleSection('basics')}>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Business name"><Input value={intake.business_name || ''} onChange={(e) => patch('business_name', e.target.value)} placeholder="Your business name" /></Field>
-              <Field label="Tagline or slogan"><Input value={intake.tagline || ''} onChange={(e) => patch('tagline', e.target.value)} placeholder="e.g. Custom apps for small businesses" /></Field>
+              <Field label="Business or project name (optional)"><Input value={intake.business_name || ''} onChange={(e) => patch('business_name', e.target.value)} placeholder="Working name, undecided, or leave blank" /></Field>
+              <Field label="Tagline or slogan (if you have one)"><Input value={intake.tagline || ''} onChange={(e) => patch('tagline', e.target.value)} placeholder="e.g. Custom apps for small businesses" /></Field>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Phone"><Input value={intake.phone || ''} onChange={(e) => patch('phone', e.target.value)} placeholder="(555) 555-5555" /></Field>
@@ -180,7 +180,7 @@ export default function ClientIntakeForm() {
 
         {sections.includes('brand') && (
           <Section id="brand" label={SECTION_LABELS.brand} description={SECTION_DESCRIPTIONS.brand} open={!!openSections.brand} onToggle={() => toggleSection('brand')}>
-            <FileUploadField label="Logo" hint="PNG or SVG preferred, transparent background if possible" onUpload={(urls) => patch('logo_url', urls[0])} />
+            <FileUploadField label="Logo" hint="Optional. If you already have a logo, PNG or SVG is preferred." onUpload={(urls) => patch('logo_url', urls[0])} />
             {intake.logo_url && <img src={intake.logo_url} alt="Logo" className="h-16 object-contain rounded-lg" />}
             <FileUploadField label="Headshot / portrait" hint="A professional photo of you for the About page" onUpload={(urls) => patch('headshot_url', urls[0])} />
             {intake.headshot_url && <img src={intake.headshot_url} alt="Headshot" className="h-20 w-20 object-cover rounded-full" />}
@@ -217,7 +217,7 @@ export default function ClientIntakeForm() {
 
         {sections.includes('gallery') && (
           <Section id="gallery" label={SECTION_LABELS.gallery} description={SECTION_DESCRIPTIONS.gallery} open={!!openSections.gallery} onToggle={() => toggleSection('gallery')}>
-            <FileUploadField label="Gallery images" hint="Upload your best work — 5-20 photos recommended" multiple onUpload={(urls) => patchNested('page_gallery', 'photo_urls', [...(intake.page_gallery?.photo_urls || []), ...urls])} />
+            <FileUploadField label="Gallery images" hint="Optional. Upload available photos, or skip if you are just starting." multiple onUpload={(urls) => patchNested('page_gallery', 'photo_urls', [...(intake.page_gallery?.photo_urls || []), ...urls])} />
             {(intake.page_gallery?.photo_urls || []).length > 0 && <p className="text-xs text-green-600">{intake.page_gallery.photo_urls.length} photo(s) uploaded</p>}
             <Field label="Captions or descriptions" hint="Describe what's in the photos — event names, product names, etc."><Textarea rows={3} value={intake.page_gallery?.captions || ''} onChange={(e) => patchNested('page_gallery', 'captions', e.target.value)} placeholder="Photo 1: Johnson Wedding — gold and ivory theme&#10;Photo 2: Corporate gala at The Grand Hall" /></Field>
             <Field label="How should the gallery be organized?" hint="By event type, product category, date, etc."><Input value={intake.page_gallery?.categories || ''} onChange={(e) => patchNested('page_gallery', 'categories', e.target.value)} placeholder="e.g. Weddings, Corporate, Birthday Parties" /></Field>
@@ -248,7 +248,7 @@ export default function ClientIntakeForm() {
 
         {sections.includes('workflow') && (
           <Section id="workflow" label={SECTION_LABELS.workflow} description={SECTION_DESCRIPTIONS.workflow} open={!!openSections.workflow} onToggle={() => toggleSection('workflow')}>
-            <Field label="Your process, step by step" hint="Walk us through what happens from first contact to delivery. This is the most important section for Custom projects."><Textarea rows={8} value={intake.workflow_description || ''} onChange={(e) => patch('workflow_description', e.target.value)} placeholder="1. Client fills out an inquiry form on my website&#10;2. I review and send a quote within 24 hours&#10;3. Client approves quote, pays 50% retainer via Square&#10;4. I begin work — usually takes 2-3 weeks&#10;5. Client reviews, we do 1-2 rounds of changes&#10;6. Final payment, then I hand over everything" /></Field>
+            <Field label="What would you like someone to do in your app?" hint="Describe a possible first visit, booking, purchase, or other goal. If you are unsure, say what you want to achieve and I will help map the steps."><Textarea rows={8} value={intake.workflow_description || ''} onChange={(e) => patch('workflow_description', e.target.value)} placeholder="1. Client fills out an inquiry form on my website&#10;2. I review and send a quote within 24 hours&#10;3. Client approves quote, pays 50% retainer via Square&#10;4. I begin work — usually takes 2-3 weeks&#10;5. Client reviews, we do 1-2 rounds of changes&#10;6. Final payment, then I hand over everything" /></Field>
             <Field label="User roles" hint="Who uses the system and what should each role be able to do?"><Textarea rows={4} value={intake.user_roles || ''} onChange={(e) => patch('user_roles', e.target.value)} placeholder="Admin (me): see everything, manage orders, send invoices&#10;Client: view their order, track status, upload photos&#10;Staff: view assigned tasks, update status" /></Field>
             <Field label="Business rules" hint="Pricing rules, deposit %, rush fees, discounts, deadlines — anything the system should know"><Textarea rows={4} value={intake.business_rules || ''} onChange={(e) => patch('business_rules', e.target.value)} placeholder="50% deposit required to start&#10;Rush fee: 25% extra for under 2 weeks&#10;10% discount for returning clients" /></Field>
           </Section>
@@ -256,9 +256,9 @@ export default function ClientIntakeForm() {
 
         {sections.includes('data') && (
           <Section id="data" label={SECTION_LABELS.data} description={SECTION_DESCRIPTIONS.data} open={!!openSections.data} onToggle={() => toggleSection('data')}>
-            <Field label="What do you currently track?" hint="Orders, clients, inventory, finances, appointments — what lives in spreadsheets or notebooks today?"><Textarea rows={4} value={intake.data_tracked || ''} onChange={(e) => patch('data_tracked', e.target.value)} placeholder="I track orders in a Google Sheet, invoices in QuickBooks, appointments in Google Calendar, inventory on paper" /></Field>
+            <Field label="What might you need to keep track of?" hint="For example: people, bookings, orders or messages. Existing systems are not required; not sure yet is a useful answer."><Textarea rows={4} value={intake.data_tracked || ''} onChange={(e) => patch('data_tracked', e.target.value)} placeholder="I track orders in a Google Sheet, invoices in QuickBooks, appointments in Google Calendar, inventory on paper" /></Field>
             <Field label="What should happen automatically?" hint="Emails when someone books? Status updates? Payment reminders? Low stock alerts?"><Textarea rows={4} value={intake.automations_wanted || ''} onChange={(e) => patch('automations_wanted', e.target.value)} placeholder="Send confirmation email when client pays&#10;Remind me 3 days before an event&#10;Alert me when inventory is low" /></Field>
-            <Field label="Existing tools to keep or replace"><Textarea rows={3} value={intake.existing_tools || ''} onChange={(e) => patch('existing_tools', e.target.value)} placeholder="Keep: Square for payments, Google Calendar&#10;Replace: the spreadsheet, the paper contracts" /></Field>
+            <Field label="Existing tools to keep or replace (skip if starting fresh)"><Textarea rows={3} value={intake.existing_tools || ''} onChange={(e) => patch('existing_tools', e.target.value)} placeholder="Keep: Square for payments, Google Calendar&#10;Replace: the spreadsheet, the paper contracts" /></Field>
           </Section>
         )}
 
@@ -273,7 +273,7 @@ export default function ClientIntakeForm() {
         {sections.includes('notes') && (
           <Section id="notes" label={SECTION_LABELS.notes} description={SECTION_DESCRIPTIONS.notes} open={!!openSections.notes} onToggle={() => toggleSection('notes')}>
             <Field label="Additional pages or sections"><Textarea rows={3} value={intake.additional_pages || ''} onChange={(e) => patch('additional_pages', e.target.value)} placeholder="e.g. FAQ page, blog, booking calendar, track-your-order page" /></Field>
-            <Field label="Anything else"><Textarea rows={3} value={intake.additional_notes || ''} onChange={(e) => patch('additional_notes', e.target.value)} placeholder="Anything we haven't covered that you want us to know" /></Field>
+            <Field label="What do you need help figuring out?" hint="Your idea, audience, features, branding, content or launch plan — tell me where you would like guidance."><Textarea rows={3} value={intake.additional_notes || ''} onChange={(e) => patch('additional_notes', e.target.value)} placeholder="Anything we haven't covered that you want us to know" /></Field>
           </Section>
         )}
 
