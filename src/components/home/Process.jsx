@@ -1,8 +1,8 @@
 import { MessageCircle, Hammer, Rocket } from 'lucide-react';
 
 const STEPS = [
-  { icon: MessageCircle, title: 'We talk', desc: "Tell me about your business and what's not working. You'll leave with a clear plan, honest pricing, and zero pressure. Most calls are 20 minutes." },
-  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. Your content intake form keeps everything organized, no chasing emails." },
+  { icon: MessageCircle, title: 'We shape your idea', desc: "Bring an idea, a new business, or something you want to improve. You do not need a business name, a feature list, or a finished plan. We work out who your app is for and what its first version should do." },
+  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. The intake form lets you share what you know and flag what you need help deciding." },
   { icon: Rocket, title: 'You launch', desc: "Your app goes live on web and mobile. I handle the launch, walk you through everything, and stay available for support after." },
 ];
 
@@ -12,7 +12,7 @@ export default function Process() {
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Three steps to your custom app
+          From your first idea to your custom app
         </h2>
 
         <div className="mt-10 grid gap-0 md:grid-cols-3">
