@@ -36,4 +36,26 @@ await scenario('cancelled invoice rejects payment','base44/functions/recordPayme
 await scenario('overpayment rejected','base44/functions/recordPayment/entry.ts',{amount_total:100,deposit_amount:50},{invoice_id:'i',request_id:'r',kind:'deposit',amount:60},400);
 const send=mocks({status:'draft',client_email:'test@example.test',project_title:'Test',price_total:1500,deposit_percent:50});send.client.entities.PricingSettings.list=async()=>[{proposal_valid_days:3,packages:[{}]}];
 const fn=load('base44/functions/sendProposal/entry.ts',send.bindings);const start=Date.now();const res=await fn(request({proposal_id:'abc123'}));assert.equal(res.status,200);const expiry=new Date(send.writes[0].expires_at).getTime();assert.ok(expiry-start>=72*3600000&&expiry-start<72*3600000+10000);checks++;console.log('PASS 72-hour expiry starts on send');
-console.log(checks+' workflow tests passed; no external requests or real emails.');
+
+const live=mocks({});
+let invoice={id:'inv',amount_total:1500,deposit_amount:750,deposit_status:'pending',balance_status:'pending',balance_amount:750,contract_id:'c',status:'open'};
+let contract={id:'c',status:'signed'};let ledger=[];
+live.client.entities.Invoice.get=async()=>({...invoice});
+live.client.entities.Invoice.update=async(id,x)=>(invoice={...invoice,...x});
+live.client.entities.Payment.filter=async()=>ledger;
+live.client.entities.Payment.create=async x=>{const p={...x,id:'p'+ledger.length};ledger.push(p);return p;};
+live.client.entities.Contract.get=async()=>contract;
+live.client.entities.Contract.update=async(id,x)=>(contract={...contract,...x});
+const pay=load('base44/functions/recordPayment/entry.ts',live.bindings);
+const payBody={invoice_id:'inv',request_id:'first',kind:'deposit',method:'transfer',amount:250,notify_client:false};
+assert.equal((await pay(request(payBody))).status,200);
+assert.equal(invoice.deposit_paid_amount,250);assert.equal(invoice.deposit_status,'pending');assert.equal(contract.status,'signed');
+assert.equal((await pay(request(payBody))).status,200);assert.equal(ledger.length,1);
+assert.equal((await pay(request({...payBody,amount:300}))).status,409);
+assert.equal((await pay(request({...payBody,request_id:'second',amount:500}))).status,200);
+assert.equal(invoice.deposit_status,'paid');assert.equal(contract.status,'active');
+assert.equal((await pay(request({...payBody,request_id:'third',kind:'balance',amount:750}))).status,200);
+assert.equal(invoice.status,'paid');assert.equal(contract.status,'active');assert.equal(live.emails.length,0);
+console.log('PASS full payment lifecycle, partials, retry protection, and delivery independence');
+
+console.log((checks+1)+' workflow tests passed; no external requests or real emails.');
