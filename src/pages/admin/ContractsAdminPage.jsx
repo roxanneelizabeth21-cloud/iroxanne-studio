@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ClipboardList } from 'lucide-react';
 import ContractForm from '@/components/admin/ContractForm';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
@@ -220,6 +220,18 @@ export default function ContractsAdminPage() {
                     onClick={() => navigator.clipboard.writeText(`${window.location.origin}/contract/${c.id}?t=${c.access_token}`)}>
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
+                )}
+                {['signed', 'deposit_paid', 'active'].includes(c.status) && (
+                  <Button variant="outline" size="sm" className="gap-1" onClick={async () => {
+                    try {
+                      const res = await base44.functions.invoke('sendIntakeForm', { contract_id: c.id });
+                      const data = res.data || res;
+                      if (data.error) { toast({ title: data.error, variant: 'destructive' }); return; }
+                      if (data.existing) { toast({ title: 'Intake form already sent — link copied', description: data.link }); }
+                      else { toast({ title: 'Intake form sent to ' + c.client_email }); }
+                      navigator.clipboard.writeText(data.link);
+                    } catch (e) { toast({ title: 'Failed to send intake form', variant: 'destructive' }); }
+                  }}><ClipboardList className="h-3.5 w-3.5" /> Send Intake</Button>
                 )}
               </div>
             </div>
