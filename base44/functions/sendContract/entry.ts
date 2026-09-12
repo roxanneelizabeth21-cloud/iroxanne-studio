@@ -10,6 +10,7 @@ export default async function(req: Request) {
     const contract=await base44.entities.Contract.get(contract_id);
     if(!['draft','sent'].includes(contract.status)) return Response.json({error:'Only draft or sent contracts may be sent for signature.'},{status:409});
     if(!contract.client_email || !contract.terms?.trim()) return Response.json({error:'Add the client email and agreement terms before sending.'},{status:400});
+    if(contract.contract_variant==='rush' && !contract.rush_terms?.trim()) return Response.json({error:'Add the rush schedule addendum before sending.'},{status:400});
     const token=contract.access_token || Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
     const link='https://iroxannestudio.base44.app/contract/'+contract_id+'?t='+token;
     await base44.entities.Contract.update(contract_id,{access_token:token,status:'sent',sent_at:new Date().toISOString()});

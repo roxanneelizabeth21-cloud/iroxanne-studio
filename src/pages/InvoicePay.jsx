@@ -1,0 +1,228 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Loader2, CheckCircle2, CreditCard, Lock } from 'lucide-react';
+import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
+
+const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
+
+export default function InvoicePay() {
+  const { id } = useParams();
+  const [params] = useSearchParams();
+  const token = params.get('t') || '';
+  const status = params.get('status');
+
+  const [invoice, setInvoice] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [redirecting, setRedirecting] = useState(null);
+  const [notice, setNotice] = useState(status === 'success' ? 'Payment received — thank you! Your balance is updated below.' : status === 'cancelled' ? 'Checkout was cancelled. No charge was made.' : '');
+
+  const load = async () => {
+    try {
+      const res = await base44.functions.invoke('clientInvoice', { id, token, action: 'view' });
+      const data = res.data || res;
+      if (data.error) { setError(data.error); }
+      else {
+        setInvoice(data.invoice);
+        setSummary(data.summary);
+        setPayments(data.payments || []);
+      }
+    } catch {
+      setError('Could not load this invoice.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, [id, token]);
+
+  const pay = async (kind, milestoneIndex) => {
+    // Stripe Checkout must run in a top-level window, not inside the builder iframe.
+    if (window.self !== window.top) {
+      setError('Checkout opens in a secure Stripe page and only works from the published app. Open this link directly in your browser.');
+      return;
+    }
+    setRedirecting(kind + (milestoneIndex != null ? `_${milestoneIndex}` : ''));
+    setError('');
+    try {
+      const res = await base44.functions.invoke('createStripeCheckout', { id, token, kind, milestone_index: milestoneIndex });
+      const data = res.data || res;
+      if (data.error) { setError(data.error); }
+      else if (data.url) { window.location.href = data.url; return; }
+    } catch {
+      setError('Could not start checkout. Please try again.');
+    } finally {
+      setRedirecting(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error && !invoice) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center">
+          <p className="text-lg font-semibold text-foreground">{error}</p>
+          <p className="mt-2 text-sm text-muted-foreground">If you copied this link, make sure it's complete.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const depositRemaining = summary?.depositOutstanding ?? 0;
+  const balanceRemaining = summary?.balanceOutstanding ?? 0;
+  const fullyPaid = summary?.outstanding <= 0.001;
+
+  return (
+    <div className="studio-surface min-h-screen bg-[#FAF7F0] py-10 px-4">
+      <div className="max-w-3xl mx-auto">
+        <BrandedPageHeader
+          title="Invoice & Payments"
+          subtitle="Pay your deposit, milestones, or balance securely online."
+          projectTitle={invoice.project_title}
+          clientName={invoice.client_name || invoice.client_email}
+        />
+
+        {notice && (
+          <div className="mb-4 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-sm text-green-700">
+            {notice}
+          </div>
+        )}
+        {error && <div className="mb-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
+
+        <div className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="grid sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Prepared for</p>
+              <p className="font-medium text-foreground">{invoice.client_name || invoice.client_email}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Project</p>
+              <p className="font-medium text-foreground">{invoice.project_title}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="rounded-xl bg-secondary/40 p-4">
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Project total</p>
+              <p className="text-xl font-bold text-foreground mt-1">{money(invoice.amount_total)}</p>
+            </div>
+            <div className="rounded-xl bg-secondary/40 p-4">
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Paid to date</p>
+              <p className="text-xl font-bold text-foreground mt-1">{money(summary?.paid)}</p>
+            </div>
+            <div className="rounded-xl bg-secondary/40 p-4">
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Outstanding</p>
+              <p className="text-xl font-bold text-primary mt-1">{money(summary?.outstanding)}</p>
+            </div>
+          </div>
+
+          {fullyPaid ? (
+            <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 text-center">
+              <CheckCircle2 className="h-10 w-10 mx-auto text-green-500 mb-2" />
+              <p className="font-semibold text-foreground">This invoice is paid in full</p>
+              <p className="text-sm text-muted-foreground mt-1">Thank you! Your project is all squared away.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <h2 className="text-sm font-semibold text-foreground">Pay online</h2>
+              {depositRemaining > 0 && (
+                <PayRow
+                  label="Deposit"
+                  amount={depositRemaining}
+                  status={invoice.deposit_status}
+                  loading={redirecting === 'deposit'}
+                  onPay={() => pay('deposit')}
+                />
+              )}
+              {(invoice.milestones || []).map((m, i) => (
+                <PayRow
+                  key={i}
+                  label={m.label}
+                  amount={m.amount}
+                  status={m.status}
+                  dueDate={m.due_date}
+                  loading={redirecting === `milestone_${i}`}
+                  onPay={() => pay('milestone', i)}
+                />
+              ))}
+              {balanceRemaining > 0 && (invoice.milestones || []).length === 0 && (
+                <PayRow
+                  label="Balance"
+                  amount={balanceRemaining}
+                  status={invoice.balance_status}
+                  loading={redirecting === 'balance'}
+                  onPay={() => pay('balance')}
+                />
+              )}
+              {balanceRemaining > 0 && (invoice.milestones || []).length > 0 && (
+                <PayRow
+                  label="Remaining balance"
+                  amount={balanceRemaining}
+                  status={invoice.balance_status}
+                  loading={redirecting === 'balance'}
+                  onPay={() => pay('balance')}
+                />
+              )}
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
+                <Lock className="h-3 w-3" /> Secure checkout powered by Stripe. Test mode is active.
+              </p>
+            </div>
+          )}
+
+          {payments.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-foreground mb-2">Payment history</h2>
+              <div className="rounded-xl border border-border overflow-hidden">
+                {payments.map((p, i) => (
+                  <div key={i} className="flex justify-between px-4 py-3 text-sm border-t border-border/60 first:border-t-0">
+                    <span className="text-muted-foreground">
+                      {p.paid_at ? new Date(p.paid_at).toLocaleDateString() : ''} · {p.kind} · {p.method}
+                    </span>
+                    <span className="font-medium text-foreground">{money(p.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <BrandedFooter />
+      </div>
+    </div>
+  );
+}
+
+function PayRow({ label, amount, status, dueDate, loading, onPay }) {
+  const paid = status === 'paid' || status === 'waived';
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4">
+      <div>
+        <p className="font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Due now'}
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="font-bold text-foreground">{money(amount)}</span>
+        {paid ? (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600"><CheckCircle2 className="h-4 w-4" /> Paid</span>
+        ) : (
+          <Button onClick={onPay} disabled={loading} className="gap-1.5">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+            Pay now
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
