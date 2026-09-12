@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 export default function FeaturedWork({ items, loading }) {
   if (!loading && (!items || items.length === 0)) return null;
   return (
-    <section id="work" className="bg-white py-14 px-5 md:px-8">
+    <section id="work" tabIndex={-1} aria-label="Project examples" className="scroll-mt-24 focus:outline-none bg-white py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Selected work</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
