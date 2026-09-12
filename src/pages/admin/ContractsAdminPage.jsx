@@ -249,8 +249,7 @@ export default function ContractsAdminPage() {
 function PricingSettingsCard({ settings, onSave }) {
   const [s, setS] = useState(settings || {
     rate_per_hour: 65,
-    pricing_mode: 'custom_quote',
-    default_deposit_mode: 'fixed_percent',
+    pricing_mode: 'packages_addons',
     default_deposit_percent: 50,
     standard_terms: '',
     packages: [],
@@ -277,23 +276,10 @@ function PricingSettingsCard({ settings, onSave }) {
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>Default deposit</Label>
-          <Select value={s.default_deposit_mode} onValueChange={(v) => update('default_deposit_mode', v)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fixed_percent">Fixed %</SelectItem>
-              <SelectItem value="tiered">% by tier</SelectItem>
-              <SelectItem value="custom_amount">Custom amount</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      {s.default_deposit_mode === 'fixed_percent' && (
-        <div className="space-y-1.5">
           <Label>Deposit %</Label>
           <Input type="number" value={s.default_deposit_percent} onChange={(e) => update('default_deposit_percent', Number(e.target.value))} />
         </div>
-      )}
+      </div>
       <div className="space-y-1.5">
         <Label>Standard terms (pre-filled on new contracts)</Label>
         <Textarea rows={4} value={s.standard_terms || ''} onChange={(e) => update('standard_terms', e.target.value)} />
