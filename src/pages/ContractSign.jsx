@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, CheckCircle2, ShieldCheck, FileSignature } from 'lucide-react';
+import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
@@ -76,15 +77,13 @@ export default function ContractSign() {
   return (
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-            <FileSignature className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Project Agreement</h1>
-            <p className="text-sm text-muted-foreground">iRoxanne Studio</p>
-          </div>
-        </div>
+        <BrandedPageHeader
+          title="Project Agreement"
+          subtitle="Review the terms below and sign to get started."
+          projectTitle={contract.project_title}
+          clientName={contract.client_name || contract.client_email}
+        />
+        <div className="flex justify-end mb-2"><PrintButton /></div>
 
         <div className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6 shadow-sm">
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
