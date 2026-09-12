@@ -7,7 +7,7 @@ export const BRAND_PLUM_DARK = '#2D2A4A';
 export const BRAND_GOLD = '#C9A84C';
 
 export function brandButton(label: string, url: string): string {
-  return `<a href="${url}" style="display:inline-block;background:${BRAND_PLUM};color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 32px;border-radius:50px;">${label}</a>`;
+  return `<a href="${esc(url)}" style="display:inline-block;background:${BRAND_PLUM};color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 32px;border-radius:50px;">${label}</a>`;
 }
 
 // Label/value table used by the admin alert emails (new subscriber, new inquiry).
@@ -58,7 +58,7 @@ export function brandedEmail({
 
 // HTML-escape a value for safe interpolation into email HTML.
 export function esc(v: unknown): string {
-  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 // Resolve the studio admin notification email: BrandProfile.notify_email,

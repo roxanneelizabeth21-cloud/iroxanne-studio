@@ -140,6 +140,10 @@
     },
     "proposal_id": {
       "type": "string"
+    },
+    "delivered_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [

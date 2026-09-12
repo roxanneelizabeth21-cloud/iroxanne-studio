@@ -88,7 +88,8 @@ export default async function (req: Request) {
       const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
       const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
       const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
-      let contractId = proposal.contract_id || '';
+      const previous = await base44.asServiceRole.entities.Contract.filter({proposal_id:id});
+      let contractId = proposal.contract_id || previous[0]?.id || '';
       if (!contractId) {
         const contract = await base44.asServiceRole.entities.Contract.create({
           proposal_id: id,

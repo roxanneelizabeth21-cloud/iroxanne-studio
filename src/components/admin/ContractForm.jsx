@@ -40,6 +40,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       ...form,
       price_total: total,
       deposit_amount: computeDeposit(total),
+      deposit_percent: form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
     };
     onSave(payload);
   };
@@ -142,7 +143,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label>Deposit ({settings?.default_deposit_percent ?? 50}%)</Label>
+          <Label>Deposit ({form.deposit_percent ?? settings?.default_deposit_percent ?? 50}%)</Label>
           <Input type="number" disabled value={computeDeposit(total)} />
         </div>
         <div className="space-y-1.5">
@@ -171,11 +172,11 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 }
 
 function buildInitial(initial, settings) {
-  if (initial && initial.id) {
+  if (initial && initial.id && initial.quick_pitch === undefined && initial.client_email) {
     return { ...initial };
   }
   return {
-    lead_id: initial?.lead_id || '',
+    lead_id: initial?.lead_id || initial?.id || '',
     client_name: initial?.client_name || initial?.name || '',
     client_email: initial?.client_email || initial?.email || '',
     project_title: initial?.project_title || initial?.quick_pitch?.slice(0, 60) || '',

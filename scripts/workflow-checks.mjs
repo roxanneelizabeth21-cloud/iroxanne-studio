@@ -34,6 +34,6 @@ await scenario('signature requires consent','base44/functions/clientContract/ent
 await scenario('cancelled contract cannot be signed','base44/functions/clientContract/entry.ts',{access_token:'t',status:'cancelled'},{id:'c',token:'t',action:'sign',signerName:'Test',consent:true},409);
 await scenario('cancelled invoice rejects payment','base44/functions/recordPayment/entry.ts',{status:'cancelled'},{invoice_id:'i',request_id:'r',kind:'deposit',amount:10},409);
 await scenario('overpayment rejected','base44/functions/recordPayment/entry.ts',{amount_total:100,deposit_amount:50},{invoice_id:'i',request_id:'r',kind:'deposit',amount:60},400);
-const send=mocks({status:'draft',client_email:'test@example.test',project_title:'Test'});send.client.entities.PricingSettings.list=async()=>[{proposal_valid_days:3,packages:[{}]}];
+const send=mocks({status:'draft',client_email:'test@example.test',project_title:'Test',price_total:1500,deposit_percent:50});send.client.entities.PricingSettings.list=async()=>[{proposal_valid_days:3,packages:[{}]}];
 const fn=load('base44/functions/sendProposal/entry.ts',send.bindings);const start=Date.now();const res=await fn(request({proposal_id:'abc123'}));assert.equal(res.status,200);const expiry=new Date(send.writes[0].expires_at).getTime();assert.ok(expiry-start>=72*3600000&&expiry-start<72*3600000+10000);checks++;console.log('PASS 72-hour expiry starts on send');
 console.log(checks+' workflow tests passed; no external requests or real emails.');

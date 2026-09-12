@@ -120,7 +120,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
     onSave({ ...form, price_total: total });
   };
 
-  const valid = form.client_email?.includes('@') && form.project_title?.trim();
+  const valid = form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && form.deposit_percent >= 0 && form.deposit_percent <= 100 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
 
   return (
     <div className="space-y-5">
@@ -270,8 +270,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
           <Input value={form.timeline_estimate || ''} onChange={(e) => update('timeline_estimate', e.target.value)} placeholder="2 weeks once your content is delivered" />
         </div>
         <div className="space-y-1.5">
-          <Label>Valid until</Label>
-          <Input type="date" value={form.valid_until || ''} onChange={(e) => update('valid_until', e.target.value)} />
+          <Label>Proposal validity</Label>
+          <p className="text-sm py-2">{settings?.proposal_valid_days ?? 3} days from sending. Change this in contract pricing settings.</p>
         </div>
       </div>
 

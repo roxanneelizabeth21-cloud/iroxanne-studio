@@ -73,7 +73,7 @@ export default function ContractsAdminPage() {
         toast({ title: 'Contract created' });
       }
       await load();
-      setEditing((prev) => (prev?.contract ? { contract: prev.contract } : null));
+      setEditing(null);
     } catch (e) {
       toast({ title: 'Save failed', description: e.message, variant: 'destructive' });
     } finally {
@@ -94,6 +94,7 @@ export default function ContractsAdminPage() {
   };
 
   const saveSettings = async (s) => {
+    s = {...s,packages:(s.packages || []).map(p=>({...p,name:p.name.trim()})),addons:(s.addons || []).map(a=>({...a,name:a.name.trim()}))};
     try {
       if (s.id) {
         await base44.entities.PricingSettings.update(s.id, s);
@@ -190,6 +191,11 @@ export default function ContractsAdminPage() {
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
                 )}
+                {c.status === 'active' && <Button variant="outline" size="sm" onClick={async () => {
+                  if (!window.confirm('Confirm the app has been delivered and the client handoff is complete. Payment status is tracked separately.')) return;
+                  try { await base44.entities.Contract.update(c.id,{status:'completed',delivered_at:new Date().toISOString()}); toast({title:'Project marked delivered'}); await load(); }
+                  catch(e){ toast({title:'Could not update project',description:e.message,variant:'destructive'}); }
+                }}>Mark delivered</Button>}
                 {['signed', 'deposit_paid', 'active'].includes(c.status) && (
                   <Button variant="outline" size="sm" className="gap-1" onClick={async () => {
                     try {
@@ -215,6 +221,7 @@ export default function ContractsAdminPage() {
           </DialogHeader>
           {editing && (
             <ContractForm
+              key={editing.contract?.id || editing.lead?.id || 'new'}
               initial={editing.contract || editing.lead || {}}
               settings={settings}
               onSave={handleSave}
