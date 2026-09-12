@@ -1,0 +1,94 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "invoice_id": {
+      "type": "string",
+      "description": "Invoice this payment applies to"
+    },
+    "contract_id": {
+      "type": "string",
+      "description": "Contract this payment belongs to"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "project_title": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount received (USD)"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "balance",
+        "milestone",
+        "other"
+      ],
+      "default": "balance",
+      "description": "What this payment covers"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "stripe",
+        "square",
+        "zelle",
+        "cashapp",
+        "venmo",
+        "paypal",
+        "cash",
+        "check",
+        "transfer",
+        "other"
+      ],
+      "default": "other",
+      "description": "How the payment was collected"
+    },
+    "reference": {
+      "type": "string",
+      "description": "External reference \u2014 Stripe payment intent, Square receipt #, check #, etc."
+    },
+    "paid_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the payment was received"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "amount"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
