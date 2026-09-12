@@ -50,8 +50,7 @@
     }
   },
   "required": [
-    "name",
-    "portfolio_item_id"
+    "name"
   ],
   "rls": {
     "create": {
