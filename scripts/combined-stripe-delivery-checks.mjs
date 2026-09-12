@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+function load(file,names,bindings={}){
+ const source=fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replace(/\bexport /g,'')+'\nreturn {'+names+'};';
+ return new Function(...Object.keys(bindings),ts.transpile(source,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}))(...Object.values(bindings));
+}
+const {paymentSummary}=load('base44/shared/paymentSummary.ts','paymentSummary');
+const {reminderDecision,canCompleteHandoff}=load('base44/shared/studioDelivery.ts','reminderDecision,canCompleteHandoff');
+const {applyInvoicePayment}=load('base44/shared/stripeInvoiceSync.ts','applyInvoicePayment',{paymentSummary});
+let invoice={id:'i',contract_id:'c',amount_total:1000,deposit_amount:500,deposit_status:'pending',balance_status:'pending',status:'open',milestones:[{label:'Milestone 1',amount:200,status:'pending'}],reminder_enabled:true,reminder_next_at:'2020-01-01T00:00:00Z',reminder_sent_count:0};
+let contract={id:'c',status:'signed',signature_mode:'drawn',signature_image:'saved-signature',rush_terms:'Saved rush addendum',handoff_status:'ready',handoff_items:[{required:true,completed:true}]};
+const ledger=[];
+const db={Invoice:{get:async()=>({...invoice}),update:async(id,x)=>(invoice={...invoice,...x})},Contract:{get:async()=>({...contract}),update:async(id,x)=>(contract={...contract,...x})},Payment:{filter:async()=>[...ledger],create:async x=>{const row={...x,id:'p'+ledger.length};ledger.push(row);return row;}}};
+const client={asServiceRole:{entities:db}};
+const pay=opts=>applyInvoicePayment(client,{invoice_id:'i',source:'checkout.session.completed',...opts});
+await pay({kind:'deposit',amount:500,reference:'pi_deposit'});
+assert.equal(contract.status,'active');assert.equal(contract.signature_image,'saved-signature');assert.equal(contract.rush_terms,'Saved rush addendum');assert.equal(contract.handoff_status,'ready');
+assert.equal(reminderDecision(invoice,paymentSummary(invoice,ledger).depositOutstanding),'skip');
+console.log('PASS Stripe deposit stops deposit reminders and preserves signature/rush/handoff');
+await pay({kind:'milestone',amount:200,reference:'pi_milestone',milestoneIndex:0});
+assert.equal(invoice.milestones[0].status,'paid');assert.equal(invoice.balance_status,'partial');assert.equal(paymentSummary(invoice,ledger).balanceOutstanding,300);
+assert.equal(reminderDecision(invoice,paymentSummary(invoice,ledger).balanceOutstanding),'send');
+console.log('PASS Stripe milestone reduces the balance used by reminders');
+const replay=await pay({kind:'milestone',amount:200,reference:'pi_milestone',milestoneIndex:0});
+assert.equal(replay.duplicate,true);assert.equal(ledger.length,2);
+await pay({kind:'balance',amount:300,reference:'pi_balance'});
+assert.equal(invoice.status,'paid');assert.equal(invoice.balance_status,'paid');assert.equal(reminderDecision(invoice,0),'skip');assert.equal(contract.status,'active');assert.equal(canCompleteHandoff(contract),false);
+console.log('PASS final Stripe payment stops reminders without marking handoff accepted/delivered');
+contract={...contract,status:'completed',handoff_status:'accepted',delivered_at:'2026-09-12T00:00:00Z'};
+await pay({kind:'balance',amount:300,reference:'pi_balance'});
+assert.equal(contract.status,'completed');assert.equal(contract.handoff_status,'accepted');
+console.log('PASS Stripe duplicate event leaves accepted handoff unchanged');
+console.log('4 combined Stripe/delivery checks passed with in-memory records; no external requests.');
