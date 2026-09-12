@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, CheckCircle2, Upload, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
 
 const TIER_LABELS = { starter: 'Starter', business: 'Business', custom: 'Custom' };
 
@@ -153,9 +154,13 @@ export default function ClientIntakeForm() {
     <div className="min-h-screen ir-app-bg py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 px-4 py-2 rounded-full mb-4 border border-purple-200 dark:border-purple-800"><Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" /><span className="text-xs font-semibold ir-gradient-text">{TIER_LABELS[tier]} Project</span></div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Content Intake — {intake.project_title || 'Your Project'}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-lg mx-auto">Fill in each section with your content. Upload images and documents where you have them. You can save your progress and come back anytime. The more you provide, the faster we build.</p>
+          <BrandedPageHeader
+            title="Content Intake"
+            subtitle={`${TIER_LABELS[tier]} Project — fill in each section with your content, upload files, and save anytime.`}
+            projectTitle={intake.project_title}
+            clientName={intake.client_name}
+          />
+          <div className="flex justify-end mb-2"><PrintButton /></div>
         </div>
 
         {sections.includes('basics') && (
