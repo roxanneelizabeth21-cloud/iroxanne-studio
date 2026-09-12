@@ -151,7 +151,7 @@ export default function ClientIntakeForm() {
   const isBusiness = tier === 'business' || isCustom;
 
   return (
-    <div className="min-h-screen ir-app-bg py-10 px-4">
+    <div className="min-h-screen bg-[#FAF7F0] py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-6">
           <BrandedPageHeader
