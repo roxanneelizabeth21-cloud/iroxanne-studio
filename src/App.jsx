@@ -31,6 +31,7 @@ import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
 import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
+import InvoicePay from '@/pages/InvoicePay';
 import ProjectHandoff from '@/pages/ProjectHandoff';
 import ProposalView from '@/pages/ProposalView';
 import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';

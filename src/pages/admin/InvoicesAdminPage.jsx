@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Receipt, Plus, Send } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import InvoiceReminderSettings from '@/components/admin/InvoiceReminderSettings';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
@@ -82,13 +81,12 @@ export default function InvoicesAdminPage() {
         {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
         <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
       </div>}
-      <InvoiceReminderSettings key={i.id+'-'+i.updated_date} invoice={i} onSaved={load}/>
       <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
         {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><strong>{money(p.amount)}</strong></div>)}
         {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
       </div></details>
     </section>)}
-    <p className="text-xs text-muted-foreground">Payment-provider integration is pending. Recording a payment updates your records; it does not charge the client or mark the project delivered.</p>
+    <p className="text-xs text-muted-foreground">Clients can pay deposits, milestones, and balances online via Stripe. Use “Request deposit / balance” to email them a pay link, or share the invoice link directly.</p>
     <Dialog open={!!editing} onOpenChange={o=>!busy&&!o&&setEditing(null)}><DialogContent><DialogHeader><DialogTitle>Record received payment</DialogTitle><DialogDescription>{editing?.project_title} — enter money you have already received.</DialogDescription></DialogHeader>
       <form onSubmit={save} className="space-y-4">
         <div><Label htmlFor="payment-kind">Payment stage</Label><select id="payment-kind" className="w-full border rounded-md p-2 bg-background" value={form.kind} onChange={e=>setForm({...form,kind:e.target.value,amount:remaining(editing,e.target.value)})}><option value="deposit">Deposit</option><option value="balance">Balance</option></select></div>

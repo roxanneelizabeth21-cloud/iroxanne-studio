@@ -49,10 +49,14 @@ export default async function(req) {
       const total = typeof updated.price_total === 'number' ? updated.price_total : 0;
       const deposit = typeof updated.deposit_amount === 'number' ? updated.deposit_amount : 0;
 
+      let invoiceToken = '';
+      let invoiceUrl = '';
       try {
         const existing = await base44.asServiceRole.entities.Invoice.filter({ contract_id: id }).catch(() => []);
-        if (!existing || existing.length === 0) {
-          await base44.asServiceRole.entities.Invoice.create({
+        let invoice: any = existing && existing[0];
+        if (!invoice) {
+          invoiceToken = Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('');
+          invoice = await base44.asServiceRole.entities.Invoice.create({
             contract_id: id,
             client_name: updated.client_name || '',
             client_email: updated.client_email,
@@ -63,7 +67,18 @@ export default async function(req) {
             balance_amount: Math.max(total - deposit, 0),
             balance_status: total - deposit > 0 ? 'pending' : 'waived',
             status: 'open',
-          }).catch((e) => console.log('invoice create failed', e?.message));
+            access_token: invoiceToken,
+          }).catch((e) => { console.log('invoice create failed', e?.message); return null; });
+        } else if (!invoice.access_token) {
+          invoiceToken = Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('');
+          await base44.asServiceRole.entities.Invoice.update(invoice.id, { access_token: invoiceToken }).catch(() => {});
+          invoice.access_token = invoiceToken;
+        } else {
+          invoiceToken = invoice.access_token;
+        }
+        if (invoice && invoice.access_token) {
+          const origin = (new URL(req.url).origin.includes('base44')) ? new URL(req.url).origin : 'https://iroxannestudio.base44.app';
+          invoiceUrl = `${origin}/invoice/${invoice.id}?t=${invoice.access_token}`;
         }
       } catch (e) { console.log('invoice step failed', e?.message); }
 
@@ -78,7 +93,7 @@ export default async function(req) {
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
               <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
               <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
-              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`,
+              ${invoiceUrl ? `<p style="margin:0 0 16px;">${brandButton('Pay deposit online', invoiceUrl)}</p><p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">Pay securely by card, or use the payment instructions I'll send separately. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>` : `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`}`,
             footerNote: 'iRoxanne Studio — one builder, not an agency.',
           }),
         }).catch((e) => console.log('client sign email failed', e?.message));

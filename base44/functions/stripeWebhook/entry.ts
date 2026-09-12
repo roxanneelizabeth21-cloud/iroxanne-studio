@@ -83,6 +83,10 @@ export default async function (req: Request) {
       return { error: (e as Error).message };
     });
 
+    if (result && result.error) {
+      return Response.json({ received: true, error: result.error }, { status: 500 });
+    }
+
     if (result && !result.duplicate && result.invoice) {
       const invoice = result.invoice;
       if (invoice.client_email) {
