@@ -9,8 +9,8 @@ export default function Hero({ projects, loading }) {
     : [];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#302634] pt-[72px]" style={{ backgroundImage: 'radial-gradient(ellipse at 6% 15%, rgba(157,86,156,0.48), transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(105,48,123,0.38), transparent 60%), linear-gradient(115deg, #633B69, #482751 58%, #342039)' }}>
-      <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+    <section className="relative isolate overflow-hidden bg-[#302634] pt-[72px]" style={{ backgroundImage: 'radial-gradient(ellipse at 6% 15%, rgba(130,92,119,0.42), transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(79,53,75,0.32), transparent 60%), linear-gradient(115deg, #443342, #302634 58%, #251e2a)' }}>
+      <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12]" xmlns="http://www.w3.org/2000/svg">
         <filter id="hero-plum-grain">
           <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch" />
           <feColorMatrix type="saturate" values="0" />
