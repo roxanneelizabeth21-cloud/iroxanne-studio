@@ -18,6 +18,7 @@ export default async function(req: Request) {
     if (invoice.status === 'cancelled') return Response.json({error:'This invoice is cancelled.'},{status:409});
     let payments = await base44.entities.Payment.filter({invoice_id}, '-created_date', 1000);
     const existing = payments.find((p:any)=>p.request_id===request_id);
+    if (existing && (Number(existing.amount)!==amount || existing.kind!==kind || existing.method!==method)) return Response.json({error:'This request was already recorded with different details. Refresh the invoice before entering another payment.'},{status:409});
     const before = paymentSummary(invoice,payments);
     if (!existing && amount > (kind === 'deposit' ? before.depositOutstanding : before.balanceOutstanding) + 0.001) return Response.json({error:'Amount exceeds the unpaid amount for this payment stage.'},{status:400});
     // Persist a baseline before the first ledger entry so old manual payments are retained on retries.
@@ -49,8 +50,7 @@ export default async function(req: Request) {
       const money = (n:number)=>n.toLocaleString('en-US',{style:'currency',currency:'USD'});
       await base44.asServiceRole.integrations.Core.SendEmail({to:invoice.client_email,subject:'Payment received — '+invoice.project_title,
         html:brandedEmail({title:'Thank you for your payment',content:'<p>Payment received for '+esc(invoice.project_title)+'.</p>'+detailRows([['Payment',money(amount)],['Method',esc(method)],['Paid to date',money(summary.paid)],['Remaining',money(summary.outstanding)]])})
-      });
-      receiptSent = true;
+      }).then(() => { receiptSent = true; }).catch(() => { receiptSent = false; });
     }
     return Response.json({payment,invoice:updated,paid_total:summary.paid,outstanding:summary.outstanding,receipt_sent:receiptSent,duplicate:!!existing});
   } catch(e) { return Response.json({error:(e as Error).message},{status:500}); }
