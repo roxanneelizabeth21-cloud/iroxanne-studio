@@ -11,7 +11,8 @@ const INTEGRATION_HOURS = {
   'Zapier': 2,
   'Email marketing (SendGrid/Mailchimp)': 4,
   'SMS (Twilio)': 4,
-  'Other third-party API': 4,
+  'AI features (assistant, generator, insights)': 8,
+  'Other third-party API': 5,
   'None yet': 0,
 };
 
