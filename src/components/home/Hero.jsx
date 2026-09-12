@@ -1,12 +1,21 @@
 import { ArrowRight } from 'lucide-react';
 
-export default function Hero({ projects, loading }) {
+export default function Hero({ projects, loading, heroBackgroundImage }) {
   const trustNames = !loading
     ? (projects || []).map((p) => p.business_name || p.client_name || p.title).filter(Boolean).slice(0, 6)
     : [];
 
   return (
     <section className="relative overflow-hidden bg-[#FAF7F0] pt-[72px]">
+      {heroBackgroundImage && (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+            style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/80 via-[#FAF7F0]/50 to-[#FAF7F0]" />
+        </>
+      )}
       <div className="pointer-events-none absolute right-[5%] top-[15%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/5 blur-[120px]" />
       <div className="pointer-events-none absolute left-[-5%] bottom-[10%] h-[300px] w-[300px] rounded-full bg-[#2D2A4A]/3 blur-[80px]" />
 

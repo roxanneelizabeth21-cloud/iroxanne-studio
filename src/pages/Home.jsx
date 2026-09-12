@@ -13,6 +13,7 @@ export default function Home() {
   const [projects, setProjects] = useState(null);
   const [testimonials, setTestimonials] = useState(null);
   const [headshotUrl, setHeadshotUrl] = useState(null);
+  const [heroBackgroundImage, setHeroBackgroundImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function Home() {
         setProjects(proj);
         setTestimonials(test);
         setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
+        setHeroBackgroundImage(settings?.[0]?.hero_background_image || null);
       } finally {
         if (active) setLoading(false);
       }
@@ -58,7 +60,7 @@ export default function Home() {
       <SiteNav />
 
       <main>
-        <Hero projects={projects} loading={loading} />
+        <Hero projects={projects} loading={loading} heroBackgroundImage={heroBackgroundImage} />
 
         <FeaturedWork
           items={projects}
