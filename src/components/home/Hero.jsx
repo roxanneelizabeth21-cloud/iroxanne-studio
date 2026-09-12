@@ -14,10 +14,10 @@ export default function Hero({ projects, loading, heroBackgroundImage }) {
       {heroBackgroundImage && (
         <>
           <div
-            className="pointer-events-none absolute inset-0 bg-no-repeat opacity-40"
-            style={{ backgroundImage: `url(${heroBackgroundImage})`, backgroundPosition: 'right center', backgroundSize: '38%' }}
+            className="pointer-events-none absolute inset-0 bg-cover bg-no-repeat opacity-50"
+            style={{ backgroundImage: `url(${heroBackgroundImage})`, backgroundPosition: 'center top' }}
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/80 via-[#FAF7F0]/50 to-[#FAF7F0]" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAF7F0]/60 via-transparent to-[#FAF7F0]" />
         </>
       )}
       <div className="pointer-events-none absolute right-[5%] top-[15%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/5 blur-[120px]" />
