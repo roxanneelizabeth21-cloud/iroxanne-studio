@@ -12,7 +12,7 @@ export default function Services() {
   return (
     <section id="services" className="mx-auto max-w-6xl border-t border-border px-6 py-20">
       <h2 className="font-sans text-3xl font-bold tracking-tight">What I build</h2>
-      <p className="mt-2 text-muted-foreground">One person, end-to-end — design, build, launch, and support.</p>
+      <p className="mt-2 text-muted-foreground">One person, end-to-end: design, build, launch, and support.</p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((s) => (
           <div

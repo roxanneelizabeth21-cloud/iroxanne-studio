@@ -31,13 +31,13 @@ export default function Contact() {
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Contact</p>
         <h1 className="text-[34px] md:text-[42px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Get in touch</h1>
         <p className="mt-3 text-[15px] text-[#2D2A4A]/50 leading-relaxed max-w-md" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Have a question or an idea? Send a message — I read every one personally and reply within 1 business day.
+          Have a question or an idea? Send a message. I read every one personally and reply within 1 business day.
         </p>
 
         {done ? (
           <div className="mt-10 rounded-2xl border border-[#B8942E]/20 bg-white p-10 text-center shadow-sm">
             <CheckCircle2 className="mx-auto h-10 w-10 text-[#B8942E]" />
-            <p className="mt-4 text-[18px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Thanks — your message is on its way.</p>
+            <p className="mt-4 text-[18px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Thanks, your message is on its way.</p>
             <p className="mt-1 text-[14px] text-[#2D2A4A]/45" style={{ fontFamily: "'Inter', sans-serif" }}>I'll get back to you within 1 business day.</p>
           </div>
         ) : (

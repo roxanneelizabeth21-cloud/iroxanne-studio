@@ -1,5 +1,5 @@
 // Shared branded HTML email shell so every email the app sends looks like iRoxanne Studio:
-// plum header wordmark, warm cream body, consistent footer — aligned with the site palette.
+// plum header wordmark, warm cream body, consistent footer, aligned with the site palette.
 export const BRAND_PLUM = '#2D2A4A';
 export const BRAND_PLUM_LIGHT = '#4A3F6B';
 export const BRAND_CREAM = '#FAF7F0';

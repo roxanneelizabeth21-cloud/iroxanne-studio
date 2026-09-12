@@ -34,7 +34,7 @@ export default function Hero({ projects, loading }) {
           </h1>
 
           <p className="mt-7 max-w-[640px] text-[15.5px] leading-[1.7] text-[#E4DCE2]" style={{ fontFamily: "'Inter', sans-serif" }}>
-            I design and build complete business apps — booking platforms, e-commerce suites, client portals, admin dashboards — custom to how you work. One person. No agency markup. Ready in weeks.
+            I design and build complete business apps: booking platforms, e-commerce suites, client portals, admin dashboards, custom to how you work. One person. No agency markup. Ready in weeks.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3.5">

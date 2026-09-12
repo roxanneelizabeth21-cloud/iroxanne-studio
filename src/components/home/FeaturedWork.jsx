@@ -11,7 +11,7 @@ export default function FeaturedWork({ items, loading }) {
           Apps built for real businesses
         </h2>
         <p className="mt-3 max-w-[480px] text-[15px] text-[#2D2A4A]/50 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Every project replaces a stack of tools with one custom platform — designed, built, and launched in weeks.
+          Every project replaces a stack of tools with one custom platform, designed, built, and launched in weeks.
         </p>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

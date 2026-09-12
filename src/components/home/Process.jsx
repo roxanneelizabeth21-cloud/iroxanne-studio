@@ -2,7 +2,7 @@ import { MessageCircle, Hammer, Rocket } from 'lucide-react';
 
 const STEPS = [
   { icon: MessageCircle, title: 'We talk', desc: "Tell me about your business and what's not working. You'll leave with a clear plan, honest pricing, and zero pressure. Most calls are 20 minutes." },
-  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. Your content intake form keeps everything organized — no chasing emails." },
+  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. Your content intake form keeps everything organized, no chasing emails." },
   { icon: Rocket, title: 'You launch', desc: "Your app goes live on web and mobile. I handle the launch, walk you through everything, and stay available for support after." },
 ];
 

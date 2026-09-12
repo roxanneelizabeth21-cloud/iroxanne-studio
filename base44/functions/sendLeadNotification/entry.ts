@@ -32,18 +32,18 @@ export default async function(req) {
       ].filter(([, v]) => v);
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: adminEmail,
-        subject: `New quote request — ${lead.name || lead.email}`,
+        subject: `New quote request: ${lead.name || lead.email}`,
         html: brandedEmail({
           title: 'New quote request',
           content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
-          footerNote: 'iRoxanne Studio — one builder, not an agency.',
+          footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
       }).catch((e) => console.log('admin notify failed', e?.message));
     }
 
     const callSettings=await base44.asServiceRole.entities.CallSettings.list('-updated_date',1).catch(()=>[]);
     const bookingLink=callSettings[0]?.enabled && lead.booking_token ? 'https://iroxannestudio.base44.app/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token) : '';
-    // 2) Client welcome — single rich confirmation reflecting what they submitted.
+    // 2) Client welcome: single rich confirmation reflecting what they submitted.
     if (lead.email) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';
       const summary: [string, string][] = [
@@ -68,7 +68,7 @@ export default async function(req) {
             ${bookingLink ? '<p style="margin:20px 0 8px;">If a conversation would help, choose an available time for an optional call.</p><p>'+brandButton('Schedule an optional call',bookingLink)+'</p>' : ''}
             <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,
-          footerNote: 'iRoxanne Studio — one builder, not an agency.',
+          footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
       }).catch((e) => console.log('client welcome failed', e?.message));
     }
