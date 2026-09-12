@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { estimateProject } from '@/lib/estimateProject';
 
 const FEATURE_OPTIONS = [
