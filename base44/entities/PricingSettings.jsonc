@@ -82,6 +82,25 @@
       "type": "boolean",
       "default": false,
       "description": "Whether Stripe checkout is wired up for deposit collection. Until true, deposits are marked pay-offline."
+    },
+    "payment_link": {
+      "type": "string",
+      "description": "A hosted pay-online link (Stripe Payment Link, Square checkout, PayPal.me). Added as a 'Pay online' button on invoice emails when set."
+    },
+    "payment_instructions": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "How clients can pay you \u2014 Zelle/CashApp handle, Square note, bank transfer details. Shown on invoice emails and the client payment page. Line breaks are preserved."
+    },
+    "invoice_due_days": {
+      "type": "number",
+      "default": 7,
+      "description": "Default number of days a client has to pay an invoice after it's sent"
+    },
+    "proposal_valid_days": {
+      "type": "number",
+      "default": 14,
+      "description": "Default number of days a new proposal stays valid"
     }
   },
   "required": [],
