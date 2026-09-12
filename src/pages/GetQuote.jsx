@@ -21,6 +21,10 @@ const FEATURE_OPTIONS = [
   'Social media links & embeds',
   'Blog or news section',
   'E-commerce / product listings',
+  'AI assistant or smart features',
+  'Inventory or order management',
+  'Contracts / proposals / e-sign',
+  'Budget or expense tracking',
 ];
 
 const INTEGRATION_OPTIONS = [
@@ -29,6 +33,7 @@ const INTEGRATION_OPTIONS = [
   'Zapier',
   'Email marketing (SendGrid/Mailchimp)',
   'SMS (Twilio)',
+  'AI features (assistant, generator, insights)',
   'Other third-party API',
   'None yet',
 ];
