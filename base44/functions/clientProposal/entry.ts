@@ -72,7 +72,8 @@ export default async function (req: Request) {
       // Create the draft contract prefilled from the proposal.
       const total = typeof proposal.price_total === 'number' ? proposal.price_total : 0;
       const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
-      const settings = (await base44.asServiceRole.entities.PricingSettings.list().catch(() => []))[0];
+      const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
+      const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
       let contractId = proposal.contract_id || '';
       if (!contractId) {
         const contract = await base44.asServiceRole.entities.Contract.create({

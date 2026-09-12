@@ -25,14 +25,14 @@ function addDays(days) {
 function buildInitial(initial, settings) {
   const i = initial || {};
   const isLead = !i.id || i.quick_pitch !== undefined;
-  const validDays = settings?.proposal_valid_days ?? 14;
+  const validDays = settings?.proposal_valid_days ?? 3;
 
   // Lead prefill: seed a line item from the matching package tier.
   let lineItems = i.line_items;
   let selectedPackage = i.selected_package || '';
   const tier = i.estimated_tier || i.tier || '';
   if (!lineItems && isLead && tier && settings?.packages?.length) {
-    const pkg = settings.packages.find((p) => p.name?.toLowerCase() === String(tier).toLowerCase());
+    const pkg = settings.packages.find((p) => p.name?.trim().toLowerCase() === String(tier).trim().toLowerCase());
     if (pkg) {
       selectedPackage = pkg.name;
       lineItems = [{ description: `${pkg.name} package — ${pkg.description || 'custom app build'}`, quantity: 1, amount: pkg.price }];
@@ -71,7 +71,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
   const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
 
   const total = (form.line_items || []).reduce((sum, li) => sum + num(li.amount), 0);
-  const depositAmt = Math.round((total * num(form.deposit_percent)) / 100);
+  const depositAmt = Math.round(total * num(form.deposit_percent)) / 100;
 
   const addLine = () =>
     setForm((p) => ({ ...p, line_items: [...(p.line_items || []), { description: '', quantity: 1, amount: 0 }] }));

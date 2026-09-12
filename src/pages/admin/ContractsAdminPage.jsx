@@ -47,7 +47,7 @@ export default function ContractsAdminPage() {
       ]);
       setLeads(leadList);
       setContracts(contractList);
-      setSettings(settingsList[0] || null);
+      setSettings(settingsList.find((s) => s.packages?.length) || settingsList[0] || null);
     } finally {
       setLoading(false);
     }

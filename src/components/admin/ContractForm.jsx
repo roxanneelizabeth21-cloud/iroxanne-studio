@@ -31,8 +31,8 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
   const computeDeposit = (price) => {
     const p = money(price);
-    const pct = settings?.default_deposit_percent ?? 50;
-    return Math.round((p * pct) / 100);
+    const pct = form.deposit_percent ?? settings?.default_deposit_percent ?? 50;
+    return Math.round(p * pct) / 100;
   };
 
   const submit = () => {

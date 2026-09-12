@@ -131,6 +131,15 @@
     "deposit_paid_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "signature_consent": {
+      "type": "boolean"
+    },
+    "signer_user_agent": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
     }
   },
   "required": [

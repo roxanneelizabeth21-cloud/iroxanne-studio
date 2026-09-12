@@ -31,6 +31,8 @@ import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
 import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
+import ProposalView from '@/pages/ProposalView';
+import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
 import CaseStudy from '@/pages/CaseStudy';
 
@@ -102,6 +104,7 @@ const AuthenticatedApp = () => {
       <Route path="/quote" element={<GetQuote />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
+      <Route path="/proposal/:id" element={<ProposalView />} />
       <Route path="/intake/:id" element={<ClientIntakeForm />} />
       <Route path="/work/:slug" element={<CaseStudy />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
@@ -109,6 +112,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
         <Route path="/admin/contracts" element={<ContractsAdminPage />} />
+        <Route path="/admin/proposals" element={<ProposalsAdminPage />} />
         <Route path="/admin/invoices" element={<InvoicesAdminPage />} />
         <Route path="/admin/pages" element={<SitePageVisibility />} />
         <Route path="/admin/banners" element={<BannersAdminPage />} />

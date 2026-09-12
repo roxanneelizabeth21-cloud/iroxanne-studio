@@ -38,7 +38,8 @@ export default async function (req: Request) {
 
     // Payment instructions come from PricingSettings so Roxanne can change them
     // in one place without a redeploy.
-    const settings = (await base44.asServiceRole.entities.PricingSettings.list().catch(() => []))[0];
+    const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
+      const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
     const payInstructions: string = settings?.payment_instructions || '';
     const payLink: string = settings?.payment_link || '';
 

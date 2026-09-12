@@ -101,7 +101,8 @@
         "viewed",
         "accepted",
         "declined",
-        "expired"
+        "expired",
+        "changes_requested"
       ],
       "default": "draft",
       "description": "Proposal lifecycle status"
@@ -134,6 +135,21 @@
     "contract_id": {
       "type": "string",
       "description": "Contract created from this proposal on acceptance"
+    },
+    "change_request": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "changes_requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "proposal_number": {
+      "type": "string"
     }
   },
   "required": [

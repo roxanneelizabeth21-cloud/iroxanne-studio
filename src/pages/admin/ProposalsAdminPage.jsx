@@ -38,7 +38,7 @@ export default function ProposalsAdminPage() {
       ]);
       setLeads(leadList);
       setProposals(proposalList);
-      setSettings(settingsList[0] || null);
+      setSettings(settingsList.find((s) => s.packages?.length) || settingsList[0] || null);
     } finally {
       setLoading(false);
     }
