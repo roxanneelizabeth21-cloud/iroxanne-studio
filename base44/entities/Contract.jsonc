@@ -64,15 +64,10 @@
       "type": "number",
       "description": "Total contract price (USD)"
     },
-    "deposit_mode": {
-      "type": "string",
-      "enum": [
-        "fixed_percent",
-        "tiered",
-        "custom_amount"
-      ],
-      "default": "fixed_percent",
-      "description": "How the deposit amount was determined for this contract"
+    "deposit_percent": {
+      "type": "number",
+      "default": 50,
+      "description": "Deposit percentage applied to this contract (e.g. 50 = 50%)"
     },
     "deposit_amount": {
       "type": "number",
@@ -123,7 +118,7 @@
     },
     "estimated_tier": {
       "type": "string",
-      "description": "Project tier carried over from the Lead estimate (small/standard/enterprise)"
+      "description": "Project tier carried over from the Lead estimate (starter/business/custom)"
     },
     "stripe_checkout_url": {
       "type": "string",
