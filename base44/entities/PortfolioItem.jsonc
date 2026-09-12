@@ -81,6 +81,24 @@
     "tagline": {
       "type": "string",
       "description": "Short one-line summary shown on cards"
+    },
+    "marketing_features": {
+      "type": "string",
+      "description": "Detailed feature-and-benefit list used by the AI marketing agent for post generation. Markdown format.",
+      "maxLength": 10000
+    },
+    "saas_replacement_value": {
+      "type": "string",
+      "description": "What SaaS tools this app replaces and their combined monthly cost, used for value-based marketing copy"
+    },
+    "project_tier": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "business",
+        "custom"
+      ],
+      "description": "Which pricing tier this project represents \u2014 used by the agent when referencing what each tier gets you"
     }
   },
   "required": [
