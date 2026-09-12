@@ -1,256 +1,75 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import HeroOrbital from '@/components/home/HeroOrbital';
 
 export default function Hero({ projects, loading }) {
   const trustNames = !loading
-    ? (projects || [])
-        .map((project) =>
-          project.business_name ||
-          project.client_name ||
-          project.title ||
-          project.project_title ||
-          project.name
-        )
-        .filter(Boolean)
-        .slice(0, 5)
+    ? (projects || []).map((p) => p.business_name || p.client_name || p.title).filter(Boolean).slice(0, 6)
     : [];
 
   return (
-    <section
-      className="
-        relative isolate overflow-hidden
-        bg-background dark:bg-[#15162B]
-        pt-[82px]
-      "
-    >
-      {/* =========================================
-          BACKGROUND
-      ========================================== */}
+    <section className="relative overflow-hidden bg-[#FAF7F0] pt-[72px]">
+      {/* Subtle warm glow */}
+      <div className="pointer-events-none absolute right-[-10%] top-[10%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/6 blur-[120px]" />
+      <div className="pointer-events-none absolute left-[-5%] bottom-[5%] h-[400px] w-[400px] rounded-full bg-[#2D2A4A]/4 blur-[100px]" />
 
-      {/* subtle indigo upper glow */}
-      <div
-        className="
-          pointer-events-none absolute
-          left-[10%] top-[-260px]
-          h-[540px] w-[760px]
-          rounded-full
-          bg-[#5559C3]/10
-          blur-[130px]
-        "
-      />
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-16 pb-20 md:pt-24 md:pb-28 lg:pt-32 lg:pb-36">
+        <div className="max-w-[620px]">
+          {/* Eyebrow */}
+          <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+            Custom apps for small businesses
+          </p>
 
-      {/* plum / rose glow behind arcs */}
-      <div
-        className="
-          pointer-events-none absolute
-          right-[-160px] top-[105px]
-          h-[560px] w-[760px]
-          rounded-full
-          bg-[radial-gradient(circle,rgba(209,71,94,0.20)_0%,rgba(138,66,102,0.14)_33%,rgba(85,89,195,0.06)_52%,transparent_73%)]
-          blur-[26px]
-        "
-      />
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
+              className="text-[#2D2A4A] text-[46px] sm:text-[56px] md:text-[66px] lg:text-[74px] font-semibold">
+            Your vision,{' '}
+            <span className="italic font-medium">built</span>{' '}
+            into software that runs your business.
+          </h1>
 
-      {/* very subtle grid */}
-      <div
-        className="
-          pointer-events-none absolute inset-0 opacity-[0.11]
-          [background-image:linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)]
-          [background-size:48px_48px]
-        "
-      />
+          <p className="mt-7 max-w-[480px] text-[15.5px] leading-[1.7] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
+            I design and build complete business apps — booking platforms, e-commerce suites, client portals, admin dashboards — custom to how you work. One person. No agency markup. Ready in weeks.
+          </p>
 
-      {/* Abstract luminous orbital artwork (right side). No logo / text / icon. */}
-      <HeroOrbital />
-
-      {/* =========================================
-          HERO CONTENT
-      ========================================== */}
-
-      <div
-        className="
-          relative z-10 mx-auto
-          flex min-h-[560px] max-w-7xl
-          flex-col
-          px-5 pb-10 pt-6
-          md:px-8 md:pt-10
-          lg:min-h-[600px] lg:pt-12
-        "
-      >
-        <div className="flex flex-1 items-center">
-
-          <div className="max-w-[650px]">
-
-            <h1
-              className="
-                text-[50px] font-semibold
-                leading-[0.98]
-                tracking-[-0.045em]
-                text-foreground
-                sm:text-[62px]
-                md:text-[72px]
-                lg:text-[76px]
-              "
-            >
-              <span className="block">
-                Your Idea.
-              </span>
-
-              <span className="block">
-                Our App.
-              </span>
-
-              <span
-                className="
-                  block
-                  bg-gradient-to-r
-                  from-[#A961A3]
-                  via-[#D1475E]
-                  to-[#FF7860]
-                  bg-clip-text
-                  text-transparent
-                "
-              >
-                Real Results.
-              </span>
-            </h1>
-
-            <p
-              className="
-                mt-7 max-w-[460px]
-                text-[15px] leading-7
-                text-muted-foreground
-                sm:text-base
-              "
-            >
-              Custom apps that streamline your business,
-              delight your clients, and drive growth.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-
-              <Button
-                asChild
-                className="
-                  h-11 rounded-lg border-0
-                  bg-gradient-to-r
-                  from-[#8A4266]
-                  via-[#D1475E]
-                  to-[#FF6C47]
-                  px-6
-                  text-[13px] font-semibold text-white
-                  shadow-[0_10px_30px_rgba(209,71,94,0.25)]
-                  transition
-                  hover:brightness-110
-                "
-              >
-                <a href="/quote">
-                  Get a Quote
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="
-                  h-11 rounded-lg
-                  border-foreground/20
-                  bg-transparent
-                  px-6
-                  text-[13px] font-semibold text-foreground
-                  hover:border-foreground/30
-                  hover:bg-foreground/[0.05]
-                  hover:text-foreground
-                "
-              >
-                <a href="#work">
-                  See Our Work
-                </a>
-              </Button>
-
-            </div>
-
+          <div className="mt-9 flex flex-wrap gap-3.5">
+            <a href="/quote" className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#2D2A4A] text-white text-[14px] font-semibold transition hover:bg-[#3D3A5A] shadow-[0_8px_32px_rgba(45,42,74,0.18)]" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Get a free quote <ArrowRight className="h-4 w-4" />
+            </a>
+            <a href="#work" className="inline-flex items-center gap-2 h-12 px-7 rounded-full border-2 border-[#2D2A4A]/12 text-[#2D2A4A] text-[14px] font-semibold transition hover:border-[#2D2A4A]/25 hover:bg-[#2D2A4A]/3" style={{ fontFamily: "'Inter', sans-serif" }}>
+              See the work
+            </a>
           </div>
-
-
         </div>
 
-        {/* =========================================
-            TRUST / PROJECT STRIP
-        ========================================== */}
-
-        <div className="pb-9 pt-10">
-
-          {trustNames.length > 0 ? (
-            <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                Selected work
-              </p>
-
-              <div
-                className="
-                  flex flex-wrap
-                  items-center justify-center
-                  gap-x-9 gap-y-4
-                  md:gap-x-12
-                "
-              >
-                {trustNames.map((name) => (
-                  <span
-                    key={name}
-                    className="
-                      text-sm font-semibold
-                      tracking-wide text-muted-foreground
-                    "
-                  >
-                    {name}
-                  </span>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <p className="mb-5 text-center text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                Designed for businesses ready to work smarter
-              </p>
-
-              <div
-                className="
-                  flex flex-wrap items-center justify-center
-                  gap-x-8 gap-y-3
-                  text-[12px] font-medium
-                  text-muted-foreground
-                "
-              >
-                <span>Custom Apps</span>
-                <span className="text-[#D1475E]/70">•</span>
-                <span>Client Portals</span>
-                <span className="text-[#D1475E]/70">•</span>
-                <span>Business Automation</span>
-                <span className="text-[#D1475E]/70">•</span>
-                <span>Internal Tools</span>
-                <span className="text-[#D1475E]/70">•</span>
-                <span>Connected Workflows</span>
-              </div>
-            </>
-          )}
-
+        {/* Value strip */}
+        <div className="mt-20 pt-8 border-t border-[#2D2A4A]/8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>7+</p>
+              <p className="text-[13px] text-[#2D2A4A]/45 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Apps launched</p>
+            </div>
+            <div>
+              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>2 weeks</p>
+              <p className="text-[13px] text-[#2D2A4A]/45 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Typical turnaround</p>
+            </div>
+            <div>
+              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>$300–600</p>
+              <p className="text-[13px] text-[#2D2A4A]/45 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Monthly SaaS replaced</p>
+            </div>
+            <div>
+              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>100%</p>
+              <p className="text-[13px] text-[#2D2A4A]/45 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>You own it</p>
+            </div>
+          </div>
         </div>
+
+        {/* Trust strip */}
+        {trustNames.length > 0 && (
+          <div className="mt-12 flex flex-wrap items-center justify-start gap-x-8 gap-y-3">
+            {trustNames.map((name) => (
+              <span key={name} className="text-[13px] font-medium text-[#2D2A4A]/30 tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{name}</span>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* bottom divider */}
-      <div
-        className="
-          absolute inset-x-0 bottom-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-border
-          to-transparent
-        "
-      />
     </section>
   );
 }
