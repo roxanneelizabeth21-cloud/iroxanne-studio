@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 
+const LOGO_3D = 'https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/7380fe8cf_CodexImageAug31202603_50_41PM.png';
+
 export default function Hero({ projects, loading }) {
   const trustNames = !loading
     ? (projects || []).map((p) => p.business_name || p.client_name || p.title).filter(Boolean).slice(0, 6)
@@ -7,35 +9,47 @@ export default function Hero({ projects, loading }) {
 
   return (
     <section className="relative overflow-hidden bg-[#FAF7F0] pt-[72px]">
-      {/* Subtle warm glow */}
+      {/* Subtle warm glows */}
       <div className="pointer-events-none absolute right-[-10%] top-[10%] h-[500px] w-[500px] rounded-full bg-[#C9A84C]/6 blur-[120px]" />
       <div className="pointer-events-none absolute left-[-5%] bottom-[5%] h-[400px] w-[400px] rounded-full bg-[#2D2A4A]/4 blur-[100px]" />
 
-      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-16 pb-20 md:pt-24 md:pb-28 lg:pt-32 lg:pb-36">
-        <div className="max-w-[620px]">
-          {/* Eyebrow */}
-          <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Custom apps for small businesses
-          </p>
+      <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-16 pb-20 md:pt-24 md:pb-28 lg:pt-28 lg:pb-32">
+        <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-16 items-center">
+          {/* Left — copy */}
+          <div>
+            <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Custom apps for small businesses
+            </p>
 
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
-              className="text-[#2D2A4A] text-[46px] sm:text-[56px] md:text-[66px] lg:text-[74px] font-semibold">
-            Your vision,{' '}
-            <span className="italic font-medium">built</span>{' '}
-            into software that runs your business.
-          </h1>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
+                className="text-[#2D2A4A] text-[44px] sm:text-[54px] md:text-[60px] lg:text-[70px] font-semibold">
+              Your vision,{' '}
+              <span className="italic font-medium">built</span>{' '}
+              into software that runs your business.
+            </h1>
 
-          <p className="mt-7 max-w-[480px] text-[15.5px] leading-[1.7] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
-            I design and build complete business apps — booking platforms, e-commerce suites, client portals, admin dashboards — custom to how you work. One person. No agency markup. Ready in weeks.
-          </p>
+            <p className="mt-7 max-w-[480px] text-[15.5px] leading-[1.7] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
+              I design and build complete business apps — booking platforms, e-commerce suites, client portals, admin dashboards — custom to how you work. One person. No agency markup. Ready in weeks.
+            </p>
 
-          <div className="mt-9 flex flex-wrap gap-3.5">
-            <a href="/quote" className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#2D2A4A] text-white text-[14px] font-semibold transition hover:bg-[#3D3A5A] shadow-[0_8px_32px_rgba(45,42,74,0.18)]" style={{ fontFamily: "'Inter', sans-serif" }}>
-              Get a free quote <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href="#work" className="inline-flex items-center gap-2 h-12 px-7 rounded-full border-2 border-[#2D2A4A]/12 text-[#2D2A4A] text-[14px] font-semibold transition hover:border-[#2D2A4A]/25 hover:bg-[#2D2A4A]/3" style={{ fontFamily: "'Inter', sans-serif" }}>
-              See the work
-            </a>
+            <div className="mt-9 flex flex-wrap gap-3.5">
+              <a href="/quote" className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#2D2A4A] text-white text-[14px] font-semibold transition hover:bg-[#3D3A5A] shadow-[0_8px_32px_rgba(45,42,74,0.18)]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Get a free quote <ArrowRight className="h-4 w-4" />
+              </a>
+              <a href="#work" className="inline-flex items-center gap-2 h-12 px-7 rounded-full border-2 border-[#2D2A4A]/12 text-[#2D2A4A] text-[14px] font-semibold transition hover:border-[#2D2A4A]/25 hover:bg-[#2D2A4A]/3" style={{ fontFamily: "'Inter', sans-serif" }}>
+                See the work
+              </a>
+            </div>
+          </div>
+
+          {/* Right — 3D logo mark */}
+          <div className="hidden md:flex items-center justify-center">
+            <img
+              src={LOGO_3D}
+              alt=""
+              draggable="false"
+              className="w-[260px] lg:w-[320px] xl:w-[360px] object-contain drop-shadow-[0_24px_64px_rgba(138,66,102,0.18)] select-none"
+            />
           </div>
         </div>
 
