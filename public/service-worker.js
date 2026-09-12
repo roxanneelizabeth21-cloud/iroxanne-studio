@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roxsan-v3';
+const CACHE_NAME = 'iroxanne-studio-v4';
 // NOTE: do NOT pre-cache /manifest.json — it must always be fetched fresh so
 // installed PWAs pick up branding/name updates instead of serving a stale copy.
 const urlsToCache = [
