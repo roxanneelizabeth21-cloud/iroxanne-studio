@@ -37,14 +37,19 @@ export default async function(req) {
     } = body || {};
 
     const pid = portfolio_item_id;
-    if (!pid) return Response.json({ error: 'portfolio_item_id is required' }, { status: 400 });
+    const isServiceCampaign = pid === '__studio_service__' || !pid;
     if (!start_date || !end_date) return Response.json({ error: 'start_date and end_date are required' }, { status: 400 });
 
-    const ctx = await resolvePortfolioContext(base44, pid);
-    const itemTitle = ctx?.title || body.project_title || body.portfolio_title || 'the new project';
-    const itemDescription = ctx?.description || body.project_description || '';
-    const portfolioSec = portfolioSection(ctx?.item);
-    const testimonials = await loadApprovedTestimonials(base44, pid);
+    let ctx = null;
+    let itemTitle = 'iRoxanne Studio — Service Marketing';
+    let itemDescription = '';
+    if (!isServiceCampaign) {
+      ctx = await resolvePortfolioContext(base44, pid);
+      itemTitle = ctx?.title || body.project_title || body.portfolio_title || 'the new project';
+      itemDescription = ctx?.description || body.project_description || '';
+    }
+    const portfolioSec = isServiceCampaign ? '' : portfolioSection(ctx?.item);
+    const testimonials = isServiceCampaign ? [] : await loadApprovedTestimonials(base44, pid);
     const testimonialSec = testimonialSection(testimonials);
 
     const windowDays = Math.max(1, Math.round((new Date(end_date).getTime() - new Date(start_date).getTime()) / 86400000) + 1);
@@ -70,7 +75,7 @@ ${perfRules}
 ${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${presetLine}
 
 Campaign brief:
-- Portfolio item: "${itemTitle}"
+- ${isServiceCampaign ? 'This is a SERVICE MARKETING campaign — promote the app-building service, not a specific project. Mix Service Offer, Pain Point / Education, Behind the Build, and Social Proof posts. Link target should be Get a Quote.' : `Portfolio item: "${itemTitle}"`}
 - Launch/target date: ${launch_date || 'TBD'}
 - Campaign window: ${start_date} to ${end_date} (${windowDays} days)
 - Campaign goal: ${goal}
