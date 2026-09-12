@@ -12,6 +12,7 @@ import CanvasStepBar from '@/components/marketing/canvas/CanvasStepBar';
 import ReelClipPicker from '@/components/marketing/reel/ReelClipPicker';
 import ReelDetailsStep from '@/components/marketing/reel/ReelDetailsStep';
 import ReelBriefCard from '@/components/marketing/reel/ReelBriefCard';
+import { STUDIO_SERVICE_ID, STUDIO_SERVICE_ITEM } from '@/lib/marketing';
 
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 
@@ -152,6 +153,7 @@ export default function CreateReel() {
               <label className={FL}>Project</label>
               <select value={projectId} onChange={(e) => setProjectId(e.target.value)} aria-label="Project">
                 <option value="">Choose a project</option>
+                <option value={STUDIO_SERVICE_ID}>{STUDIO_SERVICE_ITEM.title}</option>
                 {projects.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
               </select>
             </div>
