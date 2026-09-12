@@ -1,4 +1,4 @@
-export const defaultCallSettings = {enabled:false,timezone:'America/New_York',calendar_id:'primary',duration_minutes:30,buffer_minutes:15,notice_hours:24,horizon_days:21,weekly_hours:[1,2,3,4,5].map(day=>({day,start:'10:00',end:'16:00'})),blocked_dates:[]};
+export const defaultCallSettings = {enabled:false,timezone:'America/New_York',calendar_id:'primary',duration_minutes:30,buffer_minutes:15,notice_hours:24,horizon_days:21,weekly_hours:[1,2,3,4,5].map(day=>({day,start:'17:00',end:'19:30'})),blocked_dates:[]};
 export function validateCallSettings(s:any) {
  try {new Intl.DateTimeFormat('en-US',{timeZone:s.timezone}).format();}catch{throw Error('Choose a valid time zone.');}
  for(const [key,min,max] of [['duration_minutes',15,120],['buffer_minutes',0,60],['notice_hours',1,168],['horizon_days',1,60]] as const){
