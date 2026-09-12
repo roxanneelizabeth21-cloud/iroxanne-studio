@@ -1,39 +1,38 @@
-import { Compass, Hammer, Rocket } from 'lucide-react';
+import { MessageCircle, Hammer, Rocket } from 'lucide-react';
 
 const STEPS = [
-  {
-    icon: Compass,
-    title: 'Discover',
-    desc: "We start with a conversation about your business, your customers, and the problem you're solving. You leave with a clear plan and an honest estimate — no pressure.",
-  },
-  {
-    icon: Hammer,
-    title: 'Build',
-    desc: 'I design and build your custom app, sharing progress as I go. You review, we refine, and you watch it come to life — usually in weeks, not months.',
-  },
-  {
-    icon: Rocket,
-    title: 'Launch',
-    desc: 'Your app goes live on web and mobile. I handle the launch, hand over the keys, and stick around for support whenever you need it.',
-  },
+  { icon: MessageCircle, title: 'We talk', desc: "Tell me about your business and what's not working. You'll leave with a clear plan, honest pricing, and zero pressure. Most calls are 20 minutes." },
+  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. Your content intake form keeps everything organized — no chasing emails." },
+  { icon: Rocket, title: 'You launch', desc: "Your app goes live on web and mobile. I handle the launch, walk you through everything, and stay available for support after." },
 ];
 
 export default function Process() {
   return (
-    <section id="process" className="mx-auto max-w-6xl border-t border-border px-6 py-20">
-      <div>
-        <h2 className="font-sans text-3xl font-bold tracking-tight">How it works</h2>
-        <p className="mt-2 text-muted-foreground">A simple, transparent process — no jargon, no surprises.</p>
-      </div>
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {STEPS.map((step, i) => (
-          <div key={step.title} className="relative rounded-2xl border border-border bg-card/50 p-6">
-            <span className="text-sm font-semibold text-primary">0{i + 1}</span>
-            <step.icon className="mt-3 h-7 w-7 text-primary" />
-            <h3 className="mt-4 font-sans text-lg font-semibold">{step.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
-          </div>
-        ))}
+    <section id="process" className="bg-[#FAF7F0] py-24 px-5 md:px-8">
+      <div className="mx-auto max-w-6xl">
+        <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
+        <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          Three steps to your custom app
+        </h2>
+
+        <div className="mt-14 grid gap-0 md:grid-cols-3">
+          {STEPS.map((step, i) => (
+            <div key={step.title} className="relative pl-10 md:pl-0 md:pr-8 pb-12 md:pb-0">
+              {/* Vertical connector (mobile) */}
+              {i < STEPS.length - 1 && <div className="absolute left-[15px] top-[40px] bottom-0 w-px bg-[#2D2A4A]/8 md:hidden" />}
+              {/* Horizontal connector (desktop) */}
+              {i < STEPS.length - 1 && <div className="hidden md:block absolute right-0 top-[20px] h-px w-8 bg-[#2D2A4A]/10" />}
+
+              <div className="absolute left-0 md:relative md:left-auto">
+                <div className="h-[34px] w-[34px] rounded-full bg-[#2D2A4A] flex items-center justify-center">
+                  <step.icon className="h-[16px] w-[16px] text-[#C9A84C]" />
+                </div>
+              </div>
+              <h3 className="mt-5 text-[18px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{step.title}</h3>
+              <p className="mt-2 text-[14px] text-[#2D2A4A]/50 leading-[1.7] max-w-[340px]" style={{ fontFamily: "'Inter', sans-serif" }}>{step.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
