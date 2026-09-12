@@ -36,9 +36,10 @@
       "enum": [
         "Portfolio page",
         "Consult booking",
+        "Get a Quote",
         "None"
       ],
-      "description": "Which link is appended at the bottom of the post. Defaults to the portfolio page when a PortfolioItem is attached, otherwise the consult-booking link."
+      "description": "Which link is appended at the bottom of the post. Defaults to the portfolio page when a PortfolioItem is attached, Get a Quote for service posts, otherwise the consult-booking link."
     },
     "format": {
       "type": "string",
@@ -57,9 +58,13 @@
       "enum": [
         "Loop Clip",
         "Authentic/Personal",
-        "Announcement/CTA"
+        "Announcement/CTA",
+        "Service Offer",
+        "Pain Point / Education",
+        "Behind the Build",
+        "Social Proof"
       ],
-      "description": "Performance-based content bucket the AI assigned (drives clip-matching rules)"
+      "description": "Content category the AI assigned \u2014 drives content strategy and clip-matching rules"
     },
     "scheduled_date": {
       "type": "string",
@@ -79,131 +84,6 @@
       "type": "string",
       "description": "Instagram-specific publish time (HH:MM). Blank falls back to scheduled_time."
     },
-    "facebook_scheduled_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Facebook-specific publish date. Blank falls back to scheduled_date, so Facebook can be staggered away from Instagram."
-    },
-    "facebook_scheduled_time": {
-      "type": "string",
-      "description": "Facebook-specific publish time (HH:MM). Blank falls back to scheduled_time."
-    },
-    "instagram_first_comment": {
-      "type": "string",
-      "description": "Optional first comment posted automatically on the Instagram post immediately after it publishes."
-    },
-    "facebook_first_comment": {
-      "type": "string",
-      "description": "Optional first comment for the Facebook post. Meta does not grant this app permission to write Page comments, so this is never posted automatically \u2014 the post is flagged for a manual paste instead."
-    },
-    "instagram_comment_status": {
-      "type": "string",
-      "enum": [
-        "Not Needed",
-        "Posted",
-        "Failed"
-      ],
-      "default": "Not Needed",
-      "description": "Result of the automatic Instagram first comment. 'Failed' never fails or retries the post itself \u2014 the calendar flags it for a manual paste."
-    },
-    "facebook_comment_status": {
-      "type": "string",
-      "enum": [
-        "Not Needed",
-        "Manual Required",
-        "Done"
-      ],
-      "default": "Not Needed",
-      "description": "'Manual Required' after a Facebook post publishes with first-comment text waiting. 'Done' once the owner confirms they pasted it."
-    },
-    "instagram_comment_error": {
-      "type": "string",
-      "description": "Error message from the last failed Instagram first-comment attempt"
-    },
-    "calendar_position": {
-      "type": "number",
-      "description": "Manual ordering position of this post within its scheduled day on the visual calendar"
-    },
-    "caption": {
-      "type": "string",
-      "description": "Post caption text"
-    },
-    "hashtags": {
-      "type": "string",
-      "description": "Hashtags for the post"
-    },
-    "hook": {
-      "type": "string",
-      "description": "Opening line / video hook"
-    },
-    "cta": {
-      "type": "string",
-      "description": "Call to action"
-    },
-    "image_prompt": {
-      "type": "string",
-      "description": "AI image generation prompt for the admin's Canva workflow. NOT media \u2014 an image prompt never satisfies the media requirement."
-    },
-    "image_style_preset": {
-      "type": "string",
-      "description": "Name of the image style preset applied to the image_prompt"
-    },
-    "video_brief": {
-      "type": "string",
-      "description": "Human-readable assembly checklist derived from the template + slot values"
-    },
-    "template_id": {
-      "type": "string",
-      "description": "Reference to the VideoTemplate used for this video post (optional)"
-    },
-    "slot_values": {
-      "type": "object",
-      "description": "Filled-in values for each slot of the chosen VideoTemplate"
-    },
-    "clip_asset_id": {
-      "type": "string",
-      "description": "Reference to the ClipAsset selected for this post via the template clip-matcher (optional)"
-    },
-    "media_clip_id": {
-      "type": "string",
-      "description": "Reference to the ClipAsset used as the post's ready-to-post media (video/graphic). Prefer this Clips-library reference over a direct upload when possible. Used as the chip thumbnail and the Ready-to-Post preview."
-    },
-    "media_file_url": {
-      "type": "string",
-      "description": "Direct URL of an uploaded finished video/graphic file attached inline to the post. Used as the chip thumbnail and the Ready-to-Post preview when set (overrides media_clip_id)."
-    },
-    "needs_crop": {
-      "type": "boolean",
-      "default": false,
-      "description": "True when the attached media still needs a final crop to the requested aspect ratio. Never blocks Draft status."
-    },
-    "crop_status": {
-      "type": "string",
-      "enum": [
-        "not_needed",
-        "needs_crop",
-        "cropped",
-        "failed"
-      ],
-      "default": "not_needed",
-      "description": "Crop state of the attached media"
-    },
-    "requested_aspect_ratio": {
-      "type": "string",
-      "description": "Aspect ratio the media was composed for (e.g. 4:5, 1:1, 9:16)"
-    },
-    "actual_dimensions": {
-      "type": "string",
-      "description": "Detected dimensions of the attached media, e.g. 1024x1024, when detectable"
-    },
-    "create_post_state": {
-      "type": "object",
-      "description": "Wizard-only state for the guided Create Post flow that no canonical field can express: portfolioItemId, goal, customGoal, instruction, platformIds (includes manual-share platforms), link, copyReady, reviewRecommended. Canonical values (portfolio_item_id, campaign_id, platform, publish_targets, format, requested_aspect_ratio, caption, hook, cta, hashtags, media, schedule) are NOT duplicated here."
-    },
-    "create_post_step": {
-      "type": "number",
-      "description": "Index of the Create Post wizard step the owner was last on (0 Subject, 1 Media, 2 Copy, 3 Review), plus the furthest step reached."
-    },
     "status": {
       "type": "string",
       "enum": [
@@ -221,148 +101,111 @@
         "Skipped"
       ],
       "default": "Draft",
-      "description": "Post status. 'Pending Review' = auto-generated, awaiting admin approval. 'Posted' means fully published and locked in its calendar position."
-    },
-    "approval_status": {
-      "type": "string",
-      "enum": [
-        "Not Reviewed",
-        "Changes Requested",
-        "Approved"
-      ],
-      "default": "Not Reviewed",
-      "description": "Owner approval state. Direct Instagram/Facebook publishing requires 'Approved'."
-    },
-    "approval_notes": {
-      "type": "string",
-      "description": "Notes left by the owner when requesting changes"
-    },
-    "publishing_status": {
-      "type": "string",
-      "enum": [
-        "Not Started",
-        "Publishing",
-        "Published",
-        "Partially Published",
-        "Failed"
-      ],
-      "default": "Not Started",
-      "description": "Overall result of the last direct publishing operation across all selected platforms"
-    },
-    "instagram_publish_status": {
-      "type": "string",
-      "enum": [
-        "Not Selected",
-        "Ready",
-        "Publishing",
-        "Published",
-        "Failed",
-        "Connection Required",
-        "Permission Required"
-      ],
-      "default": "Not Selected",
-      "description": "Independent Instagram publishing result"
-    },
-    "facebook_publish_status": {
-      "type": "string",
-      "enum": [
-        "Not Selected",
-        "Ready",
-        "Publishing",
-        "Published",
-        "Failed",
-        "Connection Required",
-        "Permission Required"
-      ],
-      "default": "Not Selected",
-      "description": "Independent Facebook publishing result"
-    },
-    "instagram_post_url": {
-      "type": "string",
-      "description": "Permalink or platform ID of the published Instagram post"
-    },
-    "facebook_post_url": {
-      "type": "string",
-      "description": "Permalink or platform ID of the published Facebook post"
-    },
-    "instagram_publish_error": {
-      "type": "string",
-      "description": "Last Instagram publishing error message"
-    },
-    "facebook_publish_error": {
-      "type": "string",
-      "description": "Last Facebook publishing error message"
-    },
-    "last_publish_attempt_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Timestamp of the last direct publishing attempt"
-    },
-    "manual_posts": {
-      "type": "array",
-      "description": "Owner-confirmed manual postings (e.g. TikTok, YouTube) that the publishing tool cannot verify through an API. Recorded only when the owner explicitly marks the post as posted manually \u2014 never set by opening a profile link.",
-      "items": {
-        "type": "object",
-        "properties": {
-          "platform": {
-            "type": "string",
-            "enum": [
-              "Instagram",
-              "Facebook",
-              "TikTok",
-              "YouTube"
-            ],
-            "description": "Platform the owner posted to manually"
-          },
-          "posted_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the owner posted it"
-          },
-          "post_url": {
-            "type": "string",
-            "description": "Optional public URL of the manual post"
-          },
-          "notes": {
-            "type": "string",
-            "description": "Optional owner notes about this manual posting"
-          }
-        },
-        "required": [
-          "platform"
-        ]
-      }
+      "description": "Post lifecycle status"
     },
     "publish_mode": {
       "type": "string",
       "enum": [
         "manual",
-        "auto"
+        "auto_publish"
       ],
       "default": "manual",
-      "description": "manual = admin taps Publish themselves (default); auto = the 15-minute auto-publish job publishes the post when its scheduled date/time arrives (Facebook/Instagram only, status must be Ready)."
+      "description": "When auto_publish the system will attempt direct posting when the scheduled time arrives."
     },
-    "calendar_event_id": {
+    "caption": {
       "type": "string",
-      "description": "Google Calendar event ID for this post's scheduled slot (managed by the syncPostToCalendar automation). Cleared when no event exists."
+      "description": "Post caption / body text",
+      "maxLength": 4000
     },
-    "auto_generated": {
-      "type": "boolean",
-      "default": false,
-      "description": "True if this post was created by the weekly auto-generation (not manually)"
+    "hashtags": {
+      "type": "string",
+      "description": "Hashtags to append to the caption (stored separately for easy editing)",
+      "maxLength": 500
     },
-    "posted_at": {
+    "hook": {
+      "type": "string",
+      "description": "Opening hook line \u2014 the scroll-stopper",
+      "maxLength": 300
+    },
+    "cta": {
+      "type": "string",
+      "description": "Call-to-action line",
+      "maxLength": 300
+    },
+    "image_prompt": {
+      "type": "string",
+      "description": "AI image generation prompt (used by generateMarketingImage)",
+      "maxLength": 1000
+    },
+    "image_style_preset": {
+      "type": "string",
+      "description": "Name of the Brand Profile style preset to apply to the image prompt"
+    },
+    "media_url": {
+      "type": "string",
+      "description": "URL of the attached image/video asset (from Gallery or generation)"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video",
+        "none"
+      ],
+      "default": "none",
+      "description": "Type of media attached"
+    },
+    "gallery_image_id": {
+      "type": "string",
+      "description": "ID of the GalleryImage record when media comes from the gallery"
+    },
+    "clip_asset_id": {
+      "type": "string",
+      "description": "ID of the ClipAsset record when a clip is attached"
+    },
+    "first_comment": {
+      "type": "string",
+      "description": "Optional first comment to post immediately after the main post (used for extra hashtags or engagement bait)",
+      "maxLength": 2000
+    },
+    "template_id": {
+      "type": "string",
+      "description": "ID of the VideoTemplate used for video posts"
+    },
+    "slot_values": {
+      "type": "object",
+      "description": "Key-value map of template slot fills (slot_name \u2192 value)"
+    },
+    "video_brief": {
+      "type": "string",
+      "description": "Human-readable CapCut assembly checklist derived from the template + slot values",
+      "maxLength": 4000
+    },
+    "original_ai_caption": {
+      "type": "string",
+      "description": "The caption as originally generated by the AI (before any manual edits)"
+    },
+    "facebook_post_id": {
+      "type": "string",
+      "description": "Facebook Graph API post ID after publishing"
+    },
+    "instagram_media_id": {
+      "type": "string",
+      "description": "Instagram media ID after publishing"
+    },
+    "published_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Timestamp the post was marked as posted / finished publishing"
+      "description": "Timestamp when the post was published"
+    },
+    "publish_error": {
+      "type": "string",
+      "description": "Error message if publishing failed"
     },
     "manual_metrics": {
       "type": "object",
-      "description": "Manually logged performance metrics, e.g. {views, likes, comments, shares, saves}",
+      "description": "Manually entered performance metrics (likes, comments, shares, saves, reach, impressions)",
       "properties": {
-        "views": {
-          "type": "number"
-        },
         "likes": {
           "type": "number"
         },
@@ -374,36 +217,37 @@
         },
         "saves": {
           "type": "number"
+        },
+        "reach": {
+          "type": "number"
+        },
+        "impressions": {
+          "type": "number"
         }
       }
     },
-    "original_ai_caption": {
-      "type": "string",
-      "description": "The AI's original generated caption \u2014 set once at generation time, never overwritten by edits. Drives the style-learning loop."
+    "visual_direction": {
+      "type": "object",
+      "description": "Structured visual direction for image generation (visual_type, creative_concept, subject, setting, composition, camera_angle, framing, lighting, mood, color_direction, movement, text_overlay, typography_direction, platform, format, aspect_ratio, reference_assets, elements_to_preserve, elements_to_avoid, reason_for_match)"
     },
-    "external_post_id": {
-      "type": "string",
-      "description": "ID of the post on the external platform after publishing"
+    "reference_asset_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs of reference assets (approved screenshots, logos, product shots) passed to image generation"
     },
-    "auto_publish": {
-      "type": "boolean",
-      "default": false,
-      "description": "Deprecated \u2014 use publish_mode instead"
-    },
-    "publish_error": {
+    "variation_of": {
       "type": "string",
-      "description": "Last publish error message (manual or auto attempt). Cleared on successful publish."
+      "description": "ID of the earlier post this is a regenerated variation of"
     },
-    "description": {
+    "admin_notes": {
       "type": "string",
-      "description": "Optional description for this marketing post",
+      "description": "Internal notes visible only to admin",
       "maxLength": 1000
     }
   },
-  "required": [
-    "platform",
-    "format"
-  ],
+  "required": [],
   "rls": {
     "create": {
       "user_condition": {
