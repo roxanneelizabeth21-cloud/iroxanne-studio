@@ -10,6 +10,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ClipboardList } from 'lucide-react';
 import ContractForm from '@/components/admin/ContractForm';
 
+import HandoffPanel from '@/components/admin/HandoffPanel';
+import { RUSH_TERMS } from '../../../base44/shared/studioDelivery';
+
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
 const STATUS_STYLES = {
@@ -32,6 +35,7 @@ export default function ContractsAdminPage() {
   const [showLead, setShowLead] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [handoff,setHandoff] = useState(null);
 
   useEffect(() => {
     load();
@@ -62,6 +66,8 @@ export default function ContractsAdminPage() {
     try {
       if (payload.id) {
         const { id, ...changes } = payload;
+        const latest=await base44.entities.Contract.get(id);
+        if(!['draft','sent'].includes(latest.status))throw new Error('Signed agreements cannot be edited. Create a new agreement for changed terms.');
         await base44.entities.Contract.update(id, changes);
         toast({ title: 'Contract updated' });
       } else {
@@ -176,8 +182,8 @@ export default function ContractsAdminPage() {
                   {c.client_name || c.client_email} · {money(c.price_total)} · dep {money(c.deposit_amount)}
                 </p>
               </div>
-              <div className="flex gap-1 shrink-0">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ contract: c })}>
+              <div className="flex flex-wrap gap-1 justify-end">
+                <Button disabled={!['draft','sent'].includes(c.status)} title="Edit unsigned agreement" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ contract: c })}>
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
                 {(c.status === 'draft' || c.status === 'sent') && (
@@ -191,11 +197,7 @@ export default function ContractsAdminPage() {
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
                 )}
-                {c.status === 'active' && <Button variant="outline" size="sm" onClick={async () => {
-                  if (!window.confirm('Confirm the app has been delivered and the client handoff is complete. Payment status is tracked separately.')) return;
-                  try { await base44.entities.Contract.update(c.id,{status:'completed',delivered_at:new Date().toISOString()}); toast({title:'Project marked delivered'}); await load(); }
-                  catch(e){ toast({title:'Could not update project',description:e.message,variant:'destructive'}); }
-                }}>Mark delivered</Button>}
+                {['signed','deposit_paid','active','completed'].includes(c.status) && <Button variant="outline" size="sm" onClick={()=>setHandoff(c)}>Handoff checklist</Button>}
                 {['signed', 'deposit_paid', 'active'].includes(c.status) && (
                   <Button variant="outline" size="sm" className="gap-1" onClick={async () => {
                     try {
@@ -214,6 +216,7 @@ export default function ContractsAdminPage() {
         </div>
       </div>
 
+      <Dialog open={!!handoff} onOpenChange={o=>!o&&setHandoff(null)}><DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Project handoff — {handoff?.project_title}</DialogTitle></DialogHeader>{handoff&&<HandoffPanel contractId={handoff.id} onSaved={load}/>}</DialogContent></Dialog>
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -321,8 +324,9 @@ function PricingSettingsCard({ settings, onSave }) {
         <Label>Standard terms (pre-filled on new contracts)</Label>
         <Textarea rows={4} value={s.standard_terms || ''} onChange={(e) => update('standard_terms', e.target.value)} />
       </div>
+      <label className="block text-sm space-y-2">Rush terms (pre-filled on new agreements)<Textarea rows={7} maxLength={8000} value={s.rush_terms ?? RUSH_TERMS} onChange={e=>update('rush_terms',e.target.value)}/></label>
       <div className="flex justify-end">
-        <Button onClick={() => onSave(s)}>Save Settings</Button>
+        <Button onClick={() => onSave({...s,rush_terms:s.rush_terms ?? RUSH_TERMS})}>Save Settings</Button>
       </div>
     </div>
   );

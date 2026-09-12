@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Receipt, Plus, Send } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import InvoiceReminderSettings from '@/components/admin/InvoiceReminderSettings';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
@@ -81,6 +82,7 @@ export default function InvoicesAdminPage() {
         {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
         <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
       </div>}
+      <InvoiceReminderSettings key={i.id+'-'+i.updated_date} invoice={i} onSaved={load}/>
       <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
         {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><strong>{money(p.amount)}</strong></div>)}
         {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
