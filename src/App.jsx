@@ -105,6 +105,7 @@ const AuthenticatedApp = () => {
       <Route path="/quote" element={<GetQuote />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
+      <Route path="/invoice/:id" element={<InvoicePay />} />
       <Route path="/handoff/:id" element={<ProjectHandoff />} />
       <Route path="/proposal/:id" element={<ProposalView />} />
       <Route path="/intake/:id" element={<ClientIntakeForm />} />

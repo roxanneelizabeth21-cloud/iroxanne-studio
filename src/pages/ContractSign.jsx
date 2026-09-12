@@ -147,7 +147,7 @@ export default function ContractSign() {
           {contract.terms && (
             <div>
               <h2 className="text-sm font-semibold text-foreground mb-2">Terms &amp; conditions</h2>
-              <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-6 max-h-72 overflow-y-auto rounded-xl bg-muted/40 p-4">
+              <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-6 max-h-72 overflow-y-auto print:max-h-none print:overflow-visible rounded-xl bg-muted/40 p-4">
                 {contract.terms}
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function ContractSign() {
                   className="mt-1.5"
                 />
               </div>
-              <fieldset className="space-y-3"><legend className="text-sm font-medium">Signature method</legend><div className="flex gap-5">{['typed','drawn'].map(mode=><label key={mode} className="flex gap-2"><input type="radio" name="signature-method" checked={signatureMode===mode} onChange={()=>setSignatureMode(mode)} />{mode==='typed'?'Type my signature':'Draw my signature'}</label>)}</div>{signatureMode==='drawn' && <SignaturePad onChange={setSignatureImage} disabled={signing}/>}</fieldset>
+              <fieldset className="space-y-3"><legend className="text-sm font-medium">Signature method</legend><div className="flex gap-5">{['typed','drawn'].map(mode=><label key={mode} className="flex gap-2"><input type="radio" name="signature-method" checked={signatureMode===mode} onChange={()=>{setSignatureMode(mode);setSignatureImage('');}} />{mode==='typed'?'Type my signature':'Draw my signature'}</label>)}</div>{signatureMode==='drawn' && <SignaturePad onChange={setSignatureImage} disabled={signing}/>}</fieldset>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
