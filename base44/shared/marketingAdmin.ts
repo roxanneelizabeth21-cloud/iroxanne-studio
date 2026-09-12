@@ -42,9 +42,14 @@ Content rules:
   - Facebook: slightly longer and conversational, 1–3 hashtags.
   - YouTube: keyword-aware titles (put the title in the caption field first line), description with value, hashtags at the end.
 - Image prompts: prefer showing real app screenshots, UI, dashboards, or device mockups. Do NOT bake text or logos into the image. Describe lighting, mood, color palette, and composition.
-- Vary content types across the calendar: portfolio showcases, educational/tech-tip posts, behind-the-build/process content, client testimonials (only approved ones), direct offers/CTAs.
+- CONTENT MIX (aim for this ratio across the calendar):
+  - 30% Service Offer / Pain Point / Education — promote the service, address client pain points, explain what custom apps solve. Lead with the problem the audience has, not with the portfolio.
+  - 30% Portfolio showcases — show the work, use real project details.
+  - 20% Behind the Build / Process — show how you work, tools, day-in-the-life, consult-to-launch journey.
+  - 20% Social Proof / Testimonials / Authentic-Personal — approved testimonials, client wins, personal founder story.
 - Hooks should stop the scroll in the first 2 seconds (for video) or first line (for text).
-- CTAs should be specific and platform-appropriate (e.g. "Book a free consult", "See the portfolio", "DM to get started").
+- CTAs should be specific and platform-appropriate (e.g. "Get a free quote", "Book a consult", "See the portfolio", "DM to get started").
+- For service posts (no specific project), link to the Get a Quote page. For project posts, link to the portfolio page.
 - Never invent client names, testimonials, or results. Only reference real PortfolioItem/Testimonial records, and only use a client's name or quote when the record is marked shareable/approved.
 - Never invent streaming URLs, prices, or dates.
 `.trim();
@@ -318,16 +323,21 @@ export async function regeneratePostContent(base44, post, opts) {
   }
   let ctx = cache.ctx != null ? cache.ctx : null;
   const pid = post.portfolio_item_id;
-  if (!ctx && pid) ctx = await resolvePortfolioContext(base44, pid);
+  const isServicePost = !pid || pid === '__studio_service__';
+  if (!ctx && pid && !isServicePost) ctx = await resolvePortfolioContext(base44, pid);
   const brandSection = brandProfileSection(brandProfile);
   const templateSection = videoTemplateSection(templates);
-  let itemTitle = 'this work';
+  let itemTitle = 'iRoxanne Studio';
   let itemDescription = '';
   let portfolioItem = null;
   if (ctx) { itemTitle = ctx.title || itemTitle; itemDescription = ctx.description || ''; portfolioItem = ctx.item; }
-  const portfolioSec = portfolioSection(portfolioItem);
-  const testimonials = cache.testimonials != null ? cache.testimonials : await loadApprovedTestimonials(base44, pid);
+  const portfolioSec = isServicePost ? '' : portfolioSection(portfolioItem);
+  const testimonials = cache.testimonials != null ? cache.testimonials : (isServicePost ? [] : await loadApprovedTestimonials(base44, pid));
   const testimonialSec = testimonialSection(testimonials);
+
+  const serviceContext = isServicePost
+    ? `\nThis is a SERVICE MARKETING post — not tied to a specific project. Promote iRoxanne Studio's service, address client pain points, show process, or leverage social proof. Use content_bucket: "Service Offer", "Pain Point / Education", "Behind the Build", or "Social Proof". Link target should be "Get a Quote".`
+    : '';
 
   const isVideo = VIDEO_FORMATS.includes(post.format);
   const keepTemplate = isVideo && post.template_id && !(instruction && /change\s+template|different\s+template/i.test(instruction));
@@ -356,7 +366,7 @@ Existing post:
 - Current caption: ${post.caption || ''}
 - Current hook: ${post.hook || ''}
 - Current CTA: ${post.cta || ''}
-- Portfolio item: ${itemTitle}
+- ${isServicePost ? 'This is a service post (not tied to a specific project).' : `Portfolio item: ${itemTitle}`}
 ${itemDescription ? `- What it does: ${itemDescription}` : ''}
 ${portfolioSec ? `- This post has a full portfolio context. Draw hooks and on-screen text from the real project details.` : ''}
 ${testimonialSec ? `- Approved testimonials are available — you may quote them directly when the post is testimonial/social-proof.` : ''}
