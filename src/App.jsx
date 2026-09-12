@@ -29,6 +29,8 @@ import LegalPage from '@/pages/LegalPage';
 import Unsubscribe from '@/pages/Unsubscribe';
 import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
+import BookCall from '@/pages/BookCall';
+import CallAvailabilityPage from '@/pages/admin/CallAvailabilityPage';
 import Contact from '@/pages/Contact';
 import ContractSign from '@/pages/ContractSign';
 import InvoicePay from '@/pages/InvoicePay';
@@ -104,6 +106,7 @@ const AuthenticatedApp = () => {
       <Route path="/terms" element={<LegalPage />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/quote" element={<GetQuote />} />
+      <Route path="/book-call" element={<BookCall />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/contract/:id" element={<ContractSign />} />
       <Route path="/invoice/:id" element={<InvoicePay />} />
@@ -117,6 +120,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
         <Route path="/admin/contracts" element={<ContractsAdminPage />} />
         <Route path="/admin/proposals" element={<ProposalsAdminPage />} />
+        <Route path="/admin/call-availability" element={<CallAvailabilityPage />} />
         <Route path="/admin/invoices" element={<InvoicesAdminPage />} />
         <Route path="/admin/pages" element={<SitePageVisibility />} />
         <Route path="/admin/banners" element={<BannersAdminPage />} />

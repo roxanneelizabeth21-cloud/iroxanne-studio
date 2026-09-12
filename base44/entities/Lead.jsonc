@@ -135,6 +135,21 @@
     "estimated_price_high": {
       "type": "number",
       "description": "Auto-estimated upper bound of price (USD)"
+    },
+    "booking_token": {
+      "type": "string"
+    },
+    "call_event_id": {
+      "type": "string"
+    },
+    "call_start": {
+      "type": "string"
+    },
+    "call_end": {
+      "type": "string"
+    },
+    "call_pending_start": {
+      "type": "string"
     }
   },
   "required": [

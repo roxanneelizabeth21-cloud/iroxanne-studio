@@ -41,6 +41,8 @@ export default async function(req) {
       }).catch((e) => console.log('admin notify failed', e?.message));
     }
 
+    const callSettings=await base44.asServiceRole.entities.CallSettings.list('-updated_date',1).catch(()=>[]);
+    const bookingLink=callSettings[0]?.enabled && lead.booking_token ? 'https://iroxannestudio.base44.app/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token) : '';
     // 2) Client welcome — single rich confirmation reflecting what they submitted.
     if (lead.email) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';
@@ -63,6 +65,7 @@ export default async function(req) {
           title: `Thanks, ${esc(firstName)}!`,
           content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
             ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}
+            ${bookingLink ? '<p style="margin:20px 0 8px;">If a conversation would help, choose an available time for an optional call.</p><p>'+brandButton('Schedule an optional call',bookingLink)+'</p>' : ''}
             <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,
           footerNote: 'iRoxanne Studio — one builder, not an agency.',

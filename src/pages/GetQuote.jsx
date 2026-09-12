@@ -74,9 +74,12 @@ export default function GetQuote() {
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [bookingLink,setBookingLink] = useState('');
+  const [bookingEnabled,setBookingEnabled] = useState(false);
   const [hourlyRate, setHourlyRate] = useState(null);
 
   React.useEffect(() => {
+    base44.functions.invoke('quoteCallBooking',{action:'config'}).then(r=>setBookingEnabled(!!(r.data||r).enabled)).catch(()=>{});
     base44.entities.PricingSettings.list()
       .then((list) => { if (list?.[0]?.rate_per_hour) setHourlyRate(list[0].rate_per_hour); })
       .catch(() => {});
@@ -107,13 +110,16 @@ export default function GetQuote() {
     setSubmitting(true);
     try {
       const estimate = estimateProject({ mustHave: form.must_have_features, niceToHave: form.nice_to_have_features, integrations: form.integrations_needed, rate: hourlyRate });
-      await base44.entities.Lead.create({
+      const bookingToken=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
+      const lead=await base44.entities.Lead.create({
+        booking_token:bookingToken,
         email: form.email, name: form.name, interested_apps: ['service_inquiry'], source: 'get_quote_form', request_type: 'quote_request', status: 'new',
         phone: form.phone, business_name: form.business_name, business_type: form.business_type, website: form.website, quick_pitch: form.quick_pitch, problem_to_solve: form.problem_to_solve,
         must_have_features: form.must_have_features, nice_to_have_features: form.nice_to_have_features, integrations_needed: form.integrations_needed, existing_tools: form.existing_tools,
         design_style: form.design_style, design_inspiration: form.design_inspiration, ideal_launch_date: form.ideal_launch_date, ongoing_support_needed: form.ongoing_support_needed, budget_range: form.budget_range,
         estimated_tier: estimate.tier, estimated_hours_low: estimate.hoursLow, estimated_hours_high: estimate.hoursHigh, estimated_price_low: estimate.priceLow, estimated_price_high: estimate.priceHigh,
       });
+      setBookingLink('/book-call?lead='+encodeURIComponent(lead.id)+'&t='+bookingToken);
       setSubmitted(true);
       toast.success("Got it! We'll follow up within 2 business days.");
     } catch (error) { console.error('Get a Quote submission error:', error); toast.error('Something went wrong — please try again.'); }
@@ -121,7 +127,7 @@ export default function GetQuote() {
   };
 
   if (submitted) {
-    return (<div className="min-h-screen flex items-center justify-center px-4 ir-app-bg"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-500" /><h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Thanks, {form.name.split(' ')[0] || 'there'}!</h1><p className="text-gray-600 dark:text-gray-400">We've got your project details and sent you a confirmation email. We'll follow up within 2 business days with a custom proposal.</p></div></div>);
+    return (<div className="min-h-screen flex items-center justify-center px-4 ir-app-bg"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-500" /><h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Thanks, {form.name.split(' ')[0] || 'there'}!</h1><p className="text-gray-600 dark:text-gray-400">We've got your project details and sent you a confirmation email. We'll follow up within 2 business days with a custom proposal.</p>{bookingEnabled && <div className="mt-6 pt-6 border-t border-black/10"><p className="text-sm text-gray-600 mb-3">Want to talk through your project? Choose an available time for an optional call.</p><Button asChild className="rounded-full"><a href={bookingLink}>Schedule an optional call</a></Button><p className="text-xs text-gray-500 mt-3">You can also use the booking link in your confirmation email.</p></div>}</div></div>);
   }
 
   return (

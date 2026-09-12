@@ -15,6 +15,7 @@ const NAV_TOP = [
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
   { to: '/admin/portfolio', label: 'Portfolio', Icon: LayoutDashboard },
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
+  { to: '/admin/call-availability', label: 'Call availability', Icon: CalendarDays },
   { to: '/admin/contracts', label: 'Contracts', Icon: FileText },
   { to: '/admin/invoices', label: 'Invoices', Icon: Receipt },
 ];
