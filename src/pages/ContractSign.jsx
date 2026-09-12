@@ -75,7 +75,7 @@ export default function ContractSign() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4">
+    <div className="min-h-screen bg-[#FAF7F0] py-10 px-4">
       <div className="max-w-3xl mx-auto">
         <BrandedPageHeader
           title="Project Agreement"
