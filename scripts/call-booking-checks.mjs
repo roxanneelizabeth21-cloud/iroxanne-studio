@@ -7,7 +7,8 @@ function load(path,names='',bindings={}){
 }
 const helpers=load('base44/shared/callAvailability.ts','defaultCallSettings,validateCallSettings,callSlots');
 const {defaultCallSettings:defaults,callSlots,validateCallSettings}=helpers;
-const settings={...defaults,enabled:true,notice_hours:1,horizon_days:7};
+const settings={...defaults,weekly_hours:[1,2,3,4,5].map(day=>({day,start:'10:00',end:'16:00'})),enabled:true,notice_hours:1,horizon_days:7};
+assert.equal(defaults.weekly_hours[0].start,'17:00');assert.equal(defaults.weekly_hours[0].end,'19:30');
 const now=Date.parse('2026-09-14T12:00:00Z');
 let slots=callSlots(settings,[],now);
 assert.equal(slots[0],'2026-09-14T14:00:00.000Z');
