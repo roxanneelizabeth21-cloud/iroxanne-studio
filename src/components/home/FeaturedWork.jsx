@@ -8,10 +8,10 @@ export default function FeaturedWork({ items, loading }) {
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Selected work</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Apps built for real businesses
+          A few projects I’ve worked on
         </h2>
         <p className="mt-3 max-w-[480px] text-[15px] text-[#2D2A4A]/50 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Every project replaces a stack of tools with one custom platform, designed, built, and launched in weeks.
+          Each project starts with someone’s idea. These examples show some of the different ways an app can support a new venture or an existing business.
         </p>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
