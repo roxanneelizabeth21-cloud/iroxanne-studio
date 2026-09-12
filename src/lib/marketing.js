@@ -13,7 +13,18 @@ export const SLOT_TYPES = ['text', 'clip', 'audio_cue', 'timestamp'];
 export const CLIP_SOURCES = ['My Footage', 'Stock', 'Canva Export', 'Adobe Stock'];
 export const ORIENTATIONS = ['Vertical 9:16', 'Horizontal', 'Square'];
 export const CLIP_MOODS = ['Beach', 'Island', 'Sunset', 'Road', 'Rain', 'Studio', 'Hands', 'Silhouette', 'Nature', 'City', 'Celebration'];
-export const CONTENT_BUCKETS = ['Loop Clip', 'Authentic/Personal', 'Announcement/CTA'];
+export const CONTENT_BUCKETS = ['Loop Clip', 'Authentic/Personal', 'Announcement/CTA', 'Service Offer', 'Pain Point / Education', 'Behind the Build', 'Social Proof'];
+
+export const STUDIO_SERVICE_ID = '__studio_service__';
+export const STUDIO_SERVICE_ITEM = {
+  id: STUDIO_SERVICE_ID,
+  title: 'iRoxanne Studio \u2014 My Service',
+  category: 'Service',
+  description: 'Promote your app-building service, share your process, educate potential clients, or post a direct offer.',
+  cover_image_url: null,
+};
+export const isServicePost = (id) => id === STUDIO_SERVICE_ID;
+export const withServiceOption = (items = []) => [STUDIO_SERVICE_ITEM, ...items];
 
 export const isVideoFormat = (format) => ['Reel', 'Short', 'Video'].includes(format);
 
