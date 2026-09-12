@@ -44,7 +44,7 @@ export default function ContractSign() {
     setSigning(true);
     setError('');
     try {
-      const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName });
+      const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else { setSigned(true); setContract(data.contract); }

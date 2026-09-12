@@ -10,6 +10,7 @@ import ProposalForm from '@/components/admin/ProposalForm';
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
 const STATUS_STYLES = {
+  changes_requested: 'bg-amber-500/10 text-amber-700',
   draft: 'bg-secondary text-muted-foreground',
   sent: 'bg-blue-500/10 text-blue-600',
   viewed: 'bg-amber-500/10 text-amber-700',
@@ -51,6 +52,7 @@ export default function ProposalsAdminPage() {
     try {
       if (payload.id) {
         const { id, ...changes } = payload;
+        changes.status = 'draft';
         await base44.entities.Proposal.update(id, changes);
         toast({ title: 'Proposal updated' });
         setEditing(null);
@@ -150,10 +152,11 @@ export default function ProposalsAdminPage() {
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[p.status] || ''}`}>{p.status}</span>
                 </div>
                 <p className="text-xs text-muted-foreground truncate">
-                  {p.business_name || p.client_name || p.client_email} · {money(p.price_total)}
+                  {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {money(p.price_total)}
                   {p.valid_until ? ` · valid to ${p.valid_until}` : ''}
                 </p>
               </div>
+              {p.change_request && <p className="text-sm whitespace-pre-wrap max-w-sm">Requested changes: {p.change_request}</p>}
               <div className="flex gap-1 shrink-0 items-center">
                 {p.status === 'accepted' && p.contract_id ? (
                   <Button asChild variant="outline" size="sm" className="gap-1">

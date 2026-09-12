@@ -82,7 +82,8 @@ export default function ContractsAdminPage() {
   };
 
   const handleSend = async (contract) => {
-    const token = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    if (!['draft', 'sent'].includes(contract.status)) return;
+    const token = contract.access_token || Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
     const link = `${window.location.origin}/contract/${contract.id}?t=${token}`;
     try {
       await base44.entities.Contract.update(contract.id, {

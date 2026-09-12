@@ -9,7 +9,7 @@ export default async function (req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
-    const { id, token, action, decline_reason } = body || {};
+    const { id, token, action, decline_reason, change_request } = body || {};
     if (!id || !token) return Response.json({ error: 'Missing proposal id or token' }, { status: 400 });
 
     let proposal;
@@ -21,7 +21,8 @@ export default async function (req: Request) {
     if (proposal.access_token !== token) return Response.json({ error: 'Invalid or expired link' }, { status: 403 });
 
     const now = new Date().toISOString();
-    const expired = proposal.valid_until && new Date(proposal.valid_until) < new Date() &&
+    const expiry = proposal.expires_at || proposal.valid_until;
+    const expired = expiry && new Date(expiry) <= new Date() &&
       !['accepted', 'declined'].includes(proposal.status);
 
     // First view: mark viewed for the admin pipeline.
@@ -32,8 +33,21 @@ export default async function (req: Request) {
       return Response.json({ proposal, expired: !!expired });
     }
 
+    if (!['sent', 'viewed', 'changes_requested', 'accepted', 'declined'].includes(proposal.status)) return Response.json({ error: 'This proposal is not open for responses.' }, { status: 409 });
     if (expired) return Response.json({ error: 'This proposal has expired — reach out and I can refresh it for you.' }, { status: 409 });
 
+    if (action === 'request_changes') {
+      if (!['sent', 'viewed'].includes(proposal.status)) return Response.json({ error: 'This proposal cannot accept change requests right now.' }, { status: 409 });
+      if (typeof change_request !== 'string' || !change_request.trim()) return Response.json({ error: 'Please describe the changes you need.' }, { status: 400 });
+      const updated = await base44.asServiceRole.entities.Proposal.update(id, { status: 'changes_requested', change_request: change_request.trim().slice(0, 2000), changes_requested_at: now });
+      const adminEmail = await resolveAdminEmail(base44).catch(() => '');
+      if (adminEmail) await base44.asServiceRole.integrations.Core.SendEmail({
+        to: adminEmail, subject: 'Proposal changes requested — ' + updated.project_title,
+        html: brandedEmail({ title: 'Changes requested', content: '<p>' + esc(updated.client_name || updated.client_email) + ' requested:</p><p>' + esc(updated.change_request) + '</p>' }),
+      }).catch(() => {});
+      return Response.json({ proposal: updated });
+    }
+    if (proposal.status === 'changes_requested') return Response.json({ error: 'Your changes are being reviewed. Please wait for the revised proposal.' }, { status: 409 });
     if (action === 'decline') {
       if (['accepted', 'declined'].includes(proposal.status)) {
         return Response.json({ error: 'This proposal has already been responded to' }, { status: 409 });
@@ -77,11 +91,12 @@ export default async function (req: Request) {
       let contractId = proposal.contract_id || '';
       if (!contractId) {
         const contract = await base44.asServiceRole.entities.Contract.create({
+          proposal_id: id,
           lead_id: proposal.lead_id || '',
           client_name: proposal.client_name || '',
           client_email: proposal.client_email,
           project_title: proposal.project_title,
-          scope_summary: proposal.scope_summary || '',
+          scope_summary: [proposal.scope_summary || '', ...(proposal.deliverables || []).map((d: string) => '• ' + d), proposal.timeline_estimate ? 'Timeline: ' + proposal.timeline_estimate : ''].filter(Boolean).join('\n\n'),
           pricing_mode: 'packages_addons',
           selected_package: proposal.selected_package || '',
           line_items: proposal.line_items || [],

@@ -53,7 +53,7 @@ export default async function (req: Request) {
 
     // Recompute from the full payment ledger so the numbers survive edits and
     // out-of-order entry rather than being incremented blind.
-    const payments = (await base44.entities.Payment.filter({ invoice_id }).catch(() => [])) || [];
+    const payments = (await base44.entities.Payment.filter({ invoice_id })) || [];
     const total = typeof invoice.amount_total === 'number' ? invoice.amount_total : 0;
     const depositDue = typeof invoice.deposit_amount === 'number' ? invoice.deposit_amount : 0;
     const balanceDue = Math.max(total - depositDue, 0);
@@ -107,15 +107,13 @@ export default async function (req: Request) {
       status: invoiceStatus,
     });
 
-    // Roll the contract forward: deposit in = active, fully paid = completed.
+    // Payment and delivery are separate: paying never completes a project.
     if (invoice.contract_id) {
       const contract = await base44.entities.Contract.get(invoice.contract_id).catch(() => null);
       if (contract) {
         const changes: Record<string, unknown> = {};
-        if (settled && !['completed', 'cancelled'].includes(contract.status)) {
-          changes.status = 'completed';
-        } else if ((depositStatus === 'paid' || depositStatus === 'waived') &&
-          ['sent', 'signed', 'deposit_paid'].includes(contract.status)) {
+        if ((depositStatus === 'paid' || depositStatus === 'waived') &&
+          ['signed', 'deposit_paid'].includes(contract.status)) {
           changes.status = 'active';
         }
         if (depositStatus === 'paid' && !contract.deposit_paid_at) {

@@ -19,6 +19,7 @@ export default function ProposalView() {
   const [working, setWorking] = useState('');
   const [showDecline, setShowDecline] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
+  const [changeRequest, setChangeRequest] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -43,6 +44,7 @@ export default function ProposalView() {
         id,
         token,
         action,
+        change_request: action === 'request_changes' ? changeRequest : undefined,
         decline_reason: action === 'decline' ? declineReason : undefined,
       });
       const data = res.data || res;
@@ -79,7 +81,10 @@ export default function ProposalView() {
 
   const accepted = proposal.status === 'accepted';
   const declined = proposal.status === 'declined';
-  const settled = accepted || declined;
+  const changesRequested = proposal.status === 'changes_requested';
+  const expiry = proposal.expires_at || proposal.valid_until;
+  const expired = expiry && new Date(expiry) <= new Date();
+  const settled = accepted || declined || changesRequested || expired;
   const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
   const depositAmt = typeof proposal.price_total === 'number'
     ? Math.round(proposal.price_total * depositPct) / 100
@@ -189,7 +194,7 @@ export default function ProposalView() {
 
           {proposal.valid_until && !settled && (
             <p className="text-xs text-muted-foreground text-center">
-              This proposal is valid through {new Date(proposal.valid_until).toLocaleDateString()}.
+              This proposal is valid through {new Date(expiry).toLocaleString()}.
             </p>
           )}
 
@@ -216,6 +221,8 @@ export default function ProposalView() {
             </div>
           )}
 
+          {changesRequested && <div className="rounded-xl border border-border p-5"><h2 className="font-semibold">Your change request is saved</h2><p className="mt-2 whitespace-pre-wrap">{proposal.change_request}</p><p className="text-sm mt-3">I'll review it and send a revised proposal.</p></div>}
+          {expired && !accepted && !declined && <p role="status">This proposal has expired. Please contact me for an updated proposal.</p>}
           {!settled && (
             <div className="border-t border-border pt-6 space-y-3">
               {error && <p className="text-sm text-destructive">{error}</p>}
@@ -249,6 +256,11 @@ export default function ProposalView() {
                   <p className="text-xs text-muted-foreground text-center">
                     Accepting doesn't charge you anything. I'll send your agreement to sign, then the deposit.
                   </p>
+                  <div className="space-y-2 pt-4">
+                    <label htmlFor="proposal-changes" className="text-sm font-medium">Need something adjusted?</label>
+                    <Textarea id="proposal-changes" value={changeRequest} onChange={(e) => setChangeRequest(e.target.value)} maxLength={2000} placeholder="Describe any changes to scope, timing, or pricing." />
+                    <Button variant="outline" disabled={!!working || !changeRequest.trim()} onClick={() => act('request_changes')}>Request changes</Button>
+                  </div>
                   <button
                     onClick={() => setShowDecline(true)}
                     className="w-full text-xs text-muted-foreground underline hover:text-foreground pt-1"

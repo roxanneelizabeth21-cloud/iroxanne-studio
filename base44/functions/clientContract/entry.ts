@@ -7,7 +7,7 @@ export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
-    const { id, token, action, signerName } = body || {};
+    const { id, token, action, signerName, consent } = body || {};
     if (!id || !token) return Response.json({ error: 'Missing contract id or token' }, { status: 400 });
 
     let contract;
@@ -19,6 +19,8 @@ export default async function(req) {
     if (contract.access_token !== token) return Response.json({ error: 'Invalid or expired link' }, { status: 403 });
 
     if (action === 'sign') {
+      if (contract.status !== 'sent') return Response.json({ error: 'This agreement is not open for signature.' }, { status: 409 });
+      if (consent !== true) return Response.json({ error: 'Please confirm your agreement to sign electronically.' }, { status: 400 });
       if (!signerName || !signerName.trim()) return Response.json({ error: 'Please type your full name to sign' }, { status: 400 });
       if (['signed', 'deposit_paid', 'active', 'completed'].includes(contract.status)) {
         return Response.json({ error: 'This contract has already been signed' }, { status: 409 });
@@ -28,7 +30,9 @@ export default async function(req) {
         status: 'signed',
         signed_at: new Date().toISOString(),
         signer_name: signerName.trim(),
-        signer_ip: ip
+        signer_ip: ip,
+        signature_consent: true,
+        signer_user_agent: (req.headers.get('user-agent') || '').slice(0, 1000)
       });
 
       // Post-sign: create an invoice (deposit + balance tracking) and notify

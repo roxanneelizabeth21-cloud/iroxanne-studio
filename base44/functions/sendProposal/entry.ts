@@ -3,15 +3,12 @@ import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 function generateToken() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  for (let i = 0; i < 48; i++) token += chars[Math.floor(Math.random() * chars.length)];
-  return token;
+  return Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function getBaseUrl(req: Request) {
   const url = new URL(req.url);
-  return url.origin.includes('base44') ? url.origin : 'https://iroxanne.com';
+  return 'https://iroxannestudio.base44.app';
 }
 
 // Admin-only: generate the access token, mark the proposal sent, and email the
@@ -33,11 +30,21 @@ export default async function (req: Request) {
     }
     if (!proposal.client_email) return Response.json({ error: 'Proposal has no client email' }, { status: 400 });
 
+    if (['accepted', 'declined'].includes(proposal.status)) return Response.json({ error: 'Create a new proposal for a completed response.' }, { status: 409 });
+    const settingsList = await base44.entities.PricingSettings.list('-updated_date');
+    const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
+    const validDays = Math.max(1, Number(settings?.proposal_valid_days) || 3);
+    const refresh = ['draft', 'changes_requested', 'expired'].includes(proposal.status) || !proposal.expires_at;
+    const expiresAt = refresh ? new Date(Date.now() + validDays * 86400000).toISOString() : proposal.expires_at;
+    if (new Date(expiresAt).getTime() <= Date.now()) return Response.json({ error: 'Edit this expired proposal before resending.' }, { status: 409 });
     // Reuse the existing token on resend so old links keep working.
     const token = proposal.access_token || generateToken();
     const updated = await base44.entities.Proposal.update(proposal_id, {
       access_token: token,
-      status: proposal.status === 'draft' ? 'sent' : proposal.status,
+      status: 'sent',
+      expires_at: expiresAt,
+      valid_until: expiresAt.slice(0, 10),
+      proposal_number: proposal.proposal_number || 'IR-' + new Date().getFullYear() + '-' + proposal_id.toUpperCase(),
       sent_at: new Date().toISOString(),
     });
 
@@ -54,7 +61,7 @@ export default async function (req: Request) {
           title: `Your proposal is ready, ${esc(firstName)}`,
           content: `<p style="margin:0 0 16px;">I've put together a proposal for <strong>${esc(proposal.project_title)}</strong>${proposal.business_name ? ` for ${esc(proposal.business_name)}` : ''} — what I'll build, what it costs, and how we'd work together.</p>
             ${typeof proposal.price_total === 'number' ? `<p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total investment: ${moneyFmt(proposal.price_total)}</p>` : ''}
-            ${proposal.valid_until ? `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">This proposal is valid through ${esc(proposal.valid_until)}.</p>` : ''}
+            ${expiresAt ? `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">This proposal is valid through ${esc(new Date(expiresAt).toUTCString())}.</p>` : ''}
             <p style="margin:0 0 20px;">Open it below to review the full scope. If it looks right, you can accept online and I'll send your agreement to sign.</p>
             <p>${brandButton('Review your proposal', link)}</p>
             <p style="margin:16px 0 0;font-size:13px;color:#8B7B95;">This link is private to you — please don't forward it.</p>`,
