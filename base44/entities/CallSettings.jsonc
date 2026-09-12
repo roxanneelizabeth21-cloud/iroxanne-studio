@@ -1,0 +1,79 @@
+{
+  "name": "CallSettings",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "timezone": {
+      "type": "string",
+      "default": "America/New_York"
+    },
+    "calendar_id": {
+      "type": "string",
+      "default": "primary"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 30
+    },
+    "buffer_minutes": {
+      "type": "number",
+      "default": 15
+    },
+    "notice_hours": {
+      "type": "number",
+      "default": 24
+    },
+    "horizon_days": {
+      "type": "number",
+      "default": 21
+    },
+    "weekly_hours": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "blocked_dates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
