@@ -29,25 +29,17 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       line_items: (p.line_items || []).map((li, idx) => (idx === i ? { ...li, [field]: value } : li)),
     }));
 
-  const computeDeposit = (price, mode) => {
+  const computeDeposit = (price) => {
     const p = money(price);
-    if (mode === 'fixed_percent') {
-      const pct = settings?.default_deposit_percent ?? 50;
-      return Math.round((p * pct) / 100);
-    }
-    if (mode === 'tiered') {
-      const tier = form.estimated_tier || 'small';
-      const pct = settings?.tiered_deposit_percents?.[tier] ?? 50;
-      return Math.round((p * pct) / 100);
-    }
-    return form.deposit_amount || 0;
+    const pct = settings?.default_deposit_percent ?? 50;
+    return Math.round((p * pct) / 100);
   };
 
   const submit = () => {
     const payload = {
       ...form,
       price_total: total,
-      deposit_amount: form.deposit_mode === 'custom_amount' ? form.deposit_amount : computeDeposit(total, form.deposit_mode),
+      deposit_amount: computeDeposit(total),
     };
     onSave(payload);
   };
@@ -150,24 +142,12 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label>Deposit</Label>
-          <Select value={form.deposit_mode} onValueChange={(v) => update('deposit_mode', v)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fixed_percent">Fixed % of total</SelectItem>
-              <SelectItem value="tiered">% by project tier</SelectItem>
-              <SelectItem value="custom_amount">Custom amount</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>Deposit ({settings?.default_deposit_percent ?? 50}%)</Label>
+          <Input type="number" disabled value={computeDeposit(total)} />
         </div>
         <div className="space-y-1.5">
-          <Label>Deposit amount</Label>
-          <Input
-            type="number"
-            disabled={form.deposit_mode !== 'custom_amount'}
-            value={form.deposit_mode === 'custom_amount' ? (form.deposit_amount || 0) : computeDeposit(total, form.deposit_mode)}
-            onChange={(e) => update('deposit_amount', Number(e.target.value))}
-          />
+          <Label>Payment schedule</Label>
+          <Input value={form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
         </div>
       </div>
 
@@ -200,20 +180,15 @@ function buildInitial(initial, settings) {
     client_email: initial?.client_email || initial?.email || '',
     project_title: initial?.project_title || initial?.quick_pitch?.slice(0, 60) || '',
     scope_summary: initial?.scope_summary || buildScopeFromLead(initial),
-    pricing_mode: settings?.pricing_mode || 'custom_quote',
+    pricing_mode: settings?.pricing_mode || 'packages_addons',
     selected_package: '',
     line_items: initial?.estimated_price_low
       ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
       : [],
-    deposit_mode: settings?.default_deposit_mode || 'fixed_percent',
     deposit_amount: 0,
-    payment_schedule: initial?.payment_schedule_preference === 'thirds'
-      ? 'Split across 3 milestones'
-      : initial?.payment_schedule_preference === 'full_upfront'
-      ? 'Full amount upfront'
-      : '50% upfront, 50% on launch',
+    payment_schedule: '50% upfront, 50% on launch',
     terms: settings?.standard_terms || '',
-    estimated_tier: initial?.estimated_tier || 'small',
+    estimated_tier: initial?.estimated_tier || 'starter',
   };
 }
 
