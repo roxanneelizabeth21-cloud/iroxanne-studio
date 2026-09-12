@@ -1,7 +1,6 @@
-// TODO: Replace with Base44 media URL once headshot is uploaded
-const HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
+const FALLBACK_HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
 
-export default function About() {
+export default function About({ headshotUrl }) {
   return (
     <section id="about" className="bg-white py-24 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
@@ -10,7 +9,7 @@ export default function About() {
           <div>
             <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)]">
               <img
-                src={HEADSHOT_URL}
+                src={headshotUrl || FALLBACK_HEADSHOT_URL}
                 alt="Roxanne"
                 className="w-full aspect-[3/4] object-cover object-top"
               />

@@ -12,6 +12,7 @@ import SiteFooter from '@/components/home/SiteFooter';
 export default function Home() {
   const [projects, setProjects] = useState(null);
   const [testimonials, setTestimonials] = useState(null);
+  const [headshotUrl, setHeadshotUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function Home() {
 
     (async () => {
       try {
-        const [proj, test] = await Promise.all([
+        const [proj, test, settings] = await Promise.all([
           base44.entities.PortfolioItem
             .list('-sort_order', 6)
             .catch(() => []),
@@ -31,12 +32,17 @@ export default function Home() {
               3
             )
             .catch(() => []),
+
+          base44.entities.HomePageSettings
+            .list()
+            .catch(() => []),
         ]);
 
         if (!active) return;
 
         setProjects(proj);
         setTestimonials(test);
+        setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
       } finally {
         if (active) setLoading(false);
       }
@@ -61,7 +67,7 @@ export default function Home() {
 
         <Process />
 
-        <About />
+        <About headshotUrl={headshotUrl} />
 
         <Testimonials
           items={testimonials}

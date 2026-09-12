@@ -199,6 +199,11 @@ export default function HomePageSettingsForm() {
             <MediaUploader type="image" currentUrl={form.hero_studio_image} onUpload={(url) => set('hero_studio_image', url)} placeholder="Upload studio photo" />
           </div>
           <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">About Headshot</label>
+            <p className="text-xs text-muted-foreground">Your portrait shown in the About section on the homepage.</p>
+            <MediaUploader type="image" currentUrl={form.about_headshot_url} onUpload={(url) => set('about_headshot_url', url)} placeholder="Upload your headshot" />
+          </div>
+          <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hero Overlay Graphic</label>
             <p className="text-xs text-muted-foreground">Optional decorative image layered over the background.</p>
             <MediaUploader type="image" currentUrl={form.hero_overlay_image} onUpload={(url) => set('hero_overlay_image', url)} placeholder="Upload overlay graphic (PNG with transparency)" />

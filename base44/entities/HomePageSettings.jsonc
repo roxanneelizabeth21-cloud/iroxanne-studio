@@ -14,6 +14,10 @@
       "type": "string",
       "description": "Optional decorative overlay graphic URL"
     },
+    "about_headshot_url": {
+      "type": "string",
+      "description": "Headshot image URL shown in the About section on the homepage."
+    },
     "hero_title": {
       "type": "string",
       "description": "Hero heading text",
