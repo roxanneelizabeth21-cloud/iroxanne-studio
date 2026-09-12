@@ -10,17 +10,8 @@ export default function Hero({ projects, loading }) {
 
   return (
     <div className="pt-[72px]">
-    <section className="relative isolate overflow-hidden bg-[#302634]" style={{ backgroundImage: 'radial-gradient(ellipse at 6% 15%, rgba(130,92,119,0.42), transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(79,53,75,0.32), transparent 60%), linear-gradient(115deg, #443342, #302634 58%, #251e2a)' }}>
-      <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12]" xmlns="http://www.w3.org/2000/svg">
-        <filter id="hero-plum-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#hero-plum-grain)" opacity="0.65" />
-      </svg>
-      <div aria-hidden="true" className="pointer-events-none absolute -right-48 top-24 hidden h-[620px] w-[480px] rounded-full border border-[#B69A60]/30 lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 hidden h-[46%] w-[8%] border-l border-t border-[#B69A60]/30 bg-[#241d29]/30 lg:block" />
-
+    <section className="relative isolate overflow-hidden bg-[#302634]">
+      <img src="/images/hero-facebook-plum.png" alt="" aria-hidden="true" fetchPriority="high" className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center" />
       <div className="relative mx-auto flex min-h-[340px] max-w-6xl items-center justify-center px-5 py-10 text-center md:min-h-[400px] md:px-8 md:py-12">
         <div className="w-full max-w-[800px]">
           <p className="text-[13px] font-medium text-[#D5BB82] tracking-[0.16em] mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
