@@ -16,7 +16,8 @@ export default function About({ headshotUrl }) {
             </div>
             <div className="mt-5">
               <p className="text-[22px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Roxanne</p>
-              <p className="text-[13px] text-[#B8942E] font-medium mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>Founder & Builder</p>
+              <p className="text-[13px] text-[#B8942E] font-medium mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>Founder & Builder · Base44 Partner</p>
+              <a href="https://app.base44.com/@roxanne-bruce" target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-11 items-center text-sm text-[#2D2A4A] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">View my Base44 Partner profile <span className="sr-only">(opens in a new tab)</span></a>
             </div>
           </div>
 
