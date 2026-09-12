@@ -16,8 +16,9 @@ export default async function(req) {
 
     const adminEmail = await resolveAdminEmail(base44).catch(() => '');
     const arr = (a) => Array.isArray(a) ? a.join(', ') : (a || '');
-    const BUDGET_LABELS = { under_5k:'Under $5,000','5k_10k':'$5,000 – $10,000','10k_20k':'$10,000 – $20,000','20k_50k':'$20,000 – $50,000','50k_plus':'$50,000+',not_sure:'Not sure yet' };
+    const BUDGET_LABELS = { under_1500:'Under $1,500','1500_3000':'$1,500–$3,000','3000_5000':'$3,000–$5,000','5000_8000':'$5,000–$8,000','8000_plus':'$8,000+',not_sure:'Not sure yet' };
     const PRICING_LABELS = { fixed:'Fixed project price', hourly:'Hourly', not_sure:'Not sure' };
+    const budgetLabel = (v) => BUDGET_LABELS[v] || v || '';
 
     // 1) Admin notification
     if (adminEmail) {
@@ -25,7 +26,7 @@ export default async function(req) {
         ['Name', lead.name || ''],
         ['Email', lead.email || ''],
         ['Business', lead.business_name || ''],
-        ['Budget', lead.budget_range || ''],
+        ['Budget', budgetLabel(lead.budget_range)],
         ['Estimated', lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
         ['Pitch', lead.quick_pitch || ''],
       ].filter(([, v]) => v);
@@ -49,7 +50,7 @@ export default async function(req) {
         ['The problem', lead.problem_to_solve || ''],
         ['Must-have features', arr(lead.must_have_features)],
         ['Integrations needed', arr(lead.integrations_needed)],
-        ['Budget', BUDGET_LABELS[lead.budget_range] || lead.budget_range || ''],
+        ['Budget', budgetLabel(lead.budget_range)],
         ['Pricing preference', PRICING_LABELS[lead.pricing_model_preference] || lead.pricing_model_preference || ''],
         ['Ideal launch', lead.ideal_launch_date || ''],
         ['Needs training', lead.training_needed ? 'Yes' : ''],
@@ -60,7 +61,7 @@ export default async function(req) {
         subject: "We've got your project details — iRoxanne Studio",
         html: brandedEmail({
           title: `Thanks, ${esc(firstName)}!`,
-          content: `<p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
+          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
             ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}
             <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,

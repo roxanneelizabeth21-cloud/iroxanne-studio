@@ -43,7 +43,6 @@ export function brandedEmail({
         </td></tr>
         <tr><td style="height:3px;background:linear-gradient(90deg,${BRAND_GOLD} 0%,#E8D5A0 50%,${BRAND_GOLD} 100%);"></td></tr>
         <tr><td style="padding:34px 32px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.7;color:${BRAND_PLUM_DARK};">
-          ${title ? `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:${BRAND_PLUM};">${title}</h1>` : ''}
           ${content}
         </td></tr>
         <tr><td style="padding:0 32px;"><div style="height:1px;background:rgba(45,42,74,0.08);"></div></td></tr>
