@@ -194,9 +194,7 @@ export default function ContractSign() {
             </div>
           )}
         </div>
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          © {new Date().getFullYear()} iRoxanne Studio
-        </p>
+        <BrandedFooter />
       </div>
     </div>
   );
