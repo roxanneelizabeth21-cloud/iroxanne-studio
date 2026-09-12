@@ -2,6 +2,11 @@
   "name": "Proposal",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this proposal",
+      "maxLength": 1000
+    },
     "lead_id": {
       "type": "string",
       "description": "Lead this proposal was generated from (optional)"

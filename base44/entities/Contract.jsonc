@@ -2,6 +2,11 @@
   "name": "Contract",
   "type": "object",
   "properties": {
+    "description": {
+      "type": "string",
+      "description": "Optional description for this contract",
+      "maxLength": 1000
+    },
     "lead_id": {
       "type": "string",
       "description": "Lead this contract was generated from (optional)"
