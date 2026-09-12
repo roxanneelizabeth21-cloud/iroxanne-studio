@@ -41,7 +41,7 @@ let payments=[{kind:'deposit',amount:125}],sendFail=false,identity={is_service:t
 const ie={get:async()=>({...inv}),filter:async()=>inv.reminder_enabled?[{...inv}]:[],update:async(id,x)=>(inv={...inv,...x})};
 const reminder=load('base44/functions/processPaymentReminders/entry.ts',{...helpers,paymentSummary,esc:x=>String(x??''),brandedEmail:x=>x.content,brandButton:()=>'',detailRows:x=>JSON.stringify(x),createClientFromRequest:()=>({auth:{me:async()=>identity},asServiceRole:{entities:{Invoice:ie,Payment:{filter:async()=>payments},PricingSettings:{list:async()=>[]}},integrations:{Core:{SendEmail:async x=>{if(sendFail)throw Error('unknown');emails.push(x);}}}}})});
 identity=null;assert.equal((await reminder(request({}))).status,403);identity={is_service:true};
-assert.equal((await reminder(request({}))).status,200);assert.equal(emails.length,1);assert.match(emails[0].body,/\$375.00/);assert.equal(inv.reminder_sent_count,1);
+assert.equal((await reminder(request({}))).status,200);assert.equal(emails.length,1);assert.match(emails[0].html,/\$375.00/);assert.equal(inv.reminder_sent_count,1);
 await reminder(request({}));assert.equal(emails.length,1);
 inv.reminder_next_at='2020-01-01T00:00:00Z';await reminder(request({}));assert.equal(emails.length,2);assert.equal(inv.reminder_enabled,false);
 inv={...inv,reminder_enabled:true,reminder_sent_count:0,reminder_next_at:'2020-01-01T00:00:00Z'};payments=[{kind:'deposit',amount:500}];await reminder(request({}));assert.equal(emails.length,2);assert.equal(inv.reminder_enabled,false);
