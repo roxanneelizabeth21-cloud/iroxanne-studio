@@ -112,6 +112,24 @@
     "notes": {
       "type": "string",
       "description": "Internal notes"
+    },
+    "proposal_id": {
+      "type": "string",
+      "description": "Proposal this work originated from (optional)"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When payment is expected"
+    },
+    "last_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this invoice was emailed to the client"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Unguessable token letting the client view their payment status page without logging in"
     }
   },
   "required": [
