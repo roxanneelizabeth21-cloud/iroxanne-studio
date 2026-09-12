@@ -24,7 +24,7 @@ const FEATURE_OPTIONS = [
 ];
 
 const INTEGRATION_OPTIONS = [
-  'Payments (Stripe/Square)',
+  'Payments (Stripe/Square/Wix)',
   'Gmail / Google Calendar',
   'Zapier',
   'Email marketing (SendGrid/Mailchimp)',
