@@ -280,6 +280,50 @@ function PricingSettingsCard({ settings, onSave }) {
           <Input type="number" value={s.default_deposit_percent} onChange={(e) => update('default_deposit_percent', Number(e.target.value))} />
         </div>
       </div>
+      {/* Packages */}
+      {(s.pricing_mode === 'fixed_packages' || s.pricing_mode === 'packages_addons') && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Packages</Label>
+            <Button type="button" variant="outline" size="sm" className="gap-1" onClick={() => update('packages', [...(s.packages || []), { name: '', price: 0, description: '', highlight: false }])}>
+              <Plus className="h-3.5 w-3.5" /> Add package
+            </Button>
+          </div>
+          {(s.packages || []).map((pkg, i) => (
+            <div key={i} className="rounded-xl border border-border bg-secondary/30 p-3 space-y-2">
+              <div className="flex gap-2 items-end">
+                <div className="flex-1 space-y-1"><Label className="text-xs">Name</Label><Input value={pkg.name} onChange={(e) => { const p = [...s.packages]; p[i] = { ...p[i], name: e.target.value }; update('packages', p); }} placeholder="e.g. Starter" /></div>
+                <div className="w-28 space-y-1"><Label className="text-xs">Price ($)</Label><Input type="number" value={pkg.price} onChange={(e) => { const p = [...s.packages]; p[i] = { ...p[i], price: Number(e.target.value) }; update('packages', p); }} /></div>
+                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive shrink-0" onClick={() => update('packages', s.packages.filter((_, j) => j !== i))}><span className="text-lg">&times;</span></Button>
+              </div>
+              <div className="space-y-1"><Label className="text-xs">What's included</Label><Input value={pkg.description || ''} onChange={(e) => { const p = [...s.packages]; p[i] = { ...p[i], description: e.target.value }; update('packages', p); }} placeholder="Brief description of what this tier covers" /></div>
+              <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={!!pkg.highlight} onChange={(e) => { const p = [...s.packages]; p[i] = { ...p[i], highlight: e.target.checked }; update('packages', p); }} /> Highlight as recommended</label>
+            </div>
+          ))}
+          {(!s.packages || s.packages.length === 0) && <p className="text-xs text-muted-foreground">No packages yet — add your tiers above.</p>}
+        </div>
+      )}
+
+      {/* Add-ons */}
+      {s.pricing_mode === 'packages_addons' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Add-ons</Label>
+            <Button type="button" variant="outline" size="sm" className="gap-1" onClick={() => update('addons', [...(s.addons || []), { name: '', price: 0, description: '' }])}>
+              <Plus className="h-3.5 w-3.5" /> Add add-on
+            </Button>
+          </div>
+          {(s.addons || []).map((addon, i) => (
+            <div key={i} className="flex gap-2 items-end">
+              <div className="flex-1 space-y-1"><Label className="text-xs">Name</Label><Input value={addon.name} onChange={(e) => { const a = [...s.addons]; a[i] = { ...a[i], name: e.target.value }; update('addons', a); }} placeholder="e.g. Extra pages" /></div>
+              <div className="w-28 space-y-1"><Label className="text-xs">Price ($)</Label><Input type="number" value={addon.price} onChange={(e) => { const a = [...s.addons]; a[i] = { ...a[i], price: Number(e.target.value) }; update('addons', a); }} /></div>
+              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-destructive shrink-0" onClick={() => update('addons', s.addons.filter((_, j) => j !== i))}><span className="text-lg">&times;</span></Button>
+            </div>
+          ))}
+          {(!s.addons || s.addons.length === 0) && <p className="text-xs text-muted-foreground">No add-ons yet.</p>}
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <Label>Standard terms (pre-filled on new contracts)</Label>
         <Textarea rows={4} value={s.standard_terms || ''} onChange={(e) => update('standard_terms', e.target.value)} />
