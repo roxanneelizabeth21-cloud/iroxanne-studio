@@ -2,8 +2,8 @@ import { MessageCircle, Hammer, Rocket } from 'lucide-react';
 
 const STEPS = [
   { icon: MessageCircle, title: 'We shape your idea', desc: "Bring an idea, a new business, or something you want to improve. You do not need a business name, a feature list, or a finished plan. We work out who your app is for and what its first version should do." },
-  { icon: Hammer, title: 'I build', desc: "I design and build your app, sharing progress as I go. You review, I refine. The intake form lets you share what you know and flag what you need help deciding." },
-  { icon: Rocket, title: 'You launch', desc: "Your app goes live on web and mobile. I handle the launch, walk you through everything, and stay available for support after." },
+  { icon: Hammer, title: 'We choose your support', desc: "I can design and build your app, or guide you while you build it yourself. We agree on the scope, cost, and next steps before work begins." },
+  { icon: Rocket, title: 'We work through the next steps', desc: "For a full build, I share progress for your review and help you prepare for launch. For guidance, we focus on the questions and decisions we have agreed to work through together." },
 ];
 
 export default function Process() {
