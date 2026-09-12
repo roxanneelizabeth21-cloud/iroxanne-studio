@@ -2,7 +2,11 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero({ projects, loading, heroBackgroundImage }) {
   const trustNames = !loading
-    ? (projects || []).map((p) => p.business_name || p.client_name || p.title).filter(Boolean).slice(0, 6)
+    ? (projects || [])
+        .map((p) => p.business_name || p.client_name || p.title)
+        .filter(Boolean)
+        .filter((name) => !/eventflow/i.test(name))
+        .slice(0, 6)
     : [];
 
   return (
