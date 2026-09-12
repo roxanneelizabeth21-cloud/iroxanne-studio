@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 
-import { isRushDate, RUSH_TERMS } from '../../../base44/shared/studioDelivery';
+import { isRushDate, RUSH_TERMS } from '@/lib/studioDelivery';
 
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 

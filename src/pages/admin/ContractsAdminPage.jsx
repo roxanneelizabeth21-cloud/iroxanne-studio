@@ -11,7 +11,7 @@ import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, Clipboar
 import ContractForm from '@/components/admin/ContractForm';
 
 import HandoffPanel from '@/components/admin/HandoffPanel';
-import { RUSH_TERMS } from '../../../base44/shared/studioDelivery';
+import { RUSH_TERMS } from '@/lib/studioDelivery';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
