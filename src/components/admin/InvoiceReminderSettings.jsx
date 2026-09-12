@@ -19,6 +19,7 @@ export default function InvoiceReminderSettings({invoice,onSaved}){
   if(pause)setEnabled(false);setMessage(pause?'Reminders paused.':'Reminder schedule saved.');await onSaved();
  }catch(e){setMessage(e.message);}finally{setBusy(false);}};
  return <details className="border-t pt-3 text-sm"><summary className="cursor-pointer font-medium">Payment reminders · {invoice.reminder_enabled?'Enabled':'Off'}</summary><div className="space-y-3 pt-3">
+ <p className="rounded-lg border border-amber-300 bg-amber-50 text-amber-950 p-3">Setup check: confirm the hourly payment-reminder Workflow is active in Base44 before relying on these schedules.</p>
  <p className="text-muted-foreground">Email {invoice.client_email} about the selected unpaid stage. Checked hourly; delivery can be up to an hour after the chosen time. Stops when that stage is paid or the limit is reached.</p>
  <p>{invoice.reminder_sent_count||0} sent in this sequence.{invoice.reminder_last_sent_at?' Last sent '+new Date(invoice.reminder_last_sent_at).toLocaleString()+'.':''}</p>
  {invoice.reminder_error&&<p className="text-destructive">{invoice.reminder_error}</p>}
