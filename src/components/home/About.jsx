@@ -24,18 +24,18 @@ export default function About({ headshotUrl }) {
           <div>
             <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>About</p>
             <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              One person. No agency.<br />Just really good software.
+              Hi, I’m Roxanne.<br />Let’s talk about your idea.
             </h2>
             <div className="mt-8 h-1 w-12 bg-[#C9A84C]/40 rounded-full" />
             <div className="mt-8 space-y-5 text-[15.5px] leading-[1.75] text-[#2D2A4A]/55" style={{ fontFamily: "'Inter', sans-serif" }}>
               <p>
-                iRoxanne Studio is me, <span className="font-semibold text-[#2D2A4A]">Roxanne</span>. I build custom apps for small businesses, solo founders, and creators who need software that actually fits how they work.
+                I’m <span className="font-semibold text-[#2D2A4A]">Roxanne</span>, the person behind iRoxanne Studio. I help people explore their ideas and turn them into apps, whether they are just starting out or already running a business.
               </p>
               <p>
-                When you work with me, you talk to the person building your app. No account managers, no hand-offs, no markup for a team you'll never meet. That means faster turnaround, fairer pricing, and an app built around your real needs instead of a template.
+                You work directly with me. I start by listening to what you have in mind, asking questions, and helping you decide where to begin. You do not need to know the technical details or have everything worked out.
               </p>
               <p>
-                Every project starts with understanding your business and ends with an app you own, on web and mobile. From booking platforms to full e-commerce suites to AI-powered business tools, I build the kind of software that would cost $300 to $600 per month if you assembled it from off-the-shelf SaaS. And I build it custom for you, once.
+                My work includes booking systems, online stores, client portals, and tools for everyday tasks. We agree on the scope, cost, and next steps before the build, and you have opportunities to review the app as it takes shape.
               </p>
               <a href="/quote" className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2D2A4A] hover:text-[#B8942E] transition mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
                 Let's talk about your idea <span className="text-[#B8942E]">→</span>
