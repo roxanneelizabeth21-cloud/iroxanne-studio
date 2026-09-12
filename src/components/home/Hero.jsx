@@ -23,18 +23,17 @@ export default function Hero({ projects, loading }) {
       <div className="relative mx-auto max-w-6xl px-5 md:px-8 pt-2 pb-10 md:pt-3 md:pb-14 lg:pt-4 lg:pb-16">
         <div className="max-w-[1000px]">
           <p className="text-[13px] font-medium text-[#D5BB82] tracking-wide mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Custom apps for small businesses
+            Custom apps for new ideas and small businesses
           </p>
 
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
               className="text-[#FAF3E5] text-[46px] sm:text-[56px] md:text-[66px] lg:text-[76px] font-semibold">
-            Your vision,{' '}
-            <span className="italic font-medium">built</span>{' '}
-            into software that runs your business.
+            An idea to explore.{' '}
+            <span className="italic font-medium">A place to begin.</span>
           </h1>
 
           <p className="mt-7 max-w-[640px] text-[15.5px] leading-[1.7] text-[#E4DCE2]" style={{ fontFamily: "'Inter', sans-serif" }}>
-            I design and build complete business apps: booking platforms, e-commerce suites, client portals, admin dashboards, custom to how you work. One person. No agency markup. Ready in weeks.
+            I’m Roxanne. I design and build custom apps, and I can help you work out what yours could look like. Whether you have an early idea or a business you want to develop, we can start with a conversation.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3.5">
@@ -51,20 +50,20 @@ export default function Hero({ projects, loading }) {
         <div className="mt-14 pt-6 border-t border-[#B69A60]/35">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>7+</p>
-              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Apps launched</p>
+              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your idea</p>
+              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>A starting point for our conversation</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>2 weeks</p>
-              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Typical turnaround</p>
+              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>A clear plan</p>
+              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Scope and cost discussed together</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>$300–600</p>
-              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Monthly SaaS replaced</p>
+              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your feedback</p>
+              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Room to review as we build</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>100%</p>
-              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>You own it</p>
+              <p className="text-[28px] font-semibold text-[#FAF3E5]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Next steps</p>
+              <p className="text-[13px] text-[#D3C7D1] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Guidance as you prepare to launch</p>
             </div>
           </div>
         </div>
