@@ -1,0 +1,165 @@
+{
+  "name": "Proposal",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string",
+      "description": "Lead this proposal was generated from (optional)"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Client email \u2014 where the proposal link is sent"
+    },
+    "business_name": {
+      "type": "string",
+      "description": "Client business name"
+    },
+    "project_title": {
+      "type": "string",
+      "description": "Project / app name"
+    },
+    "intro_note": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Personal intro paragraph shown at the top of the proposal"
+    },
+    "scope_summary": {
+      "type": "string",
+      "maxLength": 6000,
+      "description": "What will be built \u2014 the pitch of the solution"
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Bullet list of concrete deliverables",
+      "items": {
+        "type": "string"
+      }
+    },
+    "selected_package": {
+      "type": "string",
+      "description": "Package tier proposed (Starter / Business / Custom)"
+    },
+    "estimated_tier": {
+      "type": "string",
+      "description": "Tier key carried from the Lead estimate (starter/business/custom)"
+    },
+    "line_items": {
+      "type": "array",
+      "description": "Itemized pricing lines (package + add-ons)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "description",
+          "amount"
+        ]
+      }
+    },
+    "price_total": {
+      "type": "number",
+      "description": "Total proposed price (USD)"
+    },
+    "deposit_percent": {
+      "type": "number",
+      "default": 50,
+      "description": "Deposit percentage that will apply to the contract"
+    },
+    "timeline_estimate": {
+      "type": "string",
+      "description": "Human timeline, e.g. '2 weeks once content is delivered'"
+    },
+    "saas_replacement_note": {
+      "type": "string",
+      "maxLength": 1500,
+      "description": "What this build replaces in monthly SaaS spend \u2014 value framing"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date",
+      "description": "Proposal expiry date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "viewed",
+        "accepted",
+        "declined",
+        "expired"
+      ],
+      "default": "draft",
+      "description": "Proposal lifecycle status"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Unguessable token required to view the proposal via the public page. Generated on send."
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "viewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "declined_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decline_reason": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Optional reason the client gave when declining"
+    },
+    "contract_id": {
+      "type": "string",
+      "description": "Contract created from this proposal on acceptance"
+    }
+  },
+  "required": [
+    "client_email",
+    "project_title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
