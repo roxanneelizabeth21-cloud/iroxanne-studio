@@ -58,7 +58,7 @@ export default function Home() {
       <SiteNav />
 
       <main>
-        <Hero projects={projects} loading={loading} headshotUrl={headshotUrl} />
+        <Hero projects={projects} loading={loading} />
 
         <FeaturedWork
           items={projects}
