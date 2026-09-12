@@ -1,53 +1,56 @@
 // Lightweight project estimator for the Get-a-Quote intake.
 // Produces a tier label and an hour / price range from the selected
-// features, integrations, and compliance needs. Intentionally simple —
-// it gives the studio a ballpark to frame the follow-up proposal, not a quote.
+// features and integrations. Gives the studio a ballpark to frame
+// the follow-up proposal, not a binding quote.
 
-const RATE = 65; // blended $/hr
+const DEFAULT_RATE = 65; // blended $/hr — overridden by PricingSettings when available
 
 const INTEGRATION_HOURS = {
-  'Payments (Stripe/Square)': 12,
-  'Gmail / Google Calendar': 8,
-  'Zapier': 6,
-  'Email marketing (SendGrid/Mailchimp)': 8,
-  'SMS (Twilio)': 8,
-  'QuickBooks': 10,
-  'Other third-party API': 8,
+  'Payments (Stripe/Square)': 5,
+  'Gmail / Google Calendar': 3,
+  'Zapier': 2,
+  'Email marketing (SendGrid/Mailchimp)': 4,
+  'SMS (Twilio)': 4,
+  'Other third-party API': 4,
   'None yet': 0,
 };
 
-export function estimateProject({ mustHave = [], niceToHave = [], integrations = [], compliance = '' } = {}) {
-  let hoursLow = 40;
-  let hoursHigh = 60;
+/**
+ * @param {Object}  opts
+ * @param {Array}   opts.mustHave     - must-have feature labels
+ * @param {Array}   opts.niceToHave   - nice-to-have feature labels
+ * @param {Array}   opts.integrations - integration labels
+ * @param {number}  [opts.rate]       - $/hr from PricingSettings (falls back to DEFAULT_RATE)
+ */
+export function estimateProject({ mustHave = [], niceToHave = [], integrations = [], rate } = {}) {
+  const hourlyRate = rate && rate > 0 ? rate : DEFAULT_RATE;
 
-  // Features
-  hoursLow += mustHave.length * 8;
-  hoursHigh += mustHave.length * 12;
-  hoursLow += niceToHave.length * 4;
-  hoursHigh += niceToHave.length * 6;
+  // Base: a simple site with landing + contact + gallery
+  let hoursLow = 15;
+  let hoursHigh = 25;
+
+  // Features — smaller increments matching real Base44 build times
+  hoursLow += mustHave.length * 3;
+  hoursHigh += mustHave.length * 5;
+  hoursLow += niceToHave.length * 2;
+  hoursHigh += niceToHave.length * 3;
 
   // Integrations
   integrations.forEach((name) => {
-    const h = INTEGRATION_HOURS[name] ?? 8;
+    const h = INTEGRATION_HOURS[name] ?? 4;
     hoursLow += Math.round(h * 0.7);
     hoursHigh += h;
   });
 
-  // Compliance overhead
-  if (/hipaa|gdpr|pci/i.test(compliance || '')) {
-    hoursLow += 16;
-    hoursHigh += 24;
-  }
-
   hoursLow = Math.round(hoursLow);
   hoursHigh = Math.round(hoursHigh);
 
-  const priceLow = Math.round((hoursLow * RATE) / 100) * 100;
-  const priceHigh = Math.round((hoursHigh * RATE) / 100) * 100;
+  const priceLow = Math.round((hoursLow * hourlyRate) / 100) * 100;
+  const priceHigh = Math.round((hoursHigh * hourlyRate) / 100) * 100;
 
-  let tier = 'small';
-  if (hoursHigh > 240) tier = 'enterprise';
-  else if (hoursHigh > 120) tier = 'standard';
+  let tier = 'starter';
+  if (hoursHigh > 80) tier = 'custom';
+  else if (hoursHigh > 40) tier = 'business';
 
   return { tier, hoursLow, hoursHigh, priceLow, priceHigh };
 }
