@@ -1,5 +1,6 @@
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import BrandLogo from '@/components/BrandLogo';
 
 const NAV_LINKS = [
   { label: 'Work', href: '#work' },
@@ -16,7 +17,7 @@ export default function SiteNav() {
       <header className="fixed inset-x-0 top-0 z-50 bg-[#FAF7F0]/80 backdrop-blur-xl border-b border-[#2D2A4A]/5">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 md:px-8">
           <a href="/" className="flex shrink-0 items-center">
-            <img src="https://media.base44.com/images/public/6a94dbc673f0d144b6ed36bb/3c870c3bc_CodexImageAug31202605_02_37PM.png" alt="iRoxanne Studio" draggable="false" className="h-10 w-auto object-contain md:h-11" />
+            <BrandLogo height="h-10 md:h-11" />
           </a>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map((l) => (
