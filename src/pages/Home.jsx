@@ -48,7 +48,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-[#FAF7F0] text-[#2D2A4A]">
       <SiteNav />
 
       <main>
