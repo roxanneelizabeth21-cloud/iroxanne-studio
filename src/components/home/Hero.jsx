@@ -29,7 +29,7 @@ export default function Hero({ projects, loading }) {
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
               className="text-[#FAF3E5] text-[46px] sm:text-[56px] md:text-[66px] lg:text-[76px] font-semibold">
             An idea to explore.{' '}
-            <span className="italic font-medium">A place to begin.</span>
+            <span>A place to begin.</span>
           </h1>
 
           <p className="mt-7 max-w-[640px] text-[15.5px] leading-[1.7] text-[#E4DCE2]" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -40,9 +40,16 @@ export default function Hero({ projects, loading }) {
             <a href="/quote" className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#E9D5A5] text-[#302634] text-[14px] font-semibold transition hover:bg-[#F5E5BE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5] shadow-[0_8px_32px_rgba(45,42,74,0.18)]" style={{ fontFamily: "'Inter', sans-serif" }}>
               Get a free quote <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="#work" className="inline-flex items-center gap-2 h-12 px-7 rounded-full border-2 border-[#C9B78C]/60 text-[#FAF3E5] text-[14px] font-semibold transition hover:border-[#E9D5A5] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]" style={{ fontFamily: "'Inter', sans-serif" }}>
-              See the work
-            </a>
+            {!loading && projects?.length > 0 && <a href="#work" onClick={(event) => {
+              if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              const target = document.getElementById('work');
+              if (!target) return;
+              event.preventDefault();
+              target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+              target.focus({ preventScroll: true });
+            }} className="inline-flex items-center gap-2 h-12 px-7 rounded-full border-2 border-[#C9B78C]/60 text-[#FAF3E5] text-[14px] font-semibold transition hover:border-[#E9D5A5] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]" style={{ fontFamily: "'Inter', sans-serif" }}>
+              View my projects
+            </a>}
           </div>
         </div>
 
