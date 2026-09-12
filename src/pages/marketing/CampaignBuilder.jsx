@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 import CampaignDetail from '@/components/marketing/CampaignDetail';
 import CampaignListControls from '@/components/marketing/CampaignListControls';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
-import { CAMPAIGN_STATUSES, formatDate, daysUntil } from '@/lib/marketing';
+import { CAMPAIGN_STATUSES, formatDate, daysUntil, STUDIO_SERVICE_ID, STUDIO_SERVICE_ITEM } from '@/lib/marketing';
 
 export default function CampaignBuilder() {
   const { id } = useParams();
@@ -48,7 +48,6 @@ export default function CampaignBuilder() {
 
   const create = async () => {
     if (!form.name.trim()) return toast({ title: 'Campaign name is required', variant: 'destructive' });
-    if (!form.portfolio_item_id) return toast({ title: 'Select a project', variant: 'destructive' });
     setSaving(true);
     try {
       const created = await base44.entities.Campaign.create(form);
@@ -105,6 +104,7 @@ export default function CampaignBuilder() {
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Project</label>
             <select value={form.portfolio_item_id} onChange={(e) => onProjectChange(e.target.value)} className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
               <option value="">Select a project…</option>
+              <option value={STUDIO_SERVICE_ID}>{STUDIO_SERVICE_ITEM.title}</option>
               {portfolioItems.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
             </select>
           </div>
