@@ -14,7 +14,7 @@
         "fixed_packages",
         "packages_addons"
       ],
-      "default": "custom_quote",
+      "default": "packages_addons",
       "description": "How pricing is presented to clients. custom_quote = write a price per project; fixed_packages = set tiers; packages_addons = tiers plus selectable add-ons."
     },
     "packages": {
@@ -69,38 +69,10 @@
         ]
       }
     },
-    "default_deposit_mode": {
-      "type": "string",
-      "enum": [
-        "fixed_percent",
-        "tiered",
-        "custom_amount"
-      ],
-      "default": "fixed_percent",
-      "description": "How the deposit amount is determined by default on a new contract"
-    },
     "default_deposit_percent": {
       "type": "number",
       "default": 50,
-      "description": "Deposit percentage when default_deposit_mode is fixed_percent (e.g. 50 = 50%)"
-    },
-    "tiered_deposit_percents": {
-      "type": "object",
-      "description": "Deposit % by project tier when default_deposit_mode is tiered",
-      "properties": {
-        "small": {
-          "type": "number",
-          "default": 50
-        },
-        "standard": {
-          "type": "number",
-          "default": 40
-        },
-        "enterprise": {
-          "type": "number",
-          "default": 33
-        }
-      }
+      "description": "Deposit percentage applied to new contracts (e.g. 50 = 50% upfront, 50% on launch)"
     },
     "standard_terms": {
       "type": "string",
