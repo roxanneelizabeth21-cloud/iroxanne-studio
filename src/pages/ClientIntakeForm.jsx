@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, CheckCircle2, Upload, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle2, Upload, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
 
