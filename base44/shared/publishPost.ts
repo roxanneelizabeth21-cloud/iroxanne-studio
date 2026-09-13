@@ -51,6 +51,7 @@ export async function resolveLinkForPost(base44, post) {
   if (post.link_target === 'None') return '';
   const target = post.link_target || (post.portfolio_item_id ? 'Portfolio page' : 'Consult booking');
 
+  if (target === 'Get a Quote') return `${SITE_URL}/quote`;
   if (target === 'Consult booking') return CONSULT_URL;
   if (target === 'Portfolio page') {
     if (!post.portfolio_item_id) return '';
@@ -192,6 +193,9 @@ export async function publishToPlatform(base44, post, platform) {
 // independently. Throws only when no platform published, so a partial success
 // is reported as 'Partially Published' instead of looking like a total failure.
 export async function publishMarketingPost(base44, post, only = null) {
+  if (post.approval_status !== 'Approved') throw new Error('Post requires approval');
+  if (!String(post.caption || '').trim()) throw new Error('Caption is missing');
+  if (!await resolveMediaUrl(post, base44)) throw new Error('Graphic or video is missing');
   const selected = Array.isArray(only) && only.length
     ? only
     : (Array.isArray(post.publish_targets) && post.publish_targets.length ? post.publish_targets : [post.platform]);
@@ -211,6 +215,7 @@ export async function publishMarketingPost(base44, post, only = null) {
     const statusField = isIG ? 'instagram_publish_status' : 'facebook_publish_status';
     const urlField = isIG ? 'instagram_post_url' : 'facebook_post_url';
     const errField = isIG ? 'instagram_publish_error' : 'facebook_publish_error';
+    if (post[statusField] === 'Published') continue;
     try {
       const result = await publishToPlatform(base44, post, platform);
       patch[statusField] = 'Published';
@@ -225,6 +230,7 @@ export async function publishMarketingPost(base44, post, only = null) {
         // first comment can only be flagged for the owner to paste by hand.
         patch.facebook_comment_status = 'Manual Required';
       }
+      await base44.asServiceRole.entities.MarketingPost.update(post.id, { [statusField]: 'Published', [urlField]: patch[urlField], [errField]: '' });
       successes.push({ platform, ...result });
     } catch (e) {
       patch[statusField] = e.connectionRequired ? 'Connection Required' : 'Failed';
@@ -250,6 +256,7 @@ export async function publishMarketingPost(base44, post, only = null) {
     patch.external_post_id = successes[0].external_id;
     patch.publish_error = errors.join(' | ');
   } else {
+    patch.status = 'Failed';
     patch.publishing_status = 'Failed';
     patch.publish_error = errors.join(' | ');
   }

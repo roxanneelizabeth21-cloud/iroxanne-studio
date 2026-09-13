@@ -65,6 +65,11 @@ export default async function(req) {
   const message=String(error.message).slice(0,500);
   if(job) await e.MarketingProduction.update(job.id,{error:message});
   await e.MarketingAutomation.update(settings.id,{last_run:new Date().toISOString(),last_error:message});
+  const day = new Date().toISOString().slice(0,10);
+  if (settings.last_notice !== day) {
+   await e.MarketingAutomation.update(settings.id,{last_notice:day});
+   try { await b.asServiceRole.integrations.Core.SendEmail({to:'roxanneelizabeth21@gmail.com',subject:'iRoxanne Studio marketing needs attention',body:'Automatic content production could not complete a story. Your existing posts are safe. Open https://iroxannestudio.com/marketing/controls to see the error and production status.'}); } catch {}
+  }
   return Response.json({error:message},{status:500});
  }
 }

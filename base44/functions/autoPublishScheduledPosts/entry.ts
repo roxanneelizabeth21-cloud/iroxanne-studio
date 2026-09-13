@@ -25,6 +25,8 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     const auth = await requireAuthenticated(base44);
     if (!auth.ok) return auth.response;
+    const actor = await base44.auth.me().catch(() => null);
+    if (!actor || (actor.role !== 'admin' && actor.is_service !== true)) return Response.json({error:'Forbidden'}, {status:403});
 
     const ns = await loadNotificationSettings(base44);
     const tz = ns.timezone || 'America/New_York';
@@ -65,7 +67,7 @@ export default async function (req) {
         .filter((t) => ['Facebook', 'Instagram'].includes(t));
       return selected.filter((t) => {
         const isIG = t === 'Instagram';
-        if (p[isIG ? 'instagram_publish_status' : 'facebook_publish_status'] === 'Published') return false;
+        if (['Published', 'Failed', 'Connection Required', 'Permission Required'].includes(p[isIG ? 'instagram_publish_status' : 'facebook_publish_status'])) return false;
         const date = p[isIG ? 'instagram_scheduled_date' : 'facebook_scheduled_date'] || p.scheduled_date;
         if (!date || date > today) return false;
         const time = normalizeTime(p[isIG ? 'instagram_scheduled_time' : 'facebook_scheduled_time'] || p.scheduled_time);
@@ -74,6 +76,7 @@ export default async function (req) {
     };
 
     const due = (posts || [])
+      .filter((p) => p.approval_status === 'Approved')
       .filter((p) => ['Ready', 'Scheduled', 'Approved', 'Partially Published'].includes(p.status))
       .map((p) => ({ post: p, targets: dueTargetsFor(p) }))
       .filter((x) => x.targets.length > 0);
@@ -86,6 +89,7 @@ export default async function (req) {
       const firstLine = String(p.hook || (p.caption || '').split('\n')[0] || p.format || 'post').trim().slice(0, 80);
       try {
         const r = await publishMarketingPost(base44, p, targets);
+        if (r.errors?.length) failures.push({id:p.id,platform:targets.join(' + '),error:r.errors.join(' | '),firstLine});
         successes.push({ id: p.id, platform: targets.join(' + '), external_id: r.external_id, firstLine });
       } catch (e) {
         const msg = String(e.message);
