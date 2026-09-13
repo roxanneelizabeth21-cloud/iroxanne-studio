@@ -4,9 +4,9 @@ import ThemeToggle from '@/components/ThemeToggle';
 import BrandLogo from '@/components/BrandLogo';
 
 const NAV_LINKS = [
-  { label: 'Work', href: '#work' },
-  { label: 'Process', href: '#process' },
-  { label: 'About', href: '/about' },
+  { label: 'App Examples', href: '/#work' },
+  { label: 'How It Works', href: '/#process' },
+  { label: 'Meet Roxanne', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -14,8 +14,8 @@ export default function SiteNav() {
   const [open, setOpen] = useState(false);
   const navigateSection = (event, href) => {
     setOpen(false);
-    if (!href.startsWith('#') || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const target = document.getElementById(href.slice(1));
+    if (!href.startsWith('/#') || window.location.pathname !== '/' || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = document.getElementById(href.slice(2));
     if (!target) return;
     event.preventDefault();
     requestAnimationFrame(() => {
