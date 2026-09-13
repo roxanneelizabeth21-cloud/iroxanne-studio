@@ -52,8 +52,8 @@ export default function ContractSign() {
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else { setSigned(true); setContract(data.contract); }
-    } catch {
-      setError('Signing failed. Please try again.');
+    } catch (e) {
+      setError(e?.message || 'Signing failed. Please try again.');
     } finally {
       setSigning(false);
     }
