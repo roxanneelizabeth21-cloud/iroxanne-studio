@@ -22,7 +22,9 @@ function leadStep(p) {
 }
 
 function proposalStep(p) {
-  const expired = p.valid_until && new Date(p.valid_until) < new Date() &&
+  if (p.status === 'changes_requested') return step('Changes requested — review and revise the proposal', 'action', 'proposal');
+  const expiry = p.expires_at || p.valid_until;
+  const expired = expiry && new Date(expiry) < new Date() &&
     !['accepted', 'declined'].includes(p.status);
   if (expired) return step('Expired — extend the date and resend', 'attention', 'proposal');
 
@@ -40,9 +42,18 @@ function contractStep(p) {
   const inv = p._invoice;
   const intake = p._intake;
 
-  const depositDone = inv && (inv.deposit_status === 'paid' || inv.deposit_status === 'waived');
+  const depositDone = inv
+    ? ['paid', 'waived'].includes(inv.deposit_status)
+    : !!p.deposit_paid_at || p.status === 'deposit_paid';
   const balanceOpen = inv && inv.balance_amount > 0 &&
     !['paid', 'waived'].includes(inv.balance_status);
+
+  if (['signed', 'deposit_paid', 'active'].includes(p.status) && !depositDone) {
+    if (!inv) return step('Signed — create the deposit invoice', 'action', 'invoice');
+    return inv.last_sent_at
+      ? step(`Waiting on the ${money(inv.deposit_amount)} deposit`, 'waiting', 'invoice')
+      : step(`Email the ${money(inv.deposit_amount)} deposit request`, 'action', 'invoice');
+  }
 
   switch (p.status) {
     case 'draft':
@@ -60,9 +71,6 @@ function contractStep(p) {
       return step('Deposit in — send the content intake form', 'action', 'contract');
 
     case 'deposit_paid':
-      if (!intake) return step('Deposit in — send the content intake form', 'action', 'contract');
-      return step('Waiting on their content', 'waiting', 'contract');
-
     case 'active': {
       // In build. Content first, then delivery, then the balance.
       if (!intake) return step('In build — send the content intake form', 'action', 'contract');
