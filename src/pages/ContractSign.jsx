@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -83,7 +83,7 @@ export default function ContractSign() {
       <div className="max-w-3xl mx-auto">
         <BrandedPageHeader
           title="Project Agreement"
-          subtitle="Review the terms below and sign to get started."
+          subtitle={signed ? 'Your signed agreement has been saved.' : 'Review the terms below and sign to get started.'}
           projectTitle={contract.project_title}
           clientName={contract.client_name || contract.client_email}
         />
@@ -164,8 +164,12 @@ export default function ContractSign() {
                 Signed by {contract.signer_name} on {contract.signed_at ? new Date(contract.signed_at).toLocaleString() : ''}.
               </p>
               <p className="text-xs text-muted-foreground mt-3">
-                We'll be in touch shortly about your deposit and next steps.
+                We'll be in touch shortly about your deposit and next steps. You can return to this link to view your agreement.
               </p>
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
+                <Button asChild><Link to="/" replace>Done — return to iRoxanne Studio</Link></Button>
+                <PrintButton />
+              </div>
             </div>
           ) : (
             <div className="border-t border-border pt-5 space-y-4">
