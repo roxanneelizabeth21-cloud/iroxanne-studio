@@ -4,9 +4,9 @@ import ThemeToggle from '@/components/ThemeToggle';
 import BrandLogo from '@/components/BrandLogo';
 
 const NAV_LINKS = [
-  { label: 'App Examples', href: '/#work' },
+  { label: 'What I Can Build', href: '/#services' },
   { label: 'How It Works', href: '/#process' },
-  { label: 'Meet Roxanne', href: '/about' },
+  { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 

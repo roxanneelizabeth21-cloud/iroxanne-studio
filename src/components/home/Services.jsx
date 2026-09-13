@@ -1,18 +1,18 @@
 import { Calendar, Megaphone, ShoppingCart, Users, Wrench } from 'lucide-react';
 
 const SERVICES = [
-  { icon: Calendar, title: 'Booking systems', desc: 'Scheduling, appointments, and reservations that fill your calendar.' },
-  { icon: Megaphone, title: 'Marketing tools', desc: 'Content engines and automations that keep you visible.' },
-  { icon: ShoppingCart, title: 'E-commerce', desc: 'Storefronts and checkout that turn visitors into customers.' },
-  { icon: Users, title: 'Client portals', desc: 'Secure logins where clients manage their own stuff.' },
-  { icon: Wrench, title: 'Internal tools', desc: 'Dashboards and workflows that run your back office.' },
+  { icon: Calendar, title: 'Booking systems', desc: 'Let clients request appointments and choose available times.' },
+  { icon: Megaphone, title: 'Marketing tools', desc: 'Organize content, plan posts, and manage your outreach.' },
+  { icon: ShoppingCart, title: 'E-commerce', desc: 'Show your products and manage orders and checkout.' },
+  { icon: Users, title: 'Client portals', desc: 'Give clients a place to view their documents, requests, and updates.' },
+  { icon: Wrench, title: 'Internal tools', desc: 'Bring everyday tasks, records, and project updates together.' },
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="mx-auto max-w-6xl border-t border-border px-6 py-20">
-      <h2 className="font-sans text-3xl font-bold tracking-tight">What I build</h2>
-      <p className="mt-2 text-muted-foreground">One person, end-to-end: design, build, launch, and support.</p>
+    <section id="services" className="scroll-mt-24 mx-auto max-w-6xl border-t border-border px-6 py-20">
+      <h2 className="font-sans text-3xl font-bold tracking-tight">What I can help you build</h2>
+      <p className="mt-2 text-muted-foreground">Have something different in mind? You can start with an idea, and we can explore what its first version might look like.</p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((s) => (
           <div

@@ -41,6 +41,8 @@ import ProjectsPipeline from '@/pages/admin/ProjectsPipeline';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
 import CaseStudy from '@/pages/CaseStudy';
 import About from '@/pages/About';
+import Feedback from '@/pages/Feedback';
+import TestimonialsAdminPage from '@/pages/admin/TestimonialsAdminPage';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
@@ -111,6 +113,7 @@ const AuthenticatedApp = () => {
       <Route path="/book-call" element={<BookCall />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/about" element={<About />} />
+      <Route path="/feedback" element={<Feedback />} />
       <Route path="/contract/:id" element={<ContractSign />} />
       <Route path="/invoice/:id" element={<InvoicePay />} />
       <Route path="/handoff/:id" element={<ProjectHandoff />} />
@@ -122,6 +125,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/projects" element={<ProjectsPipeline />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
+        <Route path="/admin/testimonials" element={<TestimonialsAdminPage />} />
         <Route path="/admin/contracts" element={<ContractsAdminPage />} />
         <Route path="/admin/proposals" element={<ProposalsAdminPage />} />
         <Route path="/admin/call-availability" element={<CallAvailabilityPage />} />

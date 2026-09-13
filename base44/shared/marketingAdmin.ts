@@ -285,7 +285,7 @@ export function portfolioSection(item: any): string {
 export async function loadApprovedTestimonials(base44, portfolioItemId?: string): Promise<any[]> {
   try {
     const all = await base44.asServiceRole.entities.Testimonial.list('-created_date', 50);
-    let pool = (all || []).filter((t) => t.approved_for_use === true);
+    let pool = (all || []).filter((t) => t.approved_for_use === true && t.consent_to_publish === true && !t.request_pending);
     if (portfolioItemId) {
       const forItem = pool.filter((t) => t.portfolio_item_id === portfolioItemId);
       if (forItem.length >= 2) pool = forItem;

@@ -19,6 +19,7 @@ const NAV_TOP = [
   { to: '/admin/projects', label: 'Projects', Icon: FolderKanban, subtitle: 'Every client, and the one thing to do next' },
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
   { to: '/admin/portfolio', label: 'Portfolio', Icon: LayoutDashboard },
+  { to: '/admin/testimonials', label: 'Testimonials', Icon: MessageSquare },
 ];
 
 // Reached from a project card in the normal flow. Listed here so they stay
