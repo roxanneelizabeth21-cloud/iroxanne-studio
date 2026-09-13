@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,21 @@ const STATUS_STYLES = {
 
 export default function ContractsAdminPage() {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const requestedContract = searchParams.get('contract');
+
+  useEffect(() => {
+    if (!requestedContract) return;
+    let cancelled = false;
+    base44.entities.Contract.get(requestedContract).then(contract => {
+      if (cancelled) return;
+      if (['draft', 'sent'].includes(contract.status)) setEditing({ contract });
+      else setHandoff(contract);
+    }).catch(() => {
+      if (!cancelled) toast({ title: 'Agreement could not be opened', description: 'It may no longer be available, or you may need to sign in again.', variant: 'destructive' });
+    });
+    return () => { cancelled = true; };
+  }, [requestedContract, toast]);
   const [leads, setLeads] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [settings, setSettings] = useState(null);
