@@ -13,6 +13,7 @@ export default function Services() {
     <section id="services" className="scroll-mt-24 mx-auto max-w-6xl border-t border-border px-6 py-20">
       <h2 className="font-sans text-3xl font-bold tracking-tight">What I can help you build</h2>
       <p className="mt-2 text-muted-foreground">Have something different in mind? You can start with an idea, and we can explore what its first version might look like.</p>
+      <p className="mt-3 text-muted-foreground">I can build the app with you, or offer agreed guidance while you build it yourself. <a href="/quote?support=guidance" className="underline underline-offset-4">Ask about guidance</a>.</p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((s) => (
           <div
