@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ClipboardList } from 'lucide-react';
+import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ClipboardList, Trash2 } from 'lucide-react';
 import ContractForm from '@/components/admin/ContractForm';
 
 import HandoffPanel from '@/components/admin/HandoffPanel';
@@ -75,6 +75,28 @@ export default function ContractsAdminPage() {
 
   const startFromLead = (lead) => {
     setEditing({ lead });
+  };
+
+  const handleDeleteContract = async (contract) => {
+    if (!window.confirm(`Delete agreement "${contract.project_title}"? This cannot be undone.`)) return;
+    try {
+      await base44.entities.Contract.delete(contract.id);
+      toast({ title: 'Agreement deleted' });
+      await load();
+    } catch (e) {
+      toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteLead = async (lead) => {
+    if (!window.confirm(`Delete quote request from "${lead.name || lead.email}"? This cannot be undone.`)) return;
+    try {
+      await base44.entities.Lead.delete(lead.id);
+      toast({ title: 'Quote request deleted' });
+      await load();
+    } catch (e) {
+      toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });
+    }
   };
 
   const handleSave = async (payload) => {
@@ -166,9 +188,14 @@ export default function ContractsAdminPage() {
                     <p className="text-xs text-primary mt-0.5">Est. {money(lead.estimated_price_low)}–{money(lead.estimated_price_high)}</p>
                   )}
                 </div>
-                <Button size="sm" onClick={() => startFromLead(lead)} className="gap-1 shrink-0">
-                  <Plus className="h-3.5 w-3.5" /> Create Contract
-                </Button>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button size="sm" onClick={() => startFromLead(lead)} className="gap-1">
+                    <Plus className="h-3.5 w-3.5" /> Create Contract
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDeleteLead(lead)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -224,6 +251,9 @@ export default function ContractsAdminPage() {
                     } catch (e) { toast({ title: 'Failed to send intake form', variant: 'destructive' }); }
                   }}><ClipboardList className="h-3.5 w-3.5" /> Send Intake</Button>
                 )}
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDeleteContract(c)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
             </div>
           ))}
