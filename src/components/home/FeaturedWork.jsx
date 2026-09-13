@@ -6,9 +6,9 @@ export default function FeaturedWork({ items, loading }) {
   return (
     <section id="work" tabIndex={-1} aria-label="Project examples" className="scroll-mt-24 focus:outline-none bg-card py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Selected work</p>
+        <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>App examples</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          A few projects I’ve worked on
+          See what an idea can become
         </h2>
         <p className="mt-3 max-w-[480px] text-[15px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
           Each project starts with someone’s idea. These examples show some of the different ways an app can support a new venture or an existing business.
