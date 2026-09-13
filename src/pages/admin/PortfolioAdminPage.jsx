@@ -69,7 +69,7 @@ export default function PortfolioAdminPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold">Portfolio</h1>
-          <p className="text-sm text-muted-foreground mt-1">Projects shown on the home page "Our work" grid.</p>
+          <p className="text-sm text-muted-foreground mt-1">Edit an app and check “Show on homepage” to choose its preview. Up to three checked apps appear, with lower display orders first.</p>
         </div>
         <Button onClick={() => setEditing('new')}><Plus className="h-4 w-4" /> Add project</Button>
       </div>
@@ -97,6 +97,7 @@ export default function PortfolioAdminPage() {
                   <span>{item.category}</span>
                   <span>•</span>
                   <span>Order {item.sort_order ?? 0}</span>
+                  <span>{item.featured ? 'Homepage selected' : 'Not on homepage'}</span>
                 </div>
                 <div className="mt-2 flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => setEditing(item)}><Pencil className="h-3.5 w-3.5" /> Edit</Button>

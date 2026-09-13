@@ -106,12 +106,12 @@ export default function PortfolioItemForm({ initial, onSave, onCancel, saving })
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label>Sort order</Label>
+          <Label>Homepage display order (lower first)</Label>
           <Input type="number" value={form.sort_order} onChange={(e) => set('sort_order', e.target.value)} />
         </div>
         <div className="flex flex-col justify-end gap-4 pt-1">
           <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked={!!form.featured} onCheckedChange={(v) => set('featured', !!v)} /> Featured
+            <Checkbox checked={!!form.featured} onCheckedChange={(v) => set('featured', !!v)} /> Show on homepage
           </label>
           <label className="flex items-center gap-2 text-sm">
             <Checkbox checked={!!form.client_shareable} onCheckedChange={(v) => set('client_shareable', !!v)} /> Client name shareable
@@ -119,6 +119,7 @@ export default function PortfolioItemForm({ initial, onSave, onCancel, saving })
         </div>
       </div>
 
+      <p className="text-sm text-muted-foreground">The homepage shows up to three checked apps, ordered by display order. Uncheck an app to hide its preview without deleting it.</p>
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>Cancel</Button>
         <Button type="submit" disabled={saving}>

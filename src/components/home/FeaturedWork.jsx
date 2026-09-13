@@ -8,14 +8,14 @@ export default function FeaturedWork({ items, loading }) {
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>App examples</p>
         <h2 className="text-[28px] md:text-[32px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Three recent projects
+          Selected projects
         </h2>
         <p className="mt-3 max-w-[480px] text-[15px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
           Each project starts with someone’s idea. These examples show some of the different ways an app can support a new venture or an existing business.
         </p>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(loading ? Array.from({ length: 3 }) : [...items].sort((a,b) => String(b.date_built || b.created_date || '').localeCompare(String(a.date_built || a.created_date || ''))).slice(0,3)).map((item, i) => {
+          {(loading ? Array.from({ length: 3 }) : items.slice(0,3)).map((item, i) => {
             const hasCaseStudy = !!item?.slug;
             const inner = (
               <>

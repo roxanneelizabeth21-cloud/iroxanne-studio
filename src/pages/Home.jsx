@@ -35,7 +35,7 @@ export default function Home() {
       try {
         const [proj, test, settings] = await Promise.all([
           base44.entities.PortfolioItem
-            .list('-sort_order', 10)
+            .filter({ featured: true }, 'sort_order', 3)
             .catch(() => []),
 
           base44.functions.invoke('testimonialFeedback', { action: 'public' })
@@ -48,7 +48,7 @@ export default function Home() {
 
         if (!active) return;
 
-        setProjects((proj || []).filter((p) => !/eventflow/i.test(p.title || p.client_name || p.business_name || '')));
+        setProjects(proj || []);
         setTestimonials(test);
         setHeroBackgroundImage(settings?.[0]?.hero_background_image || null);
       } finally {
