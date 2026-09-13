@@ -33,6 +33,8 @@ export default async function(req) {
     const auth = await requireAuthenticated(base44);
     if (!auth.ok) return auth.response;
 
+    const automation = await base44.asServiceRole.entities.MarketingAutomation.list();
+    if (automation[0]?.enabled) return Response.json({skipped:'Studio production handles the weekly schedule'});
     const [campaigns, portfolioItems, posts, brandProfile, templates] = await Promise.all([
       base44.asServiceRole.entities.Campaign.list(),
       base44.asServiceRole.entities.PortfolioItem.list(),

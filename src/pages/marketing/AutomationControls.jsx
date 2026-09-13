@@ -1,3 +1,4 @@
+import ProductionControls from '@/components/marketing/ProductionControls';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
 import CampaignActivePanel from '@/components/marketing/controls/CampaignActivePanel';
 import ProjectRotationPanel from '@/components/marketing/controls/ProjectRotationPanel';
@@ -6,6 +7,7 @@ import ProjectRotationPanel from '@/components/marketing/controls/ProjectRotatio
 export default function AutomationControls() {
   return (
     <div>
+      <ProductionControls />
       <HowThisWorks
         steps={[
           'Switch on the campaigns you want promoted this week — the generator fills their coming 7 days.',
