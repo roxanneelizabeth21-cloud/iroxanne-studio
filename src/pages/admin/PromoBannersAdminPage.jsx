@@ -7,7 +7,10 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import PromoBannerForm from '@/components/admin/PromoBannerForm';
 
-const PAGE_LABELS = { all: 'All', home: 'Home', music: 'Music', shop: 'Shop', release: 'Release' };
+// Display labels for stored target_pages keys. Must stay aligned with
+// PAGE_OPTIONS in PromoBannerForm.jsx — 'music', 'shop' and 'release' were
+// music-app pages that don't exist in the studio app.
+const PAGE_LABELS = { all: 'All pages', home: 'Home' };
 
 function pagesList(str) {
   return String(str || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
