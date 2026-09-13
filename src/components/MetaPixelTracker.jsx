@@ -9,7 +9,8 @@ export default function MetaPixelTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+    // Disabled until a Studio-owned pixel is explicitly configured.
+    if (false && typeof window !== 'undefined' && typeof window.fbq === 'function') {
       window.fbq('track', 'PageView');
     }
   }, [location.pathname]);
