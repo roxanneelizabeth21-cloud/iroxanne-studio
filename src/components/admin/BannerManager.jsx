@@ -5,14 +5,16 @@ import { Button } from '@/components/ui/button';
 import MediaUploader from '@/components/admin/MediaUploader';
 import { useToast } from '@/components/ui/use-toast';
 
+// Pages this app actually serves. The previous list (Music, Videos, Gallery,
+// Store, Press Kit) was inherited from the music app and none of those routes
+// exist here.
 const PAGES = [
-  { key: 'music', label: 'Music' },
+  { key: 'home', label: 'Home' },
   { key: 'about', label: 'About' },
-  { key: 'videos', label: 'Videos' },
-  { key: 'gallery', label: 'Gallery' },
-  { key: 'store', label: 'Store' },
+  { key: 'quote', label: 'Get a Quote' },
   { key: 'contact', label: 'Contact' },
-  { key: 'press', label: 'Press Kit' },
+  { key: 'privacy', label: 'Privacy' },
+  { key: 'terms', label: 'Terms' },
 ];
 
 export default function BannerManager() {

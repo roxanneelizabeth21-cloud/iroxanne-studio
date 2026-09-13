@@ -78,7 +78,7 @@ export default function Templates() {
       <HowThisWorks
         steps={[
           'A template is the shape of a video: how long it runs and which pieces it needs.',
-          'Each piece is a slot — a line of text, a clip, or a music moment — and the AI fills them in for you.',
+          'Each piece is a slot — a line of text, a clip, or an image — and the AI fills them in for you.',
           'Use New Template to add your own, or open one to change its slots.',
           'When you write a video post, pick the template and the assembly checklist is built from it.',
         ]}

@@ -92,7 +92,7 @@ Return concise plain-language values for: creative_concept, mood, subject, setti
       const avoid = [];
       if (choices.no_person) avoid.push('no people, no faces, no hands');
       const preserve = [];
-      if (choices.artwork) preserve.push('the mood and palette of the approved release artwork');
+      if (choices.artwork) preserve.push('the mood and palette of the approved project artwork');
       if (choices.photo) preserve.push('a photographic, real-world treatment');
 
       const res = await base44.functions.invoke('generateMarketingImage', {

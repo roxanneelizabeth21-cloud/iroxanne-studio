@@ -2,7 +2,7 @@ import { ArrowUp, ArrowDown, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const SOURCE_LABEL = { library: 'From library', release: 'From release', ai: 'AI slide' };
+const SOURCE_LABEL = { library: 'From library', release: 'From project', ai: 'AI slide' };
 
 // Ordered carousel cards. Meta shows them left to right in this order.
 export default function SlideList({ slides, onChange }) {

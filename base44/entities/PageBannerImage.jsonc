@@ -4,7 +4,7 @@
   "properties": {
     "page_key": {
       "type": "string",
-      "description": "Identifier for the page this banner belongs to (e.g. music, about, videos)"
+      "description": "Identifier for the page this banner belongs to (e.g. home, about, quote)"
     },
     "image_url": {
       "type": "string",

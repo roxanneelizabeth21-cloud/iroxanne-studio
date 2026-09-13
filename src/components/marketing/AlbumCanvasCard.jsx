@@ -9,7 +9,7 @@ export default function AlbumCanvasCard({ canvas, onDelete, onDuplicate }) {
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return (
     <div className="rounded-lg border border-border/60 overflow-hidden bg-card">
-      <img src={canvas.image_url} alt={canvas.title || 'Album canvas'} className="w-full object-cover" />
+      <img src={canvas.image_url} alt={canvas.title || 'Case study card'} className="w-full object-cover" />
       <div className="p-3 space-y-2">
         <div className="min-w-0">
           <p className="text-sm font-medium truncate">{canvas.title || canvas.project_title}</p>

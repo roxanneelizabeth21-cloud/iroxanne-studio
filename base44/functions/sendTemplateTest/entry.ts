@@ -9,9 +9,9 @@ import { unsubscribeUrl } from '../../shared/subscriberEmail.ts';
 // way the real send does — same shell, same merge-field substitution — using
 // sample data, and emails it to the signed-in admin.
 const SAMPLE: Record<string, Record<string, any>> = {
-  fan_welcome: { fan_name: 'Alex', email: 'fan@example.com', site_url: CANONICAL_URL, music_url: `${CANONICAL_URL}/consult` },
-  admin_new_subscriber: { email: 'fan@example.com', name: 'Alex', source: 'newsletter', utm: 'instagram / social / launch', signed_up: new Date().toLocaleString() },
-  admin_new_inquiry: { name: 'Alex', email: 'fan@example.com', inquiry_type: 'collaboration', message_subject: 'Custom app inquiry', submitted: new Date().toLocaleString() },
+  fan_welcome: { fan_name: 'Alex', email: 'alex@example.com', site_url: CANONICAL_URL, music_url: `${CANONICAL_URL}/quote` },
+  admin_new_subscriber: { email: 'alex@example.com', name: 'Alex', source: 'newsletter', utm: 'instagram / social / launch', signed_up: new Date().toLocaleString() },
+  admin_new_inquiry: { name: 'Alex', email: 'alex@example.com', inquiry_type: 'new project', message_subject: 'Custom app inquiry', submitted: new Date().toLocaleString() },
   admin_daily_posts: { count: 2, plural: 's', date: new Date().toISOString().slice(0, 10) },
   admin_post_time: { count: 1, plural: '', date: new Date().toISOString().slice(0, 10), time: '09:00' },
   admin_weekly_digest: { week_start: '2026-08-19', week_end: '2026-08-31', completed_count: 4, scheduled_count: 6 },

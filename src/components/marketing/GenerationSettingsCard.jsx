@@ -6,7 +6,7 @@ const HELP = 'text-xs text-muted-foreground/80';
 
 const COUNTS = [
   { key: 'posts_per_campaign_week', label: 'Posts per week, per active campaign', fallback: 4 },
-  { key: 'posts_per_evergreen_week', label: 'Posts per week, per evergreen song', fallback: 3 },
+  { key: 'posts_per_evergreen_week', label: 'Posts per week, per evergreen project', fallback: 3 },
 ];
 
 const MIX = [
