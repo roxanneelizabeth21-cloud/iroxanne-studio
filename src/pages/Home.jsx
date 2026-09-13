@@ -17,6 +17,19 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const target = document.getElementById(hash.slice(1));
+      if (target) {
+        setTimeout(() => {
+          target.style.scrollMarginTop = '96px';
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     (async () => {

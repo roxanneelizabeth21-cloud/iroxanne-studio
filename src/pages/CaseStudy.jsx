@@ -26,7 +26,7 @@ export default function CaseStudy() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
       <main className="mx-auto max-w-4xl px-5 md:px-8 pt-[130px] pb-20">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <Link to="/#work" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
           <ArrowLeft className="h-4 w-4" /> Back to work
         </Link>
 
@@ -36,7 +36,7 @@ export default function CaseStudy() {
           <div className="py-32 text-center">
             <h1 className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Project not found</h1>
             <p className="mt-2 text-[15px] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>This case study isn't available yet.</p>
-            <Link to="/" className="mt-6 inline-block text-[14px] font-medium text-[#876b26] dark:text-[#D5BB82] hover:underline" style={{ fontFamily: "'Inter', sans-serif" }}>View all work</Link>
+            <Link to="/#work" className="mt-6 inline-block text-[14px] font-medium text-[#876b26] dark:text-[#D5BB82] hover:underline" style={{ fontFamily: "'Inter', sans-serif" }}>View all work</Link>
           </div>
         ) : (
           <article className="mt-8">
