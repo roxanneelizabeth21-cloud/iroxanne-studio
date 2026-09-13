@@ -49,6 +49,7 @@ export default async function (req: Request) {
       if (amount <= 0) return Response.json({ error: 'Balance is already paid' }, { status: 409 });
     }
 
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isSafeInteger(Math.round(amount * 100))) return Response.json({error:'Invalid payment amount'}, {status:400});
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('square');
     if (!accessToken) return Response.json({ error: 'Square payments are not configured yet' }, { status: 503 });
 
@@ -100,7 +101,10 @@ export default async function (req: Request) {
       return Response.json({ error: sqErr ? `${sqErr.detail || sqErr.code}${sqErr.field ? ` (${sqErr.field})` : ''}` : 'Could not start checkout' }, { status: 502 });
     }
 
-    return Response.json({ url: data.payment_link?.url || data.payment_link?.long_url });
+    const link = data.payment_link;
+    if (!link?.order_id || !(link.url || link.long_url)) throw new Error('Square did not return a bound checkout');
+    await base44.asServiceRole.entities.SquareCheckout.create({invoice_id:id,order_id:link.order_id,location_id:locationId,kind,currency:'USD',expected_amount_cents:Math.round(amount*100),...(milestoneIndex != null ? {milestone_index:milestoneIndex} : {}),status:'pending',last_checked_at:new Date().toISOString()});
+    return Response.json({ url: link.url || link.long_url });
   } catch (error) {
     console.log('createSquareCheckout error', (error as Error)?.message);
     return Response.json({ error: (error as Error).message }, { status: 500 });
