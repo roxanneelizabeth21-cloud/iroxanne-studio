@@ -1,37 +1,118 @@
-// Shared Stripe -> Invoice sync logic used by the Stripe webhook (and reusable
-// by other payment paths). Records a Payment ledger entry, recomputes the
-// invoice deposit/balance/milestone + overall status, and activates the
-// contract once the deposit is settled. Idempotent by request_id.
+// The single writer for money against an invoice.
+//
+// Both payment paths go through here — the Stripe webhook and the admin's
+// manual "record payment" — so the ledger entry, the overpayment guard, the
+// milestone marking, the deposit/balance recompute and the contract roll-forward
+// exist in exactly one place. This logic used to be duplicated in
+// recordPayment/entry.ts and had already drifted: the manual path couldn't mark
+// a milestone paid or backfill contract.deposit_paid_at, and the Stripe path
+// had no overpayment guard.
+//
+// Idempotent by request_id. Callers supply it: `stripe_<payment_intent>` for
+// webhooks, a client-generated UUID for admin entry.
 import { paymentSummary } from './paymentSummary.ts';
 
-const cents = (n: unknown) => Math.round((Number(n) || 0) * 100);
+export const PAYMENT_KINDS = ['deposit', 'balance', 'milestone', 'other'] as const;
+export const PAYMENT_METHODS = [
+  'stripe', 'square', 'zelle', 'cashapp', 'venmo', 'paypal', 'cash', 'check', 'transfer', 'other',
+] as const;
 
-export async function applyInvoicePayment(
-  base44: any,
-  opts: { invoice_id: string; amount: number; kind: string; reference: string; milestoneIndex?: number; source?: string }
-) {
+/** Error carrying the HTTP status a caller should return. */
+export class PaymentError extends Error {
+  status: number;
+  constructor(message: string, status = 400) {
+    super(message);
+    this.status = status;
+  }
+}
+
+export type ApplyPaymentOpts = {
+  invoice_id: string;
+  amount: number;
+  kind: string;
+  method?: string;
+  reference?: string;
+  request_id: string;
+  notes?: string;
+  paid_at?: string;
+  milestoneIndex?: number | null;
+  source?: string;
+  /** Reject an amount larger than what's outstanding for this stage. */
+  enforceOutstanding?: boolean;
+};
+
+export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
   const db = base44.asServiceRole.entities;
-  const { invoice_id, kind, reference } = opts;
+  const { invoice_id, request_id, reference = '', source } = opts;
+  const kind = opts.kind;
+  const method = opts.method || 'stripe';
   const amount = Math.round(Number(opts.amount) * 100) / 100;
   const milestoneIndex = opts.milestoneIndex ?? null;
-  if (!Number.isFinite(amount) || amount <= 0) throw new Error('Invalid payment amount');
-  if (!['deposit', 'balance', 'milestone', 'other'].includes(kind)) throw new Error('Invalid payment kind');
+
+  if (!invoice_id) throw new PaymentError('Invoice is required.', 400);
+  if (!request_id || typeof request_id !== 'string') throw new PaymentError('Request ID is required.', 400);
+  if (!Number.isFinite(amount) || amount <= 0) throw new PaymentError('Enter a positive payment amount.', 400);
+  if (!PAYMENT_KINDS.includes(kind as any)) throw new PaymentError('Invalid payment type.', 400);
+  if (!PAYMENT_METHODS.includes(method as any)) throw new PaymentError('Invalid payment method.', 400);
+
+  const paidAtDate = opts.paid_at ? new Date(opts.paid_at) : new Date();
+  if (Number.isNaN(paidAtDate.getTime())) throw new PaymentError('Invalid payment date.', 400);
+  const paidAt = paidAtDate.toISOString();
 
   const invoice = await db.Invoice.get(invoice_id);
-  if (invoice.status === 'cancelled') throw new Error('Invoice is cancelled');
+  if (!invoice) throw new PaymentError('Invoice not found.', 404);
+  if (invoice.status === 'cancelled') throw new PaymentError('This invoice is cancelled.', 409);
 
-  const request_id = `stripe_${reference}`;
+  // --- Idempotency -----------------------------------------------------------
   let payments = await db.Payment.filter({ invoice_id }, '-created_date', 1000);
   const existing = payments.find((p: any) => p.request_id === request_id);
-  if (existing) return { duplicate: true, payment: existing, invoice };
+  if (existing) {
+    const sameDetails =
+      Math.round(Number(existing.amount) * 100) === Math.round(amount * 100) &&
+      existing.kind === kind &&
+      existing.method === method;
+    if (!sameDetails) {
+      throw new PaymentError(
+        'This request was already recorded with different details. Refresh the invoice before entering another payment.',
+        409
+      );
+    }
+    return { duplicate: true, payment: existing, invoice, summary: paymentSummary(invoice, payments) };
+  }
+
+  // --- Milestone validation --------------------------------------------------
+  const milestones = Array.isArray(invoice.milestones) ? invoice.milestones : [];
+  if (kind === 'milestone') {
+    if (milestoneIndex == null || !milestones[milestoneIndex]) {
+      throw new PaymentError('Milestone not found on this invoice.', 404);
+    }
+    const m = milestones[milestoneIndex];
+    if (m.status === 'paid') throw new PaymentError('That milestone is already paid.', 409);
+    if (opts.enforceOutstanding && amount > Number(m.amount) + 0.001) {
+      throw new PaymentError('Amount exceeds this milestone.', 400);
+    }
+  }
 
   const before = paymentSummary(invoice, payments);
-  await db.Invoice.update(invoice_id, {
+
+  // --- Overpayment guard -----------------------------------------------------
+  // Milestones draw down the balance, so they're checked against it too.
+  if (opts.enforceOutstanding) {
+    const cap = kind === 'deposit' ? before.depositOutstanding : before.balanceOutstanding;
+    if (kind !== 'other' && amount > cap + 0.001) {
+      throw new PaymentError('Amount exceeds the unpaid amount for this payment stage.', 400);
+    }
+  }
+
+  // Persist a baseline before the first ledger entry so payments recorded
+  // before the ledger existed are retained across retries.
+  const baseline = {
     legacy_deposit_cents: before.legacyDeposit,
     legacy_balance_cents: before.legacyBalance,
-  }).catch(() => {});
+  };
+  await db.Invoice.update(invoice_id, baseline).catch(() => {});
 
-  const paidAt = new Date().toISOString();
+  // --- Write the ledger entry ------------------------------------------------
   const payment = await db.Payment.create({
     invoice_id,
     contract_id: invoice.contract_id || '',
@@ -40,24 +121,23 @@ export async function applyInvoicePayment(
     project_title: invoice.project_title,
     amount,
     kind,
-    method: 'stripe',
+    method,
     request_id,
     reference: String(reference).slice(0, 300),
-    notes: opts.source ? `Stripe checkout (${opts.source})` : 'Stripe checkout payment',
+    notes: String(opts.notes || (source ? `Stripe checkout (${source})` : '')).slice(0, 1000),
     paid_at: paidAt,
   });
 
   // Mark the specific milestone paid when this payment targets one.
-  if (kind === 'milestone' && milestoneIndex != null && Array.isArray(invoice.milestones) && invoice.milestones[milestoneIndex]) {
-    const milestones = invoice.milestones.map((m: any, i: number) => (i === milestoneIndex ? { ...m, status: 'paid' } : m));
-    await db.Invoice.update(invoice_id, { milestones }).catch(() => {});
+  if (kind === 'milestone' && milestoneIndex != null && milestones[milestoneIndex]) {
+    const next = milestones.map((m: any, i: number) => (i === milestoneIndex ? { ...m, status: 'paid' } : m));
+    await db.Invoice.update(invoice_id, { milestones: next }).catch(() => {});
   }
 
+  // --- Recompute -------------------------------------------------------------
   payments = await db.Payment.filter({ invoice_id }, '-created_date', 1000);
-  const summary = paymentSummary(
-    { ...invoice, legacy_deposit_cents: before.legacyDeposit, legacy_balance_cents: before.legacyBalance },
-    payments
-  );
+  const summary = paymentSummary({ ...invoice, ...baseline }, payments);
+
   const depositStatus =
     invoice.deposit_status === 'waived' || summary.deposit === 0
       ? 'waived'
@@ -77,26 +157,30 @@ export async function applyInvoicePayment(
     deposit_status: depositStatus,
     deposit_paid_amount: summary.depositPaid,
     deposit_paid_at: depositStatus === 'paid' ? invoice.deposit_paid_at || paidAt : invoice.deposit_paid_at,
-    deposit_method: kind === 'deposit' ? 'stripe' : invoice.deposit_method,
+    deposit_method: kind === 'deposit' ? method : invoice.deposit_method,
     balance_amount: summary.balance,
     balance_paid_amount: summary.balancePaid,
     balance_status: balanceStatus,
     status: summary.outstanding === 0 ? 'paid' : ['paid', 'waived'].includes(depositStatus) ? 'deposit_paid' : 'open',
   });
 
-  // Activate the contract once the deposit is settled.
+  // --- Roll the contract forward --------------------------------------------
+  // Applies to every method, not just Stripe — an offline deposit has to
+  // activate the project and stamp deposit_paid_at the same way.
   if (invoice.contract_id && ['paid', 'waived'].includes(depositStatus)) {
     try {
       const contract = await db.Contract.get(invoice.contract_id);
-      if (['signed', 'deposit_paid'].includes(contract.status)) {
-        await db.Contract.update(contract.id, {
-          status: 'active',
-          stripe_payment_intent: reference,
-          deposit_paid_at: depositStatus === 'paid' ? paidAt : contract.deposit_paid_at,
-        });
+      if (contract) {
+        const changes: Record<string, unknown> = {};
+        if (['signed', 'deposit_paid'].includes(contract.status)) changes.status = 'active';
+        if (!contract.deposit_paid_at && depositStatus === 'paid') changes.deposit_paid_at = paidAt;
+        if (method === 'stripe' && reference && !contract.stripe_payment_intent) {
+          changes.stripe_payment_intent = reference;
+        }
+        if (Object.keys(changes).length > 0) await db.Contract.update(contract.id, changes);
       }
     } catch (e) {
-      console.log('contract activation failed', (e as Error)?.message);
+      console.log('contract roll-forward failed', (e as Error)?.message);
     }
   }
 
