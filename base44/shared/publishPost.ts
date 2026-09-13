@@ -34,14 +34,14 @@ export async function resolveMediaUrl(post, base44) {
 
 export const PUBLIC_SITE_URL = CANONICAL_URL;
 const SITE_URL = PUBLIC_SITE_URL;
-const CONSULT_URL = `${SITE_URL}/consult`;
+const CONSULT_URL = `${SITE_URL}/book-call`;
 
 // The public page for a portfolio item: its live project URL if set, otherwise
 // the studio's /portfolio/<slug> page. Mirrors src/lib/postLink.js on the backend.
 function portfolioPageUrl(item) {
   if (!item) return '';
   if (item.project_url) return item.project_url;
-  if (item.slug) return `${SITE_URL}/portfolio/${item.slug}`;
+  if (item.slug) return `${SITE_URL}/work/${item.slug}`;
   return '';
 }
 
@@ -49,6 +49,7 @@ function portfolioPageUrl(item) {
 // the portfolio project page, the consult-booking page, or none. Direct links —
 // no Open Graph proxy step.
 export async function resolveLinkForPost(base44, post) {
+  if (post.create_post_state && Object.prototype.hasOwnProperty.call(post.create_post_state, 'link')) return post.create_post_state.link || '';
   if (post.link_target === 'None') return '';
   const target = post.link_target || (post.portfolio_item_id ? 'Portfolio page' : 'Consult booking');
 

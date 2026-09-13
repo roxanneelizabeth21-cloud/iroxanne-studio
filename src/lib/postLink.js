@@ -8,12 +8,12 @@ export function defaultLinkTarget(item) {
   if (!item?.id || item.id === '__studio_service__') return 'Get a Quote';
   return 'Portfolio page';
 }
-export function consultBookingUrl() { return `${SITE_URL}/consult`; }
-export function getQuoteUrl() { return `${SITE_URL}/get-quote`; }
+export function consultBookingUrl() { return `${SITE_URL}/book-call`; }
+export function getQuoteUrl() { return `${SITE_URL}/quote`; }
 export function portfolioPageUrl(item) {
   if (!item) return '';
   if (item.project_url) return item.project_url;
-  if (item.slug) return `${SITE_URL}/portfolio/${item.slug}`;
+  if (item.slug) return `${SITE_URL}/work/${item.slug}`;
   return '';
 }
 export function pageUrl(item, target) {

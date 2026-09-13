@@ -43,21 +43,18 @@ export default async function(req) {
   });
   // Owner requires personal approval for every post; AI checks never approve.
   const automatic=false;
-  for(const platform of ['Facebook','Instagram']) {
-   const key=platform.toLowerCase()+'_post_id';
-   if(job[key]) continue;
-   // Recover after a record-save timeout without creating another variant.
-   const marker='studio-production:'+job.id+':'+platform;
+  if (!job.facebook_post_id && !job.instagram_post_id) {
+   const marker='studio-production:'+job.id+':story';
    const existing=await e.MarketingPost.filter({description:marker},'-created_date',1);
    const post=existing[0]||await e.MarketingPost.create({
-    description:marker,platform,publish_targets:[platform],format:'Feed Post',content_bucket:'Authentic/Personal',
-    caption:content[platform.toLowerCase()],hook:content.hook,image_prompt:content.image_prompt,
-    media_file_url:image_url,media_type:'image',scheduled_date:slot.date,scheduled_time:platform==='Facebook'?'12:00':'18:00',
-    scheduled_timezone:'America/New_York',status:automatic?'Scheduled':'Pending Review',
-    approval_status:automatic?'Approved':'Pending Review',publish_mode:automatic?'auto':'manual',
-    link_target:'None',auto_generated:true
+    description:marker,platform:'Facebook',publish_targets:['Facebook','Instagram'],
+    format:'Feed Post',content_bucket:'Authentic/Personal',caption:content.facebook,
+    hook:content.hook,image_prompt:content.image_prompt,media_file_url:image_url,media_type:'image',
+    scheduled_date:slot.date,scheduled_time:'12:00',scheduled_timezone:'America/New_York',
+    status:'Pending Review',approval_status:'Pending Review',publish_mode:'manual',link_target:'None',
+    create_post_state:{platformIds:['facebook','instagram'],platformCaptions:{facebook:content.facebook,instagram:content.instagram},link:'',goal:'Build brand awareness'}
    });
-   await e.MarketingProduction.update(job.id,{[key]:post.id});
+   await e.MarketingProduction.update(job.id,{facebook_post_id:post.id,instagram_post_id:post.id});
   }
   await e.MarketingProduction.update(job.id,{phase:'complete',error:quality?.pass?'':String(quality?.reason||'Needs visual review')});
   await e.MarketingAutomation.update(settings.id,{last_run:new Date().toISOString(),last_error:''});

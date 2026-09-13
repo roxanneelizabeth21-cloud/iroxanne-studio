@@ -148,9 +148,9 @@ export default function CreatePost() {
   }, [ensurePost, queue, toast, portfolioItems]);
 
   // Canonical post-field change (media, copy, schedule, approval).
-  const patchPost = useCallback(async (fields, deferred) => {
+  const patchPost = useCallback(async (fields, deferred, ownerApproval = false) => {
     const contentKeys = ['caption', 'hashtags', 'hook', 'cta', 'media_file_url', 'media_clip_id', 'media_type', 'visual_direction'];
-    if (contentKeys.some(k => k in fields)) fields = { ...fields, approval_status: 'Pending Review', publish_mode: 'manual' };
+    if (!ownerApproval && contentKeys.some(k => k in fields)) fields = { ...fields, approval_status: 'Pending Review', publish_mode: 'manual' };
     setPostBoth((p) => (p ? { ...p, ...fields } : p));
     if (!Object.keys(fields || {}).length) { if (!await flush()) throw new Error('Your changes could not be saved. Please try again.'); return; }
     if (!postRef.current?.id) await ensurePost();
@@ -238,6 +238,7 @@ export default function CreatePost() {
   const canContinue = step === 0 ? step1Ok : step === 1 ? step2Ok : step === 2 ? step3Ok : false;
 
   const goToStep = useCallback(async (next) => {
+    if (['Posted','Partially Published','Publishing'].includes(postRef.current?.status) || postRef.current?.publishing_status === 'Publishing') return;
     setStep(next);
     stepRef.current = next;
     const highest = Math.max(maxStepRef.current, next);
@@ -307,7 +308,7 @@ export default function CreatePost() {
   return (
     <div className="mx-auto w-full max-w-5xl space-y-3">
       <Link to="/marketing" className="inline-block py-2 text-sm underline">← Back to planner</Link>
-      <CanvasStepBar steps={STEPS} step={step} maxStep={maxStep} onGoTo={goToStep} />
+      {!['Posted', 'Partially Published', 'Publishing'].includes(post?.status) && post?.publishing_status !== 'Publishing' && <CanvasStepBar steps={STEPS} step={step} maxStep={maxStep} onGoTo={goToStep} />}
 
       <div className="min-w-0">
       <div className="mb-2 flex items-center justify-end">
