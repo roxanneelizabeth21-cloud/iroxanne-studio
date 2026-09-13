@@ -2,6 +2,7 @@
 // Used by publishPostToSocial (manual button) and autoPublishScheduledPosts (background job).
 
 import { resolveFacebookPage } from './facebookPages.ts';
+import { CANONICAL_URL } from './studioUrl.ts';
 
 const VIDEO_EXT = /\.(mp4|mov|webm|m4v)$/i;
 
@@ -30,7 +31,7 @@ export async function resolveMediaUrl(post, base44) {
   return '';
 }
 
-export { CANONICAL_URL as PUBLIC_SITE_URL } from './studioUrl.ts';
+export const PUBLIC_SITE_URL = CANONICAL_URL;
 const SITE_URL = PUBLIC_SITE_URL;
 const CONSULT_URL = `${SITE_URL}/consult`;
 
