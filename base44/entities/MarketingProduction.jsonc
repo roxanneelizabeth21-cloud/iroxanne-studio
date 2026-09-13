@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "properties": {
+    "slot_key": {
+      "type": "string"
+    },
+    "scheduled_date": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string"
+    },
+    "attempts": {
+      "type": "number"
+    },
+    "facebook_post_id": {
+      "type": "string"
+    },
+    "instagram_post_id": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "error": {
+      "type": "string"
+    },
+    "content": {
+      "type": "object"
+    },
+    "voice_url": {
+      "type": "string"
+    }
+  },
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "required": [],
+  "name": "MarketingProduction"
+}
