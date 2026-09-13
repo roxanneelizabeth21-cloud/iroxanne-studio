@@ -37,6 +37,7 @@ import InvoicePay from '@/pages/InvoicePay';
 import ProjectHandoff from '@/pages/ProjectHandoff';
 import ProposalView from '@/pages/ProposalView';
 import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';
+import ProjectsPipeline from '@/pages/admin/ProjectsPipeline';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
 import CaseStudy from '@/pages/CaseStudy';
 import About from '@/pages/About';
@@ -118,6 +119,7 @@ const AuthenticatedApp = () => {
       <Route path="/work/:slug" element={<CaseStudy />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
+        <Route path="/admin/projects" element={<ProjectsPipeline />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
         <Route path="/admin/contracts" element={<ContractsAdminPage />} />

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Image, LayoutDashboard, Eye, Mail, MessageSquare, ScrollText, FileText,
-  Megaphone, Bot, ArrowLeft, ChevronLeft, Menu, Sun, PenLine, LayoutTemplate, CalendarDays, Library, Clapperboard, BarChart3, UserCircle, ChevronDown, Palette, ToggleLeft, Receipt,
+  Megaphone, Bot, ArrowLeft, ChevronLeft, Menu, Sun, PenLine, LayoutTemplate, CalendarDays, Library, Clapperboard, BarChart3, UserCircle, ChevronDown, Palette, ToggleLeft, Receipt, FolderKanban,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from './NotificationBell';
@@ -13,6 +13,7 @@ import MarketingBackButton from '@/components/marketing/MarketingBackButton';
 
 const NAV_TOP = [
   { to: '/admin', label: 'Overview', Icon: Home, end: true },
+  { to: '/admin/projects', label: 'Projects', Icon: FolderKanban },
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
   { to: '/admin/portfolio', label: 'Portfolio', Icon: LayoutDashboard },
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
