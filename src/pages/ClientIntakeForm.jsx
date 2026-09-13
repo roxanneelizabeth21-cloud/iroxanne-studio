@@ -4,17 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, CheckCircle2, Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, CheckCircle2, Upload, ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
+import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
 
-const TIER_LABELS = { starter: 'Starter', business: 'Business', custom: 'Custom' };
-
-const SECTION_ORDER = {
-  starter: ['basics', 'brand', 'home', 'about', 'gallery', 'contact', 'notes'],
-  business: ['basics', 'brand', 'home', 'about', 'services', 'gallery', 'testimonials', 'contact', 'legal', 'notes'],
-  custom: ['basics', 'brand', 'home', 'about', 'services', 'gallery', 'testimonials', 'contact', 'legal', 'workflow', 'data', 'documents', 'notes'],
-};
+import { intakeSteps, readableIntake } from '@/lib/intakeJourney';
 
 const SECTION_LABELS = {
   basics: 'Your Idea / Business', brand: 'Brand & Design', home: 'Home Page',
@@ -58,7 +52,7 @@ function FileUploadField({ label, hint, multiple, onUpload }) {
     try {
       const urls = [];
       for (const file of files) {
-        const { url } = await base44.storage.uploadFile(file);
+        const { file_url: url } = await base44.integrations.Core.UploadFile({ file });
         urls.push(url);
       }
       onUpload(urls);
@@ -79,19 +73,11 @@ function FileUploadField({ label, hint, multiple, onUpload }) {
   );
 }
 
-function Section({ id, label, description, open, onToggle, children }) {
-  return (
-    <div className="rounded-[18px] border border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-xl overflow-hidden">
-      <button type="button" onClick={onToggle} className="flex items-center justify-between w-full px-6 py-4 text-left">
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{label}</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-        </div>
-        {open ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
-      </button>
-      {open && <div className="px-6 pb-6 space-y-4 border-t border-black/5 dark:border-white/10 pt-4">{children}</div>}
-    </div>
-  );
+function Section({ label, description, children }) {
+  return <section className="rounded-3xl border border-border bg-card text-card-foreground p-6 sm:p-8 shadow-sm"><h2 className="font-display text-2xl mb-2">{label}</h2><p className="text-sm text-muted-foreground mb-7 leading-relaxed">{description}</p><div className="space-y-5">{children}</div></section>;
+}
+function Choices({ label, value, options, onChange, multiple = false }) {
+  return <fieldset className="space-y-3"><legend className="font-medium mb-3">{label}</legend><div className="grid sm:grid-cols-2 gap-3">{options.map(([key,text])=><label key={key} className="flex items-center gap-3 rounded-2xl border border-border p-4 cursor-pointer has-[:checked]:border-[#B69A59] has-[:checked]:bg-secondary"><input type={multiple?'checkbox':'radio'} name={label} checked={multiple?(value||[]).includes(key):value===key} onChange={()=>onChange(multiple?((value||[]).includes(key)?value.filter(v=>v!==key):[...(value||[]),key]):key)} className="accent-[#6B4B68]"/><span className="text-sm">{text}</span></label>)}</div></fieldset>;
 }
 
 export default function ClientIntakeForm() {
@@ -104,13 +90,16 @@ export default function ClientIntakeForm() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [openSections, setOpenSections] = useState({ basics: true });
+  const [step, setStep] = useState('welcome');
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => { const warn = e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } }; window.addEventListener('beforeunload', warn); return () => window.removeEventListener('beforeunload', warn); }, [dirty]);
 
   useEffect(() => {
     (async () => {
       try {
-        const records = await base44.entities.ClientIntake.list();
-        const match = records.find((r) => r.id === id && r.access_token === token);
+        const res = await base44.functions.invoke('intakeJourney', { action: 'get', id, token });
+        const match = res.data.record;
+        setStep(intakeSteps(match.journey_profile).includes(match.journey_step) ? match.journey_step : 'welcome');
         if (!match) { setError('Invalid or expired link.'); return; }
         if (match.status === 'submitted' || match.status === 'reviewed') { setSubmitted(true); }
         setIntake(match);
@@ -120,24 +109,22 @@ export default function ClientIntakeForm() {
   }, [id, token]);
 
   const patch = useCallback((field, value) => {
-    setIntake((prev) => ({ ...prev, [field]: value }));
+    setDirty(true); setIntake((prev) => ({ ...prev, [field]: value }));
   }, []);
   const patchNested = useCallback((section, field, value) => {
-    setIntake((prev) => ({ ...prev, [section]: { ...(prev[section] || {}), [field]: value } }));
+    setDirty(true); setIntake((prev) => ({ ...prev, [section]: { ...(prev[section] || {}), [field]: value } }));
   }, []);
-  const toggleSection = (s) => setOpenSections((prev) => ({ ...prev, [s]: !prev[s] }));
 
-  const handleSave = async (final = false) => {
+  const handleSave = async (final = false, nextStep = step) => {
     setSaving(true);
     try {
-      const updates = { ...intake };
-      delete updates.id; delete updates.created_date; delete updates.updated_date; delete updates.created_by;
-      if (final) { updates.status = 'submitted'; updates.submitted_at = new Date().toISOString(); }
-      else { updates.status = 'in_progress'; }
-      await base44.entities.ClientIntake.update(intake.id, updates);
+      const res = await base44.functions.invoke('intakeJourney', { action: final ? 'submit' : 'save', id, token, answers: { ...intake, journey_step: nextStep } });
+      if (res.data.error) throw new Error(res.data.error);
+      setDirty(false);
       if (final) { setSubmitted(true); toast.success('Submitted! We\'ll review and get started.'); }
       else { toast.success('Progress saved'); }
-    } catch (e) { toast.error('Save failed — please try again'); }
+      return true;
+    } catch (e) { toast.error('Save failed. Your answers are still here; please try again.'); return false; }
     finally { setSaving(false); }
   };
 
@@ -145,24 +132,46 @@ export default function ClientIntakeForm() {
   if (error) return <div className="min-h-screen flex items-center justify-center ir-app-bg px-4"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{error}</p></div></div>;
   if (submitted) return <div className="min-h-screen flex items-center justify-center ir-app-bg px-4"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-500" /><h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">All set, {intake.client_name?.split(' ')[0] || 'there'}!</h1><p className="text-gray-600 dark:text-gray-400">We've received your content. We'll review everything and reach out if we have any questions before we start building.</p></div></div>;
 
-  const tier = intake.project_tier || 'business';
-  const sections = SECTION_ORDER[tier] || SECTION_ORDER.business;
-  const isCustom = tier === 'custom';
-  const isBusiness = tier === 'business' || isCustom;
+  const profile = intake.journey_profile || {};
+  const steps = intakeSteps(profile);
+  const position = Math.max(0, steps.indexOf(step));
+  const sections = [step];
+  const isCustom = true;
+  const isBusiness = true;
+  const toggleSection = () => {};
+  const openSections = Object.fromEntries(steps.map(s => [s,true]));
+  const go = async next => { if (await handleSave(false,next)) { setStep(next); window.scrollTo({top:0,behavior:'smooth'}); } };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] py-10 px-4">
+    <div className="min-h-screen bg-background text-foreground py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-6">
           <BrandedPageHeader
-            title="Content Intake"
-            subtitle={`${TIER_LABELS[tier]} Project — share what you know, skip what you do not have, and save anytime.`}
+            title="Tell me about your project"
+            subtitle="A little at a time. We’ll work through the rest together."
             projectTitle={intake.project_title}
             clientName={intake.client_name}
           />
-          <p className="text-sm text-[#2D2A4A] mt-4">An early idea is enough. You do not need a logo, website, customers, finished copy, or a feature list. Write “not sure yet” wherever you need guidance.</p><div className="flex justify-end mb-2"><PrintButton /></div>
+          <p className="text-sm text-muted-foreground mt-4">An early idea is enough. You do not need a logo, website, customers, finished copy, or a feature list. Write “not sure yet” wherever you need guidance.</p>
         </div>
 
+        <div aria-live="polite" className="space-y-3"><p className="text-xs tracking-widest uppercase text-muted-foreground">Step {position+1} of {steps.length} · {step==='welcome'?'Welcome':step==='idea'?'Your idea':step==='review'?'Review':SECTION_LABELS[step]}</p><div role="progressbar" aria-label="Intake progress" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={position+1} className="h-1.5 rounded-full bg-secondary overflow-hidden"><div className="h-full bg-[#B69A59] transition-all" style={{width:((position+1)/steps.length*100)+'%'}}/></div></div>
+        {step==='welcome' && <Section label="A good place to begin" description="You don’t need to have everything figured out. These choices help me ask only what matters to your project.">
+          <Choices label="Where are you starting?" value={profile.start} onChange={v=>patchNested('journey_profile','start',v)} options={[["idea","I have an idea"],["new","I’m starting a business"],["business","I run a business"],["existing","I already started an app"]]}/>
+          <Choices label="Do you have content to share?" value={profile.content} onChange={v=>patchNested('journey_profile','content',v)} options={[["ready","Yes, I have some content or files"],["help","I need help putting it together"]]}/>
+          <Choices label="Will we connect tools you already use?" value={profile.connections} onChange={v=>patchNested('journey_profile','connections',v)} options={[["yes","Yes, I have tools to connect"],["unsure","Not sure yet / starting fresh"]]}/>
+          <Choices multiple label="Which content would you like to include? (Optional)" value={profile.features} onChange={v=>patchNested('journey_profile','features',v)} options={[["services","Services or packages"],["gallery","Photos or portfolio"],["testimonials","Reviews I already have"],["contact","Public contact details"]]}/>
+          <p className="text-sm text-muted-foreground">Unsure? Continue with the shorter path. You can come back and change these choices.</p>
+        </Section>}
+        {step==='idea' && <Section label="Your idea" description="A few sentences are enough. A working name is welcome, too.">
+          <Field label="Business or project name"><Input value={intake.business_name||''} onChange={e=>patch('business_name',e.target.value)} placeholder="Working name or not decided yet"/></Field>
+          <Field label="What would you like to create or improve?"><Textarea rows={4} value={profile.idea||''} onChange={e=>patchNested('journey_profile','idea',e.target.value)} placeholder="Tell me in your own words. No technical terms needed."/></Field>
+          <Field label="Who would this help?"><Textarea rows={3} value={profile.audience||''} onChange={e=>patchNested('journey_profile','audience',e.target.value)} placeholder="Your customers, a community, your team, or still exploring"/></Field>
+        </Section>}
+        {step==='review' && <Section label="Ready when you are" description="Review what you’ve shared. Blank answers are fine. Use Back to make changes, or send this to Roxanne.">
+          {Object.entries(intake).filter(([k,v])=>!['id','client_name','project_title','project_tier','status','journey_step'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border pb-4"><h3 className="text-sm font-semibold capitalize mb-1">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">{readableIntake(v)}</p></div>)}
+          <Button variant="outline" disabled={saving} onClick={()=>go('welcome')}>Edit my choices</Button>
+        </Section>}
         {sections.includes('basics') && (
           <Section id="basics" label={SECTION_LABELS.basics} description={SECTION_DESCRIPTIONS.basics} open={!!openSections.basics} onToggle={() => toggleSection('basics')}>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -174,7 +183,7 @@ export default function ClientIntakeForm() {
               <Field label="Email to show on site"><Input value={intake.email_for_site || ''} onChange={(e) => patch('email_for_site', e.target.value)} placeholder="hello@yourbusiness.com" /></Field>
             </div>
             <Field label="Business address (if applicable)"><Input value={intake.address || ''} onChange={(e) => patch('address', e.target.value)} placeholder="City, State or full address" /></Field>
-            <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : JSON.stringify(intake.social_links || '', null, 2)} onChange={(e) => patch('social_links', e.target.value)} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
+            <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : JSON.stringify(intake.social_links || '', null, 2)} onChange={(e) => patch('social_links', { links: e.target.value })} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
           </Section>
         )}
 
@@ -277,15 +286,12 @@ export default function ClientIntakeForm() {
           </Section>
         )}
 
-        <div className="flex items-center justify-between gap-4 pt-2">
-          <Button type="button" variant="outline" onClick={() => handleSave(false)} disabled={saving} className="gap-1.5">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Save Progress
-          </Button>
-          <Button type="button" onClick={() => handleSave(true)} disabled={saving} className="gap-1.5 bg-purple-600 hover:bg-purple-700">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Submit
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Button variant="ghost" disabled={saving||position===0} onClick={()=>go(steps[position-1])}><ArrowLeft className="w-4 h-4 mr-2"/>Back</Button>
+          <Button variant="outline" disabled={saving} onClick={()=>handleSave(false)}>Save & return later</Button>
+          <Button disabled={saving} className="rounded-full px-6" onClick={()=>step==='review'?handleSave(true):go(steps[position+1])}>{saving?<Loader2 className="w-4 h-4 animate-spin"/>:step==='review'?'Send to Roxanne':<>Continue<ArrowRight className="w-4 h-4 ml-2"/></>}</Button>
         </div>
-        <p className="text-xs text-center text-muted-foreground">You can save your progress and come back anytime using this same link.</p>
+        <p role="status" className="text-xs text-center text-muted-foreground">{dirty?'You have unsaved answers.':'Your saved answers will be here when you return using the same private link.'} Continue saves your progress.</p>
         <BrandedFooter />
       </div>
     </div>
