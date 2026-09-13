@@ -21,8 +21,8 @@ export default function InvoicePay() {
   const [redirecting, setRedirecting] = useState(null);
   const [verifying, setVerifying] = useState(false);
   const [notice, setNotice] = useState(
-    status === 'COMPLETED' ? 'Payment received — verifying your payment now…' :
-    status === 'CANCELED' ? 'Checkout was cancelled. No charge was made.' : ''
+    status === 'COMPLETED' ? 'Checking payment status…' :
+    status === 'CANCELED' ? 'Checkout was cancelled. Completed payments are checked automatically.' : ''
   );
 
   const load = async () => {
@@ -62,7 +62,7 @@ export default function InvoicePay() {
           setError(data.error);
           setNotice('');
         } else {
-          setNotice('Payment received — thank you! Your balance is updated below.');
+          setNotice(data.pending ? 'Your payment is being checked automatically. Please allow a few minutes, then refresh. You can safely close this page.' : 'Payment received — thank you! Your balance is updated below.');
           await load();
           // Clean Square's query params from the URL so a refresh doesn't re-trigger verification.
           const cleanUrl = new URL(window.location.href);
