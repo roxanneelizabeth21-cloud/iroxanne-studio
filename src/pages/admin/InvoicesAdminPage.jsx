@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Receipt, Plus, Send } from 'lucide-react';
+import { Receipt, Plus, Send, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
@@ -71,6 +71,16 @@ export default function InvoicesAdminPage() {
     }catch(e){toast({title:'Could not send request',description:e.message,variant:'destructive'});}
     finally{inFlight.current=false;setBusy(false);}
   };
+  const removeInvoice = async i => {
+    if(!window.confirm(`Delete invoice for "${i.project_title}"? Payment history linked to it will remain. This cannot be undone.`))return;
+    try{await base44.entities.Invoice.delete(i.id);toast({title:'Invoice deleted'});await load();}
+    catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
+  };
+  const removePayment = async p => {
+    if(!window.confirm(`Delete this ${p.kind} payment of ${money(p.amount)}? This cannot be undone.`))return;
+    try{await base44.entities.Payment.delete(p.id);toast({title:'Payment deleted'});await load();}
+    catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
+  };
   return <div className="space-y-6">
     <div><h1 className="font-display text-3xl font-semibold flex items-center gap-2"><Receipt className="h-6 w-6 text-primary"/>Invoices & Payments</h1>
     <p className="text-sm text-muted-foreground mt-2">Track deposits and balances for every signed project. Record payments after you receive them.</p></div>
@@ -90,9 +100,10 @@ export default function InvoicesAdminPage() {
         {remaining(i,'deposit')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'deposit'})} className="gap-1"><Send className="h-4 w-4"/>Request deposit</Button>}
         {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
         <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
+        <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete invoice" onClick={()=>removeInvoice(i)}><Trash2 className="h-4 w-4"/></Button>
       </div>}
       <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
-        {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><strong>{money(p.amount)}</strong></div>)}
+        {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2 items-center"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><span className="flex items-center gap-1"><strong>{money(p.amount)}</strong><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Delete payment" onClick={()=>removePayment(p)}><Trash2 className="h-3.5 w-3.5"/></Button></span></div>)}
         {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
       </div></details>
     </section>)}
