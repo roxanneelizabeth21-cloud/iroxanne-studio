@@ -12,7 +12,8 @@ const STAGES = [
   { key: 'inquiry', label: 'Inquiry', hint: 'New leads' },
   { key: 'proposal', label: 'Proposal', hint: 'Sent, awaiting decision' },
   { key: 'contract', label: 'Contract', hint: 'Sent or signed' },
-  { key: 'intake', label: 'Intake', hint: 'Form in progress' },
+  { key: 'deposit', label: 'Deposit', hint: 'Request or await payment' },
+  { key: 'intake', label: 'Content Intake', hint: 'Collect and review project details' },
   { key: 'build', label: 'In Build', hint: 'Active work' },
   { key: 'handoff', label: 'Handoff', hint: 'Delivered, awaiting acceptance' },
   { key: 'paid', label: 'Paid', hint: 'Completed & paid' },
@@ -22,6 +23,7 @@ const STAGE_TINT = {
   inquiry: 'border-l-blue-400',
   proposal: 'border-l-violet-400',
   contract: 'border-l-amber-400',
+  deposit: 'border-l-yellow-500',
   intake: 'border-l-teal-400',
   build: 'border-l-primary',
   handoff: 'border-l-orange-400',
@@ -49,9 +51,14 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
     let stage = 'contract';
     if (c.status === 'completed' && invoice && invoice.status === 'paid') stage = 'paid';
     else if (c.handoff_status === 'accepted' || c.delivered_at) stage = 'handoff';
-    else if (c.status === 'active') stage = 'build';
-    else if (intake && ['pending', 'sent', 'in_progress', 'submitted'].includes(intake.status)) stage = 'intake';
-    else if (['signed', 'deposit_paid'].includes(c.status)) stage = 'contract';
+    else if (['signed', 'deposit_paid', 'active'].includes(c.status)) {
+      const depositDone = invoice
+        ? ['paid', 'waived'].includes(invoice.deposit_status)
+        : !!c.deposit_paid_at || c.status === 'deposit_paid';
+      if (!depositDone) stage = 'deposit';
+      else if (!intake || intake.status !== 'reviewed') stage = 'intake';
+      else stage = 'build';
+    }
     else if (c.status === 'sent') stage = 'contract';
     if (c.lead_id) usedLeadIds.add(c.lead_id);
     if (c.proposal_id) usedProposalIds.add(c.proposal_id);
@@ -78,7 +85,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 }
 
 export default function ProjectsPipeline() {
-  const [view,setView]=useState('intakes');
+  const [view,setView]=useState('pipeline');
   const { data: leads = [], isLoading: lLoading, error: lErr } = useQuery({ queryKey: ['pipeline-leads'], queryFn: () => base44.entities.Lead.list('-created_date', 100) });
   const { data: proposals = [], isLoading: pLoading, error: pErr } = useQuery({ queryKey: ['pipeline-proposals'], queryFn: () => base44.entities.Proposal.list('-created_date', 100) });
   const { data: contracts = [], isLoading: cLoading, error: cErr } = useQuery({ queryKey: ['pipeline-contracts'], queryFn: () => base44.entities.Contract.list('-created_date', 100) });
@@ -117,7 +124,7 @@ export default function ProjectsPipeline() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1 flex items-center gap-2">
             <FolderKanban className="h-6 w-6 text-primary" /> Projects
           </h1>
-          <p className="text-sm text-muted-foreground">Start here. Every card tells you the one thing to do next.</p>
+          <p className="text-sm text-muted-foreground">Request → optional call → proposal → agreement → deposit → content intake → build → handoff → final payment → complete. Each card shows your next step.</p>
         </div>
         <div className="flex gap-4 text-sm">
           <div>
