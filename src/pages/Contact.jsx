@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2, CheckCircle2, PhoneCall, ArrowRight } from 'lucide-react';
 import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
 
@@ -33,6 +33,17 @@ export default function Contact() {
         <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed max-w-md" style={{ fontFamily: "'Inter', sans-serif" }}>
           Have a question or an idea? Send a message. I read every one personally and reply within 1 business day.
         </p>
+
+        <div className="mt-6 flex items-start gap-4 rounded-2xl border border-[#2D2A4A]/10 bg-[#2D2A4A]/[0.03] p-5">
+          <PhoneCall className="h-5 w-5 shrink-0 text-[#B8942E] mt-0.5" />
+          <div>
+            <p className="text-[14px] font-semibold text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>Prefer to talk it through?</p>
+            <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>Share a few details about your project, then pick a time for an optional call.</p>
+            <a href="/quote" className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2D2A4A] hover:text-[#3D3A5A] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Schedule a call <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
 
         {done ? (
           <div className="mt-10 rounded-2xl border border-[#B8942E]/20 bg-card text-card-foreground p-10 text-center shadow-sm">
