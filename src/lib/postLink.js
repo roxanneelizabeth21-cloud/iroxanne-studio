@@ -1,5 +1,7 @@
 // Which link gets appended at the bottom of a post, and how to build it.
-export const SITE_URL = 'https://iroxanne.com';
+// Canonical studio domain. Keep in sync with CANONICAL_URL in
+// base44/shared/studioUrl.ts — the backend copy that builds client emails.
+export const SITE_URL = 'https://iroxannestudio.com';
 export const LINK_TARGETS = ['Portfolio page', 'Consult booking', 'Get a Quote', 'None'];
 
 export function defaultLinkTarget(item) {

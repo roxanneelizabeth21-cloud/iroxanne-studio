@@ -1,3 +1,4 @@
+import { CANONICAL_URL } from '../../shared/studioUrl.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { renderTemplate, subscriberEmailHtml, textToHtmlParagraphs } from '../../shared/emailTemplates.ts';
 import { brandedEmail, detailRows } from '../../shared/emailBrand.ts';
@@ -8,7 +9,7 @@ import { unsubscribeUrl } from '../../shared/subscriberEmail.ts';
 // way the real send does — same shell, same merge-field substitution — using
 // sample data, and emails it to the signed-in admin.
 const SAMPLE: Record<string, Record<string, any>> = {
-  fan_welcome: { fan_name: 'Alex', email: 'fan@example.com', site_url: 'https://iroxanne.com', music_url: 'https://iroxanne.com/consult' },
+  fan_welcome: { fan_name: 'Alex', email: 'fan@example.com', site_url: CANONICAL_URL, music_url: `${CANONICAL_URL}/consult` },
   admin_new_subscriber: { email: 'fan@example.com', name: 'Alex', source: 'newsletter', utm: 'instagram / social / launch', signed_up: new Date().toLocaleString() },
   admin_new_inquiry: { name: 'Alex', email: 'fan@example.com', inquiry_type: 'collaboration', message_subject: 'Custom app inquiry', submitted: new Date().toLocaleString() },
   admin_daily_posts: { count: 2, plural: 's', date: new Date().toISOString().slice(0, 10) },

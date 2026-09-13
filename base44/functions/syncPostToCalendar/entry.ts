@@ -1,3 +1,4 @@
+import { studioUrl } from '../../shared/studioUrl.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { resolveCalendarId, gcalInsertEvent, gcalUpdateEvent, gcalDeleteEvent } from '../../shared/googleCalendar.ts';
 import { loadNotificationSettings, appOrigin, requireAuthenticated } from '../../shared/marketingAdmin.ts';
@@ -86,7 +87,7 @@ export default async function (req) {
 
     const ns = await loadNotificationSettings(base44);
     const tz = ns.timezone || 'America/New_York';
-    const origin = appOrigin(req) || 'https://iroxanne.com';
+    const origin = appOrigin(req) || studioUrl(req);
 
     // Bulk pass over all posts (campaign bulk-generation skips entity automations).
     if (body.sweep) {

@@ -39,7 +39,7 @@ export default function AdSettingsPanel({ form, set, accounts, page }) {
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <label className={FL}>Destination link</label>
-          <Input value={form.destination_url} onChange={(e) => set('destination_url', e.target.value)} placeholder="https://iroxanne.com/release/..." />
+          <Input value={form.destination_url} onChange={(e) => set('destination_url', e.target.value)} placeholder="https://iroxannestudio.com/work/..." />
         </div>
         <div className="space-y-1.5">
           <label className={FL}>Button</label>

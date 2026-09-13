@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/postLink';
 import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Megaphone, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -62,7 +63,7 @@ export default function CarouselAds() {
     setProjectId(id);
     if (item) {
       setName((n) => n || `${item.title} — Carousel`);
-      set('destination_url', item.project_url || (item.slug ? `https://iroxanne.com/portfolio/${item.slug}` : ''));
+      set('destination_url', item.project_url || (item.slug ? `${SITE_URL}/portfolio/${item.slug}` : ''));
     }
   };
 

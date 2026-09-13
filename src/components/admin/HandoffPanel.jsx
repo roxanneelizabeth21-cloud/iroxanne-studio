@@ -16,7 +16,7 @@ export default function HandoffPanel({contractId,onSaved}){
  const item=(id,patch)=>setC(p=>({...p,handoff_items:p.handoff_items.map(x=>x.id===id?{...x,...patch}:x)}));
  const locked=c?.handoff_status==='accepted'||c?.status==='completed';
  const complete=c?.handoff_items?.every(x=>!x.required||x.completed);
- const shareLink=link||(c?.handoff_token && c.handoff_status!=='draft'?'https://iroxannestudio.base44.app/handoff/'+contractId+'?t='+c.handoff_token:'');
+ const shareLink=link||(c?.handoff_token && c.handoff_status!=='draft'?window.location.origin+'/handoff/'+contractId+'?t='+c.handoff_token:'');
  return <div className="space-y-4">
  {error&&<p role="alert" className="text-destructive">{error}</p>}
  {!c?<p>Loading checklist…</p>:<>
