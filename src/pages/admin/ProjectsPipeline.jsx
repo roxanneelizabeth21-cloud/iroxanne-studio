@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { FolderKanban, AlertCircle } from 'lucide-react';
 import ProjectCard from '@/components/admin/ProjectCard';
+import { sortByUrgency, countNeedingAction } from '@/lib/pipelineSteps';
 
 import IntakeManager from '@/components/admin/IntakeManager';
 import { Button } from '@/components/ui/button';
@@ -96,8 +97,13 @@ export default function ProjectsPipeline() {
     const map = {};
     STAGES.forEach((s) => { map[s.key] = []; });
     projects.forEach((p) => { if (map[p._stage]) map[p._stage].push(p); });
+    // Anything waiting on Roxanne rises to the top of its column, so the work
+    // to do today is always the first thing in view.
+    STAGES.forEach((s) => { map[s.key] = sortByUrgency(map[s.key]); });
     return map;
   }, [projects]);
+
+  const actionCount = countNeedingAction(projects);
 
   const totalValue = projects.reduce((sum, p) => {
     const v = p.price_total ?? p.amount_total;
@@ -111,9 +117,13 @@ export default function ProjectsPipeline() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1 flex items-center gap-2">
             <FolderKanban className="h-6 w-6 text-primary" /> Projects
           </h1>
-          <p className="text-sm text-muted-foreground">Track every client engagement from first inquiry to final payment.</p>
+          <p className="text-sm text-muted-foreground">Start here. Every card tells you the one thing to do next.</p>
         </div>
         <div className="flex gap-4 text-sm">
+          <div>
+            <div className="text-2xl font-bold font-display text-primary">{actionCount}</div>
+            <div className="text-xs text-muted-foreground">need you today</div>
+          </div>
           <div>
             <div className="text-2xl font-bold font-display">{projects.length}</div>
             <div className="text-xs text-muted-foreground">active projects</div>
