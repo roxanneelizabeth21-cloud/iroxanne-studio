@@ -52,7 +52,7 @@ import Templates from '@/pages/marketing/Templates';
 import ClipLibrary from '@/pages/marketing/ClipLibrary';
 import Today from '@/pages/marketing/Today';
 import MediaLibrary from '@/pages/marketing/MediaLibrary';
-import AlbumCanvasStudio from '@/pages/marketing/AlbumCanvasStudio';
+import CaseStudyCanvasStudio from '@/pages/marketing/CaseStudyCanvasStudio';
 import CarouselAds from '@/pages/marketing/CarouselAds';
 import MetaAds from '@/pages/marketing/MetaAds';
 import CreatePost from '@/pages/marketing/CreatePost';
@@ -138,7 +138,7 @@ const AuthenticatedApp = () => {
         <Route path="/marketing/today" element={<Today />} />
         <Route path="/marketing/controls" element={<AutomationControls />} />
         <Route path="/marketing/media" element={<MediaLibrary />} />
-        <Route path="/marketing/canvas" element={<AlbumCanvasStudio />} />
+        <Route path="/marketing/canvas" element={<CaseStudyCanvasStudio />} />
         <Route path="/marketing/carousel-ads" element={<CarouselAds />} />
         <Route path="/marketing/meta-ads" element={<MetaAds />} />
         <Route path="/marketing/hub" element={<Navigate to="/marketing" replace />} />
