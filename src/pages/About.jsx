@@ -53,9 +53,7 @@ export default function About() {
             I am a Base44 Partner, which means I build on a platform that lets me move quickly and keep costs transparent. My work includes everything from the first conversation through design, development, launch, and ongoing support if you want it. If you have an idea you would like to explore, I would love to hear about it.
           </p>
 
-          <a href="/quote" className="inline-flex items-center gap-2 text-[14px] font-semibold text-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Let's talk about your idea <ArrowRight className="h-4 w-4 text-[#876b26] dark:text-[#D5BB82]" />
-          </a>
+
         </div>
         </section>
       </main>

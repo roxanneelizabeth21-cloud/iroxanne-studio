@@ -1,6 +1,6 @@
 export default function Testimonials({ items, loading }) {
   const list = (items || []).slice(0, 3);
-  if (!loading && list.length === 0) return null;
+  if (list.length === 0) return null;
   return (
     <section className="bg-[#2D2A4A] py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
