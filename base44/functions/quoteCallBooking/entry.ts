@@ -1,7 +1,7 @@
 import {createClientFromRequest} from 'npm:@base44/sdk@0.8.44';
 import {defaultCallSettings,validateCallSettings,callSlots} from '../../shared/callAvailability.ts';
 import {esc,brandedEmail,brandButton,resolveAdminEmail} from '../../shared/emailBrand.ts';
-const ORIGIN='https://iroxannestudio.base44.app';
+import { studioUrl } from '../../shared/studioUrl.ts';
 async function google(token:string,path:string,options:any={}){
  const r=await fetch('https://www.googleapis.com/calendar/v3/'+path,{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
  const data=await r.json().catch(()=>({}));
@@ -73,7 +73,7 @@ export default async function(req:Request){
  await db.Lead.update(lead.id,{call_event_id:event.id,call_start:b.start,call_end:end,call_pending_start:'',phone});
  const when=new Date(b.start).toLocaleString('en-US',{timeZone:s.timezone,dateStyle:'full',timeStyle:'short'})+' ('+s.timezone+')';
  const admin=await resolveAdminEmail(client).catch(()=>'');
- const results=await Promise.allSettled([...new Set([validEmail?lead.email:null,admin].filter(Boolean))].map(to=>client.asServiceRole.integrations.Core.SendEmail({to,subject:'Call confirmed — iRoxanne Studio',html:brandedEmail({title:'Your call is confirmed',content:'<p>A '+s.duration_minutes+'-minute phone call is booked for <strong>'+esc(when)+'</strong>.</p><p>Roxanne will call '+esc(phone)+'.</p><p>To change or cancel, contact '+esc(admin||'the studio')+'.</p><p>'+brandButton('View booking',ORIGIN+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token))+'</p>'})})));
+ const results=await Promise.allSettled([...new Set([validEmail?lead.email:null,admin].filter(Boolean))].map(to=>client.asServiceRole.integrations.Core.SendEmail({to,subject:'Call confirmed — iRoxanne Studio',html:brandedEmail({title:'Your call is confirmed',content:'<p>A '+s.duration_minutes+'-minute phone call is booked for <strong>'+esc(when)+'</strong>.</p><p>Roxanne will call '+esc(phone)+'.</p><p>To change or cancel, contact '+esc(admin||'the studio')+'.</p><p>'+brandButton('View booking',studioUrl(req)+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token))+'</p>'})})));
  return Response.json({booked:true,start:b.start,end,timezone:s.timezone,email_sent:results.every(x=>x.status==='fulfilled')});
  }catch(e){return Response.json({error:(e as Error).message},{status:500});}
 }

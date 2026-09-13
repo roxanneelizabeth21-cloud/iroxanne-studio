@@ -3,7 +3,7 @@
 // itself lives in the admin-editable template registry
 // (shared/emailTemplates.ts).
 
-export const SITE_URL = 'https://iroxanne.com';
+export { CANONICAL_URL as SITE_URL } from './studioUrl.ts';
 export const FROM_NAME = 'iRoxanne Studio';
 
 export function unsubscribeUrl(email: string): string {

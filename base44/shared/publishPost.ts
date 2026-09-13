@@ -30,7 +30,7 @@ export async function resolveMediaUrl(post, base44) {
   return '';
 }
 
-export const PUBLIC_SITE_URL = 'https://iroxanne.com';
+export { CANONICAL_URL as PUBLIC_SITE_URL } from './studioUrl.ts';
 const SITE_URL = PUBLIC_SITE_URL;
 const CONSULT_URL = `${SITE_URL}/consult`;
 
