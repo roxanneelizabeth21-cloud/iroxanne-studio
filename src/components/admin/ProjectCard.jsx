@@ -33,9 +33,12 @@ export default function ProjectCard({ project }) {
   const step = projectNextStep(project);
   const StepIcon = TONE_ICONS[step.tone] || Clock;
 
-  const href =
-    ACTION_HREF[step.action] ||
+  const destination = ACTION_HREF[step.action] ||
     (kind === 'contract' ? '/admin/contracts' : '/admin/proposals');
+  const contractId = kind === 'contract' ? project.id : project.contract_id;
+  const href = destination === '/admin/contracts' && contractId
+    ? `${destination}?contract=${encodeURIComponent(contractId)}`
+    : destination;
 
   const Icon = kind === 'contract' ? FileText : kind === 'proposal' ? FileText : UserCircle;
 
