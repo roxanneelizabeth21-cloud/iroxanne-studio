@@ -5,8 +5,9 @@
 // so client-facing links disagreed with each other. Everything that builds a
 // link a client will click should go through here.
 //
-// The live app is iroxanne.com. STUDIO_URL (an app secret) overrides it for
-// staging without a code change.
+// The live app is iroxanne.com. A STUDIO_URL environment variable overrides it
+// for staging, when the runtime exposes one — read defensively, since not every
+// function context does.
 
 export const CANONICAL_URL = 'https://iroxanne.com';
 
