@@ -14,7 +14,7 @@ export default function Testimonials({ items, loading }) {
             const name = anonymous ? 'A recent client' : t.client_name;
             const initials = anonymous ? '★' : name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
             return (
-              <figure key={t.id} className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-7 backdrop-blur-sm">
+              <figure key={t.id} className="rounded-2xl bg-card/[0.06] border border-white/[0.08] p-7 backdrop-blur-sm">
                 <div className="h-1 w-8 rounded-full bg-[#C9A84C]/50 mb-5" />
                 <blockquote className="text-[15px] leading-[1.8] text-white/80" style={{ fontFamily: "'Inter', sans-serif" }}>
                   "{t.quote}"

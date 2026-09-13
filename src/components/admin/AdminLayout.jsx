@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationBell from './NotificationBell';
+import ThemeToggle from '@/components/ThemeToggle';
 import BrandLogo from '@/components/BrandLogo';
 import StrategistHeaderButton from './StrategistHeaderButton';
 import MarketingBackButton from '@/components/marketing/MarketingBackButton';
@@ -74,7 +75,7 @@ function SidebarContent({ onNavigate }) {
       </Link>
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
         <span className="text-xs text-muted-foreground uppercase tracking-wider">Inbox</span>
-        <NotificationBell />
+        <ThemeToggle /><NotificationBell />
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
         {NAV_TOP.map((n) => (
@@ -191,7 +192,7 @@ export default function AdminLayout() {
           </div>
           <span className="font-display font-semibold">Admin</span>
           <div className="flex items-center gap-1">
-            <NotificationBell />
+            <ThemeToggle /><NotificationBell />
           </div>
           </div>
         </header>

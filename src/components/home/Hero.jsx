@@ -47,26 +47,26 @@ export default function Hero({ projects, loading }) {
 
       </div>
     </section>
-    <div className="bg-[#FAF7F0] text-[#2D2A4A]">
+    <div className="bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-5 py-8 md:px-8">
         {/* Value strip */}
         <div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your idea</p>
-              <p className="text-[13px] text-[#655769] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>A starting point for our conversation</p>
+              <p className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your idea</p>
+              <p className="text-[13px] text-muted-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>A starting point for our conversation</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>A clear plan</p>
-              <p className="text-[13px] text-[#655769] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Scope and cost discussed together</p>
+              <p className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>A clear plan</p>
+              <p className="text-[13px] text-muted-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Scope and cost discussed together</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your feedback</p>
-              <p className="text-[13px] text-[#655769] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Room to review as we build</p>
+              <p className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your feedback</p>
+              <p className="text-[13px] text-muted-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Room to review as we build</p>
             </div>
             <div>
-              <p className="text-[28px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Next steps</p>
-              <p className="text-[13px] text-[#655769] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Guidance as you prepare to launch</p>
+              <p className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Next steps</p>
+              <p className="text-[13px] text-muted-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Guidance as you prepare to launch</p>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function Hero({ projects, loading }) {
         {trustNames.length > 0 && (
           <div className="mt-8 flex flex-wrap items-center justify-start gap-x-8 gap-y-3">
             {trustNames.map((name) => (
-              <span key={name} className="text-[13px] font-medium text-[#655769] tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{name}</span>
+              <span key={name} className="text-[13px] font-medium text-muted-foreground tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{name}</span>
             ))}
           </div>
         )}

@@ -8,10 +8,10 @@ const STEPS = [
 
 export default function Process() {
   return (
-    <section id="process" className="bg-[#FAF7F0] py-14 px-5 md:px-8">
+    <section id="process" className="bg-background py-14 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
-        <h2 className="text-[34px] md:text-[40px] font-semibold text-[#2D2A4A] tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
+        <h2 className="text-[34px] md:text-[40px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           From your first idea to your custom app
         </h2>
 
@@ -28,8 +28,8 @@ export default function Process() {
                   <step.icon className="h-[16px] w-[16px] text-[#C9A84C]" />
                 </div>
               </div>
-              <h3 className="mt-5 text-[18px] font-semibold text-[#2D2A4A]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{step.title}</h3>
-              <p className="mt-2 text-[14px] text-[#2D2A4A]/50 leading-[1.7] max-w-[340px]" style={{ fontFamily: "'Inter', sans-serif" }}>{step.desc}</p>
+              <h3 className="mt-5 text-[18px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{step.title}</h3>
+              <p className="mt-2 text-[14px] text-muted-foreground leading-[1.7] max-w-[340px]" style={{ fontFamily: "'Inter', sans-serif" }}>{step.desc}</p>
             </div>
           ))}
         </div>

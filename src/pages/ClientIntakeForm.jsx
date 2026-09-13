@@ -43,7 +43,7 @@ function Field({ label, hint, children }) {
   return (
     <div className="space-y-1.5">
       <label className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</label>
-      {hint && <p className="text-xs text-gray-500 dark:text-gray-500">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
       {children}
     </div>
   );
@@ -85,7 +85,7 @@ function Section({ id, label, description, open, onToggle, children }) {
       <button type="button" onClick={onToggle} className="flex items-center justify-between w-full px-6 py-4 text-left">
         <div>
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{label}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">{description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
         {open ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
       </button>
@@ -285,7 +285,7 @@ export default function ClientIntakeForm() {
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Submit
           </Button>
         </div>
-        <p className="text-xs text-center text-gray-500 dark:text-gray-500">You can save your progress and come back anytime using this same link.</p>
+        <p className="text-xs text-center text-muted-foreground">You can save your progress and come back anytime using this same link.</p>
         <BrandedFooter />
       </div>
     </div>

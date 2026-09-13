@@ -11,7 +11,7 @@
     --font-sans: 'Inter', sans-serif;
     --font-display: 'Playfair Display', serif;
 
-    --background: 10 25% 98%;
+    --background: 42 50% 96%;
     --foreground: 275 25% 13%;
     --card: 10 20% 99%;
     --card-foreground: 275 25% 13%;
@@ -73,11 +73,11 @@
   }
 
   .dark {
-    --background: 238 22% 7%;
+    --background: 285 16% 12%;
     --foreground: 30 15% 95%;
-    --card: 238 22% 10%;
+    --card: 285 16% 16%;
     --card-foreground: 30 15% 95%;
-    --popover: 238 22% 9%;
+    --popover: 285 16% 16%;
     --popover-foreground: 30 15% 95%;
     --primary: 238 55% 62%;
     --primary-foreground: 238 22% 7%;
@@ -240,18 +240,7 @@
   }
 }
 /* Studio administration and client proposals share the approved neutral palette. */
-body.studio-admin-theme, .studio-surface {
-  --background: 42 50% 96%; --foreground: 294 31% 15%;
-  --card: 40 38% 99%; --card-foreground: 294 31% 15%;
-  --popover: 40 38% 99%; --popover-foreground: 294 31% 15%;
-  --primary: 294 31% 15%; --primary-foreground: 42 50% 96%;
-  --secondary: 39 27% 91%; --secondary-foreground: 294 31% 15%;
-  --muted: 39 22% 92%; --muted-foreground: 287 12% 39%;
-  --accent: 42 39% 85%; --accent-foreground: 294 31% 15%;
-  --border: 39 23% 83%; --input: 39 23% 83%; --ring: 42 40% 48%;
-  --sidebar-background: 40 38% 94%; --sidebar-foreground: 294 31% 15%;
-  color: hsl(var(--foreground)); background: hsl(var(--background));
-}
+.studio-surface { color: hsl(var(--foreground)); background: hsl(var(--background)); }
 
 /* Keep browser autofill text paired with its field background in both themes. */
 input:-webkit-autofill,
@@ -261,3 +250,6 @@ select:-webkit-autofill {
   caret-color: hsl(var(--foreground));
   -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset;
 }
+
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }
