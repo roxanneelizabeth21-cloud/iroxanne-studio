@@ -1,10 +1,26 @@
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
 
-const FALLBACK_HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpeg';
-
 export default function About() {
+  const [headshotUrl, setHeadshotUrl] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const settings = await base44.entities.HomePageSettings.list().catch(() => []);
+        if (!active) return;
+        setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
+      } catch {
+        /* ignore — image just won't show */
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
@@ -12,11 +28,13 @@ export default function About() {
         <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>About</p>
         <h1 className="text-[34px] md:text-[42px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Hi, I'm Roxanne.</h1>
 
-        <div className="mt-6 flex justify-center">
-          <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)] max-w-[200px] sm:max-w-[240px]">
-            <img src={FALLBACK_HEADSHOT_URL} alt="Roxanne, founder of iRoxanne Studio" className="w-full aspect-[3/4] object-cover object-top" />
+        {headshotUrl && (
+          <div className="mt-6 flex justify-center">
+            <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)] max-w-[200px] sm:max-w-[240px]">
+              <img src={headshotUrl} alt="Roxanne, founder of iRoxanne Studio" className="w-full aspect-[3/4] object-cover object-top" />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-8 h-1 w-12 bg-[#C9A84C]/40 rounded-full" />
 
