@@ -1,5 +1,22 @@
 {
   "name": "Square Payment Reconciliation",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
   "description": "Reconcile saved Square checkouts without requiring a customer redirect.",
   "definition": {
     "document": {
@@ -19,16 +36,5 @@
         }
       }
     ]
-  },
-  "trigger": {
-    "condition": null,
-    "config": {
-      "trigger_type": "scheduled",
-      "events": [],
-      "schedule_mode": "recurring",
-      "cron_expression": "*/5 * * * *",
-      "timezone": "America/New_York",
-      "ends_type": "never"
-    }
   }
 }
