@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
-import { applyInvoicePayment } from '../../shared/stripeInvoiceSync.ts';
+import { applyInvoicePayment } from '../../shared/invoicePayments.ts';
 import { esc, brandedEmail, detailRows } from '../../shared/emailBrand.ts';
 
 // Stripe webhook. Verifies the signature with Web Crypto (HMAC-SHA256), then
@@ -75,9 +75,14 @@ export default async function (req: Request) {
       invoice_id: invoiceId,
       amount,
       kind,
+      method: 'stripe',
       reference,
-      milestoneIndex: milestoneIndex ?? undefined,
+      request_id: `stripe_${reference}`,
+      milestoneIndex: milestoneIndex ?? null,
       source: type,
+      // Stripe amounts are server-computed in createStripeCheckout, and a
+      // legitimate overpayment must never be dropped on the floor here.
+      enforceOutstanding: false,
     }).catch((e) => {
       console.log('applyInvoicePayment failed', (e as Error)?.message);
       return { error: (e as Error).message };
