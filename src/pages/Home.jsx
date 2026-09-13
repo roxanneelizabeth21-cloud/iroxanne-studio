@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 
 import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
-import FeaturedWork from '@/components/home/FeaturedWork';
+
 import Process from '@/components/home/Process';
 import Services from '@/components/home/Services';
 import Testimonials from '@/components/home/Testimonials';
@@ -71,7 +71,13 @@ export default function Home() {
 
         <Services />
         <Process />
-        <FeaturedWork items={projects} loading={loading} />
+        <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-10">
+          <div className="max-w-5xl mx-auto md:flex items-center justify-between gap-8">
+            <div><h2 className="font-display text-3xl">Different ideas. Real possibilities.</h2>
+            <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">From family life and travel to relationships and small businesses, explore a few ideas I’ve helped bring to life.</p></div>
+            <a href="/ideas" className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-border px-6 mt-5 md:mt-0 font-semibold">Explore the possibilities →</a>
+          </div>
+        </section>
 
         <Testimonials
           items={testimonials}

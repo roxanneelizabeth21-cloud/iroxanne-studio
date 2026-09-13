@@ -41,6 +41,7 @@ import ProjectsPipeline from '@/pages/admin/ProjectsPipeline';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
 import CaseStudy from '@/pages/CaseStudy';
 import About from '@/pages/About';
+import Ideas from '@/pages/Ideas';
 import Feedback from '@/pages/Feedback';
 import TestimonialsAdminPage from '@/pages/admin/TestimonialsAdminPage';
 
@@ -113,6 +114,7 @@ const AuthenticatedApp = () => {
       <Route path="/book-call" element={<BookCall />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/about" element={<About />} />
+      <Route path="/ideas" element={<Ideas />} />
       <Route path="/feedback" element={<Feedback />} />
       <Route path="/contract/:id" element={<ContractSign />} />
       <Route path="/invoice/:id" element={<InvoicePay />} />

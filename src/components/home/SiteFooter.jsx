@@ -21,6 +21,7 @@ export default function SiteFooter() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 md:px-8 py-6 text-[12px] text-muted-foreground sm:flex-row" style={{ fontFamily: "'Inter', sans-serif" }}>
           <span className="font-semibold text-muted-foreground">iRoxanne Studio</span>
           <div className="flex items-center gap-5">
+            <a href="/ideas" className="hover:text-foreground transition">App ideas</a>
             <a href="/about" className="hover:text-muted-foreground transition">About</a>
             <a href="/privacy" className="hover:text-muted-foreground transition">Privacy</a>
             <a href="/terms" className="hover:text-muted-foreground transition">Terms</a>

@@ -4,7 +4,8 @@ import ThemeToggle from '@/components/ThemeToggle';
 import BrandLogo from '@/components/BrandLogo';
 
 const NAV_LINKS = [
-  { label: 'What I Can Build', href: '/#services' },
+  { label: 'Possibilities', href: '/#services' },
+  { label: 'App Ideas', href: '/ideas' },
   { label: 'How It Works', href: '/#process' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -31,7 +32,7 @@ export default function SiteNav() {
           <a href="/" className="flex shrink-0 items-center">
             <BrandLogo height="h-10 md:h-11" />
           </a>
-          <nav className="hidden items-center gap-1 lg:gap-3 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {NAV_LINKS.map((l) => (
               <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="inline-flex min-h-12 items-center justify-center px-4 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] hover:bg-[#2D2A4A]/5 text-[13px] font-medium text-muted-foreground transition hover:text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>{l.label}</a>
             ))}
@@ -41,13 +42,13 @@ export default function SiteNav() {
             <a href="/quote" className="hidden sm:inline-flex items-center gap-2 h-10 px-5 rounded-full bg-[#2D2A4A] text-white text-[13px] font-semibold transition hover:bg-[#3D3A5A] shadow-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
               Get a Quote <ArrowRight className="h-3.5 w-3.5" />
             </a>
-            <button type="button" onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="homepage-mobile-menu" className="flex h-10 w-10 items-center justify-center rounded-full border border-border md:hidden">
+            <button type="button" onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="homepage-mobile-menu" className="flex h-10 w-10 items-center justify-center rounded-full border border-border lg:hidden">
               {open ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
             </button>
           </div>
         </div>
         {open && (
-          <div id="homepage-mobile-menu" className="md:hidden border-t border-border bg-background px-5 pb-6 pt-4 space-y-4">
+          <div id="homepage-mobile-menu" className="lg:hidden border-t border-border bg-background px-5 pb-6 pt-4 space-y-4">
             {NAV_LINKS.map((l) => (
               <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="flex min-h-12 items-center px-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] text-base font-medium text-muted-foreground hover:text-foreground">{l.label}</a>
             ))}
