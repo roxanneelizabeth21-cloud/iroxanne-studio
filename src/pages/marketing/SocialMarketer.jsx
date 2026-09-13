@@ -9,9 +9,9 @@ import useSpokenReplies from '@/hooks/useSpokenReplies';
 
 const AGENT = 'social_media_marketer';
 const STARTERS = [
-  'Give me 3 fresh post ideas for Amazing Grace I haven’t tried before.',
+  'Draft my first Facebook post as a warm welcome: tell the story of my passion for helping people bring their dreams to life through iRoxanne Studio. Gently invite friends to like the page and follow along, without sales pressure. Save for review.',
   'What’s been performing best this month based on the metrics we have?',
-  'Draft a week of content for Those Old Hymns — mix of testimony and hype posts.',
+  'Draft two Facebook posts for iRoxanne Studio this week about custom app builds and personal build guidance. Use my warm, honest voice and plum, cream, and gold branding. Keep them for review.',
 ];
 
 export default function SocialMarketer() {
@@ -26,7 +26,7 @@ export default function SocialMarketer() {
   const start = async () => {
     const conv = await base44.agents.createConversation({
       agent_name: AGENT,
-      metadata: { name: 'Social strategy chat', description: 'Marketing agent conversation' },
+      metadata: { name: 'iRoxanne Studio strategy', description: 'Custom app builds and personal build guidance. Warm Facebook storytelling, two posts weekly, drafts for review.' },
     });
     setConversation(conv);
     setMessages(conv.messages || []);
