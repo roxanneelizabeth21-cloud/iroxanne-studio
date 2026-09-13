@@ -144,7 +144,7 @@ export default async function (req: Request) {
             title: 'Proposal accepted 🎉',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> accepted the proposal for <strong>${esc(updated.project_title)}</strong> — ${moneyFmt(total)}.</p>
               <p style="margin:0 0 16px;">A draft contract is ready — review it and send for signature.</p>
-              <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
+              <p>${brandButton('Review draft agreement', adminLink(req, `contracts?contract=${encodeURIComponent(contractId)}`))}</p>`,
           }),
         }).catch((e) => console.log('admin accept email failed', (e as Error)?.message));
       }
