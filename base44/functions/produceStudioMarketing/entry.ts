@@ -41,7 +41,8 @@ export default async function(req) {
    prompt:'Review this marketing draft and image for iRoxanne Studio. Pass only if warm, nontechnical, truthful hypothetical copy, no invented client stories or outcomes, no pricing or guarantees, no gibberish or malformed imagery. Reject repetitive generic sales copy. Assess the actual attached image; if unavailable set pass=false. Return pass boolean and reason. Copy: '+JSON.stringify(content),
    file_urls:[image_url],response_json_schema:{type:'object',properties:{pass:{type:'boolean'},reason:{type:'string'}},required:['pass','reason']}
   });
-  const automatic=settings.auto_publish===true && quality?.pass===true;
+  // Owner requires personal approval for every post; AI checks never approve.
+  const automatic=false;
   for(const platform of ['Facebook','Instagram']) {
    const key=platform.toLowerCase()+'_post_id';
    if(job[key]) continue;

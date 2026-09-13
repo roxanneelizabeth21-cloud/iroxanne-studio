@@ -77,8 +77,9 @@ export default function PostWorkflowActions({ post: postProp, clips = [], brandP
   };
 
   const confirmSchedule = () => {
+    if (!guard(canSchedule(post, clips))) return;
     if (!schedDate) { toast({ title: 'Pick a date first.', variant: 'destructive' }); return; }
-    patch({ scheduled_date: schedDate, scheduled_time: schedTime || '', status: 'Scheduled' }, 'Post scheduled', 'schedule');
+    patch({ scheduled_date: schedDate, scheduled_time: schedTime || '', status: 'Scheduled', publish_mode: 'auto' }, 'Approved post scheduled for automatic publishing', 'schedule');
     setAskSchedule(false);
   };
 
@@ -139,7 +140,7 @@ export default function PostWorkflowActions({ post: postProp, clips = [], brandP
             <MessageSquareWarning className="h-3.5 w-3.5" /> Request Changes
           </Button>
           <Button type="button" size="sm" variant="outline" onClick={openSchedule} disabled={!!busy} className="gap-1.5">
-            <CalendarClock className="h-3.5 w-3.5" /> Schedule
+            <CalendarClock className="h-3.5 w-3.5" /> Schedule automatic publishing
           </Button>
         </div>
       )}
