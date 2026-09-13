@@ -4,8 +4,8 @@
 
 export const POST_GOALS = [
   'Showcase a project',
-  'Share a tech tip',
-  'Share a client win',
+  'Help someone imagine an app',
+  'Invite a referral',
   'Book a consult',
   'Build brand awareness',
   'Announce a new service',
@@ -87,8 +87,9 @@ export function draftFromPost(post) {
   return {
     ...EMPTY_DRAFT,
     ...s,
+    goal: s.goal || 'Build brand awareness',
     platformIds,
-    portfolioItemId: post?.portfolio_item_id || s.portfolioItemId || '',
+    portfolioItemId: post?.portfolio_item_id || s.portfolioItemId || '__studio_service__',
     campaignId: post?.campaign_id || s.campaignId || '',
     aspect: post?.requested_aspect_ratio || EMPTY_DRAFT.aspect,
   };
@@ -106,6 +107,7 @@ export function postPatchFromDraft(draft, step, maxStep) {
     requested_aspect_ratio: draft.aspect,
     create_post_step: step,
     create_post_state: {
+      ...draft,
       portfolioItemId: draft.portfolioItemId || '',
       campaignId: draft.campaignId || '',
       goal: draft.goal || '',
@@ -117,7 +119,7 @@ export function postPatchFromDraft(draft, step, maxStep) {
       reviewRecommended: !!draft.reviewRecommended,
       maxStep: Math.max(maxStep || 0, step || 0),
     },
-    description: `Goal: ${effectiveGoal(draft)}${draft.instruction ? ` | Note: ${draft.instruction}` : ''}`.slice(0, 1000),
+
   };
 }
 

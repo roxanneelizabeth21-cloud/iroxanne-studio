@@ -1,3 +1,4 @@
+import { SOCIAL_PLATFORMS } from '@/lib/socialPlatforms';
 import { useState } from 'react';
 import { Search, LayoutGrid } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,17 @@ export default function StepProject({ draft, patch, portfolioItems, campaigns })
 
   return (
     <div className="space-y-5">
+      <fieldset className="space-y-2">
+        <legend className="font-medium">Where should this story go?</legend>
+        <div className="flex flex-wrap gap-3">{SOCIAL_PLATFORMS.filter(p => ['facebook', 'instagram'].includes(p.id)).map(p => (
+          <label key={p.id} className="flex items-center gap-2 rounded-xl border border-border p-3">
+            <input type="checkbox" checked={draft.platformIds.includes(p.id)} onChange={e => {
+              const next = e.target.checked ? [...draft.platformIds, p.id] : draft.platformIds.filter(id => id !== p.id);
+              if (next.length) patch({ platformIds: next });
+            }} />{p.label}
+          </label>
+        ))}</div>
+      </fieldset>
       <div>
         <h2 className="font-display text-xl font-semibold">What are you promoting?</h2>
         <p className="text-sm text-muted-foreground mt-1">Pick a project from your portfolio, or promote your service directly.</p>

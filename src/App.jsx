@@ -60,7 +60,7 @@ import CarouselAds from '@/pages/marketing/CarouselAds';
 import MetaAds from '@/pages/marketing/MetaAds';
 import CreatePost from '@/pages/marketing/CreatePost';
 import CreateReel from '@/pages/marketing/CreateReel';
-import PostEditor from '@/pages/marketing/PostEditor';
+
 import AutomationControls from '@/pages/marketing/AutomationControls';
 import SocialMarketer from '@/pages/marketing/SocialMarketer';
 
@@ -154,7 +154,7 @@ const AuthenticatedApp = () => {
         <Route path="/marketing/campaigns" element={<CampaignBuilder />} />
         <Route path="/marketing/campaigns/:id" element={<CampaignBuilder />} />
         <Route path="/marketing/calendar" element={<ContentCalendar />} />
-        <Route path="/marketing/post/:id" element={<PostEditor />} />
+        <Route path="/marketing/post/:id" element={<CreatePost key="edit-post" />} />
         <Route path="/marketing/library" element={<ContentLibrary />} />
         <Route path="/marketing/performance" element={<MarketingPerformance />} />
         <Route path="/marketing/brand" element={<BrandProfile />} />

@@ -1,3 +1,4 @@
+import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -28,10 +29,10 @@ const TEXT_KEYS = ['customGoal', 'instruction'];
 const TEXT_DEBOUNCE = 800;
 
 const STEPS = [
-  { key: 'subject', label: 'Subject' },
-  { key: 'media', label: 'Media' },
-  { key: 'copy', label: 'Copy' },
-  { key: 'review', label: 'Review' },
+  { key: 'subject', label: 'Channels & idea' },
+  { key: 'media', label: 'Graphic' },
+  { key: 'copy', label: 'Captions' },
+  { key: 'review', label: 'Approve & schedule' },
 ];
 
 // Create Post — one guided flow (Subject → Media → Copy → Review) on top of the
@@ -39,6 +40,7 @@ const STEPS = [
 // A single in-progress MarketingPost is the source of truth and is saved
 // continuously; only its ID is remembered locally.
 export default function CreatePost() {
+  const { id: routeId } = useParams();
   const { toast } = useToast();
   const qc = useQueryClient();
   const [phase, setPhase] = useState('loading'); // loading | resume | wizard
@@ -71,17 +73,18 @@ export default function CreatePost() {
   // Look for an unfinished draft once, on open.
   useEffect(() => {
     let cancelled = false;
-    const id = loadActiveDraftId();
+    const id = routeId || loadActiveDraftId();
     if (!id) { setPhase('wizard'); return; }
     base44.entities.MarketingPost.get(id)
       .then((p) => {
         if (cancelled) return;
+        if (routeId) { startFrom(p); setStep(3); setMaxStep(3); return; }
         if (isResumableDraft(p)) { setResumable(p); setPhase('resume'); }
         else { clearActiveDraftId(); setPhase('wizard'); }
       })
-      .catch(() => { if (!cancelled) { clearActiveDraftId(); setPhase('wizard'); } });
+      .catch(() => { if (!cancelled) { if (routeId) { setPhase('error'); return; } clearActiveDraftId(); setPhase('wizard'); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [routeId]);
 
   // Save anything still queued before the tab closes; warn only when it matters.
   useEffect(() => {
@@ -108,7 +111,7 @@ export default function CreatePost() {
     creating.current = base44.entities.MarketingPost.create({
       ...postPatchFromDraft(draftRef.current, stepRef.current, maxStepRef.current),
       status: 'Draft',
-      approval_status: 'Not Reviewed',
+      approval_status: 'Draft', publish_mode: 'manual',
     }).then((created) => {
       postRef.current = created;
       setPost(created);
@@ -131,10 +134,12 @@ export default function CreatePost() {
       extra.link = item ? shareablePageUrl(item, defaultLinkTarget(item)) : '';
     }
     const next = { ...draftRef.current, ...fields, ...extra };
+    const review = { approval_status: 'Pending Review', publish_mode: 'manual' };
+    setPostBoth(p => p ? { ...p, ...review } : p);
     draftRef.current = next;
     setDraft(next);
     const debounced = Object.keys(fields).every((k) => TEXT_KEYS.includes(k));
-    const send = () => queue(postPatchFromDraft(next, stepRef.current, maxStepRef.current), debounced ? TEXT_DEBOUNCE : 0);
+    const send = () => queue({ ...postPatchFromDraft(next, stepRef.current, maxStepRef.current), ...review }, debounced ? TEXT_DEBOUNCE : 0);
     if (!postRef.current?.id && next.portfolioItemId) {
       ensurePost().then(send).catch((e) => toast({ title: 'Could not start the draft', description: e.message, variant: 'destructive' }));
       return;
@@ -144,11 +149,13 @@ export default function CreatePost() {
 
   // Canonical post-field change (media, copy, schedule, approval).
   const patchPost = useCallback(async (fields, deferred) => {
+    const contentKeys = ['caption', 'hashtags', 'hook', 'cta', 'media_file_url', 'media_clip_id', 'media_type', 'visual_direction'];
+    if (contentKeys.some(k => k in fields)) fields = { ...fields, approval_status: 'Pending Review', publish_mode: 'manual' };
     setPostBoth((p) => (p ? { ...p, ...fields } : p));
-    if (!Object.keys(fields || {}).length) { await flush(); return; }
+    if (!Object.keys(fields || {}).length) { if (!await flush()) throw new Error('Your changes could not be saved. Please try again.'); return; }
     if (!postRef.current?.id) await ensurePost();
     queue(fields, deferred ? TEXT_DEBOUNCE : 0);
-    if (!deferred) await flush();
+    if (!deferred && !await flush()) throw new Error('Your changes could not be saved. Please try again.');
     qc.invalidateQueries({ queryKey: ['marketing-posts'] });
   }, [ensurePost, flush, queue, qc]);
 
@@ -263,6 +270,8 @@ export default function CreatePost() {
   const platformLabels = (p) => (p?.create_post_state?.platformIds || [])
     .map((id) => getPlatform(id)?.label).filter(Boolean).join(' + ');
 
+  if (phase === 'error') return <p role="alert">This post could not be loaded. <Link to="/marketing">Return to the planner</Link></p>;
+
   if (phase === 'loading') {
     return <p className="text-sm text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Looking for your draft…</p>;
   }
@@ -296,7 +305,8 @@ export default function CreatePost() {
   }
 
   return (
-    <div className="max-w-5xl space-y-3">
+    <div className="mx-auto w-full max-w-5xl space-y-3">
+      <Link to="/marketing" className="inline-block py-2 text-sm underline">← Back to planner</Link>
       <CanvasStepBar steps={STEPS} step={step} maxStep={maxStep} onGoTo={goToStep} />
 
       <div className="min-w-0">
@@ -305,10 +315,10 @@ export default function CreatePost() {
       </div>
       <HowThisWorks
         steps={[
-          'Step 1 — Subject: pick the portfolio project this post is about and what the post should accomplish.',
+          'Step 1 — Choose your channels and the idea or service you want to share.',
           'Step 2 — Media: attach a picture or clip from your Media Library, or generate one.',
           'Step 3 — Copy: write or generate the caption, hashtags and the link to include.',
-          'Step 4 — Review: check everything, then schedule it or publish it now.',
+          'Step 4 — Review each version, then personally approve and schedule.',
         ]}
         note="Your work saves as you go, so you can leave and pick the draft back up later."
       />
