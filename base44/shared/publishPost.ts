@@ -17,8 +17,9 @@ export function useOwnDomain(text) {
   return String(text || '').replace(/https?:\/\/(?:www\.)?iroxanne\.base44\.app/gi, PUBLIC_SITE_URL);
 }
 
-export function buildMessage(post, link) {
-  const parts = [String(post.caption || '').trim(), String(post.hashtags || '').trim(), link ? String(link).trim() : ''].filter(Boolean);
+export function buildMessage(post, link, platform = '') {
+  const version = post.create_post_state?.platformCaptions?.[platform.toLowerCase()];
+  const parts = [String(version ?? post.caption ?? '').trim(), String(post.hashtags || '').trim(), link ? String(link).trim() : ''].filter(Boolean);
   return useOwnDomain(parts.join('\n\n'));
 }
 
@@ -63,7 +64,7 @@ export async function resolveLinkForPost(base44, post) {
 
 // Facebook Pages: resolve the first managed Page + a Page access token.
 async function publishFacebook(accessToken, post, mediaUrl, link, base44) {
-  const message = buildMessage(post, link);
+  const message = buildMessage(post, link, 'facebook');
   const page = await resolveFacebookPage(accessToken, base44);
   const pageToken = page.pageToken;
 
@@ -113,7 +114,7 @@ async function postInstagramComment(accessToken, mediaId, message) {
 // instagram_business_content_publish scope and a public media URL.
 async function publishInstagram(accessToken, post, mediaUrl, link) {
   if (!mediaUrl) throw new Error('Instagram publishing requires an attached media file (image or video).');
-  const caption = buildMessage(post, link);
+  const caption = buildMessage(post, link, 'instagram');
 
   const meRes = await fetch(`https://graph.instagram.com/me?fields=id&access_token=${encodeURIComponent(accessToken)}`);
   const me = await meRes.json();

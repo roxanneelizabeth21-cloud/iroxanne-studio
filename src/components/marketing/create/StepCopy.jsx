@@ -128,7 +128,7 @@ Return only the rewritten caption text.`,
     <div className="space-y-5">
       <div>
         <h2 className="font-display text-xl font-semibold">Create your post</h2>
-        <p className="text-sm text-muted-foreground mt-1">Choose where it goes, then generate the words or write them yourself.</p>
+        <p className="text-sm text-muted-foreground mt-1">Generate a starting caption, then tailor each channel’s version below.</p>
       </div>
 
       <div className="space-y-2">
@@ -185,6 +185,20 @@ Return only the rewritten caption text.`,
             <PenLine className="h-4 w-4" /> Write My Own
           </Button>
         </div>
+      )}
+
+      {mode === 'edit' && (
+        <fieldset className="grid gap-4 md:grid-cols-2">
+          <legend className="font-medium mb-2">Caption for each channel</legend>
+          {draft.platformIds.filter(id => ['facebook', 'instagram'].includes(id)).map(id => (
+            <label key={id} className="space-y-2 block">
+              <span className="font-medium">{entityValue(id)}</span>
+              <Textarea rows={7} value={draft.platformCaptions?.[id] ?? post.caption ?? ''}
+                onChange={e => patch({ platformCaptions: { ...draft.platformCaptions, [id]: e.target.value } })} />
+              <span className="text-xs text-muted-foreground">This version will be sent to {entityValue(id)}. Shared hashtags are added below.</span>
+            </label>
+          ))}
+        </fieldset>
       )}
 
       {mode === 'edit' && (
