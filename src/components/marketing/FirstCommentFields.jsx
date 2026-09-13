@@ -14,7 +14,7 @@ function linkComment(link) {
 // the text is stored, previewed, and flagged for a manual paste after publishing.
 export default function FirstCommentFields({ form, set, link }) {
   // Hint text only. Built from this post's own link so it can never suggest the
-  // wrong song or an old-style link that previews without a card.
+  // wrong project or an old-style link that previews without a card.
   const hint = link
     ? `▶️ Listen here: ${link}`
     : 'Optional — pick a link for this post and tap “Use project link”.';

@@ -1,6 +1,6 @@
 // Facebook Page resolution + connection diagnosis.
 // Pages are matched ONLY by the Graph API's own response for the authenticated
-// Facebook user (the token's identity) — never by email, Base44 user, artist
+// Facebook user (the token's identity) — never by email, Base44 user, studio
 // name, or Page name.
 // Business-portfolio-owned Pages are often absent from /me/accounts even when
 // the user has full access, so a stored Page ID is looked up directly as well.

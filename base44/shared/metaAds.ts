@@ -26,7 +26,7 @@ async function graphRequest(path, accessToken, method, params) {
 export const graphGet = (path, token, params) => graphRequest(path, token, 'GET', params);
 export const graphPost = (path, token, params) => graphRequest(path, token, 'POST', params);
 
-// Only these Meta ad accounts belong to this artist; anything else on the
+// Only these Meta ad accounts belong to the studio; anything else on the
 // connected profile (e.g. EF Financials) is never offered anywhere in the app.
 const ALLOWED_ACCOUNT_IDS = ['544520262606180', '3518775091612869'];
 

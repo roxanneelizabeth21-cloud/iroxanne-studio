@@ -4,7 +4,7 @@ import { getFacebookUser, listPagesFromAccounts, lookupPageById, getStoredPageCo
 const CREATE_TASKS = ['CREATE_CONTENT', 'MANAGE'];
 
 // Resolve the Facebook Page for the authenticated Facebook user (from the OAuth
-// token itself — never by email, Base44 user, artist name or Page name) and
+// token itself — never by email, Base44 user, studio name or Page name) and
 // store its Page ID + Page access token for the signed-in Base44 admin.
 export default async function (req) {
   try {
