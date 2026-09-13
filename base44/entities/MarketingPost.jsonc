@@ -89,6 +89,15 @@
       "type": "string",
       "description": "Instagram-specific publish time (HH:MM). Blank falls back to scheduled_time."
     },
+    "facebook_scheduled_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Facebook-specific publish date. Blank falls back to scheduled_date."
+    },
+    "facebook_scheduled_time": {
+      "type": "string",
+      "description": "Facebook-specific publish time (HH:MM). Blank falls back to scheduled_time."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -108,14 +117,42 @@
       "default": "Draft",
       "description": "Post lifecycle status"
     },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "Draft",
+        "Pending Review",
+        "Approved"
+      ],
+      "default": "Draft",
+      "description": "Approval workflow gate. Posts must be Approved before they can be scheduled or published."
+    },
     "publish_mode": {
       "type": "string",
       "enum": [
         "manual",
-        "auto_publish"
+        "auto"
       ],
       "default": "manual",
-      "description": "When auto_publish the system will attempt direct posting when the scheduled time arrives."
+      "description": "When auto the system will attempt direct posting when the scheduled time arrives."
+    },
+    "publishing_status": {
+      "type": "string",
+      "description": "Overall publishing operation state (Publishing, Published, Partially Published, Failed)"
+    },
+    "last_publish_attempt_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the last publish attempt started"
+    },
+    "external_post_id": {
+      "type": "string",
+      "description": "External post ID from the first platform that published successfully"
+    },
+    "posted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the post was published to at least one platform"
     },
     "caption": {
       "type": "string",
@@ -148,7 +185,15 @@
     },
     "media_url": {
       "type": "string",
-      "description": "URL of the attached image/video asset (from Gallery or generation)"
+      "description": "URL of the attached image/video asset (legacy field \u2014 media_file_url is the canonical field)"
+    },
+    "media_file_url": {
+      "type": "string",
+      "description": "Direct URL of the attached image/video asset (upload, generated image, or Gallery image URL). The canonical media field."
+    },
+    "media_clip_id": {
+      "type": "string",
+      "description": "ID of the ClipAsset record when media comes from a clip. The canonical clip reference field."
     },
     "media_type": {
       "type": "string",
@@ -166,12 +211,95 @@
     },
     "clip_asset_id": {
       "type": "string",
-      "description": "ID of the ClipAsset record when a clip is attached"
+      "description": "Legacy clip reference \u2014 read-only support. media_clip_id is the canonical field."
+    },
+    "crop_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "needs_crop",
+        "processing",
+        "done",
+        "failed"
+      ],
+      "default": "none",
+      "description": "Cropping/canvas processing state"
+    },
+    "needs_crop": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this post's media still needs a final crop before publishing"
     },
     "first_comment": {
       "type": "string",
       "description": "Optional first comment to post immediately after the main post (used for extra hashtags or engagement bait)",
       "maxLength": 2000
+    },
+    "instagram_first_comment": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Instagram-specific first comment text, posted right after the main IG media."
+    },
+    "facebook_first_comment": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Facebook-specific first comment text (manual paste required \u2014 no pages_manage_engagement scope)."
+    },
+    "instagram_publish_status": {
+      "type": "string",
+      "enum": [
+        "Not Selected",
+        "Pending",
+        "Publishing",
+        "Published",
+        "Failed",
+        "Connection Required",
+        "Permission Required"
+      ],
+      "default": "Not Selected",
+      "description": "Per-platform Instagram publish state"
+    },
+    "instagram_post_url": {
+      "type": "string",
+      "description": "Instagram media ID or permalink after publishing"
+    },
+    "instagram_publish_error": {
+      "type": "string",
+      "description": "Error message if Instagram publishing failed"
+    },
+    "instagram_comment_status": {
+      "type": "string",
+      "description": "Outcome of the Instagram first-comment attempt (Posted, Failed, Not Needed, Manual Required)"
+    },
+    "instagram_comment_error": {
+      "type": "string",
+      "description": "Error message if the Instagram first comment failed"
+    },
+    "facebook_publish_status": {
+      "type": "string",
+      "enum": [
+        "Not Selected",
+        "Pending",
+        "Publishing",
+        "Published",
+        "Failed",
+        "Connection Required",
+        "Permission Required"
+      ],
+      "default": "Not Selected",
+      "description": "Per-platform Facebook publish state"
+    },
+    "facebook_post_url": {
+      "type": "string",
+      "description": "Facebook post ID or permalink after publishing"
+    },
+    "facebook_publish_error": {
+      "type": "string",
+      "description": "Error message if Facebook publishing failed"
+    },
+    "facebook_comment_status": {
+      "type": "string",
+      "description": "Outcome of the Facebook first-comment attempt (Manual Required, Not Needed)"
     },
     "template_id": {
       "type": "string",
@@ -192,20 +320,32 @@
     },
     "facebook_post_id": {
       "type": "string",
-      "description": "Facebook Graph API post ID after publishing"
+      "description": "Facebook Graph API post ID after publishing (legacy field)"
     },
     "instagram_media_id": {
       "type": "string",
-      "description": "Instagram media ID after publishing"
+      "description": "Instagram media ID after publishing (legacy field)"
     },
     "published_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Timestamp when the post was published"
+      "description": "Timestamp when the post was published (legacy field)"
     },
     "publish_error": {
       "type": "string",
       "description": "Error message if publishing failed"
+    },
+    "create_post_step": {
+      "type": "number",
+      "description": "Current step in the Create Post wizard (0 = subject, 1 = media, 2 = copy, 3 = review)"
+    },
+    "create_post_state": {
+      "type": "object",
+      "description": "Wizard-only state for the Create Post flow (portfolioItemId, campaignId, goal, customGoal, instruction, platformIds, link, copyReady, reviewRecommended, maxStep)"
+    },
+    "requested_aspect_ratio": {
+      "type": "string",
+      "description": "Aspect ratio requested in the Create Post wizard (4:5, 1:1, 9:16)"
     },
     "manual_metrics": {
       "type": "object",

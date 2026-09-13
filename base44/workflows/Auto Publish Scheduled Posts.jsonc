@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_publish_scheduled_posts",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "publish_due_posts": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoPublishScheduledPosts"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Publish due scheduled posts",
+            "description": "Find Ready auto-publish posts whose scheduled time has arrived and publish them to Instagram/Facebook"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Runs every 15 minutes. Finds posts with publish_mode=auto whose scheduled date/time has arrived and publishes them directly to Instagram Business and/or Facebook Pages. Failed publishes stay Ready and notify the admin.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/15 * * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Auto Publish Scheduled Posts"
+}
