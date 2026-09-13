@@ -34,7 +34,8 @@
         "pending",
         "in_progress",
         "submitted",
-        "reviewed"
+        "reviewed",
+        "sent"
       ],
       "default": "pending",
       "description": "Intake lifecycle"
@@ -257,6 +258,39 @@
     "admin_notes": {
       "type": "string",
       "description": "Internal notes from the admin review"
+    },
+    "journey_profile": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "connections": {
+          "type": "string"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "idea": {
+          "type": "string"
+        },
+        "audience": {
+          "type": "string"
+        }
+      }
+    },
+    "journey_step": {
+      "type": "string"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
@@ -268,8 +302,16 @@
         "role": "admin"
       }
     },
-    "read": true,
-    "update": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "delete": {
       "user_condition": {
         "role": "admin"
