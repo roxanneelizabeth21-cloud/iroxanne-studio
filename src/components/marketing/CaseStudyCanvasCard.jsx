@@ -4,7 +4,7 @@ import SendToCanvaButton from '@/components/marketing/canvas/SendToCanvaButton';
 import DownloadFileButton from '@/components/marketing/DownloadFileButton';
 import SendCanvasToLibraryButton from '@/components/marketing/canvas/SendCanvasToLibraryButton';
 
-export default function AlbumCanvasCard({ canvas, onDelete, onDuplicate }) {
+export default function CaseStudyCanvasCard({ canvas, onDelete, onDuplicate }) {
   const slug = (canvas.title || canvas.project_title || 'canvas')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return (

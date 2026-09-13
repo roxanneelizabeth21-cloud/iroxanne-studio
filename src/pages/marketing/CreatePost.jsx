@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import CanvasStepBar from '@/components/marketing/canvas/CanvasStepBar';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
-import StepMusic from '@/components/marketing/create/StepMusic';
+import StepProject from '@/components/marketing/create/StepProject';
 import StepMedia from '@/components/marketing/create/StepMedia';
 import StepCopy from '@/components/marketing/create/StepCopy';
 import StepReview from '@/components/marketing/create/StepReview';
@@ -314,7 +314,7 @@ export default function CreatePost() {
       />
 
       {step === 0 && (
-        <StepMusic draft={draft} patch={patch} portfolioItems={portfolioItems} campaigns={campaigns} />
+        <StepProject draft={draft} patch={patch} portfolioItems={portfolioItems} campaigns={campaigns} />
       )}
       {step === 1 && post && (
         <StepMedia

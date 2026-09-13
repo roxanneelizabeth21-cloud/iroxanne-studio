@@ -7,10 +7,10 @@ import { useToast } from '@/components/ui/use-toast';
 import CanvasStepBar from '@/components/marketing/canvas/CanvasStepBar';
 import CanvaImportDialog from '@/components/marketing/CanvaImportDialog';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
-import CanvasStepRelease from '@/components/marketing/canvas/CanvasStepRelease';
+import CanvasStepProject from '@/components/marketing/canvas/CanvasStepProject';
 import CanvasStepDesign from '@/components/marketing/canvas/CanvasStepDesign';
 import CanvasStepSave from '@/components/marketing/canvas/CanvasStepSave';
-import AlbumCanvasCard from '@/components/marketing/AlbumCanvasCard';
+import CaseStudyCanvasCard from '@/components/marketing/CaseStudyCanvasCard';
 import useCanvasPreview from '@/hooks/useCanvasPreview';
 import { useDominantColor } from '@/hooks/useDominantColor';
 import { drawProjectCanvas } from '@/lib/drawProjectCanvas';
@@ -29,7 +29,7 @@ const EMPTY_DESIGN = { color: '', ctaPreset: 'See the build', customCta: '', sub
 // Case Study Canvas — the same guided shell as Create a Post
 // (Project → Design → Save), on top of the existing canvas renderer.
 // Cards are built from a PortfolioItem's screenshot/cover image.
-export default function AlbumCanvasStudio() {
+export default function CaseStudyCanvasStudio() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
@@ -183,7 +183,7 @@ export default function AlbumCanvasStudio() {
           />
 
           {step === 0 && (
-            <CanvasStepRelease releases={projects} releaseId={projectId} onPick={setProjectId} />
+            <CanvasStepProject projects={projects} projectId={projectId} onPick={setProjectId} />
           )}
           {step === 1 && (
             <CanvasStepDesign design={design} patch={patch} preset={preset} palette={palette} color={color} preview={preview} rendering={rendering} />
@@ -224,7 +224,7 @@ export default function AlbumCanvasStudio() {
           <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1 snap-x">
             {canvases.map((c) => (
               <div key={c.id} className="w-52 shrink-0 snap-start">
-                <AlbumCanvasCard canvas={c} onDelete={remove} onDuplicate={duplicate} />
+                <CaseStudyCanvasCard canvas={c} onDelete={remove} onDuplicate={duplicate} />
               </div>
             ))}
           </div>
