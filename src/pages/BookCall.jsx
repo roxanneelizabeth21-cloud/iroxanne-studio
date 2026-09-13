@@ -13,7 +13,7 @@ export default function BookCall(){
  const call=async action=>{const r=await base44.functions.invoke('quoteCallBooking',{action,lead_id,token,start:selected,phone});const d=r.data||r;if(d.error)throw Error(d.error);return d;};
  const load=async()=>{setBusy(true);setError('');try{setData(await call('slots'));}catch(e){setError(e.message);}finally{setBusy(false);}};
  useEffect(()=>{load();},[lead_id,token]);
- const book=async()=>{if(busy)return;setBusy(true);setError('');try{setData(await call('book'));}catch(e){setError(e.message);setSelected('');}finally{setBusy(false);}};
+ const book=async()=>{if(busy)return;setBusy(true);setError('');try{const d=await call('book');if(d.booked){base44.analytics.track({eventName:'call_booked'});}setData(d);}catch(e){setError(e.message);setSelected('');}finally{setBusy(false);}};
  const days=[...new Set((data?.slots||[]).map(dateKey))];
  const chosenDay=days.includes(day)?day:days[0];
  return <div className="studio-surface min-h-screen bg-background px-4 py-10"><div className="max-w-2xl mx-auto"><BrandedPageHeader title="Schedule an optional call" subtitle="Choose a time to talk through your project."/>

@@ -125,6 +125,7 @@ export default function GetQuote() {
       });
       setBookingLink('/book-call?lead='+encodeURIComponent(lead.id)+'&t='+bookingToken);
       setSubmitted(true);
+      base44.analytics.track({ eventName: 'quote_form_submitted' });
       toast.success("Got it! We'll follow up within 2 business days.");
     } catch (error) { console.error('Get a Quote submission error:', error); toast.error('Something went wrong. Please try again.'); }
     finally { setSubmitting(false); }
