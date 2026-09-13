@@ -99,6 +99,26 @@ function SidebarContent({ onNavigate }) {
           </NavLink>
         ))}
 
+        {/* Client detail pages — grouped and set back, since the normal route in
+            is clicking a project card rather than starting here. */}
+        <p className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/60">
+          Client documents
+        </p>
+        {NAV_CLIENT_DETAIL.map((n) => (
+          <NavLink
+            key={n.to}
+            to={n.to}
+            end={n.end}
+            onClick={onNavigate}
+            className={({ isActive }) => `flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[13px] transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'}`}
+          >
+            <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
+          </NavLink>
+        ))}
+
+        <p className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/60">
+          Site
+        </p>
         {NAV_REST.map((n) => (
           <NavLink
             key={n.to}
