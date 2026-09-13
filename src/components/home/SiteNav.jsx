@@ -63,20 +63,36 @@ export default function SiteNav() {
             </button>
           </div>
         </div>
-        {open && (
-          <div id="homepage-mobile-menu" className="lg:hidden border-t border-border bg-background px-5 pb-6 pt-4 space-y-4">
-            {NAV_LINKS.map((l) => (
-              <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="flex min-h-12 items-center px-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] text-base font-medium text-muted-foreground hover:text-foreground">{l.label}</a>
-            ))}
-            {isAdmin && (
-              <a href="/admin" className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground">
-                <Lock className="h-4 w-4" /> Admin
-              </a>
-            )}
-            <a href="/quote" className="block text-center py-3 rounded-full bg-[#2D2A4A] text-white text-sm font-semibold">Get a Quote</a>
-          </div>
-        )}
       </header>
+      {open && (
+        <>
+          <div
+            className="lg:hidden fixed inset-0 top-[72px] z-40 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            id="homepage-mobile-menu"
+            role="dialog"
+            aria-label="Site menu"
+            className="lg:hidden fixed right-0 top-[72px] bottom-0 z-50 flex w-[300px] max-w-[80vw] flex-col bg-background border-l border-border shadow-xl"
+          >
+            <div className="flex flex-col gap-1 p-5 overflow-y-auto flex-1">
+              {NAV_LINKS.map((l) => (
+                <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="flex min-h-12 items-center px-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] text-base font-medium text-muted-foreground hover:text-foreground">{l.label}</a>
+              ))}
+              {isAdmin && (
+                <a href="/admin" className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground">
+                  <Lock className="h-4 w-4" /> Admin
+                </a>
+              )}
+            </div>
+            <div className="mt-auto p-5 border-t border-border">
+              <a href="/quote" className="block text-center py-3 rounded-full bg-[#2D2A4A] text-white text-sm font-semibold">Get a Quote</a>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
