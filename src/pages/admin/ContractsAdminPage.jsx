@@ -75,8 +75,7 @@ export default function ContractsAdminPage() {
         if (payload.lead_id) {
           await base44.entities.Lead.update(payload.lead_id, { status: 'proposal_sent' }).catch(() => {});
         }
-        setEditing({ contract: created });
-        toast({ title: 'Contract created' });
+        toast({ title: 'Contract created', description: 'Click Send to email the signing link to your client.' });
       }
       await load();
       setEditing(null);
