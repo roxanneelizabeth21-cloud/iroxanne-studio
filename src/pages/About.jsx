@@ -40,18 +40,10 @@ export default function About() {
         <section className="mx-auto max-w-3xl px-5 md:px-8 py-14">
         <h2 className="font-display text-3xl">A little about me and how I work</h2>
         <div className="mt-8 space-y-5 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
-          <p>
-            I'm <span className="font-semibold text-foreground">Roxanne</span>, the founder and builder behind iRoxanne Studio. I build custom apps for people who have an idea and want help turning it into something real. Whether you are launching a new business, running a small team, or just exploring a concept, I work with you to shape the idea, decide what belongs in a first version, and build it step by step with your feedback along the way.
-          </p>
-          <p>
-            iRoxanne Studio is a custom app development service. I build booking systems, online stores, client portals, internal tools, and marketing dashboards. Every project starts with a conversation: I listen to what you need, ask questions, and help you figure out where to begin. You do not need to know the technical details or have everything worked out before we talk. We agree on the scope, cost, and timeline before any build begins.
-          </p>
-          <p>
-            This service is for small business owners, solo founders, creators, and anyone with an idea they want to explore. If you have been told your project is too small for a traditional agency, or too custom for a no-code template, that is exactly who I build for. You work directly with me, not a team of account managers. There are no handoffs to someone you have never met, and no layers between you and the person building your app.
-          </p>
-          <p>
-            I am a Base44 Partner, which means I build on a platform that lets me move quickly and keep costs transparent. My work includes everything from the first conversation through design, development, launch, and ongoing support if you want it. If you have an idea you would like to explore, I would love to hear about it.
-          </p>
+          <p>I’ve been building apps for nearly 20 years, starting when bringing an idea to life meant writing the code behind it. Those years have taught me how to ask the right questions, work through challenges, and build around what people actually need.</p>
+          <p>Today, newer tools let me bring that experience to projects in a different way. They can reduce the time and cost involved in development, making a custom app more accessible to someone starting a business or exploring an idea.</p>
+          <p>That’s what excites me about iRoxanne Studio: combining years of hands-on experience with new possibilities to help people create something they might once have thought was out of reach.</p>
+          <p>You don’t need a finished plan or technical knowledge to begin. Bring your idea, and we’ll work out the next steps together.</p>
 
 
         </div>
