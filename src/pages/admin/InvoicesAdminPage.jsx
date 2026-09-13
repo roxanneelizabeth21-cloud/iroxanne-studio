@@ -31,10 +31,20 @@ export default function InvoicesAdminPage() {
   const remaining = (i,k) => k==='deposit'
     ? (['paid','waived'].includes(i.deposit_status) ? 0 : Math.max(0,Number(i.deposit_amount||0)-Number(i.deposit_paid_amount||0)))
     : (i.balance_status==='waived' || i.balance_status==='paid' ? 0 : Math.max(0,Number(i.balance_amount||0)-Number(i.balance_paid_amount||0)));
+  // Unpaid milestones, kept with their original index so the backend can mark
+  // the right one paid.
+  const openMilestones = i => (Array.isArray(i?.milestones)?i.milestones:[])
+    .map((m,idx)=>({...m,idx})).filter(m=>m.status!=='paid');
+  const stageAmount = (i,kind,idx) => {
+    if(kind==='milestone'){ const m=(i?.milestones||[])[idx]; return m?Number(m.amount||0):0; }
+    return remaining(i,kind);
+  };
   const openPayment = i => {
-    const kind = remaining(i,'deposit')>0 ? 'deposit':'balance';
+    const ms = openMilestones(i);
+    const kind = remaining(i,'deposit')>0 ? 'deposit' : ms.length ? 'milestone' : 'balance';
+    const milestone_index = kind==='milestone' ? ms[0].idx : '';
     setEditing(i);
-    setForm({kind,amount:remaining(i,kind),method:'transfer',reference:'',request_id:crypto.randomUUID(),notify_client:false});
+    setForm({kind,milestone_index,amount:stageAmount(i,kind,milestone_index),method:'transfer',reference:'',request_id:crypto.randomUUID(),notify_client:false});
   };
   const save = async e => {
     e.preventDefault();
