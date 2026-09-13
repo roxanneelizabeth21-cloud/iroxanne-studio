@@ -1,44 +1,32 @@
-import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import HubTaskGrid from '@/components/marketing/hub/HubTaskGrid';
-import HubStatusStrip from '@/components/marketing/hub/HubStatusStrip';
-import HubToolLinks from '@/components/marketing/hub/HubToolLinks';
+import ContentCalendar from './ContentCalendar';
+import { hasValidMedia, publishTargets, platformResult } from '@/lib/postValidation';
 import { dateKey } from '@/lib/marketing';
 
-const DONE = ['Posted', 'Skipped', 'Cancelled'];
-
-// Marketing home. Its only job is answering "what do you want to do?" and
-// routing there fast — no feature dumping on this screen.
 export default function MarketingHub() {
-  const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
-  const { data: projects = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
-
-  const { dueToday, nextPost } = useMemo(() => {
-    const today = dateKey(new Date());
-    const open = posts.filter((p) => p.scheduled_date && !DONE.includes(p.status));
-    const upcoming = open
-      .filter((p) => p.scheduled_date >= today)
-      .sort((a, b) => (a.scheduled_date === b.scheduled_date
-        ? String(a.scheduled_time || '99:99').localeCompare(String(b.scheduled_time || '99:99'))
-        : a.scheduled_date.localeCompare(b.scheduled_date)));
-    return { dueToday: open.filter((p) => p.scheduled_date === today).length, nextPost: upcoming[0] || null };
-  }, [posts]);
-
-  const nextTitle = projects.find((r) => r.id === nextPost?.portfolio_item_id)?.title || '';
-
-  return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div>
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">What do you want to do?</h1>
-        <span aria-hidden="true" className="mt-2 block h-px bg-primary/60" />
-      </div>
-
-      <HubStatusStrip dueToday={dueToday} nextPost={nextPost} nextTitle={nextTitle} />
-
-      <HubTaskGrid />
-
-      <HubToolLinks />
-    </div>
-  );
+ const {data:posts=[]}=useQuery({queryKey:['marketing-posts'],queryFn:()=>base44.entities.MarketingPost.list('-created_date')});
+ const {data:clips=[]}=useQuery({queryKey:['clip-assets'],queryFn:()=>base44.entities.ClipAsset.list('-created_date')});
+ const today=dateKey(new Date());
+ const open=posts.filter(p=>!['Posted','Cancelled','Skipped'].includes(p.status));
+ const attention=open.map(p=>{
+  const failed=publishTargets(p).filter(t=>['Failed','Connection Required','Permission Required'].includes(platformResult(p,t)));
+  const reason=failed.length ? failed.join(' and ')+' needs attention' : p.status==='Scheduled' && p.scheduled_date<today ? 'Planned date has passed; check publishing' : !hasValidMedia(p,clips) ? 'Add a graphic or video' : !p.caption?.trim() ? 'Add a caption' : p.approval_status!=='Approved' ? 'Ready for your review' : '';
+  return {p,reason};
+ }).filter(x=>x.reason);
+ return <div className="space-y-5">
+  <div><h1 className="font-display text-3xl">What are we posting?</h1><p className="text-muted-foreground mt-2">Plan two weekly stories for Facebook and Instagram. Review the words and graphics, then choose when to publish.</p></div>
+  <nav aria-label="Marketing sections" className="flex flex-wrap gap-3 text-sm">
+   <span className="font-semibold border-b-2 border-primary">This week & backlog</span>
+   {[['/marketing/media','Media'],['/marketing/performance','Results'],['/marketing/brand','Settings']].map(([to,label])=><Link key={to} to={to} className="underline">{label}</Link>)}
+   <details><summary className="cursor-pointer">More tools</summary><div className="flex flex-wrap gap-3 py-3">{[['campaigns','Campaigns'],['canvas','Case study graphics'],['templates','Templates'],['clips','Clips'],['controls','Automation'],['meta-ads','Ads'],['library','All posts']].map(([to,label])=><Link key={to} to={'/marketing/'+to}>{label}</Link>)}</div></details>
+  </nav>
+  <div className="flex flex-wrap gap-3"><Link className="rounded-xl bg-primary text-primary-foreground px-4 py-3" to="/marketing/strategist?weekly=1">Create this week's two posts with the strategist</Link><Link className="rounded-xl border px-4 py-3" to="/marketing/post">Create a post myself</Link></div>
+  <details className="rounded-xl border p-4" open={attention.length>0}><summary className="cursor-pointer font-medium">Needs attention ({attention.length})</summary>
+   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">{attention.map(({p,reason})=><Link key={p.id} to={'/marketing/post/'+p.id} className="rounded-lg border p-3"><p className="font-medium line-clamp-1">{p.hook||p.caption||'Untitled post'}</p><p className="text-sm text-muted-foreground">{reason} →</p><p className="text-xs mt-2">{publishTargets(p).map(t=>t+': '+(platformResult(p,t)==='Not Selected'?'Not published':platformResult(p,t))).join(' · ')}</p></Link>)}</div>
+  </details>
+  <p className="text-sm text-muted-foreground">Dragging sets a planned date only. Approval and publishing are separate. Open a post to review both platforms. Published posts remain locked.</p>
+  <ContentCalendar planner />
+ </div>;
 }

@@ -41,11 +41,11 @@ const VIEWS = [
   { key: 'day', label: 'Day', Icon: Sun },
 ];
 
-export default function ContentCalendar() {
+export default function ContentCalendar({ planner = false }) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [view, setView] = useState(() => {
-    try { return localStorage.getItem(VIEW_KEY) || 'grid'; } catch { return 'grid'; }
+    try { return planner ? 'week' : localStorage.getItem(VIEW_KEY) || 'week'; } catch { return 'week'; }
   });
   const [cursor, setCursor] = useState(new Date());
   const [filters, setFilters] = useState(EMPTY_FILTERS);
@@ -60,7 +60,7 @@ export default function ContentCalendar() {
   const [deleting, setDeleting] = useState(null);
   const [moving, setMoving] = useState(null);
   const [playingId, setPlayingId] = useState(null);
-  const [showQueue, setShowQueue] = useState(false);
+  const [showQueue, setShowQueue] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [announce, setAnnounce] = useState('');
   const revertRef = useRef(null);
@@ -138,7 +138,7 @@ export default function ContentCalendar() {
   const addSlot = async (key) => {
     try {
       const created = await base44.entities.MarketingPost.create({
-        platform: 'Instagram', format: 'Feed Post', scheduled_date: key, scheduled_timezone: timezone, status: 'Draft', caption: '',
+        platform: 'Facebook', publish_targets: ['Facebook', 'Instagram'], format: 'Feed Post', scheduled_date: key, scheduled_timezone: timezone, status: 'Draft', caption: '',
       });
       qc.invalidateQueries({ queryKey: ['marketing-posts'] });
       openPost(created);
@@ -227,14 +227,14 @@ export default function ContentCalendar() {
       e.preventDefault();
       const id = dragId || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
       const post = posts.find((p) => p.id === id);
-      reschedule(post, { scheduled_date: key });
+      if (post && !isLocked(post)) setMovingPost({ ...post, scheduled_date: key });
     },
   });
 
   // Drop target for both pointer drags and native drops.
   dropRef.current = (id, key) => {
     const post = posts.find((p) => p.id === id);
-    if (post) reschedule(post, { scheduled_date: key });
+    if (post) if (post && !isLocked(post)) setMovingPost({ ...post, scheduled_date: key });
   };
 
   const startDrag = (p, e) => {

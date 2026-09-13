@@ -1,6 +1,6 @@
 import { GripVertical, CalendarPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { resolveMedia, isLocked } from '@/lib/postValidation';
+import { resolveMedia, isLocked, isApproved } from '@/lib/postValidation';
 import MediaStatusBadge from '@/components/marketing/MediaStatusBadge';
 import PlatformBadges from '@/components/marketing/PlatformBadges';
 
@@ -11,12 +11,12 @@ export default function UnscheduledQueue({
   return (
     <div className="glass rounded-2xl p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Unscheduled queue</h2>
+        <h2 className="text-sm font-semibold">Backlog</h2>
         <span className="text-xs text-muted-foreground">{posts.length}</span>
       </div>
-      <p className="text-[11px] text-muted-foreground">Drag onto a date, or use Move post.</p>
+      <p className="text-[11px] text-muted-foreground">Drag onto a date and choose a time, or use Move post. Planning does not approve or publish.</p>
       <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
-        {posts.map((p) => {
+        {[...posts].sort((a,b) => Number(isApproved(b))-Number(isApproved(a))).map((p) => {
           const media = resolveMedia(p, clips);
           const canDrag = !isLocked(p);
           return (
@@ -55,7 +55,7 @@ export default function UnscheduledQueue({
                 )}
                 <div className="min-w-0 space-y-0.5">
                   <p className="text-[11px] line-clamp-2">{p.hook || p.caption || p.format}</p>
-                  <div className="flex items-center gap-1"><PlatformBadges post={p} /><span className="text-[10px] text-muted-foreground">{p.status}</span></div>
+                  <div className="flex items-center gap-1"><PlatformBadges post={p} /><span className="text-[10px] text-muted-foreground">{!media || !p.caption?.trim() ? 'Needs work' : isApproved(p) ? 'Approved — choose a date' : 'Ready for your review'}</span></div>
                   {campaignName(p) && <p className="text-[10px] text-muted-foreground truncate">{campaignName(p)}</p>}
                   {projectTitle(p) && <p className="text-[10px] text-muted-foreground truncate">{projectTitle(p)}</p>}
                   <p className="text-[10px] text-muted-foreground">Created {new Date(p.created_date).toLocaleDateString()}</p>

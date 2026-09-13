@@ -17,7 +17,7 @@ const STARTERS = [
 export default function SocialMarketer() {
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => new URLSearchParams(window.location.search).has('weekly') ? 'Create two weekly stories for Facebook and Instagram, with tailored captions and finished graphics for each. Save drafts for my review; do not publish. Use my personal, sophisticated, people-first direction.' : '');
   const [sending, setSending] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const bottomRef = useRef(null);
