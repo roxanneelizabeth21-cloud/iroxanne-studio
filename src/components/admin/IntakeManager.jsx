@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import { INTAKE_LABELS, readableIntake } from '@/lib/intakeJourney';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
+import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 
 export default function IntakeManager() {
   const [rows,setRows]=useState([]);
@@ -47,7 +48,7 @@ export default function IntakeManager() {
       description:`The intake for "${r.project_title||r.client_name}" will be permanently removed. This cannot be undone.`,
     });
     if(!ok)return;
-    try{await base44.entities.ClientIntake.delete(r.id);toast.success('Intake deleted.');await load();}
+    try{const counts=await deleteProjectChain('intake',r.id);toast.success('Intake deleted.'+(chainSummary(counts)?' '+chainSummary(counts):''));await load();}
     catch{toast.error('Could not delete the intake.');}
   };
   const waiting=contracts.filter(c=>c.status!=='cancelled'&&!rows.some(i=>i.contract_id===c.id));

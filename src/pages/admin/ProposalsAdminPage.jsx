@@ -7,6 +7,7 @@ import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ArrowRig
 import { Link } from 'react-router-dom';
 import ProposalForm from '@/components/admin/ProposalForm';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
+import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
@@ -95,12 +96,12 @@ export default function ProposalsAdminPage() {
   const handleDelete = async (proposal) => {
     const ok = await confirmDelete({
       title: 'Delete this proposal?',
-      description: `"${proposal.project_title}" will be permanently removed. This cannot be undone.`,
+      description: `"${proposal.project_title}" will be permanently removed, along with any agreement created from it. This cannot be undone.`,
     });
     if (!ok) return;
     try {
-      await base44.entities.Proposal.delete(proposal.id);
-      toast({ title: 'Proposal deleted' });
+      const counts = await deleteProjectChain('proposal', proposal.id);
+      toast({ title: 'Proposal deleted', description: chainSummary(counts) });
       await load();
     } catch (e) {
       toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });
@@ -110,12 +111,12 @@ export default function ProposalsAdminPage() {
   const handleDeleteLead = async (lead) => {
     const ok = await confirmDelete({
       title: 'Delete this quote request?',
-      description: `The request from "${lead.name || lead.email}" will be permanently removed. This cannot be undone.`,
+      description: `The request from "${lead.name || lead.email}" will be permanently removed, along with any proposals or agreements created from it. This cannot be undone.`,
     });
     if (!ok) return;
     try {
-      await base44.entities.Lead.delete(lead.id);
-      toast({ title: 'Quote request deleted' });
+      const counts = await deleteProjectChain('lead', lead.id);
+      toast({ title: 'Quote request deleted', description: chainSummary(counts) });
       await load();
     } catch (e) {
       toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });

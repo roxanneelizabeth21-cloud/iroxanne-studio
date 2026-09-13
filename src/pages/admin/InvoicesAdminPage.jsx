@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Receipt, Plus, Send, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
+import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
@@ -76,10 +77,10 @@ export default function InvoicesAdminPage() {
   const removeInvoice = async i => {
     const ok = await confirmDelete({
       title: 'Delete this invoice?',
-      description: `The invoice for "${i.project_title}" will be permanently removed. Payment history linked to it will remain. This cannot be undone.`,
+      description: `The invoice for "${i.project_title}" will be permanently removed, along with any payments recorded against it. This cannot be undone.`,
     });
     if(!ok)return;
-    try{await base44.entities.Invoice.delete(i.id);toast({title:'Invoice deleted'});await load();}
+    try{const counts=await deleteProjectChain('invoice',i.id);toast({title:'Invoice deleted',description:chainSummary(counts)});await load();}
     catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
   };
   const removePayment = async p => {
@@ -88,7 +89,7 @@ export default function InvoicesAdminPage() {
       description: `This ${p.kind} payment of ${money(p.amount)} will be permanently removed. This cannot be undone.`,
     });
     if(!ok)return;
-    try{await base44.entities.Payment.delete(p.id);toast({title:'Payment deleted'});await load();}
+    try{const counts=await deleteProjectChain('payment',p.id);toast({title:'Payment deleted',description:chainSummary(counts)});await load();}
     catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
   };
   return <div className="space-y-6">

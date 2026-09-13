@@ -14,6 +14,7 @@ import ContractForm from '@/components/admin/ContractForm';
 import HandoffPanel from '@/components/admin/HandoffPanel';
 import { RUSH_TERMS } from '@/lib/studioDelivery';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
+import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
@@ -82,12 +83,12 @@ export default function ContractsAdminPage() {
   const handleDeleteContract = async (contract) => {
     const ok = await confirmDelete({
       title: 'Delete this agreement?',
-      description: `"${contract.project_title}" will be permanently removed. This cannot be undone.`,
+      description: `"${contract.project_title}" will be permanently removed, along with its invoice, intake, and payment records. This cannot be undone.`,
     });
     if (!ok) return;
     try {
-      await base44.entities.Contract.delete(contract.id);
-      toast({ title: 'Agreement deleted' });
+      const counts = await deleteProjectChain('contract', contract.id);
+      toast({ title: 'Agreement deleted', description: chainSummary(counts) });
       await load();
     } catch (e) {
       toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });
@@ -97,12 +98,12 @@ export default function ContractsAdminPage() {
   const handleDeleteLead = async (lead) => {
     const ok = await confirmDelete({
       title: 'Delete this quote request?',
-      description: `The request from "${lead.name || lead.email}" will be permanently removed. This cannot be undone.`,
+      description: `The request from "${lead.name || lead.email}" will be permanently removed, along with any proposals or agreements created from it. This cannot be undone.`,
     });
     if (!ok) return;
     try {
-      await base44.entities.Lead.delete(lead.id);
-      toast({ title: 'Quote request deleted' });
+      const counts = await deleteProjectChain('lead', lead.id);
+      toast({ title: 'Quote request deleted', description: chainSummary(counts) });
       await load();
     } catch (e) {
       toast({ title: 'Delete failed', description: e.message, variant: 'destructive' });
