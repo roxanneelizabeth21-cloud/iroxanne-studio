@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ArrowRight, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProposalForm from '@/components/admin/ProposalForm';
+import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
@@ -21,6 +22,7 @@ const STATUS_STYLES = {
 
 export default function ProposalsAdminPage() {
   const { toast } = useToast();
+  const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
   const [leads, setLeads] = useState([]);
   const [proposals, setProposals] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -91,7 +93,11 @@ export default function ProposalsAdminPage() {
   };
 
   const handleDelete = async (proposal) => {
-    if (!window.confirm(`Delete proposal "${proposal.project_title}"? This cannot be undone.`)) return;
+    const ok = await confirmDelete({
+      title: 'Delete this proposal?',
+      description: `"${proposal.project_title}" will be permanently removed. This cannot be undone.`,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Proposal.delete(proposal.id);
       toast({ title: 'Proposal deleted' });
@@ -102,7 +108,11 @@ export default function ProposalsAdminPage() {
   };
 
   const handleDeleteLead = async (lead) => {
-    if (!window.confirm(`Delete quote request from "${lead.name || lead.email}"? This cannot be undone.`)) return;
+    const ok = await confirmDelete({
+      title: 'Delete this quote request?',
+      description: `The request from "${lead.name || lead.email}" will be permanently removed. This cannot be undone.`,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Lead.delete(lead.id);
       toast({ title: 'Quote request deleted' });
@@ -234,6 +244,7 @@ export default function ProposalsAdminPage() {
           )}
         </DialogContent>
       </Dialog>
+      {confirmDialog}
     </div>
   );
 }

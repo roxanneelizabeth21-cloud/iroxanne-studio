@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import { INTAKE_LABELS, readableIntake } from '@/lib/intakeJourney';
+import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 
 export default function IntakeManager() {
   const [rows,setRows]=useState([]);
@@ -39,8 +40,13 @@ export default function IntakeManager() {
     try{await base44.entities.ClientIntake.update(selected.id,{status:'reviewed',reviewed_at:new Date().toISOString()});await load();setSelected(null);toast.success('Marked reviewed.');}
     catch{toast.error('Could not update the intake.');}finally{setBusy('');}
   };
+  const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
   const remove=async r=>{
-    if(!window.confirm(`Delete intake for "${r.project_title||r.client_name}"? This cannot be undone.`))return;
+    const ok=await confirmDelete({
+      title:'Delete this intake?',
+      description:`The intake for "${r.project_title||r.client_name}" will be permanently removed. This cannot be undone.`,
+    });
+    if(!ok)return;
     try{await base44.entities.ClientIntake.delete(r.id);toast.success('Intake deleted.');await load();}
     catch{toast.error('Could not delete the intake.');}
   };
@@ -52,6 +58,7 @@ export default function IntakeManager() {
     {rows.filter(r=>filter==='all'||r.status===filter).map(r=><article key={r.id} className="rounded-2xl bg-card border border-border p-5 flex flex-wrap items-center justify-between gap-4"><div><h3 className="font-semibold">{r.project_title||r.client_name}</h3><p className="text-sm text-muted-foreground">{r.client_name} · {INTAKE_LABELS[r.status]||r.status}</p></div><div className="flex gap-2 flex-wrap"><Button variant="outline" onClick={()=>copy(r)}>Copy private link</Button>{!['submitted','reviewed'].includes(r.status)&&<Button disabled={!!busy} variant="outline" onClick={()=>send({id:r.contract_id})}>Resend email</Button>}<Button onClick={()=>setSelected(r)}>View responses</Button><Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete" onClick={()=>remove(r)}><Trash2 className="h-4 w-4"/></Button></div></article>)}
     {!rows.length&&!error&&<p className="text-sm text-muted-foreground">No intakes yet. Choose a project below to send the first one.</p>}
     {filter==='all'&&waiting.length>0&&<div className="space-y-3"><h3 className="font-semibold">Ready to send an intake?</h3>{waiting.map(c=><div key={c.id} className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"><div><p>{c.project_title||c.client_name}</p><p className="text-sm text-muted-foreground">{c.client_name}</p></div><Button disabled={!!busy||!c.client_email} onClick={()=>send(c)}>{busy===c.id?'Sending…':'Send intake'}</Button></div>)}</div>}
+    {confirmDialog}
     <Dialog open={!!selected} onOpenChange={o=>!o&&setSelected(null)}><DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{selected?.project_title||'Project intake'}</DialogTitle></DialogHeader>{selected&&<><p className="text-sm text-muted-foreground">{selected.client_name} · {INTAKE_LABELS[selected.status]}</p>{Object.entries(selected).filter(([k,v])=>!['id','access_token','created_by','created_by_id','contract_id','lead_id','admin_notes'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border py-3"><h3 className="font-medium capitalize">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words mt-1">{readableIntake(v)}</p></div>)}{selected.status==='submitted'&&<Button disabled={!!busy} onClick={review}>Mark reviewed</Button>}</>}</DialogContent></Dialog>
   </section>;
 }

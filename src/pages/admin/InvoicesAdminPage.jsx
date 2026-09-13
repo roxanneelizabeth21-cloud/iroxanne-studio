@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Receipt, Plus, Send, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','stripe','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
@@ -71,13 +72,22 @@ export default function InvoicesAdminPage() {
     }catch(e){toast({title:'Could not send request',description:e.message,variant:'destructive'});}
     finally{inFlight.current=false;setBusy(false);}
   };
+  const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
   const removeInvoice = async i => {
-    if(!window.confirm(`Delete invoice for "${i.project_title}"? Payment history linked to it will remain. This cannot be undone.`))return;
+    const ok = await confirmDelete({
+      title: 'Delete this invoice?',
+      description: `The invoice for "${i.project_title}" will be permanently removed. Payment history linked to it will remain. This cannot be undone.`,
+    });
+    if(!ok)return;
     try{await base44.entities.Invoice.delete(i.id);toast({title:'Invoice deleted'});await load();}
     catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
   };
   const removePayment = async p => {
-    if(!window.confirm(`Delete this ${p.kind} payment of ${money(p.amount)}? This cannot be undone.`))return;
+    const ok = await confirmDelete({
+      title: 'Delete this payment?',
+      description: `This ${p.kind} payment of ${money(p.amount)} will be permanently removed. This cannot be undone.`,
+    });
+    if(!ok)return;
     try{await base44.entities.Payment.delete(p.id);toast({title:'Payment deleted'});await load();}
     catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
   };
@@ -108,6 +118,7 @@ export default function InvoicesAdminPage() {
       </div></details>
     </section>)}
     <p className="text-xs text-muted-foreground">Clients can pay deposits, milestones, and balances online via Stripe. Use “Request deposit / balance” to email them a pay link, or share the invoice link directly.</p>
+    {confirmDialog}
     <Dialog open={!!editing} onOpenChange={o=>!busy&&!o&&setEditing(null)}><DialogContent><DialogHeader><DialogTitle>Record received payment</DialogTitle><DialogDescription>{editing?.project_title} — enter money you have already received.</DialogDescription></DialogHeader>
       <form onSubmit={save} className="space-y-4">
         <div><Label htmlFor="payment-kind">Payment stage</Label><select id="payment-kind" className="w-full border rounded-md p-2 bg-background" value={form.kind} onChange={e=>{const k=e.target.value;const ms=openMilestones(editing);const idx=k==='milestone'?(ms[0]?.idx ?? ''):'';setForm({...form,kind:k,milestone_index:idx,amount:stageAmount(editing,k,idx)});}}><option value="deposit">Deposit</option><option value="balance">Balance</option>{!!openMilestones(editing).length&&<option value="milestone">Milestone</option>}</select></div>

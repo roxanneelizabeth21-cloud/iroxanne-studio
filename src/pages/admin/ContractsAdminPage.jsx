@@ -13,6 +13,7 @@ import ContractForm from '@/components/admin/ContractForm';
 
 import HandoffPanel from '@/components/admin/HandoffPanel';
 import { RUSH_TERMS } from '@/lib/studioDelivery';
+import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
@@ -28,6 +29,7 @@ const STATUS_STYLES = {
 
 export default function ContractsAdminPage() {
   const { toast } = useToast();
+  const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
   const [searchParams] = useSearchParams();
   const requestedContract = searchParams.get('contract');
 
@@ -78,7 +80,11 @@ export default function ContractsAdminPage() {
   };
 
   const handleDeleteContract = async (contract) => {
-    if (!window.confirm(`Delete agreement "${contract.project_title}"? This cannot be undone.`)) return;
+    const ok = await confirmDelete({
+      title: 'Delete this agreement?',
+      description: `"${contract.project_title}" will be permanently removed. This cannot be undone.`,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Contract.delete(contract.id);
       toast({ title: 'Agreement deleted' });
@@ -89,7 +95,11 @@ export default function ContractsAdminPage() {
   };
 
   const handleDeleteLead = async (lead) => {
-    if (!window.confirm(`Delete quote request from "${lead.name || lead.email}"? This cannot be undone.`)) return;
+    const ok = await confirmDelete({
+      title: 'Delete this quote request?',
+      description: `The request from "${lead.name || lead.email}" will be permanently removed. This cannot be undone.`,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Lead.delete(lead.id);
       toast({ title: 'Quote request deleted' });
@@ -261,6 +271,7 @@ export default function ContractsAdminPage() {
       </div>
 
       <Dialog open={!!handoff} onOpenChange={o=>!o&&setHandoff(null)}><DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Project handoff — {handoff?.project_title}</DialogTitle></DialogHeader>{handoff&&<HandoffPanel contractId={handoff.id} onSaved={load}/>}</DialogContent></Dialog>
+      {confirmDialog}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
