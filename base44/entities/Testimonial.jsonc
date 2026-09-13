@@ -38,6 +38,33 @@
       "type": "number",
       "default": 0,
       "description": "Display order (lower shows first)"
+    },
+    "consent_to_publish": {
+      "type": "boolean",
+      "default": false
+    },
+    "featured_homepage": {
+      "type": "boolean",
+      "default": false
+    },
+    "permission_notes": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "access_token": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "request_pending": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
@@ -49,7 +76,11 @@
         "role": "admin"
       }
     },
-    "read": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "update": {
       "user_condition": {
         "role": "admin"
