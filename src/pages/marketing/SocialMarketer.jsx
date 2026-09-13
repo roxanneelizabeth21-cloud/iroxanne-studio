@@ -11,7 +11,7 @@ const AGENT = 'social_media_marketer';
 const STARTERS = [
   'Draft my first Facebook post as a warm welcome: tell the story of my passion for helping people bring their dreams to life through iRoxanne Studio. Gently invite friends to like the page and follow along, without sales pressure. Save for review.',
   'What’s been performing best this month based on the metrics we have?',
-  'Draft two Facebook posts for iRoxanne Studio this week about custom app builds and personal build guidance. Use my warm, honest voice and plum, cream, and gold branding. Keep them for review.',
+  'Create two complete Facebook drafts with finished, distinct plum/cream/gold graphics: one helps someone imagine their idea becoming useful, and one gently welcomes referrals from friends. Speak to nontechnical people in my personal voice. Save for review.',
 ];
 
 export default function SocialMarketer() {
@@ -63,7 +63,7 @@ export default function SocialMarketer() {
           <h2 className="font-display text-xl flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" /> Social Strategist
           </h2>
-          <p className="text-xs text-muted-foreground">Your social media marketer — ideas, drafts, scheduling and performance reads.</p>
+          <p className="text-xs text-muted-foreground">Personal stories, possibilities and thoughtful referrals — with finished graphics.</p>
         </div>
         <div className="flex items-center gap-1">
           <Button

@@ -72,7 +72,7 @@ ${STUDIO_CONTEXT}
 ${CONTENT_RULES}
 
 ${perfRules}
-${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${presetLine}
+${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: The current IROXANNE STUDIO EDITORIAL DIRECTION takes precedence over older Brand Profile examples.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${presetLine}
 
 Campaign brief:
 - ${isServiceCampaign ? 'This is a SERVICE MARKETING campaign — promote the app-building service, not a specific project. Mix Service Offer, Pain Point / Education, Behind the Build, and Social Proof posts. Link target should be Get a Quote.' : `Portfolio item: "${itemTitle}"`}
@@ -89,7 +89,7 @@ Generate ${targetPosts} social posts spread across the campaign window (${start_
 - Follow the PERFORMANCE-BASED CONTENT RULES: roughly 40% showcase, 30% educational/tech-tip, 30% testimonial/offer. Assign each post a content_bucket accordingly.
 - Every post MUST include scheduled_date (YYYY-MM-DD), platform, format, caption, hashtags, hook, cta, and image_prompt.
 - For every video-format post (Reel, Short, Video): pick the best-fitting template by id, fill every slot in slot_values (exact on-screen text, what to show, loop notes), and set video_brief to a human-readable CapCut assembly checklist. The hook text must be bold on frame one; the brief must describe the first 2–3 seconds.
-- Image prompts must show real screenshots/UI where possible, NO baked text/logos.${default_image_style_preset ? ` Apply the "${default_image_style_preset}" preset look to image prompts and set image_style_preset accordingly.` : ''}
+- Image prompts must show Story-led editorial imagery in plum, cream and restrained gold; accurate screenshots only when supplied.${default_image_style_preset ? ` Apply the "${default_image_style_preset}" preset look to image prompts and set image_style_preset accordingly.` : ''}
 
 Return ONLY a JSON object with a "posts" array. No commentary, no markdown fences.`;
 

@@ -41,7 +41,7 @@ export default async function(req) {
 - Service Offer: "I build custom apps for small businesses — booking, e-commerce, client portals."
 - Pain Point / Education: Address a problem your target client faces (e.g. "Still running bookings through DMs?")
 - Behind the Build: Show your process, tools, or day-in-the-life.
-- Social Proof: Reference your track record (7+ client builds) without inventing specifics.
+- Social Proof: Use only verified project details; do not infer client counts.
 Use content_bucket: one of "Service Offer", "Pain Point / Education", "Behind the Build", or "Social Proof".
 Link target should be "Get a Quote" or "Consult booking".`
       : '';
@@ -56,7 +56,7 @@ ${STUDIO_CONTEXT}
 ${CONTENT_RULES}
 
 ${perfRules}
-${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: Where the Brand Profile conflicts with the generic content rules above, follow the Brand Profile.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${serviceInstruction}
+${brandSection ? `\n\n${brandSection}\n\nIMPORTANT: The current IROXANNE STUDIO EDITORIAL DIRECTION takes precedence over older Brand Profile examples.` : ''}${styleExamples ? `\n\n${styleExamples}` : ''}${templateSection ? `\n\n${templateSection}` : ''}${portfolioSec ? `\n\n${portfolioSec}` : ''}${testimonialSec ? `\n\n${testimonialSec}` : ''}${serviceInstruction}
 
 Write a single social post for iRoxanne Studio.
 - Platform: ${platform}
@@ -65,7 +65,7 @@ ${projectInstruction}
 ${noteLine}
 
 Return a single post with: platform, format, content_bucket, caption, hashtags, hook, cta, image_prompt, image_style_preset, link_target, and (if the format is video: Reel/Short/Video) template_id, slot_values, video_brief.
-- Image prompt: real screenshots/UI where possible, NO baked text/logos.
+- Image prompt: Story-led editorial imagery in plum, cream and restrained gold; accurate screenshots only when supplied.
 - Follow the PERFORMANCE-BASED CONTENT RULES.
 
 Return ONLY a JSON object with those fields. No commentary, no markdown fences.`;

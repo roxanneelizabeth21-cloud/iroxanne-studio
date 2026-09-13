@@ -25,61 +25,10 @@ export async function requireAuthenticated(base44): Promise<{ ok: true } | { ok:
 }
 
 // The studio context shared by campaign generation and single-post regeneration.
-export const STUDIO_CONTEXT = `
-About the studio:
-- Name: iRoxanne Studio (write it exactly this way). A real person building real custom apps — not a faceless agency.
-- iRoxanne Studio builds custom applications for clients using Base44 (and related no-code/low-code tools).
-- Target clients: small business owners, solo entrepreneurs, and creators who need a custom app (booking systems, marketing tools, e-commerce, client portals, internal tools) but don't want to hire a full dev team.
-- Positioning: fast, personal, high-quality app development. Show the work, show the process, build trust.
-- Tone: confident, approachable, expert but not intimidating.
-`.trim();
+export const STUDIO_CONTEXT = "IROXANNE STUDIO EDITORIAL DIRECTION \u2014 owner's current brief\nAudience: real people with an idea, people starting out, people who do not yet realize a custom app could help, and friends who may refer someone. Assume no technical knowledge.\nSell thoughtful personal service and the possibility of making something useful. Never market Base44, no-code, software stacks, partner status or affiliate offers unless Roxanne explicitly requests a technical post. Tools are background information.\nVoice: Roxanne speaking personally, warm, observant, inviting, honest and quietly assured. Nearly 20 years building apps informs her care; do not invent personal memories, conversations or client stories. High-end means considered design and individual attention, not boasting or price comparisons.\nStart with a recognizable moment or specific possibility: orders buried in messages, a volunteer coordinator matching people to shifts, a family planning a trip, an idea scribbled on paper. Explain in ordinary language what someone could do differently with an app. Hypothetical scenes must say imagine/what if; never disguise them as clients.\nInclude people without a business or feature list. Invite them to bring what they know and work through the rest together.\nFacebook only by default, two posts weekly. Across four weeks vary: two personal/idea stories, two everyday problem-to-possibility posts, two real portfolio examples in plain language, one useful conversation question, one gentle referral invitation. Do not repeat hooks, opening formulas, scenes or layouts from recent posts.\nOne natural invitation per post: a thoughtful question, a conversation, or sharing with one person who might find it useful. Never demand like/comment/tag/share together, use keyword-comment bait, or force a quote link into every post. When appropriate use https://iroxannestudio.com/quote .\nNo 'unlock your potential', 'game changer', 'revolutionize', 'seamless solutions', artificial urgency, inflated promises, agency putdowns, unverified savings or fabricated results. Zero to two relevant hashtags; no developer hashtags by default.\nVISUAL STANDARD: each draft needs a distinct finished graphic, not only an image prompt. Use generateMarketingImage after saving a draft and attach the returned asset; report failure honestly. Never claim an image exists from a prompt alone.\nArt direction: sophisticated deep textured plum, warm cream and restrained brushed gold. Editorial photography, thoughtful bespoke illustration, or accurately preserved approved app screenshots in a restrained composition. A specific story-led subject, visual hierarchy, generous space, warm lighting. Avoid stock handshakes, generic laptops, neon tech globes, floating dashboards, repeated purple quote cards and gratuitous luxury props. Use short legible headline text only when it helps. Never fabricate client faces, endorsements, logos or actual app UI; conceptual scenes must not be presented as real client work.\nRead real portfolio details for evidence and only use testimonials with BOTH consent_to_publish=true AND approved_for_use=true. Never repurpose unapproved testimonials anonymously.\nBefore delivering: would a nontechnical friend understand it, recognize a need or imagine a possibility? Does it sound like Roxanne? Does the visual add meaning? Is it different from the last post? Rewrite until these are true. Do not claim engagement outcomes without actual metrics.\nKeep everything Draft/Pending Review. Do not approve, schedule, publish or overwrite existing posts without the owner's instruction.";
 
-export const CONTENT_RULES = `
-Content rules:
-- Voice: confident, approachable, expert but not intimidating — a real person building real solutions, not a faceless agency. Use "I" and "you".
-- Platform-native writing:
-  - Instagram captions: line breaks for rhythm, 5–10 relevant hashtags at the end, hashtag-friendly tone.
-  - Facebook: slightly longer and conversational, 1–3 hashtags.
-  - YouTube: keyword-aware titles (put the title in the caption field first line), description with value, hashtags at the end.
-- Image prompts: prefer showing real app screenshots, UI, dashboards, or device mockups. Do NOT bake text or logos into the image. Describe lighting, mood, color palette, and composition.
-- CONTENT MIX (aim for this ratio across the calendar):
-  - 30% Service Offer / Pain Point / Education — promote the service, address client pain points, explain what custom apps solve. Lead with the problem the audience has, not with the portfolio.
-  - 30% Portfolio showcases — show the work, use real project details.
-  - 20% Behind the Build / Process — show how you work, tools, day-in-the-life, consult-to-launch journey.
-  - 20% Social Proof / Testimonials / Authentic-Personal — approved testimonials, client wins, personal founder story.
-- Hooks should stop the scroll in the first 2 seconds (for video) or first line (for text).
-- CTAs should be specific and platform-appropriate (e.g. "Get a free quote", "Book a consult", "See the portfolio", "DM to get started").
-- For service posts (no specific project), link to the Get a Quote page. For project posts, link to the portfolio page.
-- Never invent client names, testimonials, or results. Only reference real PortfolioItem/Testimonial records, and only use a client's name or quote when the record is marked shareable/approved.
-- Never invent streaming URLs, prices, or dates.
-`.trim();
-
-// Performance-based content rules. These override generic defaults and are based on
-// current platform performance data. Injected into every generation/regeneration prompt.
-export const PERFORMANCE_RULES = `
-PERFORMANCE-BASED CONTENT RULES — these override generic defaults. Apply to every post.
-
-Content mix per campaign (approximate):
-- 40% portfolio/showcase posts: show a real project, screenshot, UI, or "here's what I built" walkthrough. Built from real PortfolioItem records.
-- 30% educational/tech-tip posts: short, useful no-code/Base44 tips, "how I built X", common mistakes, quick wins.
-- 30% testimonial & direct-offer posts: approved client quotes (Testimonial records with approved_for_use=true), and direct CTAs (book a consult, see the portfolio, DM to get started).
-
-Assign each post a "content_bucket" of one of: "Loop Clip" (= showcase), "Authentic/Personal" (= educational/process), "Announcement/CTA" (= testimonial/offer) so the mix holds across the calendar.
-
-Format rules (apply per platform on every video post):
-- All video is vertical 9:16 with captions/on-screen text always on.
-- Instagram/Facebook Reels: 15–30 seconds. Feed video: 6–15 seconds.
-- YouTube Shorts: 6–15 seconds preferred, 30 max.
-- Stories: 5–10 seconds.
-
-Hook rules (every video brief MUST specify):
-- Frame one must have bold on-screen text: a provocative line, a result, a question, or a direct address to the viewer. The brief provides the exact text.
-- The first 2–3 seconds decide performance; the brief must describe exactly what is on screen in those seconds.
-
-Hashtag rules: 5–8 hashtags per Reel in three tiers — 2–3 niche tags (e.g. #NoCode #Base44), 2–3 content-type tags (e.g. #AppBuilder #SmallBusinessTools), 1–2 broad discovery tags (e.g. #SoloFounder). Never mega-generic tags.
-
-Caption rules: Put the primary keyword/topic phrase in the first line, before the truncation point.
-`.trim();
+export const CONTENT_RULES = STUDIO_CONTEXT;
+export const PERFORMANCE_RULES = STUDIO_CONTEXT;
 
 // Owner-configurable generation settings, read off the BrandProfile record.
 export function generationSettings(bp: any): { campaignPerWeek: number; evergreenPerWeek: number; loopPct: number; authenticPct: number; ctaPct: number } {
@@ -88,8 +37,8 @@ export function generationSettings(bp: any): { campaignPerWeek: number; evergree
     return Number.isFinite(n) && n > 0 ? Math.round(n) : fallback;
   };
   return {
-    campaignPerWeek: num(bp?.posts_per_campaign_week, 4),
-    evergreenPerWeek: num(bp?.posts_per_evergreen_week, 3),
+    campaignPerWeek: num(bp?.posts_per_campaign_week, 2),
+    evergreenPerWeek: num(bp?.posts_per_evergreen_week, 2),
     loopPct: num(bp?.mix_loop_pct, 40),
     authenticPct: num(bp?.mix_authentic_pct, 30),
     ctaPct: num(bp?.mix_cta_pct, 30),
@@ -117,7 +66,7 @@ export const VIDEO_FORMATS = ['Reel', 'Short', 'Video'];
 // Coerce a single LLM-generated post object into a clean, schema-safe record.
 export function normalizePost(raw: any): any {
   const p = raw || {};
-  const platform = ['Facebook', 'Instagram', 'YouTube', 'TikTok'].includes(p.platform) ? p.platform : 'Instagram';
+  const platform = ['Facebook', 'Instagram', 'YouTube', 'TikTok'].includes(p.platform) ? p.platform : 'Facebook';
   const validFormats = ['Feed Post', 'Reel', 'Story', 'Short', 'Video', 'Community Post'];
   const format = validFormats.includes(p.format) ? p.format : 'Feed Post';
   const isVideo = VIDEO_FORMATS.includes(format);
@@ -191,7 +140,7 @@ export function brandProfileSection(bp: any): string {
     .map((x) => `  • ${x.name} → ${String(x.prompt_suffix || '').trim()}`)
     .join('\n');
   return [
-    'BRAND PROFILE — authoritatively defines voice and rules. Override any generic content rules above where they conflict.',
+    'BRAND PROFILE — historical context. The current IROXANNE STUDIO EDITORIAL DIRECTION overrides conflicting platform promotion, jargon, old examples, or visual defaults.',
     `- Studio name: ${bp.studio_name || 'iRoxanne Studio'} (always spell it exactly this way)`,
     `- Voice / how the studio speaks: ${bp.voice_description || ''}`,
     `- What the studio builds / for whom: ${bp.service_description || ''}`,
@@ -227,7 +176,7 @@ export async function loadStyleExamples(base44, platform?: string): Promise<stri
     if (!examples.length) return '';
     const lines = examples.map((e, i) =>
       `Example ${i + 1} [${e.platform}]${e.was_edited ? ' (edited by admin)' : ''}:\n${String(e.final_caption || '').trim()}`);
-    return `STYLE REFERENCE — approved captions by the admin. Match the voice, rhythm, length, and formatting of these approved examples.\n\n${lines.join('\n\n')}`;
+    return `STYLE REFERENCE — approved captions by the admin. Use only examples consistent with the current people-first editorial direction; do not copy technical positioning or repetitive hooks.\n\n${lines.join('\n\n')}`;
   } catch {
     return '';
   }

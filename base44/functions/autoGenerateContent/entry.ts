@@ -88,7 +88,7 @@ ${testimonialSec ? `- Approved testimonials are available — use them for testi
 - Spread across Facebook, Instagram, YouTube, and TikTok; weight Reels, Shorts, and TikTok videos.
 - Follow the PERFORMANCE-BASED CONTENT RULES (${settings.loopPct}% showcase / ${settings.authenticPct}% educational / ${settings.ctaPct}% testimonial-offer). Assign content_bucket.
 - Every post: platform, format, scheduled_date, caption, hashtags, hook, cta, image_prompt. For video formats: template_id, slot_values, video_brief.
-- Image prompt: real screenshots/UI where possible, NO baked text/logos.${avoidLine}
+- Image prompt: Story-led editorial imagery in plum, cream and restrained gold; accurate screenshots only when supplied.${avoidLine}
 
 Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
 

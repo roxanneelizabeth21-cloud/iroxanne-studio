@@ -44,6 +44,7 @@ function buildPrompt(input) {
   p += 'Create a single finished marketing image for the studio.\n\n';
   if (prompt) p += `CORE IMAGE BRIEF\n${prompt}\n\n`;
 
+  p += 'Brand direction: sophisticated textured deep plum, warm cream, restrained brushed gold. A specific human idea or everyday situation, editorial composition and generous space. No generic laptops, neon technology, fake app UI or invented brand marks. Older technical context must not override this direction.\n';
   p += 'VISUAL DIRECTION\n';
   p += line('Visual type', vd.visual_type);
   p += line('Creative concept', vd.creative_concept);
@@ -68,7 +69,7 @@ function buildPrompt(input) {
     p += line('Project', context.project_title);
     p += line('Category', context.category);
     p += line('Service', context.service);
-    p += line('Tech used', context.tech_used);
+    // Technology is not the marketing subject.
     p += line('Project description', context.project_description);
     p += line('Tagline', context.tagline);
     p += line('Campaign', context.campaign_name);
