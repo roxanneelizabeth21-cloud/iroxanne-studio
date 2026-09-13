@@ -1,139 +1,126 @@
-// Single source of truth for "what do I do next" across the client pipeline.
-// Every row in the admin renders its next action from here, so the answer is
-// never something Roxanne has to work out by reading a status badge.
+// Single source of truth for "what do I do next" on a pipeline record.
 //
-// Stage order: lead → proposal → contract → deposit → intake → balance → done
-
-export const STAGES = [
-  { key: 'requests', label: 'Quote Requests', blurb: 'Someone asked for a quote. Turn it into a proposal.' },
-  { key: 'proposals', label: 'Proposals', blurb: 'Send it, then wait for them to accept online.' },
-  { key: 'agreements', label: 'Agreements', blurb: 'Send for signature. They sign online.' },
-  { key: 'money', label: 'Payments', blurb: 'Collect the deposit, then the final balance.' },
-  { key: 'intake', label: 'Content Intake', blurb: 'Get their copy, images and details — organized by page.' },
-];
+// ProjectsPipeline.buildPipeline() hands us a normalized project: a Lead,
+// Proposal or Contract annotated with _kind / _stage / _intake / _invoice.
+// This turns that state into one plain-language sentence and one tone, so the
+// answer to "what now" is never something you have to derive from a badge.
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
-// --- Leads ------------------------------------------------------------------
-export function leadNextStep(lead) {
-  if (lead.status === 'new') {
-    return { text: 'Build a proposal from this request', action: 'build_proposal', tone: 'action' };
-  }
-  if (lead.status === 'contacted') {
-    return { text: 'Follow up — no proposal sent yet', action: 'build_proposal', tone: 'action' };
-  }
-  if (lead.status === 'proposal_sent') {
-    return { text: 'Proposal sent — waiting on them', action: null, tone: 'waiting' };
-  }
-  if (lead.status === 'won') return { text: 'Won', action: null, tone: 'done' };
-  if (lead.status === 'lost') return { text: 'Closed out', action: null, tone: 'done' };
-  return { text: 'Archived', action: null, tone: 'done' };
-}
+// action = a hint for the card's destination; tone drives colour and sort order.
+const step = (text, tone, action = null) => ({ text, tone, action });
 
-// --- Proposals --------------------------------------------------------------
-export function proposalNextStep(proposal) {
-  const expired = proposal.valid_until &&
-    new Date(proposal.valid_until) < new Date() &&
-    !['accepted', 'declined'].includes(proposal.status);
-
-  switch (proposal.status) {
-    case 'draft':
-      return { text: 'Send this proposal to the client', action: 'send_proposal', tone: 'action' };
-    case 'sent':
-      if (expired) return { text: 'Expired — extend the date and resend', action: 'send_proposal', tone: 'attention' };
-      return { text: 'Sent — waiting for them to open it', action: null, tone: 'waiting' };
-    case 'viewed':
-      if (expired) return { text: 'Expired — extend the date and resend', action: 'send_proposal', tone: 'attention' };
-      return { text: 'They read it — nudge if it goes quiet', action: null, tone: 'waiting' };
-    case 'accepted':
-      return { text: 'Accepted — your draft agreement is ready', action: 'open_agreement', tone: 'action' };
-    case 'declined':
-      return { text: 'Declined', action: null, tone: 'done' };
-    default:
-      return { text: 'Expired — extend the date and resend', action: 'send_proposal', tone: 'attention' };
+function leadStep(p) {
+  switch (p.status) {
+    case 'new': return step('Build a proposal from this request', 'action', 'proposal');
+    case 'contacted': return step('Followed up — no proposal sent yet', 'action', 'proposal');
+    case 'proposal_sent': return step('Proposal sent — waiting on them', 'waiting');
+    case 'won': return step('Won', 'done');
+    case 'lost': return step('Closed out', 'done');
+    default: return step('Archived', 'done');
   }
 }
 
-// --- Agreements (Contract) --------------------------------------------------
-export function contractNextStep(contract, invoice) {
-  switch (contract.status) {
+function proposalStep(p) {
+  const expired = p.valid_until && new Date(p.valid_until) < new Date() &&
+    !['accepted', 'declined'].includes(p.status);
+  if (expired) return step('Expired — extend the date and resend', 'attention', 'proposal');
+
+  switch (p.status) {
+    case 'draft': return step('Send this proposal to the client', 'action', 'proposal');
+    case 'sent': return step('Sent — waiting for them to open it', 'waiting');
+    case 'viewed': return step('They read it — nudge if it goes quiet', 'waiting');
+    case 'accepted': return step('Accepted — review the draft agreement', 'action', 'contract');
+    case 'declined': return step('Declined', 'done');
+    default: return step('Expired — extend the date and resend', 'attention', 'proposal');
+  }
+}
+
+function contractStep(p) {
+  const inv = p._invoice;
+  const intake = p._intake;
+
+  const depositDone = inv && (inv.deposit_status === 'paid' || inv.deposit_status === 'waived');
+  const balanceOpen = inv && inv.balance_amount > 0 &&
+    !['paid', 'waived'].includes(inv.balance_status);
+
+  switch (p.status) {
     case 'draft':
-      return { text: 'Review the scope, then send for signature', action: 'send_contract', tone: 'action' };
+      return step('Review the scope, then send for signature', 'action', 'contract');
     case 'sent':
-      return { text: 'Sent — waiting on their signature', action: null, tone: 'waiting' };
-    case 'signed': {
-      if (!invoice) return { text: 'Signed — create the deposit invoice', action: 'create_invoice', tone: 'action' };
-      if (invoice.deposit_status === 'pending') {
-        return { text: `Signed — collect the ${money(invoice.deposit_amount)} deposit`, action: 'send_deposit', tone: 'action' };
+      return step('Sent — waiting on their signature', 'waiting');
+
+    case 'signed':
+      if (!inv) return step('Signed — create the deposit invoice', 'action', 'invoice');
+      if (!depositDone) {
+        return inv.last_sent_at
+          ? step(`Waiting on the ${money(inv.deposit_amount)} deposit`, 'waiting', 'invoice')
+          : step(`Email the ${money(inv.deposit_amount)} deposit request`, 'action', 'invoice');
       }
-      return { text: 'Signed — send the content intake form', action: 'send_intake', tone: 'action' };
-    }
+      return step('Deposit in — send the content intake form', 'action', 'contract');
+
     case 'deposit_paid':
-      return { text: 'Deposit in — send the content intake form', action: 'send_intake', tone: 'action' };
+      if (!intake) return step('Deposit in — send the content intake form', 'action', 'contract');
+      return step('Waiting on their content', 'waiting', 'contract');
+
     case 'active': {
-      if (invoice && invoice.balance_status !== 'paid' && invoice.balance_status !== 'waived' && invoice.balance_amount > 0) {
-        return { text: `In build — ${money(invoice.balance_amount)} balance due at launch`, action: 'send_balance', tone: 'waiting' };
+      // In build. Content first, then delivery, then the balance.
+      if (!intake) return step('In build — send the content intake form', 'action', 'contract');
+      if (intake.status === 'submitted') return step('Content is in — review it and build', 'action', 'contract');
+      if (['pending', 'sent'].includes(intake.status)) return step('Waiting on their content', 'waiting', 'contract');
+      if (intake.status === 'in_progress') return step('They started filling in their content', 'waiting', 'contract');
+
+      if (p.handoff_status === 'sent') return step('Delivered — waiting on their sign-off', 'waiting');
+      if (p.handoff_status === 'accepted' || p.delivered_at) {
+        return balanceOpen
+          ? step(`Signed off — collect the ${money(inv.balance_amount)} balance`, 'action', 'invoice')
+          : step('Signed off and paid — mark complete', 'action', 'contract');
       }
-      return { text: 'In build — mark complete when you launch', action: 'complete', tone: 'action' };
+      return step('In build — send the handoff when it\'s ready', 'action', 'handoff');
     }
+
     case 'completed':
-      return { text: 'Complete', action: null, tone: 'done' };
+      if (balanceOpen) return step(`Complete — ${money(inv.balance_amount)} still outstanding`, 'attention', 'invoice');
+      return step('Complete', 'done');
+
     default:
-      return { text: 'Cancelled', action: null, tone: 'done' };
+      return step('Cancelled', 'done');
   }
 }
 
-// --- Invoices ---------------------------------------------------------------
-export function invoiceNextStep(invoice) {
-  const total = invoice.amount_total || 0;
-  const depositDone = invoice.deposit_status === 'paid' || invoice.deposit_status === 'waived';
-  const balanceDone = invoice.balance_status === 'paid' || invoice.balance_status === 'waived' || !(invoice.balance_amount > 0);
-
-  if (depositDone && balanceDone) return { text: `Paid in full — ${money(total)}`, action: null, tone: 'done' };
-  if (!depositDone) {
-    if (!invoice.last_sent_at) {
-      return { text: `Email the ${money(invoice.deposit_amount)} deposit request`, action: 'send_deposit', tone: 'action' };
-    }
-    return { text: `Waiting on ${money(invoice.deposit_amount)} deposit`, action: 'record_payment', tone: 'waiting' };
-  }
-  if (invoice.balance_status === 'partial') {
-    const left = (invoice.balance_amount || 0) - (invoice.balance_paid_amount || 0);
-    return { text: `Part-paid — ${money(left)} still outstanding`, action: 'record_payment', tone: 'attention' };
-  }
-  return { text: `Collect the ${money(invoice.balance_amount)} final balance`, action: 'send_balance', tone: 'action' };
-}
-
-// --- Intake -----------------------------------------------------------------
-export function intakeNextStep(intake) {
-  if (!intake) return { text: 'Not sent yet', action: 'send_intake', tone: 'action' };
-  switch (intake.status) {
-    case 'pending':
-      return { text: 'Sent — waiting on their content', action: null, tone: 'waiting' };
-    case 'in_progress':
-      return { text: 'They started filling it in', action: null, tone: 'waiting' };
-    case 'submitted':
-      return { text: 'Content is in — review it and start building', action: 'review_intake', tone: 'action' };
-    default:
-      return { text: 'Reviewed', action: null, tone: 'done' };
+/** Main entry point — takes a normalized pipeline project, returns its next step. */
+export function projectNextStep(project) {
+  if (!project) return step('—', 'waiting');
+  switch (project._kind) {
+    case 'contract': return contractStep(project);
+    case 'proposal': return proposalStep(project);
+    default: return leadStep(project);
   }
 }
 
-// Tailwind classes per tone, so the whole admin reads the same way.
 export const TONE_STYLES = {
-  action: 'text-primary font-medium',
+  action: 'text-primary',
   waiting: 'text-muted-foreground',
-  attention: 'text-amber-700 font-medium',
-  done: 'text-green-700',
+  attention: 'text-amber-600',
+  done: 'text-green-600',
 };
 
 // Rows needing action sort to the top — the pile you work through today.
 export const TONE_RANK = { action: 0, attention: 1, waiting: 2, done: 3 };
 
-export function sortByUrgency(rows, getStep) {
-  return [...rows].sort((a, b) => {
-    const ra = TONE_RANK[getStep(a).tone] ?? 9;
-    const rb = TONE_RANK[getStep(b).tone] ?? 9;
+export function sortByUrgency(projects) {
+  return [...projects].sort((a, b) => {
+    const ra = TONE_RANK[projectNextStep(a).tone] ?? 9;
+    const rb = TONE_RANK[projectNextStep(b).tone] ?? 9;
     if (ra !== rb) return ra - rb;
     return String(b.created_date || '').localeCompare(String(a.created_date || ''));
   });
+}
+
+/** How many projects are actually waiting on you, for a nav or overview badge. */
+export function countNeedingAction(projects) {
+  return projects.filter((p) => {
+    const t = projectNextStep(p).tone;
+    return t === 'action' || t === 'attention';
+  }).length;
 }
