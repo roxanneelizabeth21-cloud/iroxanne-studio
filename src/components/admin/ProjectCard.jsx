@@ -1,5 +1,22 @@
 import { Link } from 'react-router-dom';
-import { FileText, Receipt, UserCircle, ArrowRight } from 'lucide-react';
+import { FileText, Receipt, UserCircle, ArrowRight, Clock, AlertCircle, Check } from 'lucide-react';
+import { projectNextStep, TONE_STYLES } from '@/lib/pipelineSteps';
+
+const TONE_ICONS = {
+  action: ArrowRight,
+  waiting: Clock,
+  attention: AlertCircle,
+  done: Check,
+};
+
+// Where the card takes you depends on what needs doing, not just what kind of
+// record it is — so the click always lands on the page where the next action lives.
+const ACTION_HREF = {
+  proposal: '/admin/proposals',
+  contract: '/admin/contracts',
+  invoice: '/admin/invoices',
+  handoff: '/admin/contracts',
+};
 
 /**
  * A single project card in the pipeline board. `project` is a normalized object
@@ -13,10 +30,12 @@ export default function ProjectCard({ project }) {
   const title = project.project_title || project.quick_pitch || 'Untitled project';
   const value = project.price_total ?? project.amount_total;
 
+  const step = projectNextStep(project);
+  const StepIcon = TONE_ICONS[step.tone] || Clock;
+
   const href =
-    kind === 'contract' ? '/admin/contracts'
-    : kind === 'proposal' ? '/admin/proposals'
-    : '/admin/proposals';
+    ACTION_HREF[step.action] ||
+    (kind === 'contract' ? '/admin/contracts' : '/admin/proposals');
 
   const Icon = kind === 'contract' ? FileText : kind === 'proposal' ? FileText : UserCircle;
 
@@ -35,6 +54,17 @@ export default function ProjectCard({ project }) {
       </div>
       <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-1">{title}</h4>
       <p className="text-xs text-muted-foreground truncate mb-2">{clientName}</p>
+
+      {/* The one thing to do next. */}
+      <div className="flex items-start gap-1.5 mb-2 pb-2 border-b border-border/50">
+        <StepIcon className={`h-3.5 w-3.5 shrink-0 mt-px ${TONE_STYLES[step.tone] || ''}`} />
+        <span className={`text-xs leading-snug ${TONE_STYLES[step.tone] || ''} ${
+          step.tone === 'action' || step.tone === 'attention' ? 'font-medium' : ''
+        }`}>
+          {step.text}
+        </span>
+      </div>
+
       <div className="flex items-center justify-between">
         {value != null ? (
           <span className="text-sm font-semibold text-foreground">${Number(value).toLocaleString()}</span>
