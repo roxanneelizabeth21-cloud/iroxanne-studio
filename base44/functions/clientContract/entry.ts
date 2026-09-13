@@ -115,7 +115,7 @@ export default async function(req) {
         }).catch((e) => console.log('admin sign email failed', e?.message));
       }
 
-      return Response.json({ contract: publicContract(updated) });
+      return Response.json({ contract: publicContract(updated), invoice_id: invoice?.id || '', invoice_token: invoiceToken || '' });
     }
 
     return Response.json({ contract: publicContract(contract) });

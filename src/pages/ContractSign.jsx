@@ -24,6 +24,7 @@ export default function ContractSign() {
   const [signatureImage,setSignatureImage] = useState('');
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
+  const [invoiceUrl, setInvoiceUrl] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -51,13 +52,19 @@ export default function ContractSign() {
       const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree, signatureMode, signatureImage });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
-      else { setSigned(true); setContract(data.contract); }
+      else { setSigned(true); setContract(data.contract); if (data.invoice_id && data.invoice_token) setInvoiceUrl(`/invoice/${data.invoice_id}?t=${data.invoice_token}`); }
     } catch (e) {
       setError(e?.message || 'Signing failed. Please try again.');
     } finally {
       setSigning(false);
     }
   };
+
+  useEffect(() => {
+    if (!signed || !invoiceUrl) return;
+    const timer = setTimeout(() => { window.location.href = invoiceUrl; }, 4500);
+    return () => clearTimeout(timer);
+  }, [signed, invoiceUrl]);
 
   if (loading) {
     return (
@@ -163,13 +170,29 @@ export default function ContractSign() {
               <p className="text-sm text-muted-foreground mt-1">
                 Signed by {contract.signer_name} on {contract.signed_at ? new Date(contract.signed_at).toLocaleString() : ''}.
               </p>
-              <p className="text-xs text-muted-foreground mt-3">
-                We'll be in touch shortly about your deposit and next steps. You can return to this link to view your agreement.
-              </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
-                <Button asChild><Link to="/" replace>Done — return to iRoxanne Studio</Link></Button>
-                <PrintButton />
-              </div>
+              {invoiceUrl && (
+                <>
+                  <p className="text-sm text-foreground mt-3 font-medium">
+                    Redirecting you to pay your deposit in a few seconds…
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
+                    <Button asChild><Link to={invoiceUrl}>Pay your deposit now</Link></Button>
+                    <Button variant="outline" asChild><Link to="/" replace>Done</Link></Button>
+                    <PrintButton />
+                  </div>
+                </>
+              )}
+              {!invoiceUrl && (
+                <>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    We'll be in touch shortly about your deposit and next steps. You can return to this link to view your agreement.
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
+                    <Button asChild><Link to="/" replace>Done — return to iRoxanne Studio</Link></Button>
+                    <PrintButton />
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <div className="border-t border-border pt-5 space-y-4">
