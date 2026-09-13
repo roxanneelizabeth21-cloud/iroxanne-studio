@@ -23,7 +23,7 @@ export default function About({ headshotUrl }) {
 
           {/* Right: bio */}
           <div>
-            <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>About</p>
+            <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Meet your builder</p>
             <h2 className="text-[34px] md:text-[40px] font-semibold text-foreground tracking-tight leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Hi, I’m Roxanne.<br />Let’s talk about your idea.
             </h2>
@@ -32,14 +32,9 @@ export default function About({ headshotUrl }) {
               <p>
                 I’m <span className="font-semibold text-foreground">Roxanne</span>, the person behind iRoxanne Studio. I help people explore their ideas and turn them into apps, whether they are just starting out or already running a business.
               </p>
-              <p>
-                You work directly with me. I start by listening to what you have in mind, asking questions, and helping you decide where to begin. You do not need to know the technical details or have everything worked out.
-              </p>
-              <p>
-                My work includes booking systems, online stores, client portals, and tools for everyday tasks. We agree on the scope, cost, and next steps before the build, and you have opportunities to review the app as it takes shape.
-              </p>
-              <a href="/quote" className="inline-flex items-center gap-2 text-[14px] font-semibold text-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
-                Let's talk about your idea <span className="text-[#876b26] dark:text-[#D5BB82]">→</span>
+              <p>You work directly with me, from the first conversation through the build. I start by listening and helping you find a practical place to begin.</p>
+              <a href="/about" className="inline-flex items-center gap-2 text-[14px] font-semibold text-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                More about me <span className="text-[#876b26] dark:text-[#D5BB82]">→</span>
               </a>
             </div>
           </div>
