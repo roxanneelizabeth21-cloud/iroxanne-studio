@@ -42,7 +42,7 @@ const NAV_REST = [
   { to: '/admin/legal', label: 'Legal', Icon: ScrollText },
 ];
 
-const MARKETING_NAV = [
+const MARKETING_ALL = [
   { to: '/marketing', label: 'Marketing', Icon: LayoutDashboard, end: true },
   { to: '/marketing/post', label: 'Create a Post', Icon: PenLine, subtitle: 'Pick a project, add media, create the copy, and decide when to share it.' },
   { to: '/marketing/campaigns', label: 'Campaigns', Icon: Megaphone, subtitle: 'Plan and manage campaigns' },
@@ -58,8 +58,11 @@ const MARKETING_NAV = [
   { to: '/marketing/brand', label: 'Brand', Icon: UserCircle, subtitle: 'Brand profile, voice and connections' },
 ];
 
+const MARKETING_NAV = MARKETING_ALL.filter(item => ['/marketing', '/marketing/post', '/marketing/media', '/marketing/brand'].includes(item.to));
+
 // Pages kept for existing links and workflows, but no longer primary destinations.
 const MARKETING_SECONDARY = [
+  ...MARKETING_ALL.filter(item => !MARKETING_NAV.includes(item)),
   { to: '/marketing/strategist', label: 'Strategist', Icon: Bot, subtitle: 'Chat with your marketing agent' },
   { to: '/marketing/today', label: 'Today', Icon: Sun, subtitle: "Today's posts and daily workflow" },
   { to: '/marketing/performance', label: 'Performance', Icon: BarChart3, subtitle: 'Post and campaign analytics' },

@@ -53,7 +53,7 @@ import MarketingPerformance from '@/pages/marketing/MarketingPerformance';
 import BrandProfile from '@/pages/marketing/BrandProfile';
 import Templates from '@/pages/marketing/Templates';
 import ClipLibrary from '@/pages/marketing/ClipLibrary';
-import Today from '@/pages/marketing/Today';
+
 import MediaLibrary from '@/pages/marketing/MediaLibrary';
 import CaseStudyCanvasStudio from '@/pages/marketing/CaseStudyCanvasStudio';
 import CarouselAds from '@/pages/marketing/CarouselAds';
@@ -141,7 +141,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/legal" element={<LegalAdminPage />} />
         <Route path="/admin/email-templates" element={<EmailTemplatesAdminPage />} />
         <Route path="/marketing" element={<MarketingHub />} />
-        <Route path="/marketing/today" element={<Today />} />
+        <Route path="/marketing/today" element={<Navigate to="/marketing" replace />} />
         <Route path="/marketing/controls" element={<AutomationControls />} />
         <Route path="/marketing/media" element={<MediaLibrary />} />
         <Route path="/marketing/canvas" element={<CaseStudyCanvasStudio />} />
