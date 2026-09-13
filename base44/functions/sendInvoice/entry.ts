@@ -2,13 +2,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { paymentSummary } from '../../shared/paymentSummary.ts';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
+import { studioUrl } from '../../shared/studioUrl.ts';
 
 const money = (n: unknown) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
-function getBaseUrl(req: Request) {
-  const url = new URL(req.url);
-  return url.origin.includes('base44') ? url.origin : 'https://iroxannestudio.base44.app';
-}
+const getBaseUrl = (req: Request) => studioUrl(req);
 
 // Admin-only: email the client their invoice — total, what's been paid, what's
 // still due, and how to pay. `which` picks the framing: deposit request,

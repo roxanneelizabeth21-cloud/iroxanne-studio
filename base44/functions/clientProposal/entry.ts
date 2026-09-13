@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
+import { adminLink } from '../../shared/studioUrl.ts';
 
 // Public, token-verified access for a client to view, accept, or decline
 // their proposal. No user auth — the access_token in the link is the credential.
@@ -143,7 +144,7 @@ export default async function (req: Request) {
             title: 'Proposal accepted 🎉',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> accepted the proposal for <strong>${esc(updated.project_title)}</strong> — ${moneyFmt(total)}.</p>
               <p style="margin:0 0 16px;">A draft contract is ready — review it and send for signature.</p>
-              <p>${brandButton('Open contracts', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
+              <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin accept email failed', (e as Error)?.message));
       }

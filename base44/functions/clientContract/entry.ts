@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 import { validateSignature } from '../../shared/studioDelivery.ts';
+import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
 
 // Public, token-verified access for a client to view and e-sign their contract.
 // No user auth — the access_token in the contract link is the credential.
@@ -77,7 +78,7 @@ export default async function(req) {
           invoiceToken = invoice.access_token;
         }
         if (invoice && invoice.access_token) {
-          const origin = (new URL(req.url).origin.includes('base44')) ? new URL(req.url).origin : 'https://iroxannestudio.base44.app';
+          const origin = studioUrl(req);
           invoiceUrl = `${origin}/invoice/${invoice.id}?t=${invoice.access_token}`;
         }
       } catch (e) { console.log('invoice step failed', e?.message); }
@@ -109,7 +110,7 @@ export default async function(req) {
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
               <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">An invoice is waiting for the deposit. Payments aren't connected yet — collect it offline or wire Stripe next.</p>
-              <p>${brandButton('Open contracts', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
+              <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));
       }

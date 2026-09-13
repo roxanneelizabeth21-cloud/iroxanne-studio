@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { defaultHandoff, canCompleteHandoff } from '../../shared/studioDelivery.ts';
+import { clientLink } from '../../shared/studioUrl.ts';
 const publicData=(c:any)=>({id:c.id,project_title:c.project_title,client_name:c.client_name,handoff_items:c.handoff_items||[],handoff_status:c.handoff_status||'draft',handoff_client_notes:c.handoff_client_notes||'',handoff_ack_name:c.handoff_ack_name,handoff_ack_at:c.handoff_ack_at});
 export default async function(req: Request) {
   try {
@@ -47,7 +48,7 @@ export default async function(req: Request) {
       if(c.handoff_status==='accepted')return Response.json({error:'Already accepted. Reopen to revise.'},{status:409});
       const token=Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,'0')).join('');
       const updated=await db.update(c.id,{handoff_token:token,handoff_status:'ready',handoff_ack_name:'',handoff_ack_at:null,handoff_client_notes:''});
-      return Response.json({contract:updated,link:'https://iroxannestudio.base44.app/handoff/'+c.id+'?t='+token});
+      return Response.json({contract:updated,link:clientLink(req,'handoff',c.id,token)});
     }
     if(action==='complete') {
       if(!canCompleteHandoff(c))return Response.json({error:'Complete required items and obtain client acceptance before marking delivered.'},{status:409});

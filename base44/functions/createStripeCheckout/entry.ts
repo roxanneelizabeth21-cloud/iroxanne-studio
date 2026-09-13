@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
 import { paymentSummary } from '../../shared/paymentSummary.ts';
+import { studioUrl } from '../../shared/studioUrl.ts';
 
 // Token-verified (no login) endpoint that creates a Stripe Checkout session
 // for a specific invoice charge: deposit, a single milestone, or the balance.
@@ -53,8 +54,7 @@ export default async function (req: Request) {
     if (!secret) return Response.json({ error: 'Payments are not configured yet' }, { status: 503 });
     const appId = process.env.BASE44_APP_ID || '';
 
-    const url = new URL(req.url);
-    const origin = url.origin.includes('base44') ? url.origin : 'https://iroxannestudio.base44.app';
+    const origin = studioUrl(req);
     const successUrl = `${origin}/invoice/${id}?t=${token}&status=success`;
     const cancelUrl = `${origin}/invoice/${id}?t=${token}&status=cancelled`;
 

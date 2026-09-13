@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { paymentSummary } from '../../shared/paymentSummary.ts';
 import { reminderDecision } from '../../shared/studioDelivery.ts';
 import { esc, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
+import { clientLink } from '../../shared/studioUrl.ts';
 export default async function(req: Request) {
   try {
     const base44=createClientFromRequest(req);
@@ -36,7 +37,7 @@ export default async function(req: Request) {
         await db.Invoice.update(invoice.id,{reminder_state:'sending',reminder_error:'',reminder_last_attempt_at:now.toISOString()});
         try {
           const money=(n:number)=>n.toLocaleString('en-US',{style:'currency',currency:'USD'});
-          const link=invoice.access_token ? 'https://iroxannestudio.base44.app/invoice/'+encodeURIComponent(invoice.id)+'?t='+encodeURIComponent(invoice.access_token) : (/^https:\/\//i.test(settings.payment_link||'')?settings.payment_link:'');
+          const link=invoice.access_token ? clientLink(req,'invoice',invoice.id,invoice.access_token) : (/^https:\/\//i.test(settings.payment_link||'')?settings.payment_link:'');
           const html=brandedEmail({title:'A friendly payment reminder',content:
             '<p>Hello '+esc(invoice.client_name||'there')+',</p><p>This is a reminder about the '+stage+' for <strong>'+esc(invoice.project_title)+'</strong>.</p>'+
             detailRows([['Amount remaining',money(due)],['Paid to date',money(summary.paid)],['Due date',esc(invoice.due_date||'Per your agreement')]])+

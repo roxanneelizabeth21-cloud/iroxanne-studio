@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
+import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
 
 // Fired immediately when a new Lead is created.
 // 1) Notifies the studio admin with the lead's details.
@@ -35,14 +36,14 @@ export default async function(req) {
         subject: `New quote request: ${lead.name || lead.email}`,
         html: brandedEmail({
           title: 'New quote request',
-          content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', 'https://iroxannestudio.base44.app/admin/contracts')}</p>`,
+          content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', adminLink(req, 'contracts'))}</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
       }).catch((e) => console.log('admin notify failed', e?.message));
     }
 
     const callSettings=await base44.asServiceRole.entities.CallSettings.list('-updated_date',1).catch(()=>[]);
-    const bookingLink=callSettings[0]?.enabled && lead.booking_token ? 'https://iroxannestudio.base44.app/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token) : '';
+    const bookingLink=callSettings[0]?.enabled && lead.booking_token ? studioUrl(req)+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token) : '';
     // 2) Client welcome: single rich confirmation reflecting what they submitted.
     if (lead.email) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';

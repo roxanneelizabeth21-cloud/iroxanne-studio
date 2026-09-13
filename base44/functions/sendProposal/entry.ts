@@ -1,15 +1,13 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
+import { studioUrl } from '../../shared/studioUrl.ts';
 
 function generateToken() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
 }
 
-function getBaseUrl(req: Request) {
-  const url = new URL(req.url);
-  return 'https://iroxannestudio.base44.app';
-}
+const getBaseUrl = (req: Request) => studioUrl(req);
 
 // Admin-only: generate the access token, mark the proposal sent, and email the
 // client a branded link to the public proposal page.
