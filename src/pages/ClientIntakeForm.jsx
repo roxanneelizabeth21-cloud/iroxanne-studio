@@ -57,7 +57,7 @@ function FileUploadField({ label, hint, multiple, onUpload }) {
       }
       onUpload(urls);
       toast.success(`${urls.length} file(s) uploaded`);
-    } catch (err) { toast.error('Upload failed — try again'); }
+    } catch { toast.error('Upload failed — try again'); }
     finally { setUploading(false); e.target.value = ''; }
   };
   return (
@@ -103,7 +103,7 @@ export default function ClientIntakeForm() {
         if (!match) { setError('Invalid or expired link.'); return; }
         if (match.status === 'submitted' || match.status === 'reviewed') { setSubmitted(true); }
         setIntake(match);
-      } catch (e) { setError('Could not load the intake form.'); }
+      } catch { setError('Could not load the intake form.'); }
       finally { setLoading(false); }
     })();
   }, [id, token]);
@@ -124,7 +124,7 @@ export default function ClientIntakeForm() {
       if (final) { setSubmitted(true); toast.success('Submitted! We\'ll review and get started.'); }
       else { toast.success('Progress saved'); }
       return true;
-    } catch (e) { toast.error('Save failed. Your answers are still here; please try again.'); return false; }
+    } catch { toast.error('Save failed. Your answers are still here; please try again.'); return false; }
     finally { setSaving(false); }
   };
 
@@ -136,8 +136,6 @@ export default function ClientIntakeForm() {
   const steps = intakeSteps(profile);
   const position = Math.max(0, steps.indexOf(step));
   const sections = [step];
-  const isCustom = true;
-  const isBusiness = true;
   const toggleSection = () => {};
   const openSections = Object.fromEntries(steps.map(s => [s,true]));
   const go = async next => { if (await handleSave(false,next)) { setStep(next); window.scrollTo({top:0,behavior:'smooth'}); } };
@@ -156,6 +154,7 @@ export default function ClientIntakeForm() {
         </div>
 
         <div aria-live="polite" className="space-y-3"><p className="text-xs tracking-widest uppercase text-muted-foreground">Step {position+1} of {steps.length} · {step==='welcome'?'Welcome':step==='idea'?'Your idea':step==='review'?'Review':SECTION_LABELS[step]}</p><div role="progressbar" aria-label="Intake progress" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={position+1} className="h-1.5 rounded-full bg-secondary overflow-hidden"><div className="h-full bg-[#B69A59] transition-all" style={{width:((position+1)/steps.length*100)+'%'}}/></div></div>
+        <fieldset disabled={saving} className="space-y-6 min-w-0">
         {step==='welcome' && <Section label="A good place to begin" description="You don’t need to have everything figured out. These choices help me ask only what matters to your project.">
           <Choices label="Where are you starting?" value={profile.start} onChange={v=>patchNested('journey_profile','start',v)} options={[["idea","I have an idea"],["new","I’m starting a business"],["business","I run a business"],["existing","I already started an app"]]}/>
           <Choices label="Do you have content to share?" value={profile.content} onChange={v=>patchNested('journey_profile','content',v)} options={[["ready","Yes, I have some content or files"],["help","I need help putting it together"]]}/>
@@ -286,6 +285,7 @@ export default function ClientIntakeForm() {
           </Section>
         )}
 
+        </fieldset>
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <Button variant="ghost" disabled={saving||position===0} onClick={()=>go(steps[position-1])}><ArrowLeft className="w-4 h-4 mr-2"/>Back</Button>
           <Button variant="outline" disabled={saving} onClick={()=>handleSave(false)}>Save & return later</Button>

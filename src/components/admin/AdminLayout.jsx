@@ -214,6 +214,7 @@ export default function AdminLayout() {
               </div>
             </div>
           )}
+          {location.pathname.startsWith('/admin') && <nav aria-label="Client workflow" className="flex gap-2 overflow-x-auto pb-3 mb-6 border-b border-border">{[['/admin','Overview'],['/admin/proposals','Inquiries & proposals'],['/admin/call-availability','Calls'],['/admin/contracts','Agreements'],['/admin/projects','Projects & intakes'],['/admin/invoices','Payments'],['/marketing','Marketing']].map(([to,label])=><NavLink key={to} to={to} end={to==='/admin'} className={({isActive})=>'whitespace-nowrap rounded-full px-4 py-2 text-sm '+(isActive?'bg-primary text-primary-foreground':'bg-secondary text-foreground hover:bg-accent')}>{label}</NavLink>)}</nav>}
           <Outlet />
         </main>
       </div>
