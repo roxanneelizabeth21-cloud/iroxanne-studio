@@ -59,10 +59,12 @@ export default async function(req:Request){
  if(phone.length<5)return Response.json({error:'Enter the phone number you would like Roxanne to call.'},{status:400});
  const end=new Date(Date.parse(b.start)+s.duration_minutes*60000).toISOString(),id=await eventId(b.start);
  await db.Lead.update(lead.id,{call_pending_start:b.start});
+ const validEmail=typeof lead.email==='string'&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(lead.email);
+ const attendees=validEmail?[{email:lead.email}]:[];
  let event;
- try{event=await google(accessToken,'calendars/primary/events?sendUpdates=all',{method:'POST',body:JSON.stringify({
+ try{event=await google(accessToken,'calendars/primary/events'+(attendees.length?'?sendUpdates=all':''),{method:'POST',body:JSON.stringify({
   id,summary:'iRoxanne Studio — discovery call',description:'Phone call with '+String(lead.name||'client').slice(0,200)+' at '+phone+'.\nQuote: '+String(lead.business_name||'').slice(0,200),
-  start:{dateTime:b.start,timeZone:s.timezone},end:{dateTime:end,timeZone:s.timezone},attendees:[{email:lead.email}],transparency:'opaque',extendedProperties:{private:{lead_id:lead.id}},reminders:{useDefault:true}
+  start:{dateTime:b.start,timeZone:s.timezone},end:{dateTime:end,timeZone:s.timezone},attendees,transparency:'opaque',extendedProperties:{private:{lead_id:lead.id}},reminders:{useDefault:true}
  })});}catch(e){
   if((e as any).status!==409)throw e;
   event=await google(accessToken,'calendars/primary/events/'+id);
@@ -71,7 +73,7 @@ export default async function(req:Request){
  await db.Lead.update(lead.id,{call_event_id:event.id,call_start:b.start,call_end:end,call_pending_start:'',phone});
  const when=new Date(b.start).toLocaleString('en-US',{timeZone:s.timezone,dateStyle:'full',timeStyle:'short'})+' ('+s.timezone+')';
  const admin=await resolveAdminEmail(client).catch(()=>'');
- const results=await Promise.allSettled([...new Set([lead.email,admin].filter(Boolean))].map(to=>client.asServiceRole.integrations.Core.SendEmail({to,subject:'Call confirmed — iRoxanne Studio',html:brandedEmail({title:'Your call is confirmed',content:'<p>A '+s.duration_minutes+'-minute phone call is booked for <strong>'+esc(when)+'</strong>.</p><p>Roxanne will call '+esc(phone)+'.</p><p>To change or cancel, contact '+esc(admin||'the studio')+'.</p><p>'+brandButton('View booking',ORIGIN+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token))+'</p>'})})));
+ const results=await Promise.allSettled([...new Set([validEmail?lead.email:null,admin].filter(Boolean))].map(to=>client.asServiceRole.integrations.Core.SendEmail({to,subject:'Call confirmed — iRoxanne Studio',html:brandedEmail({title:'Your call is confirmed',content:'<p>A '+s.duration_minutes+'-minute phone call is booked for <strong>'+esc(when)+'</strong>.</p><p>Roxanne will call '+esc(phone)+'.</p><p>To change or cancel, contact '+esc(admin||'the studio')+'.</p><p>'+brandButton('View booking',ORIGIN+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token))+'</p>'})})));
  return Response.json({booked:true,start:b.start,end,timezone:s.timezone,email_sent:results.every(x=>x.status==='fulfilled')});
  }catch(e){return Response.json({error:(e as Error).message},{status:500});}
 }
