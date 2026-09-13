@@ -19,7 +19,11 @@ export default function InvoicePay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [redirecting, setRedirecting] = useState(null);
-  const [notice, setNotice] = useState(status === 'success' ? 'Payment received — thank you! Your balance is updated below.' : status === 'cancelled' ? 'Checkout was cancelled. No charge was made.' : '');
+  const [verifying, setVerifying] = useState(false);
+  const [notice, setNotice] = useState(
+    status === 'COMPLETED' ? 'Payment received — verifying your payment now…' :
+    status === 'CANCELED' ? 'Checkout was cancelled. No charge was made.' : ''
+  );
 
   const load = async () => {
     try {
@@ -40,16 +44,55 @@ export default function InvoicePay() {
 
   useEffect(() => { load(); }, [id, token]);
 
+  // When Square redirects back with status=COMPLETED, verify the payment
+  // server-side and record it in the invoice ledger.
+  useEffect(() => {
+    if (status !== 'COMPLETED') return;
+    const tid = params.get('transaction_id');
+    const oid = params.get('order_id');
+    if (!tid && !oid) return;
+    let cancelled = false;
+    (async () => {
+      setVerifying(true);
+      try {
+        const res = await base44.functions.invoke('verifySquarePayment', { id, token, transaction_id: tid, order_id: oid });
+        const data = res.data || res;
+        if (cancelled) return;
+        if (data.error) {
+          setError(data.error);
+          setNotice('');
+        } else {
+          setNotice('Payment received — thank you! Your balance is updated below.');
+          await load();
+          // Clean Square's query params from the URL so a refresh doesn't re-trigger verification.
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('status');
+          cleanUrl.searchParams.delete('transaction_id');
+          cleanUrl.searchParams.delete('order_id');
+          window.history.replaceState({}, '', cleanUrl);
+        }
+      } catch {
+        if (!cancelled) {
+          setError('Could not verify your payment. If you were charged, please contact us.');
+          setNotice('');
+        }
+      } finally {
+        if (!cancelled) setVerifying(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [status, id, token]);
+
   const pay = async (kind, milestoneIndex) => {
     // Stripe Checkout must run in a top-level window, not inside the builder iframe.
     if (window.self !== window.top) {
-      setError('Checkout opens in a secure Stripe page and only works from the published app. Open this link directly in your browser.');
+      setError('Checkout opens in a secure Square page and only works from the published app. Open this link directly in your browser.');
       return;
     }
     setRedirecting(kind + (milestoneIndex != null ? `_${milestoneIndex}` : ''));
     setError('');
     try {
-      const res = await base44.functions.invoke('createStripeCheckout', { id, token, kind, milestone_index: milestoneIndex });
+      const res = await base44.functions.invoke('createSquareCheckout', { id, token, kind, milestone_index: milestoneIndex });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else if (data.url) { window.location.href = data.url; return; }
@@ -93,7 +136,12 @@ export default function InvoicePay() {
           clientName={invoice.client_name || invoice.client_email}
         />
 
-        {notice && (
+        {verifying && (
+          <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" /> Verifying your payment…
+          </div>
+        )}
+        {notice && !verifying && (
           <div className="mb-4 rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-3 text-sm text-green-700">
             {notice}
           </div>
@@ -175,7 +223,7 @@ export default function InvoicePay() {
                 />
               )}
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
-                <Lock className="h-3 w-3" /> Secure checkout powered by Stripe. Test mode is active.
+                <Lock className="h-3 w-3" /> Secure checkout powered by Square.
               </p>
             </div>
           )}
