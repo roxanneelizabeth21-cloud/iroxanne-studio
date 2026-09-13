@@ -203,8 +203,7 @@ export default function ContractsAdminPage() {
                       const res = await base44.functions.invoke('sendIntakeForm', { contract_id: c.id });
                       const data = res.data || res;
                       if (data.error) { toast({ title: data.error, variant: 'destructive' }); return; }
-                      if (data.existing) { toast({ title: 'Intake form already sent — link copied', description: data.link }); }
-                      else { toast({ title: 'Intake form sent to ' + c.client_email }); }
+                      toast({ title: data.sent ? 'Intake email sent' : 'Email failed; private link is available', description: data.sent ? c.client_email : data.link, variant: data.sent ? 'default' : 'destructive' });
                       navigator.clipboard.writeText(data.link);
                     } catch (e) { toast({ title: 'Failed to send intake form', variant: 'destructive' }); }
                   }}><ClipboardList className="h-3.5 w-3.5" /> Send Intake</Button>

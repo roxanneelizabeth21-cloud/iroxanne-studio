@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { FolderKanban, AlertCircle } from 'lucide-react';
 import ProjectCard from '@/components/admin/ProjectCard';
+
+import IntakeManager from '@/components/admin/IntakeManager';
+import { Button } from '@/components/ui/button';
 
 const STAGES = [
   { key: 'inquiry', label: 'Inquiry', hint: 'New leads' },
@@ -46,7 +49,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
     if (c.status === 'completed' && invoice && invoice.status === 'paid') stage = 'paid';
     else if (c.handoff_status === 'accepted' || c.delivered_at) stage = 'handoff';
     else if (c.status === 'active') stage = 'build';
-    else if (intake && ['pending', 'in_progress', 'submitted'].includes(intake.status)) stage = 'intake';
+    else if (intake && ['pending', 'sent', 'in_progress', 'submitted'].includes(intake.status)) stage = 'intake';
     else if (['signed', 'deposit_paid'].includes(c.status)) stage = 'contract';
     else if (c.status === 'sent') stage = 'contract';
     if (c.lead_id) usedLeadIds.add(c.lead_id);
@@ -74,6 +77,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 }
 
 export default function ProjectsPipeline() {
+  const [view,setView]=useState('intakes');
   const { data: leads = [], isLoading: lLoading, error: lErr } = useQuery({ queryKey: ['pipeline-leads'], queryFn: () => base44.entities.Lead.list('-created_date', 100) });
   const { data: proposals = [], isLoading: pLoading, error: pErr } = useQuery({ queryKey: ['pipeline-proposals'], queryFn: () => base44.entities.Proposal.list('-created_date', 100) });
   const { data: contracts = [], isLoading: cLoading, error: cErr } = useQuery({ queryKey: ['pipeline-contracts'], queryFn: () => base44.entities.Contract.list('-created_date', 100) });
@@ -121,6 +125,9 @@ export default function ProjectsPipeline() {
         </div>
       </div>
 
+      <nav aria-label="Project workspace" className="flex gap-2 border-b border-border pb-4"><Button variant={view==='intakes'?'default':'outline'} onClick={()=>setView('intakes')} aria-pressed={view==='intakes'}>Client intakes</Button><Button variant={view==='pipeline'?'default':'outline'} onClick={()=>setView('pipeline')} aria-pressed={view==='pipeline'}>Project pipeline</Button></nav>
+      {view==='intakes' && <IntakeManager/>}
+      {view==='pipeline' && <>
       {errors.length > 0 && (
         <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
           <AlertCircle className="h-4 w-4 shrink-0" /> Some data failed to load. Refresh to retry.
@@ -167,6 +174,7 @@ export default function ProjectsPipeline() {
           })}
         </div>
       )}
+      </>}
     </div>
   );
 }
