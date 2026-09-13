@@ -36,7 +36,7 @@ export default function ProjectCard({ project }) {
   const destination = ACTION_HREF[step.action] ||
     (kind === 'contract' ? '/admin/contracts' : '/admin/proposals');
   const contractId = kind === 'contract' ? project.id : project.contract_id;
-  const href = destination === '/admin/contracts' && contractId
+  const href = destination === '/admin/contracts' && contractId && (kind === 'proposal' || ['draft', 'sent'].includes(project.status))
     ? `${destination}?contract=${encodeURIComponent(contractId)}`
     : destination;
 
