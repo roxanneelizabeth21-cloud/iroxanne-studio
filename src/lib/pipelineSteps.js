@@ -73,7 +73,7 @@ function contractStep(p) {
     case 'deposit_paid':
     case 'active': {
       // In build. Content first, then delivery, then the balance.
-      if (!intake) return step('In build — send the content intake form', 'action', 'contract');
+      if (!intake) return step('Deposit received — send the content intake form', 'action', 'contract');
       if (intake.status === 'submitted') return step('Content is in — review it and build', 'action', 'contract');
       if (['pending', 'sent'].includes(intake.status)) return step('Waiting on their content', 'waiting', 'contract');
       if (intake.status === 'in_progress') return step('They started filling in their content', 'waiting', 'contract');
