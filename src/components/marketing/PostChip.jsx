@@ -1,4 +1,4 @@
-import { Lock, AlertTriangle, Clock, Zap, GripVertical } from 'lucide-react';
+import { Lock, AlertTriangle, Clock, Zap, GripVertical, Trash2, CalendarClock } from 'lucide-react';
 import { platformColor, STATUS_STYLES } from '@/lib/marketing';
 import { getPostMedia } from '@/lib/postMedia';
 import { getPlatform } from '@/lib/socialPlatforms';
@@ -46,6 +46,8 @@ export default function PostChip({
   clips = [],
   view = 'month',
   onClick,
+  onDelete,
+  onMove,
   draggable = true,
   onDragStart,
   onDragEnd,
@@ -78,7 +80,7 @@ export default function PostChip({
 
   if (view === 'month') {
     return (
-      <div className="flex items-center gap-0.5">
+      <div className="group flex items-center gap-0.5">
       <Handle />
       <button
         type="button"
@@ -98,6 +100,12 @@ export default function PostChip({
         {posted && <Lock className="h-2.5 w-2.5 shrink-0" />}
         {skipped && <AlertTriangle className="h-2.5 w-2.5 shrink-0" />}
       </button>
+      {!posted && (onDelete || onMove) && (
+        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+          {onMove && <button type="button" onClick={(e) => { e.stopPropagation(); onMove(post); }} className="shrink-0 p-0.5 text-muted-foreground hover:text-primary" title="Reschedule" aria-label="Reschedule this post"><CalendarClock className="h-3 w-3" /></button>}
+          {onDelete && <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(post); }} className="shrink-0 p-0.5 text-muted-foreground hover:text-destructive" title="Delete" aria-label="Delete this post"><Trash2 className="h-3 w-3" /></button>}
+        </div>
+      )}
       </div>
     );
   }
@@ -130,16 +138,24 @@ export default function PostChip({
           <span className={`ml-auto text-[8px] px-1 py-0.5 rounded-full shrink-0 ${STATUS_STYLES[post.status] || ''}`}>{post.status}</span>
         </div>
         <p className="text-[11px] leading-tight line-clamp-2">{firstLine}</p>
-        {posted && (
-          <span className="inline-flex items-center gap-0.5 text-[9px] text-emerald-600 dark:text-emerald-400 mt-0.5">
-            <Lock className="h-2.5 w-2.5" /> posted
-          </span>
-        )}
-        {skipped && (
-          <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-600 dark:text-amber-400 mt-0.5">
-            <AlertTriangle className="h-2.5 w-2.5" /> skipped
-          </span>
-        )}
+        <div className="flex items-center gap-0.5 mt-1">
+          {posted && (
+            <span className="inline-flex items-center gap-0.5 text-[9px] text-emerald-600 dark:text-emerald-400">
+              <Lock className="h-2.5 w-2.5" /> posted
+            </span>
+          )}
+          {skipped && (
+            <span className="inline-flex items-center gap-0.5 text-[9px] text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="h-2.5 w-2.5" /> skipped
+            </span>
+          )}
+          {!posted && (onMove || onDelete) && (
+            <div className="ml-auto flex items-center gap-1">
+              {onMove && <button type="button" onClick={(e) => { e.stopPropagation(); onMove(post); }} className="p-0.5 text-muted-foreground hover:text-primary" title="Reschedule" aria-label="Reschedule this post"><CalendarClock className="h-3.5 w-3.5" /></button>}
+              {onDelete && <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(post); }} className="p-0.5 text-muted-foreground hover:text-destructive" title="Delete" aria-label="Delete this post"><Trash2 className="h-3.5 w-3.5" /></button>}
+            </div>
+          )}
+        </div>
       </div>
     </button>
     </div>

@@ -378,20 +378,22 @@ export default function ContentCalendar({ planner = false }) {
                       </div>
                       <div className="space-y-1 mt-1">
                         {dayPosts.slice(0, 4).map((p) => (
-                          <PostChip
-                            key={p.id}
-                            post={p}
-                            clips={clips}
-                            view="month"
-                            dragging={dragId === p.id}
-                            moving={moving === p.id}
-                            draggable={!isLocked(p)}
-                            onDragStart={(e) => startDrag(p, e)}
-                            onDragEnd={endDrag}
-                            dragHandleProps={handleProps(p)}
-                            onClick={() => openPost(p)}
-                          />
-                        ))}
+                           <PostChip
+                             key={p.id}
+                             post={p}
+                             clips={clips}
+                             view="month"
+                             dragging={dragId === p.id}
+                             moving={moving === p.id}
+                             draggable={!isLocked(p)}
+                             onDragStart={(e) => startDrag(p, e)}
+                             onDragEnd={endDrag}
+                             dragHandleProps={handleProps(p)}
+                             onClick={() => openPost(p)}
+                             onDelete={() => setDeleting(p)}
+                             onMove={(post) => setMovingPost(post)}
+                           />
+                         ))}
                         {dayPosts.length > 4 && <p className="text-[10px] text-muted-foreground px-1">+{dayPosts.length - 4} more</p>}
                       </div>
                     </div>
@@ -439,6 +441,8 @@ export default function ContentCalendar({ planner = false }) {
                             onDragEnd={endDrag}
                             dragHandleProps={handleProps(p)}
                             onClick={() => openPost(p)}
+                            onDelete={() => setDeleting(p)}
+                            onMove={(post) => setMovingPost(post)}
                           />
                         ))}
                         {dayPosts.length === 0 && <p className="text-[10px] text-muted-foreground text-center py-2">No posts</p>}
