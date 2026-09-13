@@ -43,6 +43,7 @@ export default async function(req) {
   });
   // Owner requires personal approval for every post; AI checks never approve.
   const automatic=false;
+  if (!!job.facebook_post_id !== !!job.instagram_post_id) throw new Error('An earlier two-record story needs review before production can complete. Existing content was preserved.');
   if (!job.facebook_post_id && !job.instagram_post_id) {
    const marker='studio-production:'+job.id+':story';
    const existing=await e.MarketingPost.filter({description:marker},'-created_date',1);

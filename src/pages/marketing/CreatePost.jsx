@@ -25,7 +25,7 @@ import { getPlatform } from '@/lib/socialPlatforms';
 import { shareablePageUrl, defaultLinkTarget } from '@/lib/postLink';
 
 // Text fields are debounced so typing doesn't write on every keystroke.
-const TEXT_KEYS = ['customGoal', 'instruction'];
+const TEXT_KEYS = ['customGoal', 'instruction', 'platformCaptions'];
 const TEXT_DEBOUNCE = 800;
 
 const STEPS = [
@@ -40,6 +40,11 @@ const STEPS = [
 // A single in-progress MarketingPost is the source of truth and is saved
 // continuously; only its ID is remembered locally.
 export default function CreatePost() {
+  const { id } = useParams();
+  return <GuidedPost key={id || 'new'} />;
+}
+
+function GuidedPost() {
   const { id: routeId } = useParams();
   const { toast } = useToast();
   const qc = useQueryClient();

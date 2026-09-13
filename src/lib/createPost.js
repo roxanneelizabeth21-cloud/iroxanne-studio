@@ -91,7 +91,8 @@ export function draftFromPost(post) {
     platformIds,
     portfolioItemId: post?.portfolio_item_id || s.portfolioItemId || '__studio_service__',
     campaignId: post?.campaign_id || s.campaignId || '',
-    aspect: post?.requested_aspect_ratio || EMPTY_DRAFT.aspect,
+    aspect: post?.requested_aspect_ratio || (['Reel','Story','Short','Video'].includes(post?.format) ? '9:16' : EMPTY_DRAFT.aspect),
+    savedFormat: post?.format,
   };
 }
 
@@ -103,7 +104,7 @@ export function postPatchFromDraft(draft, step, maxStep) {
     campaign_id: draft.campaignId || '',
     platform: entityPlatform(draft.platformIds?.[0]) || 'Instagram',
     publish_targets: publishable.map(entityPlatform),
-    format: formatForAspect(draft.aspect),
+    format: draft.savedFormat || formatForAspect(draft.aspect),
     requested_aspect_ratio: draft.aspect,
     create_post_step: step,
     create_post_state: {
