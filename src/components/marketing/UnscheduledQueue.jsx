@@ -8,6 +8,8 @@ import PlatformBadges from '@/components/marketing/PlatformBadges';
 export default function UnscheduledQueue({
   posts, clips = [], campaignName, projectTitle, onOpen, onMove, onDragStart, onDragEnd, dragHandleProps, dragId,
 }) {
+  const stage = p => !resolveMedia(p, clips) || !p.caption?.trim() ? 'Needs work' : isApproved(p) ? 'Approved' : 'Ready for your review';
+  const ordered = ['Needs work', 'Ready for your review', 'Approved'].flatMap(label => posts.filter(p => stage(p) === label));
   return (
     <div className="glass rounded-2xl p-3 space-y-2">
       <div className="flex items-center justify-between">
@@ -16,7 +18,7 @@ export default function UnscheduledQueue({
       </div>
       <p className="text-[11px] text-muted-foreground">Drag onto a date and choose a time, or use Move post. Planning does not approve or publish.</p>
       <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
-        {[...posts].sort((a,b) => Number(isApproved(b))-Number(isApproved(a))).map((p) => {
+        {ordered.map((p, index) => {
           const media = resolveMedia(p, clips);
           const canDrag = !isLocked(p);
           return (
@@ -26,8 +28,9 @@ export default function UnscheduledQueue({
               draggable={canDrag}
               onDragStart={(e) => onDragStart(p, e)}
               onDragEnd={onDragEnd}
-              className={`rounded-xl border border-border/60 bg-card p-2 flex gap-2 ${dragId === p.id ? 'opacity-40' : ''} ${canDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              className={`rounded-xl border border-border/60 bg-card p-2 flex flex-wrap gap-2 ${dragId === p.id ? 'opacity-40' : ''} ${canDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
             >
+              {(index === 0 || stage(ordered[index - 1]) !== stage(p)) && <h3 className="w-full text-sm font-semibold py-1">{stage(p)}</h3>}
               <button
                 type="button"
                 {...(canDrag && dragHandleProps ? dragHandleProps(p) : {})}
