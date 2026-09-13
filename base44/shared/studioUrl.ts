@@ -5,11 +5,16 @@
 // so client-facing links disagreed with each other. Everything that builds a
 // link a client will click should go through here.
 //
-// The live app is iroxanne.com. A STUDIO_URL environment variable overrides it
-// for staging, when the runtime exposes one — read defensively, since not every
-// function context does.
+// The live app is iroxannestudio.com. A STUDIO_URL environment variable
+// overrides it for staging, when the runtime exposes one — read defensively,
+// since not every function context does.
+//
+// Two things this is deliberately NOT:
+//   - iroxanne.com, which is a different property
+//   - the Canva OAuth redirect host in shared/canva.ts, which must keep
+//     matching the Canva app registration exactly
 
-export const CANONICAL_URL = 'https://iroxanne.com';
+export const CANONICAL_URL = 'https://iroxannestudio.com';
 
 // base44 preview/sandbox hosts. Links generated while working inside a preview
 // should stay on that host, otherwise a test click leaves the environment.
