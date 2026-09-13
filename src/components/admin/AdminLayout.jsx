@@ -11,15 +11,23 @@ import BrandLogo from '@/components/BrandLogo';
 import StrategistHeaderButton from './StrategistHeaderButton';
 import MarketingBackButton from '@/components/marketing/MarketingBackButton';
 
+// Client work has exactly one front door: Projects. Every project card there
+// states its own next step and links through to the page where that step
+// happens, so there's never a choice to make about where to start.
 const NAV_TOP = [
   { to: '/admin', label: 'Overview', Icon: Home, end: true },
-  { to: '/admin/projects', label: 'Projects', Icon: FolderKanban },
+  { to: '/admin/projects', label: 'Projects', Icon: FolderKanban, subtitle: 'Every client, and the one thing to do next' },
   { to: '/admin/homepage', label: 'Homepage', Icon: LayoutDashboard },
   { to: '/admin/portfolio', label: 'Portfolio', Icon: LayoutDashboard },
+];
+
+// Reached from a project card in the normal flow. Listed here so they stay
+// findable, but they're stage 2 — not places to start a working session.
+const NAV_CLIENT_DETAIL = [
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
-  { to: '/admin/call-availability', label: 'Call availability', Icon: CalendarDays },
   { to: '/admin/contracts', label: 'Contracts', Icon: FileText },
   { to: '/admin/invoices', label: 'Invoices', Icon: Receipt },
+  { to: '/admin/call-availability', label: 'Call availability', Icon: CalendarDays },
 ];
 
 const NAV_REST = [
