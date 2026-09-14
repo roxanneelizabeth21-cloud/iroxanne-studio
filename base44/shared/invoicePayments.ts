@@ -12,7 +12,7 @@
 // webhooks, a client-generated UUID for admin entry.
 import { paymentSummary } from './paymentSummary.ts';
 
-export const PAYMENT_KINDS = ['deposit', 'balance', 'milestone', 'other'] as const;
+export const PAYMENT_KINDS = ['deposit', 'balance', 'milestone', 'other', 'project'] as const;
 export const PAYMENT_METHODS = [
   'stripe', 'square', 'zelle', 'cashapp', 'venmo', 'paypal', 'cash', 'check', 'transfer', 'other',
 ] as const;
@@ -99,7 +99,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
   // --- Overpayment guard -----------------------------------------------------
   // Milestones draw down the balance, so they're checked against it too.
   if (opts.enforceOutstanding) {
-    const cap = kind === 'deposit' ? before.depositOutstanding : before.balanceOutstanding;
+    const cap = kind === 'project' ? before.outstanding : kind === 'deposit' ? before.depositOutstanding : before.balanceOutstanding;
     if (kind !== 'other' && amount > cap + 0.001) {
       throw new PaymentError('Amount exceeds the unpaid amount for this payment stage.', 400);
     }
