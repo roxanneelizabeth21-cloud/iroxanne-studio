@@ -1,0 +1,197 @@
+PROJECT AGREEMENT — TERMS & CONDITIONS
+
+These terms form part of the Project Agreement between iRoxanne Studio ("Studio") and the client named above ("Client"). The Scope Summary, Deliverables, pricing, and payment schedule shown above are incorporated into these terms. Where the payment schedule above conflicts with these terms, the payment schedule controls.
+
+1. SCOPE OF WORK
+The Studio will build the application described in the Scope Summary and Deliverables above (the "Project"). Only the features listed in the Deliverables are included. If a feature is not listed there, it is not within scope.
+
+Not included, unless expressly listed in the Deliverables: calendar synchronization; SMS or text messaging; email marketing beyond transactional notifications; memberships, subscriptions, or recurring billing; analytics dashboards or custom reporting; multiple staff or location accounts; user roles beyond one administrator and one client role; integrations with third-party software; migration of existing data; native mobile apps for the Apple or Google stores; multi-language support; accessibility certification; copywriting; photography; logo or brand identity design; search engine optimization; and ongoing hosting or maintenance.
+
+Any of the above may be added under Section 4.
+
+2. TIMELINE
+The estimated timeline above begins at Kickoff. "Kickoff" is the later of (a) the deposit clearing, and (b) the Studio receiving the content and account access described in Section 3.
+
+Timeline estimates assume the Client responds to questions and approval requests within three (3) business days. Delay in Client responses, content, or access extends the timeline by no less than the length of the delay, and may require rescheduling around the Studio's other committed projects.
+
+3. CLIENT RESPONSIBILITIES AND APPROVALS
+The Client agrees to:
+(a) Provide all content, including text, images, logos, product or service details, and pricing, by the date agreed at Kickoff.
+(b) Provide timely access to any accounts the Project requires.
+(c) Create a Base44 account as provided in Section 9 and supply the account email during intake.
+(d) Designate one individual with authority to give approvals and feedback.
+(e) Respond to questions and approval requests within three (3) business days.
+(f) Confirm that all content supplied is owned or properly licensed by the Client and does not infringe the rights of any third party.
+
+Intermediate approvals. Routine build decisions such as layout, color, copy placement, and component styling keep the Project moving. If the Client does not respond to a written request for an intermediate decision within seven (7) calendar days, the Studio may proceed on the stated approach.
+
+Final acceptance. Final acceptance of the completed Project requires the Client's express written confirmation through the handoff acceptance in Section 9. Silence is never final acceptance.
+
+Silence never authorizes charges. No lack of response will be treated as approval of a Change, of additional fees, or of any increase to the Project price. Every Change requires express written approval under Section 4.
+
+Inactive projects. If the Client is unresponsive for thirty (30) consecutive days, the Studio may pause the Project and release the reserved build slot. Resuming is subject to availability and a rescheduling fee of two hundred fifty dollars ($250). Pausing does not suspend payments already due under Section 7.
+
+4. CHANGES TO SCOPE
+A "Change" is any new feature, or any modification to a previously approved deliverable.
+
+Changes must be requested in writing; email is sufficient. The Studio will respond with the additional cost, the timeline impact, or both. Work on a Change begins only upon the Client's express written approval. No Change is included in the original Project price.
+
+Changes are billed at sixty-five dollars ($65) per hour, or at a fixed price quoted in advance. An approved Change is invoiced separately and does not alter the existing payment schedule unless the parties agree otherwise in writing.
+
+5. REVISIONS
+The Project includes two (2) rounds of revisions per page or screen. A "round" means one consolidated set of feedback, not individual requests submitted over time.
+
+Revisions refine work already delivered, including copy edits, layout adjustments, and styling changes. A request that adds functionality or reverses an approved direction is a Change under Section 4.
+
+Additional revision rounds are billed at sixty-five dollars ($65) per hour.
+
+6. COMPLETION, LAUNCH, AND FINAL PAYMENT
+The Studio will notify the Client in writing when the agreed Deliverables are complete and ready for final review, and will provide preview or demonstration access. The Client will identify any material failure to meet the Deliverables within seven (7) calendar days so it can be addressed. Silence is not final acceptance and does not waive a reported defect.
+
+Unless the project-specific payment schedule expressly provides otherwise, the remaining balance is due within seven (7) calendar days after the completed Deliverables have been presented for final review. A timely reported material failure to meet the Deliverables will be addressed before the associated final payment is required.
+
+"Launch" means deployment to the live address for the Client's use. Launch, completion, and ownership handoff are separate events. Full ownership and administrative handoff occur only after completion and payment in full under Sections 9 and 10.
+
+7. FIXED PRICE, DEPOSIT, AND VOLUNTARY PAYMENTS
+The Project price is fixed as stated above. Unless a different project-specific milestone schedule is expressly agreed in writing, fifty percent (50%) is due at signing as the deposit and the remaining fifty percent (50%) is due under Section 6. Work begins only after the required deposit has cleared.
+
+If agreed for a particular Project, the parties may instead specify up to four required milestone payments, including the deposit. Each milestone must identify its Deliverables, amount, completion/review requirements, and payment deadline. These required payments together equal the fixed Project price. A milestone is not billed as complete merely because a calendar date has arrived.
+
+The Client may pay the entire Project price upfront or make additional voluntary payments toward the outstanding balance at any time without a prepayment fee. Each payment is credited once toward the Project price, first toward any unpaid required deposit and then toward the remaining balance. Voluntary payments reduce what remains due but do not increase the price, establish a recurring payment plan, change agreed deadlines, or require early delivery. The limit on required milestone payments does not limit voluntary payments.
+
+Payments are made through Square using the Client's invoice link. The Studio does not store card details or automatically charge the Client. Approved changes are priced and agreed separately in writing and must state any effect on the Project total, payment requirements, and handoff.
+
+If a required payment is more than fourteen (14) days overdue, the Studio may pause work after written notice. Pausing work does not transfer ownership, cancel this Agreement, or eliminate amounts properly owed. Client content and data remain subject to Section 10.
+
+Any optional pay-over-time method actually offered by the payment processor is subject to that provider's availability, eligibility, and terms. A payment received by the Studio through such a method is credited to the invoice and is not owed a second time to the Studio. No particular financing provider or approval is promised.
+
+The Client should report billing errors promptly. Nothing in this Agreement limits applicable rights or deadlines for raising an error with a bank, card issuer, payment processor, or other authority.
+
+8. THIRD-PARTY COSTS
+The Project price covers the Studio's services only. It does not include third-party costs, which are the Client's responsibility and are billed to the Client directly by the provider. These may include the Base44 subscription required to operate the Project; domain registration and renewal; transactional email services; SMS or messaging services; artificial intelligence or programming interface services billed by usage; and stock imagery, licensed fonts, or paid plugins.
+
+The Studio will identify anticipated third-party costs before Kickoff where reasonably possible. Such prices are set by the respective providers and may change without notice. Third-party costs are never included in, and never reduce, the Project price.
+
+9. PLATFORM, CLIENT ACCOUNT, AND HANDOFF
+The Project is built on Base44, a hosted application platform. The Client acknowledges and agrees that:
+
+(a) Client account. The Client is responsible for creating a Base44 account in the Client's own name, maintaining that account, and paying the subscription required to operate the Project. The Client will create the account and supply the account email during intake so handoff is not delayed. The Studio may assist with setup but does not pay for, own, or control the Client's account.
+
+(b) Custody before handoff. Until handoff, the Project remains in an account controlled by the Studio. The Client's use during this period is governed by the license in Section 10.
+
+(c) Handoff occurs after payment in full. The Studio will begin handoff within five (5) business days after all of the following have occurred: (i) completion of the agreed Deliverables, (ii) receipt of the full Project price and any approved changes expressly due before handoff, and (iii) the Client's Base44 account being ready to receive the Project. Client delay in preparing the account delays handoff but does not delay any payment due under Section 7.
+
+(d) Handoff contents. Handoff includes, to the extent supported by the platform and applicable third-party services: transfer of application ownership; administrative access credentials; documentation and a user guide; a walkthrough or recorded training session; reconnection or reassignment of third-party integrations configured during the build; and backup or export instructions. The Client acknowledges that Base44 treats transfer of application ownership and movement of an application between workspaces as separate operations, and that handoff may involve both.
+
+(e) Handoff acceptance. The Studio will provide a written handoff checklist. The Client's electronic acceptance of that checklist confirms delivery of the listed items and constitutes final acceptance under Section 3.
+
+(f) Platform dependence. Continued availability depends on Base44's services, which the Studio does not own or control. The Studio is not responsible for service interruptions, pricing changes, feature changes, or discontinuation by Base44 or any other provider. If the Client's subscription lapses or is terminated after handoff, the Project may become unavailable and the platform may delete the Project and its data. Maintaining the subscription and keeping independent backups is the Client's responsibility.
+
+(g) Platform terms. The Project is subject to Base44's own terms of service, privacy policy, and acceptable use policy, which are set by Base44 and may change. Those terms govern the Client's account, the Client's data, and the operation of the Project. The Client is responsible for reviewing them, and on handoff enters into a direct relationship with Base44 governed by them. The Studio is not a party to that relationship and cannot vary its terms.
+
+Following handoff, the Client is responsible for maintaining backups of the Project and its data, unless a separate maintenance agreement provides otherwise.
+
+10. OWNERSHIP, LICENSE, AND ACCESS
+Access during the build. Before Launch, the Studio will provide preview and testing access so the Client can review progress, test functionality, and give feedback. Preview access is for review and testing only.
+
+License from Launch. From Launch until payment in full, the Studio grants the Client a limited, non-exclusive, non-transferable, revocable license to use and operate the Project in the Client's business, including with the Client's own customers, so the Client receives the benefit of the Project while completing the payment schedule.
+
+The license is conditional. It may be suspended for an overdue required payment after written notice under Section 7 and terminates if this Agreement is cancelled before payment in full. Because the Project runs in the Studio's platform account until handoff, the Client will operate it in compliance with Base44's acceptable use policy and applicable law during that period, and the Studio may suspend the license if the Client's use places the Studio's platform account at risk. It does not permit the Client to copy, sublicense, resell, or transfer the Project, or move it to another account or platform, before ownership transfers.
+
+Ownership on payment in full. Upon receipt of the full Project price and any approved changes expressly due before handoff, the Client owns the custom application code and custom design developed for this Project, and the license above converts to ownership. Administrative transfer follows under Section 9(c).
+
+Client content and data. The Client owns all content the Client supplies and all data entered into the Project by the Client or the Client's customers, at every stage, before and after payment in full. Nothing here gives the Studio ownership of Client content or data, and the Studio will not withhold Client data on account of non-payment. The Studio will provide the Client's data in an exportable format on written request, including following cancellation.
+
+Studio retained materials. The Studio retains all right, title, and interest in its pre-existing and reusable materials, including code libraries, components, templates, frameworks, design patterns, methods, tools, and know-how, including any developed or improved during this Project. The Client is granted a perpetual, worldwide, non-exclusive, royalty-free license to use these materials solely as incorporated within the Project. This does not permit the Client to extract, sublicense, or resell them separately from the Project.
+
+Portfolio rights. The Studio may display the Project, including screenshots, a written description, and a link, in its portfolio and marketing materials. Portfolio materials will not include the Client's confidential business information, the Client's customer data, or any personal information of the Client's customers. The Client may request confidential treatment of the entire Project by written notice before Kickoff, in which case this subsection does not apply.
+
+11. SUPPORT AND WARRANTY
+Support period. The Project includes thirty (30) days of support beginning at Launch, covering (a) correction of defects, meaning the Project failing to operate as described in the Deliverables; (b) questions about using what was built; and (c) minor text or image corrections, up to one (1) hour in total.
+
+Handoff assistance is separate. Assistance with ownership transfer, administrative access, integration reconnection, training, and export at handoff is provided whenever handoff occurs and is not limited by the thirty (30) day support period. The support period expiring while the Client is still completing the payment schedule does not reduce the Studio's handoff obligations under Section 9.
+
+Not included: new features or modifications to approved functionality, which are Changes under Section 4; issues arising from Client modifications, third-party service failures, or platform changes; training beyond the handoff walkthrough; ongoing monitoring, backups, or maintenance; and content updates beyond the hour described above.
+
+Limited warranty. The Studio warrants that for thirty (30) days following Launch the Project will perform substantially as described in the Deliverables. The Client's sole and exclusive remedy is correction of the defect by the Studio. After this period the Project is provided AS IS.
+
+Ongoing maintenance is available under a separate written agreement.
+
+12. CANCELLATION
+Cancellation by the Client. The Client may cancel upon written notice.
+
+(a) All amounts already paid, including the deposit and every voluntary or milestone payment received, are credited against the value of work completed as of the cancellation date. The Client is not charged twice for the same work.
+(b) If the value of completed work, calculated at sixty-five dollars ($65) per hour and capped at the total Project price, exceeds the amounts already paid, the Client owes the difference.
+(c) If the amounts already paid exceed the value of completed work, the Studio refunds the excess, except that the deposit is non-refundable once work has begun.
+(d) If the Client cancels before any work has begun, the Studio refunds the deposit less two hundred fifty dollars ($250) for the reserved build slot.
+(e) Future milestone requests for unperformed work are cancelled; the final cancellation accounting above controls the amount owed.
+(f) The license in Section 10 terminates on cancellation. Upon payment of any balance owed under (b), the Studio will deliver the work completed to date AS IS, without warranty and without obligation to complete it, and ownership of that partial work transfers under Section 10.
+(g) The Studio will provide the Client's content and data in an exportable format on request, regardless of any balance owed.
+
+Cancellation by the Studio. The Studio may cancel upon written notice if (a) a required payment remains unpaid for more than thirty (30) days; (b) the Client is unresponsive for more than thirty (30) consecutive days; (c) the Client requests work that is unlawful, infringing, or contrary to the Studio's stated values; or (d) continued performance has become impracticable due to circumstances beyond the Studio's reasonable control.
+
+Where the Studio cancels for a reason other than the Client's non-payment or non-responsiveness, the Studio refunds amounts paid for work not yet performed. Where the Studio cancels under (a) or (b), the crediting method above applies and the deposit is retained.
+
+13. DISCLAIMERS AND LIMITATION OF LIABILITY
+Third-party services. The Project depends upon services the Studio does not control, including Base44, Square, email providers, artificial intelligence services, and domain registrars. The Studio is not liable for their interruptions, errors, data loss, pricing changes, policy changes, or discontinuation.
+
+Payment processing. Payments are collected through Square. Square's availability, processing times, and policies are outside the Studio's control. A processor outage does not waive an amount owed. Where it prevents payment, the payment is due promptly after service is restored, and that outage alone will not trigger suspension.
+
+Client content. The Studio is not responsible for the accuracy, legality, or rights clearance of content supplied by the Client.
+
+Regulatory compliance. Unless the Deliverables expressly provide otherwise, the Studio does not represent or certify that the Project complies with HIPAA, PCI-DSS, GDPR, CCPA, the Americans with Disabilities Act, WCAG accessibility standards, or any other regulatory framework. If the Client's business is subject to a specific compliance requirement, the Client must disclose it in writing before Kickoff so it may be scoped and priced.
+
+Security. The Studio applies commercially reasonable practices but does not warrant that the Project is free from vulnerabilities or immune to unauthorized access.
+
+Limitation of liability. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE STUDIO'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATING TO THIS AGREEMENT SHALL NOT EXCEED THE TOTAL AMOUNT PAID BY THE CLIENT TO THE STUDIO FOR THIS PROJECT. NEITHER PARTY SHALL BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS, LOST REVENUE, LOST DATA, OR BUSINESS INTERRUPTION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+14. INDEMNIFICATION
+The Client shall indemnify, defend, and hold harmless the Studio from and against any claims, damages, losses, and reasonable attorneys' fees arising out of or relating to (a) content supplied by the Client; (b) the Client's use or operation of the Project; (c) the Client's violation of any law or third-party right; and (d) the Client's failure to disclose a regulatory requirement as provided in Section 13.
+
+15. CONFIDENTIALITY, DATA, AND SUPPORT ACCESS
+Each party shall keep confidential the other's non-public business information and use it solely to perform this Agreement. This obligation survives termination for two (2) years.
+
+Client data. The Studio may access Client data during development solely to build and test the Project. The Studio will not sell such data or use it for any purpose other than performing this Agreement. The Client is the owner and controller of all data within the Project and is solely responsible for its privacy policy, lawful use of such data, and compliance with applicable data protection law.
+
+Platform data handling. The Studio's confidentiality obligations bind the Studio only. Data in the Project is hosted and processed by Base44 under its own terms, which reserve broad rights to access, process, store, and use that data, including to operate and improve its services and to train artificial intelligence and machine learning models. The Studio cannot limit or waive those rights on the Client's behalf. The Client should review Base44's terms and privacy policy before placing sensitive information in the Project, and is responsible for deciding what data the Project collects and stores.
+
+Support access after handoff. Where the Client requests support after handoff, the Client may grant the Studio temporary administrative access. That access is limited to what is necessary for the requested work, is used for no other purpose, and is removed at the earlier of (i) completion of the requested work, (ii) the Client's written request, or (iii) thirty (30) days after it was granted. The Studio retains no standing access to the Project after handoff except where a separate maintenance agreement provides otherwise.
+
+End users. Where the Project collects personal information from the Client's customers, the Client is solely responsible for providing the required notices, obtaining consents, and maintaining applicable policies.
+
+16. GOVERNING LAW AND DISPUTE RESOLUTION
+This Agreement is governed by the laws of the State of North Carolina, without regard to its conflict-of-law principles.
+
+Informal resolution. Before commencing arbitration, the parties shall attempt in good faith to resolve the dispute through direct discussion for not less than thirty (30) days after written notice of the dispute.
+
+Binding arbitration. Any dispute arising out of or relating to this Agreement that is not resolved through discussion shall be settled by binding arbitration administered by the American Arbitration Association under its Commercial Arbitration Rules. The arbitration shall be conducted by one (1) arbitrator in ____________________ County, North Carolina, or by videoconference if the parties agree. Judgment on the award may be entered in any court of competent jurisdiction. This Agreement evidences a transaction involving interstate commerce, and the Federal Arbitration Act governs the interpretation and enforcement of this provision.
+
+Exceptions. Either party may bring an action in small claims court for a claim within that court's jurisdiction, and either party may seek injunctive relief in court to protect intellectual property or confidential information pending arbitration.
+
+Payment disputes. The parties are encouraged to report and resolve payment concerns promptly. The informal resolution period does not delay or restrict any applicable bank, card-issuer, processor, or statutory dispute deadline, and exercising such a right is not itself a breach of this Agreement.
+
+Costs. Each party bears its own attorneys' fees and costs, and the parties share the arbitrator's fees equally, except where the arbitrator determines that a claim was frivolous or brought for an improper purpose.
+
+17. GENERAL PROVISIONS
+Independent contractor. The Studio is an independent contractor. Nothing in this Agreement creates an employment, partnership, joint venture, or agency relationship.
+
+Force majeure. Neither party is liable for delay or failure to perform caused by events beyond its reasonable control, including natural disaster, illness, war, civil unrest, utility or internet failure, or third-party platform outage. Affected timelines extend by the duration of the event. Payment obligations are not excused except where a payment processor outage prevents payment, in which case payment is due promptly after service is restored.
+
+Assignment. Neither party may assign this Agreement without the other's written consent, except in connection with the sale of substantially all of its business or assets.
+
+Entire agreement. This Agreement, including the Scope Summary, Deliverables, pricing, and payment schedule above, constitutes the entire agreement between the parties and supersedes all prior discussions, proposals, and representations, whether written or oral.
+
+Amendment. This Agreement may be modified only in a writing agreed to by both parties. Written approval of a Change under Section 4 satisfies this requirement as to that Change.
+
+Severability. If any provision is held unenforceable, it shall be modified to the minimum extent necessary, and the remaining provisions continue in full force and effect.
+
+Notices. Written notice may be given by email to the addresses stated in this Agreement and is effective upon transmission, absent a delivery failure notice.
+
+Survival. Sections 10, 13, 14, 15, 16, and 17 survive termination or expiration of this Agreement.
+
+18. ELECTRONIC SIGNATURE
+The parties consent to transact electronically. The Client's electronic signature, whether typed or drawn, has the same legal force and effect as a handwritten signature under the federal Electronic Signatures in Global and National Commerce Act and the North Carolina Uniform Electronic Transactions Act.
+
+At signing, the Studio stores the complete text of this Agreement as displayed to the Client, together with the signer's name, the email address to which the agreement was sent, the date and time of signature, the IP address, the browser information, and the signature method. The stored agreement is the version the Client signed and is not altered by later changes to the Studio's standard terms.
+
+The Client receives a copy by email and may return to the agreement link at any time to view, download, or print the signed agreement. The Client may request a paper copy by written request to the Studio.
