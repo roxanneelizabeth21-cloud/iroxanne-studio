@@ -58,6 +58,11 @@ function secretUrl(): string {
   }
 }
 
+/** Public-facing URL for client documents. Never returns a preview/admin host. */
+export function clientUrl(): string {
+  return CANONICAL_URL;
+}
+
 /** Build an absolute studio path: studioPath(req, '/invoice/abc') */
 export function studioPath(req: Request | undefined, path: string): string {
   const clean = String(path || '');
