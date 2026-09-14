@@ -48,7 +48,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       price_total: total,
       payment_schedule: form.payment_installments?.length ? scheduleText(form.payment_installments) : form.payment_schedule,
       deposit_amount: computeDeposit(total),
-      deposit_percent: form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
+      deposit_percent: form.payment_installments?.length ? computeDeposit(total)/total*100 : form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
     };
     onSave(payload);
   };
@@ -101,7 +101,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input value={form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
         </div>
       </div>
 
@@ -157,12 +157,12 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label>Deposit ({form.deposit_percent ?? settings?.default_deposit_percent ?? 50}%)</Label>
+          <Label>{form.payment_installments?.length ? 'First payment' : 'Deposit ('+(form.deposit_percent ?? settings?.default_deposit_percent ?? 50)+'%)'}</Label>
           <Input type="number" disabled value={computeDeposit(total)} />
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input value={form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
         </div>
       </div>
 
