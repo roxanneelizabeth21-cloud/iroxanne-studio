@@ -178,7 +178,7 @@ export default function ProposalView() {
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">To get started</p>
                 <p className="text-xl font-bold text-foreground mt-1">{money(depositAmt)}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{proposal.payment_installments?.length ? 'Payments follow the dated schedule below' : depositPct+'% deposit, balance on launch'}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{proposal.payment_installments?.length ? 'Payments follow the dated schedule below' : depositPct+'% deposit; remaining balance follows the completion and final-review terms in your agreement'}</p>
               </div>
             )}
             {proposal.timeline_estimate && (
@@ -208,7 +208,7 @@ export default function ProposalView() {
                 Accepted on {proposal.accepted_at ? new Date(proposal.accepted_at).toLocaleString() : ''}.
               </p>
               <p className="text-xs text-muted-foreground mt-3">
-                Your project agreement is on its way for signature — watch your inbox.
+                I'll review your draft agreement and email it to you for signature.
               </p>
             </div>
           )}
