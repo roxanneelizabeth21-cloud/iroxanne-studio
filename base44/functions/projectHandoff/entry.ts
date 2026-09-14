@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { defaultHandoff, canCompleteHandoff } from '../../shared/studioDelivery.ts';
 import { clientLink } from '../../shared/studioUrl.ts';
+import {handoffPayment} from '../../shared/handoffPayment.ts';
 const publicData=(c:any)=>({id:c.id,project_title:c.project_title,client_name:c.client_name,handoff_items:c.handoff_items||[],handoff_status:c.handoff_status||'draft',handoff_client_notes:c.handoff_client_notes||'',handoff_ack_name:c.handoff_ack_name,handoff_ack_at:c.handoff_ack_at});
 export default async function(req: Request) {
   try {
@@ -11,6 +12,8 @@ export default async function(req: Request) {
     if(['view','accept','request_changes'].includes(action)) {
       if(typeof b.token!=='string'||!c.handoff_token||c.handoff_token!==b.token)return Response.json({error:'Invalid handoff link'},{status:403});
       if(c.status==='cancelled'||!['ready','accepted','changes_requested'].includes(c.handoff_status))return Response.json({error:'Handoff is not available for review.'},{status:409});
+      const payment=await handoffPayment(base44,c);
+      if(!payment.paid_in_full)return Response.json({error:payment.message},{status:409});
       if(action==='view')return Response.json({handoff:publicData(c)});
       if(c.handoff_status!=='ready')return Response.json({error:'This handoff already has a response.'},{status:409});
       let changes;
@@ -29,7 +32,11 @@ export default async function(req: Request) {
     if(user?.role!=='admin')return Response.json({error:'Admin only'},{status:403});
     if(c.status==='cancelled')return Response.json({error:'Cancelled project'},{status:409});
     const db=base44.entities.Contract;
-    if(action==='load')return Response.json({contract:{...c,handoff_items:c.handoff_items?.length?c.handoff_items:defaultHandoff()}});
+    if(action==='load')return Response.json({contract:{...c,handoff_items:c.handoff_items?.length?c.handoff_items:defaultHandoff()},payment:await handoffPayment(base44,c).catch(()=>({paid_in_full:false,message:'Payment could not be confirmed. Please refresh before handoff.'}))});
+    if(['publish','complete'].includes(action)) {
+      const payment=await handoffPayment(base44,c);
+      if(!payment.paid_in_full)return Response.json({error:payment.message},{status:409});
+    }
     if(action==='save') {
       if(c.handoff_status==='accepted'||c.status==='completed')return Response.json({error:'Reopen the handoff before changing accepted items.'},{status:409});
       if(!Array.isArray(b.items)||!b.items.length||b.items.length>50)return Response.json({error:'Add between 1 and 50 checklist items.'},{status:400});
