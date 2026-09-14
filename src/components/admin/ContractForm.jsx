@@ -9,7 +9,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { isRushDate, RUSH_TERMS } from '@/lib/studioDelivery';
 
 import PaymentScheduleEditor, {scheduleError} from '@/components/admin/PaymentScheduleEditor';
-import {scheduleText} from '../../../base44/shared/paymentSchedule.ts';
+import {scheduleText,withHandoffTerms} from '../../../base44/shared/paymentSchedule.ts';
 
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 
@@ -46,6 +46,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
     const payload = {
       ...form,
       price_total: total,
+      terms: withHandoffTerms(form.terms),
       payment_schedule: form.payment_installments?.length ? scheduleText(form.payment_installments) : form.payment_schedule,
       deposit_amount: computeDeposit(total),
       deposit_percent: form.payment_installments?.length ? computeDeposit(total)/total*100 : form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
