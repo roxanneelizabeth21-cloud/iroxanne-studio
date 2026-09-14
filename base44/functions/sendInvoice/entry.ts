@@ -42,8 +42,6 @@ export default async function (req: Request) {
     const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
       const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
     const payInstructions: string = settings?.payment_instructions || '';
-    const rawLink = settings?.payment_link || '';
-    const payLink = /^https:\/\//i.test(rawLink) ? rawLink : '';
     // Hosted invoice page — clients pay their deposit / milestones / balance online.
     const hostedPayLink = invoice.access_token ? `${getBaseUrl(req)}/invoice/${invoice.id}?t=${invoice.access_token}` : '';
 
@@ -86,7 +84,6 @@ export default async function (req: Request) {
           <p style="font-size:22px;font-weight:600;margin:0 0 4px;">Amount due: ${money(amountDue)}</p>
           <div style="margin:20px 0;padding:16px;background:#FAF7F0;border-radius:10px;">${detailRows(rows)}</div>
           ${hostedPayLink ? `<p style="margin:0 0 16px;">${brandButton('Pay online', hostedPayLink)}</p>` : ''}
-          ${payLink ? `<p style="margin:0 0 16px;font-size:13px;">Prefer a direct link? <a href="${payLink}" style="color:#2D2A4A;">Pay here</a>.</p>` : ''}
           ${payInstructions ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.7;">${esc(payInstructions).replace(/\n/g, '<br/>')}</p>` : ''}
           ${(invoice.milestones || []).length > 0
             ? `<p style="margin:16px 0 6px;font-weight:600;">Payment schedule</p>${detailRows(
