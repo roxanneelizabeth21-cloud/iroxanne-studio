@@ -3,6 +3,8 @@ import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { studioUrl } from '../../shared/studioUrl.ts';
 
+import {validateSchedule} from '../../shared/paymentSchedule.ts';
+
 function generateToken() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
 }
@@ -36,6 +38,7 @@ export default async function (req: Request) {
     const expiresAt = refresh ? new Date(Date.now() + validDays * 86400000).toISOString() : proposal.expires_at;
     if (new Date(expiresAt).getTime() <= Date.now()) return Response.json({ error: 'Edit this expired proposal before resending.' }, { status: 409 });
     if (!Number.isFinite(proposal.price_total) || proposal.price_total <= 0 || !Number.isFinite(proposal.deposit_percent) || proposal.deposit_percent < 0 || proposal.deposit_percent > 100) return Response.json({error:'Review proposal pricing and deposit before sending.'},{status:400});
+    if(proposal.payment_installments?.length) validateSchedule(proposal.payment_installments,proposal.price_total);
     // Reuse the existing token on resend so old links keep working.
     const token = proposal.access_token || generateToken();
     const updated = await base44.entities.Proposal.update(proposal_id, {
