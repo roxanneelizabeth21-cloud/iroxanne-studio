@@ -26,8 +26,14 @@ export function defaultHandoff() {
 export function validateSignature(mode: string, image: unknown) {
   if (!['typed','drawn'].includes(mode)) return false;
   if (mode === 'typed') return true;
-  if (typeof image !== 'string' || image.length > 180000 || !/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/.test(image)) return false;
-  try { return atob(image.split(',')[1]).slice(0,8) === '\x89PNG\r\n\x1a\n'; } catch { return false; }
+  if (typeof image !== 'string' || image.length > 500000) return false;
+  if (!image.startsWith('data:image/')) return false;
+  try {
+    const commaIdx = image.indexOf(',');
+    if (commaIdx < 0) return false;
+    const b64 = image.slice(commaIdx + 1);
+    return b64.length > 10;
+  } catch { return false; }
 }
 export function canCompleteHandoff(contract: any) {
   return contract.handoff_status === 'accepted' && Array.isArray(contract.handoff_items) && contract.handoff_items.length > 0 &&
