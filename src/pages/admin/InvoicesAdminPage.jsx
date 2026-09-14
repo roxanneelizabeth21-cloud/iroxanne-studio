@@ -14,6 +14,9 @@ export default function InvoicesAdminPage() {
   const { toast } = useToast();
   const [invoices,setInvoices] = useState([]);
   const [payments,setPayments] = useState([]);
+  // Stripe sessions that never became a Payment — declined financing, abandoned
+  // or expired checkouts, and BNPL still awaiting the provider's decision.
+  const [stripeCheckouts,setStripeCheckouts] = useState([]);
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState('');
   const [editing,setEditing] = useState(null);
@@ -24,8 +27,12 @@ export default function InvoicesAdminPage() {
   const load = async () => {
     setLoading(true); setError('');
     try {
-      const [i,p] = await Promise.all([base44.entities.Invoice.list('-created_date',100),base44.entities.Payment.list('-created_date',1000)]);
-      setInvoices(i); setPayments(p);
+      const [i,p,sc] = await Promise.all([
+        base44.entities.Invoice.list('-created_date',100),
+        base44.entities.Payment.list('-created_date',1000),
+        base44.entities.StripeCheckout.list('-created_date',500).catch(()=>[]),
+      ]);
+      setInvoices(i); setPayments(p); setStripeCheckouts(sc);
     } catch(e) { setError(e.message || 'Could not load invoices.'); }
     finally { setLoading(false); }
   };
@@ -115,6 +122,25 @@ export default function InvoicesAdminPage() {
       </div>}
       <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
         {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2 items-center"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><span className="flex items-center gap-1"><strong>{money(p.amount)}</strong><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Delete payment" onClick={()=>removePayment(p)}><Trash2 className="h-3.5 w-3.5"/></Button></span></div>)}
+        {stripeCheckouts.filter(sc=>sc.invoice_id===i.id && sc.status!=='paid').map(sc=>(
+          <div key={sc.id} className="flex flex-wrap justify-between gap-2 border-t pt-2 items-center text-muted-foreground">
+            <span>
+              {new Date(sc.last_checked_at || sc.created_date).toLocaleDateString()} · stripe · {sc.kind}
+              {sc.payment_method_type ? ' · '+sc.payment_method_type : ''}
+              {' · '}{sc.payment_intent || sc.session_id}
+            </span>
+            <span className="flex items-center gap-2">
+              <strong>{money((sc.expected_amount_cents||0)/100)}</strong>
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                sc.status==='failed' ? 'bg-destructive/10 text-destructive'
+                : sc.status==='processing' ? 'bg-amber-500/10 text-amber-700'
+                : 'bg-secondary text-muted-foreground'}`}>
+                {sc.status==='processing' ? 'awaiting financing' : sc.status}
+              </span>
+            </span>
+            {sc.last_error && <span className="w-full text-[11px] text-destructive">{sc.last_error}</span>}
+          </div>
+        ))}
         {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
       </div></details>
     </section>)}
