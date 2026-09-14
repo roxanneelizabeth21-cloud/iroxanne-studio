@@ -74,6 +74,21 @@ export default async function (req: Request) {
     params.append('metadata[milestone_index]', milestoneIndex == null ? '' : String(milestoneIndex));
     params.append('metadata[project_title]', String(invoice.project_title || '').slice(0, 200));
 
+    // Mirror the metadata onto the PaymentIntent. The webhook's
+    // payment_intent.succeeded fallback reads metadata off the intent, and
+    // without this it would arrive empty and the payment would go uncredited.
+    params.append('payment_intent_data[metadata][base44_app_id]', appId);
+    params.append('payment_intent_data[metadata][invoice_id]', id);
+    params.append('payment_intent_data[metadata][kind]', kind);
+    params.append('payment_intent_data[metadata][milestone_index]', milestoneIndex == null ? '' : String(milestoneIndex));
+
+    // No payment_method_types: omitting it keeps Stripe's dynamic payment
+    // methods on, so Affirm/Afterpay surface based on the Dashboard settings,
+    // the amount and the buyer's eligibility rather than anything hardcoded here.
+    // Sessions expire after 24h so abandoned checkouts resolve to a terminal
+    // state instead of sitting pending forever.
+    params.append('expires_at', String(Math.floor(Date.now() / 1000) + 24 * 60 * 60));
+
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
@@ -89,6 +104,21 @@ export default async function (req: Request) {
       console.log('stripe checkout failed', data?.error?.message);
       return Response.json({ error: data?.error?.message || 'Could not start checkout' }, { status: 502 });
     }
+
+    // Binding record: the webhook credits a payment only when the session it
+    // names matches one of these, for the amount it was created with.
+    await base44.asServiceRole.entities.StripeCheckout.create({
+      invoice_id: id,
+      session_id: data.id,
+      payment_intent: typeof data.payment_intent === 'string' ? data.payment_intent : '',
+      kind,
+      ...(milestoneIndex != null ? { milestone_index: milestoneIndex } : {}),
+      currency: 'usd',
+      expected_amount_cents: Math.round(amount * 100),
+      status: 'pending',
+      last_checked_at: new Date().toISOString(),
+    }).catch((e: any) => console.log('StripeCheckout create failed', e?.message));
+
     return Response.json({ url: data.url, session_id: data.id });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
