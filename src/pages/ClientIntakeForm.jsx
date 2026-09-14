@@ -183,11 +183,11 @@ export default function ClientIntakeForm() {
             </div>
             <Field label="Business address (if applicable)"><Input value={intake.address || ''} onChange={(e) => patch('address', e.target.value)} placeholder="City, State or full address" /></Field>
             <div className="space-y-3">
-              <Field label="Base44 account email" hint="Already have an account? Enter its email below. Your completed app transfers to your account after payment in full. I'll help you choose the required plan before handoff."><Input type="email" value={intake.platform_account_email || ''} onChange={(e) => patch('platform_account_email', e.target.value)} placeholder="you@yourbusiness.com" /></Field>
-              <p className="text-sm text-foreground">Need an account? Create yours, then return here and enter its email.</p>
+              <Field label="Base44 account email" hint="Already have an account? Enter its email below. Your completed app transfers to your account after payment in full. Before handoff, I'll confirm the lowest suitable subscription for your app. Your Base44 subscription is separate from your project price."><Input type="email" value={intake.platform_account_email || ''} onChange={(e) => patch('platform_account_email', e.target.value)} placeholder="you@yourbusiness.com" /></Field>
+              <p className="text-sm text-foreground">Need an account? Start with a free Base44 account, then return here and enter its email. You do not need to choose a paid plan now.</p>
               <p className="text-sm text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without using my referral link.</p>
               <Button asChild className="min-h-11 whitespace-normal">
-                <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
+                <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
               </Button>
             </div>
             <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : JSON.stringify(intake.social_links || '', null, 2)} onChange={(e) => patch('social_links', { links: e.target.value })} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
