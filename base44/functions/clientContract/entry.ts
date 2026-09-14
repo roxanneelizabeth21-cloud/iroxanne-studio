@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 import { validateSignature } from '../../shared/studioDelivery.ts';
-import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
+import { studioUrl, adminLink, clientUrl } from '../../shared/studioUrl.ts';
 
 import {validateSchedule} from '../../shared/paymentSchedule.ts';
 
@@ -94,7 +94,7 @@ export default async function(req) {
           invoiceToken = invoice.access_token;
         }
         if (invoice && invoice.access_token) {
-          const origin = studioUrl(req);
+          const origin = clientUrl();
           invoiceUrl = `${origin}/invoice/${invoice.id}?t=${invoice.access_token}`;
         }
       } catch (e) { console.log('invoice step failed', e?.message); }
