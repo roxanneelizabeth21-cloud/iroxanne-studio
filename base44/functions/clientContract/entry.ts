@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 import { validateSignature } from '../../shared/studioDelivery.ts';
-import { studioUrl, adminLink, clientUrl } from '../../shared/studioUrl.ts';
+import { studioUrl, adminLink, clientUrl, clientLink } from '../../shared/studioUrl.ts';
 
 import {validateSchedule} from '../../shared/paymentSchedule.ts';
 
@@ -99,9 +99,9 @@ export default async function(req) {
         }
       } catch (e) { console.log('invoice step failed', e?.message); }
 
-      // Client-facing links must always use the public domain, not the preview host
-      const publicOrigin = 'https://iroxannestudio.com';
+      // Client-facing links must always use the canonical public domain.
       const firstName = (updated.signer_name || updated.client_name || '').split(' ')[0] || 'there';
+      const contractLink = clientLink(req, 'contract', id, token);
 
       if (updated.client_email) {
         await base44.asServiceRole.integrations.Core.SendEmail({
@@ -110,7 +110,7 @@ export default async function(req) {
           html: brandedEmail({
             title: `Your agreement is signed, ${esc(firstName)}.`, 
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
-              <p style="margin:0 0 16px;">${brandButton('View your signed agreement', `${publicOrigin}/contract/${encodeURIComponent(id)}?t=${encodeURIComponent(token)}`)}</p>
+              <p style="margin:0 0 16px;">${brandButton('View your signed agreement', contractLink)}</p>
               <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
               <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
               ${invoiceUrl ? `<p style="margin:0 0 16px;">${brandButton('Pay deposit online', invoiceUrl)}</p><p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">Pay securely by card, or use the payment instructions I'll send separately. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>` : `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`}`,
