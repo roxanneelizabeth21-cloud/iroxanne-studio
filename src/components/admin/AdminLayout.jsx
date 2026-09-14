@@ -230,7 +230,7 @@ export default function AdminLayout() {
           </div>
         </header>
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl w-full mx-auto">
-          {mktHeader && (
+          {mktHeader && location.pathname !== '/marketing' && (
             <div className="relative mb-6 flex items-start justify-between gap-3">
               <div className="flex items-start gap-2 min-w-0">
                 <MarketingBackButton />

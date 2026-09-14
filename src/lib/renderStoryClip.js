@@ -26,13 +26,20 @@ export async function renderStoryClip(imageUrl, lines, { onProgress = () => {}, 
       audioSource = audioContext.createBufferSource(); audioSource.buffer = buffer;
     } catch(e) { if(audioContext) await audioContext.close(); throw e; }
   }
-  const stream = canvas.captureStream(30);
-  if (audioSource) {
-    const destination = audioContext.createMediaStreamDestination();
-    audioSource.connect(destination);
-    destination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+  let stream, recorder;
+  try {
+    stream = canvas.captureStream(30);
+    if (audioSource) {
+      const destination = audioContext.createMediaStreamDestination();
+      audioSource.connect(destination);
+      destination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+    }
+    recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 10_000_000 });
+  } catch(e) {
+    stream?.getTracks().forEach(track => track.stop());
+    if(audioContext) await audioContext.close();
+    throw e;
   }
-  const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 10_000_000 });
   const chunks = [];
   let frameId, timeout, failed;
   const done = new Promise((resolve, reject) => {
