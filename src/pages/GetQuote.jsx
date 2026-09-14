@@ -102,7 +102,7 @@ export default function GetQuote() {
 
   React.useEffect(() => {
     base44.functions.invoke('quoteCallBooking',{action:'config'}).then(r=>setBookingEnabled(!!(r.data||r).enabled)).catch(()=>{});
-    base44.entities.PricingSettings.list()
+    base44.entities.PricingSettings.list('-updated_date', 1)
       .then((list) => { if (list?.[0]?.rate_per_hour) setHourlyRate(list[0].rate_per_hour); })
       .catch(() => {});
   }, []);

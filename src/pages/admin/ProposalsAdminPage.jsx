@@ -38,7 +38,7 @@ export default function ProposalsAdminPage() {
       const [leadList, proposalList, settingsList] = await Promise.all([
         base44.entities.Lead.filter({ status: 'new' }).catch(() => []),
         base44.entities.Proposal.list('-created_date', 50).catch(() => []),
-        base44.entities.PricingSettings.list().catch(() => []),
+        base44.entities.PricingSettings.list('-updated_date', 1).catch(() => []),
       ]);
       setLeads(leadList);
       setProposals(proposalList);
