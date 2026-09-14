@@ -103,6 +103,38 @@ function SidebarContent({ onNavigate }) {
           </NavLink>
         ))}
 
+        <div className="pt-3 relative">
+          <button
+            onClick={() => setMarketingOpen((v) => !v)}
+            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-xs uppercase tracking-wider text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            aria-expanded={marketingOpen}
+          >
+            <Megaphone className="h-4 w-4 shrink-0" /> Marketing
+          </button>
+          <button
+            onClick={() => setMarketingOpen((v) => !v)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            aria-label={marketingOpen ? 'Collapse marketing' : 'Expand marketing'}
+          >
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', marketingOpen && 'rotate-180')} />
+          </button>
+          {marketingOpen && (
+            <div className="mt-0.5 space-y-0.5">
+              {MARKETING_NAV.map((n) => (
+                <NavLink
+                  key={n.to}
+                  to={n.to}
+                  end={n.end}
+                  onClick={onNavigate}
+                  className={({ isActive }) => `flex items-center gap-2.5 pl-8 pr-3 py-1.5 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
+                >
+                  <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Client detail pages — grouped and set back, since the normal route in
             is clicking a project card rather than starting here. */}
         <p className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/60">
@@ -135,37 +167,6 @@ function SidebarContent({ onNavigate }) {
           </NavLink>
         ))}
 
-        <div className="pt-3 relative">
-          <button
-            onClick={() => setMarketingOpen((v) => !v)}
-            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-xs uppercase tracking-wider text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-            aria-expanded={marketingOpen}
-          >
-            <Megaphone className="h-4 w-4 shrink-0" /> Marketing
-          </button>
-          <button
-            onClick={() => setMarketingOpen((v) => !v)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-            aria-label={marketingOpen ? 'Collapse marketing' : 'Expand marketing'}
-          >
-            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', marketingOpen && 'rotate-180')} />
-          </button>
-          {marketingOpen && (
-            <div className="mt-0.5 space-y-0.5">
-              {MARKETING_NAV.map((n) => (
-                <NavLink
-                  key={n.to}
-                  to={n.to}
-                  end={n.end}
-                  onClick={onNavigate}
-                  className={({ isActive }) => `flex items-center gap-2.5 pl-8 pr-3 py-1.5 rounded-lg text-sm transition-colors ${isActive ? 'bg-primary/20 text-foreground font-semibold' : 'text-foreground hover:text-foreground hover:bg-secondary/50'}`}
-                >
-                  <n.Icon className="h-3.5 w-3.5 shrink-0" /> {n.label}
-                </NavLink>
-              ))}
-            </div>
-          )}
-        </div>
       </nav>
       <div className="border-t border-border/40 p-2 space-y-0.5 shrink-0">
         <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
