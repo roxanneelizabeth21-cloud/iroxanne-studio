@@ -8,7 +8,7 @@ export function scheduleError(rows,total) {
   try {validateSchedule(rows,total); return '';} catch(e) {return e.message;}
 }
 export default function PaymentScheduleEditor(props) {
-  if (!props.value?.length) return <p className="text-sm text-muted-foreground">Deposit and final balance apply. Clients may pay in full or make voluntary extra payments. Use the agreement payment schedule for any expressly agreed project milestones.</p>;
+  if (!props.value?.length) return <p className="text-sm text-muted-foreground">Deposit and final balance apply. Clients may pay in full or make voluntary extra payments. The deposit must clear before work begins; the final balance is due under the agreement.</p>;
   return <LegacyPaymentScheduleEditor {...props}/>;
 }
 function LegacyPaymentScheduleEditor({value=[],total,onChange}) {

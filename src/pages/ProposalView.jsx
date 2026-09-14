@@ -86,7 +86,7 @@ export default function ProposalView() {
   const expired = expiry && new Date(expiry) <= new Date();
   const settled = accepted || declined || changesRequested || expired;
   const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
-  const depositAmt = proposal.payment_installments?.[0]?.amount ?? (typeof proposal.price_total === 'number'
+  const depositAmt = proposal.payment_installments?.[0]?.amount ?? proposal.deposit_amount ?? (typeof proposal.price_total === 'number'
     ? Math.round(proposal.price_total * depositPct) / 100
     : null);
 
@@ -178,7 +178,7 @@ export default function ProposalView() {
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">To get started</p>
                 <p className="text-xl font-bold text-foreground mt-1">{money(depositAmt)}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{proposal.payment_installments?.length ? 'Payments follow the dated schedule below' : depositPct+'% deposit; remaining balance follows the completion and final-review terms in your agreement'}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{proposal.payment_installments?.length ? 'Payments follow the dated schedule below' : 'Remaining balance follows the completion and final-review terms in your agreement'}</p>
               </div>
             )}
             {proposal.timeline_estimate && (
@@ -196,8 +196,8 @@ export default function ProposalView() {
 
           {!settled && !proposal.payment_installments?.length && <section className="rounded-xl border border-border p-5 space-y-2">
             <h2 className="font-serif text-xl">Payment options</h2>
-            <p className="text-sm leading-6">Choose a payment approach that works for your project: pay in full, pay the agreed deposit and final balance, or arrange up to four payments tied to project milestones. You are also welcome to make extra payments toward your balance at any time, with no prepayment fee.</p>
-            <p className="text-sm text-muted-foreground">We will confirm your schedule before you sign. Extra payments reduce your balance; agreed payment deadlines still apply. Payments are made through Square.</p>
+            <p className="text-sm leading-6">Pay in full or pay the deposit shown above and the final balance. You may make voluntary partial payments toward your deposit or balance, with no prepayment fee. Work begins after the full deposit clears.</p>
+            <p className="text-sm text-muted-foreground">Partial payments reduce what you owe; agreed payment deadlines still apply. Payments are made through Square.</p>
           </section>}
 
           {proposal.valid_until && !settled && (

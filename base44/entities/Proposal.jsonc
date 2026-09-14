@@ -181,6 +181,11 @@
           "due_date"
         ]
       }
+    },
+    "deposit_amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Exact deposit in dollars; new proposals default to $500, capped at project total."
     }
   },
   "required": [

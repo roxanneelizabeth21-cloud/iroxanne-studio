@@ -38,18 +38,18 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
     if(form.payment_installments?.length) return form.payment_installments[0].amount;
     const p = money(price);
     const pct = form.deposit_percent ?? settings?.default_deposit_percent ?? 50;
-    return Math.round(p * pct) / 100;
+    return Math.min(p, form.deposit_amount ?? Math.round(p * pct) / 100);
   };
 
   const submit = () => {
-    if(scheduleError(form.payment_installments,total)) return;
+    if(scheduleError(form.payment_installments,total) || !Number.isFinite(computeDeposit(total)) || computeDeposit(total)<=0) return;
     const payload = {
       ...form,
       price_total: total,
       terms: withHandoffTerms(form.terms),
       payment_schedule: form.payment_installments?.length ? scheduleText(form.payment_installments) : form.payment_schedule,
       deposit_amount: computeDeposit(total),
-      deposit_percent: form.payment_installments?.length ? computeDeposit(total)/total*100 : form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
+      deposit_percent: computeDeposit(total)/total*100,
     };
     onSave(payload);
   };
@@ -102,7 +102,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
         </div>
       </div>
 
@@ -158,12 +158,12 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label>{form.payment_installments?.length ? 'First payment' : 'Deposit ('+(form.deposit_percent ?? settings?.default_deposit_percent ?? 50)+'%)'}</Label>
-          <Input type="number" disabled value={computeDeposit(total)} />
+          <Label>{form.payment_installments?.length ? 'First payment' : 'Deposit ($)'}</Label>
+          <Input type="number" min="0.01" step="0.01" disabled={!!form.payment_installments?.length} value={form.deposit_amount ?? computeDeposit(total)} onChange={e=>update('deposit_amount',Number(e.target.value))} />
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
         </div>
       </div>
 
@@ -202,8 +202,8 @@ function buildInitial(initial, settings) {
     line_items: initial?.estimated_price_low
       ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
       : [],
-    deposit_amount: 0,
-    payment_schedule: '50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.',
+    deposit_amount: 500,
+    payment_schedule: 'Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.',
     terms: settings?.standard_terms || '',
     contract_variant: 'standard',
     rush_terms: settings?.rush_terms || RUSH_TERMS,
