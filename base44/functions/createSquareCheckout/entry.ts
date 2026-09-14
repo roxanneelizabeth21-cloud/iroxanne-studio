@@ -25,6 +25,7 @@ export default async function (req: Request) {
     if (!['deposit', 'milestone', 'balance'].includes(kind))
       return Response.json({ error: 'Invalid payment kind' }, { status: 400 });
 
+    if(invoice.payment_installments?.length || invoice.square_schedule_enabled) return Response.json({error:'Use the Square invoice payment plan link. Separate checkout is disabled for this invoice.'},{status:409});
     const payments = await base44.asServiceRole.entities.Payment.filter({ invoice_id: id }, '-created_date', 1000);
     const summary = paymentSummary(invoice, payments);
 
