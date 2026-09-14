@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { adminLink } from '../../shared/studioUrl.ts';
 
-import {validateSchedule,scheduleText} from '../../shared/paymentSchedule.ts';
+import {validateSchedule,scheduleText,withHandoffTerms} from '../../shared/paymentSchedule.ts';
 
 // Public, token-verified access for a client to view, accept, or decline
 // their proposal. No user auth — the access_token in the link is the credential.
@@ -110,7 +110,7 @@ export default async function (req: Request) {
           deposit_amount: installments[0]?.amount ?? Math.round(total * depositPct) / 100,
           payment_installments: installments,
           payment_schedule: installments.length ? scheduleText(installments) : `${depositPct}% deposit to start, balance on launch`,
-          terms: settings?.standard_terms || '',
+          terms: withHandoffTerms(settings?.standard_terms),
           status: 'draft',
           estimated_tier: proposal.estimated_tier || '',
         });
