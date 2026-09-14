@@ -64,9 +64,10 @@ export function studioPath(req: Request | undefined, path: string): string {
   return `${studioUrl(req)}${clean.startsWith('/') ? clean : `/${clean}`}`;
 }
 
-/** A token-gated client document link — invoice, contract, proposal, intake, handoff. */
+/** A token-gated client document link — invoice, contract, proposal, intake, handoff.
+ *  ALWAYS uses the canonical public URL so clients never hit Base44 admin/login. */
 export function clientLink(req: Request | undefined, kind: string, id: string, token: string): string {
-  return `${studioUrl(req)}/${kind}/${encodeURIComponent(id)}?t=${encodeURIComponent(token)}`;
+  return `${CANONICAL_URL}/${kind}/${encodeURIComponent(id)}?t=${encodeURIComponent(token)}`;
 }
 
 /** An admin deep link, for the notification emails Roxanne gets. */
