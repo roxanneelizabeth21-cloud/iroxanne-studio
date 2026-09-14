@@ -97,13 +97,17 @@ export default function GetQuote() {
       return { ...prev, [field]: next };
     });
   };
+  const isEmailValid = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
   const canAdvance = () => {
-    if (step === 0) return form.name.trim() && form.email.trim();
+    if (step === 0) return form.name.trim() && form.email.trim() && isEmailValid(form.email);
     if (step === 1) return form.quick_pitch.trim().length >= 5;
     return true;
   };
   const goNext = () => {
-    if (!canAdvance()) { toast.error('Please fill in the required fields before continuing'); return; }
+    if (!canAdvance()) {
+      if (step === 0 && form.email.trim() && !isEmailValid(form.email)) { toast.error('Please enter a valid email address.'); return; }
+      toast.error('Please fill in the required fields before continuing'); return;
+    }
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
