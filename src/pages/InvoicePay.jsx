@@ -19,6 +19,10 @@ export default function InvoicePay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [redirecting, setRedirecting] = useState(null);
+  // Which payment providers are actually usable. Stripe stays hidden unless the
+  // secret key AND the webhook secret are both configured, because a Stripe
+  // payment with no working webhook would never be credited to the invoice.
+  const [providers, setProviders] = useState({ square: true, financing: false });
   const [verifying, setVerifying] = useState(false);
   const [notice, setNotice] = useState(
     status === 'COMPLETED' ? 'Checking payment status…' :
@@ -83,16 +87,18 @@ export default function InvoicePay() {
     return () => { cancelled = true; };
   }, [status, id, token]);
 
-  const pay = async (kind, milestoneIndex) => {
-    // Stripe Checkout must run in a top-level window, not inside the builder iframe.
+  const pay = async (kind, milestoneIndex, provider = 'square') => {
+    // Hosted checkout must run in a top-level window, not inside the builder iframe.
     if (window.self !== window.top) {
-      setError('Checkout opens in a secure Square page and only works from the published app. Open this link directly in your browser.');
+      setError('Checkout opens in a secure payment page and only works from the published app. Open this link directly in your browser.');
       return;
     }
-    setRedirecting(kind + (milestoneIndex != null ? `_${milestoneIndex}` : ''));
+    const key = `${provider}_${kind}${milestoneIndex != null ? `_${milestoneIndex}` : ''}`;
+    setRedirecting(key);
     setError('');
     try {
-      const res = await base44.functions.invoke('createSquareCheckout', { id, token, kind, milestone_index: milestoneIndex });
+      const fn = provider === 'stripe' ? 'createStripeCheckout' : 'createSquareCheckout';
+      const res = await base44.functions.invoke(fn, { id, token, kind, milestone_index: milestoneIndex });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else if (data.url) { window.location.href = data.url; return; }
