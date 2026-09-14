@@ -46,10 +46,8 @@ export default async function(req) {
         signer_user_agent: (req.headers.get('user-agent') || '').slice(0, 1000)
       });
 
-      // Post-sign: create an invoice (deposit + balance tracking) and notify
-      // the client + admin. Payments aren't wired yet — Stripe is the last
-      // piece — so the invoice is created pending and updated once a gateway
-      // is connected or the deposit is recorded offline.
+      // Post-sign: create the invoice and notify the client and admin.
+      // Square checkout and recorded payments update the shared payment ledger.
       const moneyFmt = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
       const total = typeof updated.price_total === 'number' ? updated.price_total : 0;
       const deposit = typeof updated.deposit_amount === 'number' ? updated.deposit_amount : 0;
@@ -98,8 +96,9 @@ export default async function(req) {
           to: updated.client_email,
           subject: 'Agreement signed — iRoxanne Studio',
           html: brandedEmail({
-            title: `You're all signed in, ${esc(firstName)}!`,
+            title: `Your agreement is signed, ${esc(firstName)}.`, 
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
+              <p style="margin:0 0 16px;">${brandButton('View your signed agreement', `${studioUrl(req)}/contract/${encodeURIComponent(id)}?t=${encodeURIComponent(token)}`)}</p>
               <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
               <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
               ${invoiceUrl ? `<p style="margin:0 0 16px;">${brandButton('Pay deposit online', invoiceUrl)}</p><p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">Pay securely by card, or use the payment instructions I'll send separately. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>` : `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`}`,
