@@ -111,7 +111,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
     legacy_deposit_cents: before.legacyDeposit,
     legacy_balance_cents: before.legacyBalance,
   };
-  await db.Invoice.update(invoice_id, baseline).catch(() => {});
+  await db.Invoice.update(invoice_id, baseline);
 
   // --- Write the ledger entry ------------------------------------------------
   const payment = await db.Payment.create({
