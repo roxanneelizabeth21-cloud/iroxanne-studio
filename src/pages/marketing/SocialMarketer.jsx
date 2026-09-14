@@ -16,23 +16,50 @@ const STARTERS = [
 
 export default function SocialMarketer() {
   const [conversation, setConversation] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const boot = useRef(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState(() => new URLSearchParams(window.location.search).has('weekly') ? 'Create two weekly stories for Facebook and Instagram, with tailored captions and finished graphics for each. Save drafts for my review; do not publish. Use my personal, sophisticated, people-first direction.' : '');
+  const [input, setInput] = useState(() => new URLSearchParams(window.location.search).has('weekly') ? 'Create four weekly stories for Facebook and Instagram, with tailored captions and finished graphics for each. Save drafts for my review; do not publish. Use my personal, sophisticated, people-first direction.' : '');
   const [sending, setSending] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const bottomRef = useRef(null);
   const { speaking, stop: stopSpeaking } = useSpokenReplies(messages, voiceOn);
 
-  const start = async () => {
-    const conv = await base44.agents.createConversation({
-      agent_name: AGENT,
-      metadata: { name: 'iRoxanne Studio strategy', description: 'Custom app builds and personal build guidance. Warm Facebook storytelling, two posts weekly, drafts for review.' },
-    });
-    setConversation(conv);
-    setMessages(conv.messages || []);
+  const openConversation = async (id) => {
+    setLoading(true); setError('');
+    try {
+      const conv = await base44.agents.getConversation(id);
+      if (!conv || conv.agent_name !== AGENT) throw new Error('This conversation could not be opened.');
+      setConversation(conv); setMessages(conv.messages || []);
+    } catch(e) { setError(e.message); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => { start(); }, []);
+  const start = async () => {
+    setLoading(true); setError('');
+    try {
+      const conv = await base44.agents.createConversation({
+        agent_name: AGENT,
+        metadata: { name: 'iRoxanne Studio strategy', description: 'Four weekly stories for Facebook and Instagram. Personal approval required.' }
+      });
+      setConversation(conv); setMessages(conv.messages || []);
+      setHistory(items => [conv, ...items]);
+    } catch(e) { setError(e.message); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => {
+    // Reuse the latest conversation. React StrictMode must not create two chats.
+    if (!boot.current) boot.current = base44.agents.listConversations({
+      q: { agent_name: AGENT }, sort: '-updated_date', limit: 50
+    }).then(async rows => {
+      setHistory(rows || []);
+      if (rows?.length) await openConversation(rows[0].id);
+      else await start();
+    }).catch(e => { setError(e.message); setLoading(false); });
+  }, []);
 
   useEffect(() => {
     if (!conversation?.id) return;
@@ -51,6 +78,8 @@ export default function SocialMarketer() {
     setSending(true);
     try {
       await base44.agents.addMessage(conversation, { role: 'user', content });
+    } catch(e) {
+      setInput(content); setError('Message was not sent: ' + e.message);
     } finally {
       setSending(false);
     }
@@ -75,14 +104,21 @@ export default function SocialMarketer() {
             {voiceOn ? <Volume2 className={`h-4 w-4 ${speaking ? 'text-primary' : ''}`} /> : <VolumeX className="h-4 w-4" />}
             {voiceOn ? (speaking ? 'Speaking' : 'Voice on') : 'Voice off'}
           </Button>
-          <Button variant="ghost" size="sm" onClick={start} className="gap-1.5">
+          <Button variant="ghost" size="sm" onClick={start} disabled={loading || sending} className="gap-1.5">
             <Plus className="h-4 w-4" /> New chat
           </Button>
         </div>
       </div>
 
+      <label className="text-sm mb-3">Conversation history
+        <select className="mt-1 w-full rounded-lg border border-border bg-background text-foreground p-2" value={conversation?.id || ''} disabled={loading || sending} onChange={e => openConversation(e.target.value)}>
+          <option value="" disabled>Select a conversation</option>
+          {history.map(c => <option key={c.id} value={c.id}>{c.metadata?.name || 'Strategy conversation'} — {c.created_date ? new Date(c.created_date).toLocaleDateString() : c.id.slice(-6)}</option>)}
+        </select>
+      </label>
+      {error && <p role="alert" className="text-sm text-destructive mb-2">{error}</p>}
       <div className="flex-1 overflow-y-auto space-y-3 rounded-xl border border-border/50 bg-secondary/20 p-4">
-        {!conversation && (
+        {loading && (
           <div className="flex justify-center pt-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
         )}
         {conversation && messages.length === 0 && (
