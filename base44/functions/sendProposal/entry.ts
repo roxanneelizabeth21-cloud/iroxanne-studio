@@ -38,6 +38,7 @@ export default async function (req: Request) {
     const expiresAt = refresh ? new Date(Date.now() + validDays * 86400000).toISOString() : proposal.expires_at;
     if (new Date(expiresAt).getTime() <= Date.now()) return Response.json({ error: 'Edit this expired proposal before resending.' }, { status: 409 });
     if (!Number.isFinite(proposal.price_total) || proposal.price_total <= 0 || !Number.isFinite(proposal.deposit_percent) || proposal.deposit_percent < 0 || proposal.deposit_percent > 100) return Response.json({error:'Review proposal pricing and deposit before sending.'},{status:400});
+    if (proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
     if(proposal.payment_installments?.length) validateSchedule(proposal.payment_installments,proposal.price_total);
     // Reuse the existing token on resend so old links keep working.
     const token = proposal.access_token || generateToken();

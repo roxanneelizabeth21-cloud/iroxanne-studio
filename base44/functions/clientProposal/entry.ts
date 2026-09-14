@@ -86,7 +86,8 @@ export default async function (req: Request) {
         return Response.json({ error: 'This proposal was declined — reach out if you changed your mind.' }, { status: 409 });
       }
 
-      // Create the draft contract prefilled from the proposal.
+      if (proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
+    // Create the draft contract prefilled from the proposal.
       const total = typeof proposal.price_total === 'number' ? proposal.price_total : 0;
       const installments=proposal.payment_installments?.length ? validateSchedule(proposal.payment_installments,total) : [];
       const depositPct = installments.length ? installments[0].amount/total*100 : typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;

@@ -323,8 +323,8 @@ function PricingSettingsCard({ settings, onSave }) {
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>Deposit %</Label>
-          <Input type="number" value={s.default_deposit_percent} onChange={(e) => update('default_deposit_percent', Number(e.target.value))} />
+          <Label>Starting deposit</Label>
+          <p className="text-sm">$500 by default. Set the exact dollar amount on each new proposal or agreement.</p>
         </div>
       </div>
       <div className="grid sm:grid-cols-2 gap-4">

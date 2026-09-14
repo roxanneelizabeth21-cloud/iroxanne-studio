@@ -53,11 +53,9 @@ Unless the project-specific payment schedule expressly provides otherwise, the r
 "Launch" means deployment to the live address for the Client's use. Launch, completion, and ownership handoff are separate events. Full ownership and administrative handoff occur only after completion and payment in full under Sections 9 and 10.
 
 7. FIXED PRICE AND VOLUNTARY PAYMENTS
-Unless a different project-specific milestone schedule is expressly agreed, 50% of the fixed Project price is due at signing and the remainder under Section 6. Work begins after the deposit clears.
+A deposit of five hundred dollars ($500), or the deposit expressly stated above, is due at signing and the remainder under Section 6. Work begins after the full deposit clears. The Studio does not offer a scheduled installment payment plan.
 
-An expressly agreed alternative may contain up to four required milestone payments, including the deposit, totaling the Project price. Each must state its Deliverables, amount, completion/review requirements, and deadline. A calendar date alone does not establish completion.
-
-The Client may pay in full upfront or make unlimited voluntary additional payments without a prepayment fee. Payments are credited once, first to the unpaid deposit and then to the balance. They do not increase the price, change deadlines, create recurring charges, or require early delivery.
+The Client may pay in full upfront or make voluntary partial payments toward the deposit or balance without a prepayment fee. Payments are credited once, first to the unpaid deposit and then to the balance. They do not increase the price, change deadlines, create recurring charges, or require early delivery.
 
 Clients pay through their Square invoice link. The Studio does not store cards or charge automatically. Approved changes must state their effect on the price, payments, and handoff.
 
@@ -69,6 +67,8 @@ Any pay-over-time option actually offered at checkout depends on the provider's 
 The Project price covers the Studio's services only. It does not include third-party costs, which are the Client's responsibility and are billed to the Client directly by the provider. These may include the Base44 subscription required to operate the Project; domain registration and renewal; transactional email services; SMS or messaging services; artificial intelligence or programming interface services billed by usage; and stock imagery, licensed fonts, or paid plugins.
 
 The Studio will identify anticipated third-party costs before Kickoff where reasonably possible. Such prices are set by the respective providers and may change without notice. Third-party costs are never included in, and never reduce, the Project price.
+
+Referral disclosure. The Studio may receive a referral commission from Base44 when a Client signs up through the Studio's referral link. This does not increase the Client's cost, and the Client is free to create an account without using the Studio's referral link.
 
 9. PLATFORM, CLIENT ACCOUNT, AND HANDOFF
 The Project uses Base44, a hosted platform requiring an appropriate active account and subscription. The Client creates and pays for its own account and supplies the account email during intake. The Studio may assist but does not own or control that account. Until handoff, the Project remains in the Studio's account under Section 10.
