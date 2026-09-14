@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-const FIELDS = ["business_name", "tagline", "phone", "email_for_site", "address", "social_links", "brand_colors", "logo_url", "headshot_url", "design_notes", "page_home", "page_about", "page_services", "page_gallery", "page_testimonials", "page_contact", "page_legal", "documents_urls", "documents_notes", "workflow_description", "user_roles", "data_tracked", "business_rules", "existing_tools", "automations_wanted", "additional_pages", "additional_notes", "journey_profile", "journey_step"];
+const FIELDS = ["business_name", "tagline", "phone", "email_for_site", "address", "platform_account_email", "social_links", "brand_colors", "logo_url", "headshot_url", "design_notes", "page_home", "page_about", "page_services", "page_gallery", "page_testimonials", "page_contact", "page_legal", "documents_urls", "documents_notes", "workflow_description", "user_roles", "data_tracked", "business_rules", "existing_tools", "automations_wanted", "additional_pages", "additional_notes", "journey_profile", "journey_step"];
 export default async function(req: Request) {
   try {
     const body = await req.json();
