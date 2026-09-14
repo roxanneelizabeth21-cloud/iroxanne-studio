@@ -39,6 +39,13 @@ export default function InvoicePay() {
         setSummary(data.summary);
         setPayments(data.payments || []);
       }
+      // Non-blocking: if this fails the page still works, just Square-only.
+      base44.functions.invoke('paymentProviders', { id, token })
+        .then((r) => {
+          const p = r.data || r;
+          if (!p?.error) setProviders({ square: p.square !== false, financing: !!p.financing });
+        })
+        .catch(() => {});
     } catch {
       setError('Could not load this invoice.');
     } finally {
@@ -256,27 +263,36 @@ export default function InvoicePay() {
   );
 }
 
-function PayRow({ label, amount, status, dueDate, loading, onPay }) {
+function PayRow({ label, amount, status, dueDate, loading, stripeLoading, onPay, onPayStripe, financing }) {
   const paid = status === 'paid' || status === 'waived';
+  const busy = loading || stripeLoading;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4">
-      <div>
-        <p className="font-medium text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Due now'}
-        </p>
-      </div>
-      <div className="flex items-center gap-3">
+    <div className="rounded-xl border border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="font-medium text-foreground">{label}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Due now'}
+          </p>
+        </div>
         <span className="font-bold text-foreground">{money(amount)}</span>
-        {paid ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600"><CheckCircle2 className="h-4 w-4" /> Paid</span>
-        ) : (
-          <Button onClick={onPay} disabled={loading} className="gap-1.5">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-            Pay now
-          </Button>
-        )}
       </div>
+      {paid ? (
+        <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-green-600"><CheckCircle2 className="h-4 w-4" /> Paid</span>
+      ) : (
+        <div className={`mt-3 grid gap-2 ${financing ? 'sm:grid-cols-2' : ''}`}>
+          <Button onClick={onPay} disabled={busy} className="gap-1.5 w-full">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+            Pay with Square
+          </Button>
+          {financing && (
+            <Button onClick={onPayStripe} disabled={busy} variant="outline" className="gap-1.5 w-full">
+              {stripeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CalendarClock className="h-4 w-4" />}
+              Pay over time
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
