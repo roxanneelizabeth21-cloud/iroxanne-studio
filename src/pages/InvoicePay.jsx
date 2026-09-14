@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle2, CreditCard, Lock, CalendarClock } from 'lucide-react';
+import { Loader2, CheckCircle2, CreditCard, Lock } from 'lucide-react';
 import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
@@ -19,10 +19,6 @@ export default function InvoicePay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [redirecting, setRedirecting] = useState(null);
-  // Which payment providers are actually usable. Stripe stays hidden unless the
-  // secret key AND the webhook secret are both configured, because a Stripe
-  // payment with no working webhook would never be credited to the invoice.
-  const [providers, setProviders] = useState({ square: true, financing: false });
   const [verifying, setVerifying] = useState(false);
   const [notice, setNotice] = useState(
     status === 'COMPLETED' ? 'Checking payment status…' :
@@ -39,13 +35,6 @@ export default function InvoicePay() {
         setSummary(data.summary);
         setPayments(data.payments || []);
       }
-      // Non-blocking: if this fails the page still works, just Square-only.
-      base44.functions.invoke('paymentProviders', { id, token })
-        .then((r) => {
-          const p = r.data || r;
-          if (!p?.error) setProviders({ square: p.square !== false, financing: !!p.financing });
-        })
-        .catch(() => {});
     } catch {
       setError('Could not load this invoice.');
     } finally {
@@ -94,18 +83,17 @@ export default function InvoicePay() {
     return () => { cancelled = true; };
   }, [status, id, token]);
 
-  const pay = async (kind, milestoneIndex, provider = 'square') => {
+  const pay = async (kind, milestoneIndex) => {
     // Hosted checkout must run in a top-level window, not inside the builder iframe.
     if (window.self !== window.top) {
       setError('Checkout opens in a secure payment page and only works from the published app. Open this link directly in your browser.');
       return;
     }
-    const key = `${provider}_${kind}${milestoneIndex != null ? `_${milestoneIndex}` : ''}`;
+    const key = `square_${kind}${milestoneIndex != null ? `_${milestoneIndex}` : ''}`;
     setRedirecting(key);
     setError('');
     try {
-      const fn = provider === 'stripe' ? 'createStripeCheckout' : 'createSquareCheckout';
-      const res = await base44.functions.invoke(fn, { id, token, kind, milestone_index: milestoneIndex });
+      const res = await base44.functions.invoke('createSquareCheckout', { id, token, kind, milestone_index: milestoneIndex });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else if (data.url) { window.location.href = data.url; return; }
@@ -203,10 +191,7 @@ export default function InvoicePay() {
                   amount={depositRemaining}
                   status={invoice.deposit_status}
                   loading={redirecting === 'square_deposit'}
-                  stripeLoading={redirecting === 'stripe_deposit'}
-                  financing={providers.financing}
-                  onPay={() => pay('deposit', null, 'square')}
-                  onPayStripe={() => pay('deposit', null, 'stripe')}
+                  onPay={() => pay('deposit', null)}
                 />
               )}
               {(invoice.milestones || []).map((m, i) => (
@@ -217,10 +202,7 @@ export default function InvoicePay() {
                   status={m.status}
                   dueDate={m.due_date}
                   loading={redirecting === `square_milestone_${i}`}
-                  stripeLoading={redirecting === `stripe_milestone_${i}`}
-                  financing={providers.financing}
-                  onPay={() => pay('milestone', i, 'square')}
-                  onPayStripe={() => pay('milestone', i, 'stripe')}
+                  onPay={() => pay('milestone', i)}
                 />
               ))}
               {balanceRemaining > 0 && (invoice.milestones || []).length === 0 && (
@@ -229,10 +211,7 @@ export default function InvoicePay() {
                   amount={balanceRemaining}
                   status={invoice.balance_status}
                   loading={redirecting === 'square_balance'}
-                  stripeLoading={redirecting === 'stripe_balance'}
-                  financing={providers.financing}
-                  onPay={() => pay('balance', null, 'square')}
-                  onPayStripe={() => pay('balance', null, 'stripe')}
+                  onPay={() => pay('balance', null)}
                 />
               )}
               {balanceRemaining > 0 && (invoice.milestones || []).length > 0 && (
@@ -241,24 +220,13 @@ export default function InvoicePay() {
                   amount={balanceRemaining}
                   status={invoice.balance_status}
                   loading={redirecting === 'square_balance'}
-                  stripeLoading={redirecting === 'stripe_balance'}
-                  financing={providers.financing}
-                  onPay={() => pay('balance', null, 'square')}
-                  onPayStripe={() => pay('balance', null, 'stripe')}
+                  onPay={() => pay('balance', null)}
                 />
               )}
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
                 <Lock className="h-3 w-3" />
-                {providers.financing
-                  ? 'Secure checkout powered by Square and Stripe.'
-                  : 'Secure checkout powered by Square.'}
+                Secure checkout powered by Square.
               </p>
-              {providers.financing && (
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Financing options may be available through Affirm or Afterpay. Approval,
-                  terms, and eligibility are determined by the financing provider.
-                </p>
-              )}
             </div>
           )}
 
@@ -284,9 +252,9 @@ export default function InvoicePay() {
   );
 }
 
-function PayRow({ label, amount, status, dueDate, loading, stripeLoading, onPay, onPayStripe, financing }) {
+function PayRow({ label, amount, status, dueDate, loading, onPay }) {
   const paid = status === 'paid' || status === 'waived';
-  const busy = loading || stripeLoading;
+  const busy = loading;
   return (
     <div className="rounded-xl border border-border p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -301,17 +269,11 @@ function PayRow({ label, amount, status, dueDate, loading, stripeLoading, onPay,
       {paid ? (
         <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-green-600"><CheckCircle2 className="h-4 w-4" /> Paid</span>
       ) : (
-        <div className={`mt-3 grid gap-2 ${financing ? 'sm:grid-cols-2' : ''}`}>
+        <div className="mt-3 grid gap-2">
           <Button onClick={onPay} disabled={busy} className="gap-1.5 w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
             Pay with Square
           </Button>
-          {financing && (
-            <Button onClick={onPayStripe} disabled={busy} variant="outline" className="gap-1.5 w-full">
-              {stripeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CalendarClock className="h-4 w-4" />}
-              Pay over time
-            </Button>
-          )}
         </div>
       )}
     </div>
