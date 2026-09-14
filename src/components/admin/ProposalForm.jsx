@@ -132,22 +132,22 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Client name</Label>
-          <Input value={form.client_name || ''} onChange={(e) => update('client_name', e.target.value)} placeholder="Katrina Butler" />
+          <Input value={form.client_name || ''} onChange={(e) => update('client_name', e.target.value)} placeholder="Jordan Avery" />
         </div>
         <div className="space-y-1.5">
           <Label>Client email *</Label>
-          <Input type="email" value={form.client_email || ''} onChange={(e) => update('client_email', e.target.value)} placeholder="katrina@business.com" />
+          <Input type="email" value={form.client_email || ''} onChange={(e) => update('client_email', e.target.value)} placeholder="jordan@example.com" />
         </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Business name</Label>
-          <Input value={form.business_name || ''} onChange={(e) => update('business_name', e.target.value)} placeholder="Creatively His Events" />
+          <Input value={form.business_name || ''} onChange={(e) => update('business_name', e.target.value)} placeholder="Brightside Bakery" />
         </div>
         <div className="space-y-1.5">
           <Label>Project title *</Label>
-          <Input value={form.project_title || ''} onChange={(e) => update('project_title', e.target.value)} placeholder="Event management platform" />
+          <Input value={form.project_title || ''} onChange={(e) => update('project_title', e.target.value)} placeholder="Booking and invoicing app" />
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
           rows={3}
           value={form.intro_note || ''}
           onChange={(e) => update('intro_note', e.target.value)}
-          placeholder="Katrina — after our call, here's what I think you need. You're running three systems that don't talk to each other..."
+          placeholder="Jordan — after our call, here's what I think you need. You're running three systems that don't talk to each other..."
         />
         <p className="text-xs text-muted-foreground">Shown in italics at the top of the proposal. Speak to them directly.</p>
       </div>
