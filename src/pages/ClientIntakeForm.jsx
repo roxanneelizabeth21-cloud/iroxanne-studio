@@ -8,10 +8,10 @@ import { Loader2, CheckCircle2, Upload, ArrowLeft, ArrowRight } from 'lucide-rea
 import { toast } from 'sonner';
 import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
 
-import { intakeSteps, readableIntake } from '@/lib/intakeJourney';
+import { intakeSteps, readableIntake, intakeFieldLabel } from '@/lib/intakeJourney';
 
 const SECTION_LABELS = {
-  account: 'Your Base44 account', basics: 'Your Idea / Business', brand: 'Brand & Design', home: 'Home Page',
+  account: 'Your Base44 account', basics: 'Public project details', brand: 'Brand & Design', home: 'Home Page',
   about: 'About Page', services: 'Services & Pricing', gallery: 'Gallery / Portfolio',
   testimonials: 'Testimonials', contact: 'Contact Info', legal: 'Legal & Policies',
   workflow: 'How Your App Could Work', data: 'Data & Automations', documents: 'Documents & Templates', notes: 'Anything Else',
@@ -178,7 +178,7 @@ export default function ClientIntakeForm() {
             </div>
         </Section>}
         {step==='review' && <Section label="Ready when you are" description="Review what you’ve shared. Blank answers are fine. Use Back to make changes, or send this to Roxanne.">
-          {Object.entries(intake).filter(([k,v])=>!['id','client_name','project_title','project_tier','status','journey_step'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border pb-4"><h3 className="text-sm font-semibold capitalize mb-1">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">{readableIntake(v)}</p></div>)}
+          {Object.entries(intake).filter(([k,v])=>!['id','client_name','project_title','project_tier','status','journey_step'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border pb-4"><h3 className="text-sm font-semibold capitalize mb-1">{intakeFieldLabel(k)}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">{readableIntake(v)}</p></div>)}
           <Button variant="outline" disabled={saving} onClick={()=>go('welcome')}>Edit my choices</Button>
         </Section>}
         {sections.includes('basics') && (
@@ -193,7 +193,7 @@ export default function ClientIntakeForm() {
             </div>
             <Field label="Business address (if applicable)"><Input value={intake.address || ''} onChange={(e) => patch('address', e.target.value)} placeholder="City, State or full address" /></Field>
 
-            <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : JSON.stringify(intake.social_links || '', null, 2)} onChange={(e) => patch('social_links', { links: e.target.value })} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
+            <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : intake.social_links?.links ?? readableIntake(intake.social_links)} onChange={(e) => patch('social_links', { links: e.target.value })} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
           </Section>
         )}
 
@@ -267,9 +267,9 @@ export default function ClientIntakeForm() {
 
         {sections.includes('workflow') && (
           <Section id="workflow" label={SECTION_LABELS.workflow} description={SECTION_DESCRIPTIONS.workflow} open={!!openSections.workflow} onToggle={() => toggleSection('workflow')}>
-            <Field label="What would you like someone to do in your app?" hint="Describe a possible first visit, booking, purchase, or other goal. If you are unsure, say what you want to achieve and I will help map the steps."><Textarea rows={8} value={intake.workflow_description || ''} onChange={(e) => patch('workflow_description', e.target.value)} placeholder="1. Client fills out an inquiry form on my website&#10;2. I review and send a quote within 24 hours&#10;3. Client approves quote, pays 50% retainer via Square&#10;4. I begin work — usually takes 2-3 weeks&#10;5. Client reviews, we do 1-2 rounds of changes&#10;6. Final payment, then I hand over everything" /></Field>
+            <Field label="What would you like someone to do in your app?" hint="Describe a possible first visit, booking, purchase, or other goal. If you are unsure, say what you want to achieve and I will help map the steps."><Textarea rows={8} value={intake.workflow_description || ''} onChange={(e) => patch('workflow_description', e.target.value)} placeholder="For example: someone chooses a service, requests a time, receives confirmation, and can check their booking later. Or describe your own idea." /></Field>
             <Field label="User roles" hint="Who uses the system and what should each role be able to do?"><Textarea rows={4} value={intake.user_roles || ''} onChange={(e) => patch('user_roles', e.target.value)} placeholder="Admin (me): see everything, manage orders, send invoices&#10;Client: view their order, track status, upload photos&#10;Staff: view assigned tasks, update status" /></Field>
-            <Field label="Business rules" hint="Pricing rules, deposit %, rush fees, discounts, deadlines — anything the system should know"><Textarea rows={4} value={intake.business_rules || ''} onChange={(e) => patch('business_rules', e.target.value)} placeholder="50% deposit required to start&#10;Rush fee: 25% extra for under 2 weeks&#10;10% discount for returning clients" /></Field>
+            <Field label="Business rules" hint="Pricing rules, deposit %, rush fees, discounts, deadlines — anything the system should know"><Textarea rows={4} value={intake.business_rules || ''} onChange={(e) => patch('business_rules', e.target.value)} placeholder="For example: bookings need my approval, only members can view certain pages, or stock updates when an order is placed." /></Field>
           </Section>
         )}
 

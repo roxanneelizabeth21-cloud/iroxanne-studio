@@ -22,6 +22,7 @@
       "type": "string",
       "enum": [
         "general",
+        "project",
         "collaboration",
         "media",
         "booking",

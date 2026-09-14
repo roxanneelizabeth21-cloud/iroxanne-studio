@@ -13,6 +13,7 @@ export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', best_time_to_contact: '', inquiry_type: 'general', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
   const update = (f, v) => setForm((p) => ({ ...p, [f]: v }));
@@ -23,6 +24,7 @@ export default function Contact() {
     const phoneDigits = (form.phone || '').replace(/\D/g, '');
     if (phoneDigits.length < 7) { setPhoneError('Please enter a valid phone number (at least 7 digits).'); return; }
     setPhoneError('');
+    setSubmitError('');
     setSubmitting(true);
     try {
       const created = await base44.entities.ContactMessage.create(form);
@@ -32,6 +34,8 @@ export default function Contact() {
         data: { ...created, id: created.id, created_date: created.created_date },
       }).catch(() => {});
       setDone(true);
+    } catch {
+      setSubmitError('Your message could not be sent. Your answers are still here. Please try again, or email roxanne@iroxannestudio.com.');
     } finally { setSubmitting(false); }
   };
 
@@ -82,6 +86,7 @@ export default function Contact() {
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-subject">Subject</Label><Input id="c-subject" value={form.subject} onChange={(e) => update('subject', e.target.value)} className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
               </div>
               <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-msg">Message *</Label><Textarea id="c-msg" rows={5} value={form.message} onChange={(e) => update('message', e.target.value)} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
+              {submitError && <p role="alert" className="text-sm text-destructive">{submitError}</p>}
               <Button type="submit" disabled={submitting} className="w-full h-12 rounded-full bg-[#2D2A4A] text-white text-[14px] font-semibold hover:bg-[#3D3A5A] shadow-sm">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Send Message
               </Button>
