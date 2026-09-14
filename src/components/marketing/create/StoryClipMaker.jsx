@@ -4,14 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { renderStoryClip } from '@/lib/renderStoryClip';
 
-export default function StoryClipMaker({ media, onAttach }) {
-  const [lines, setLines] = useState(['It started with an idea.', 'What could yours become?', 'Let’s explore it together.']);
+export default function StoryClipMaker({ media, post, onAttach }) {
+  const [lines, setLines] = useState(() => post?.create_post_state?.clipLines?.length === 3 ? post.create_post_state.clipLines : ['', '', '']);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [blob, setBlob] = useState(null);
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   useEffect(() => { if (!blob) { setUrl(''); return; } const next = URL.createObjectURL(blob); setUrl(next); return () => URL.revokeObjectURL(next); }, [blob]);
+  const writeLines = async () => {
+    setBusy(true); setError('');
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: 'Write exactly three short on-screen beats for a 12-second iRoxanne Studio motion graphic based ONLY on this post. Each maximum 65 characters. First a specific hook, then a concrete possibility, then a warm invitation. No generic motivational slogans, fabricated claims or metrics. Exact brand spelling iRoxanne Studio. Caption: ' + (post?.caption || '') + ' Hook: ' + (post?.hook || ''),
+        response_json_schema: {type:'object',properties:{lines:{type:'array',minItems:3,maxItems:3,items:{type:'string',maxLength:65}}},required:['lines']}
+      });
+      if (!Array.isArray(result.lines) || result.lines.length !== 3 || result.lines.some(x => typeof x !== 'string' || !x.trim() || x.length > 80)) throw new Error('Scene writing returned invalid text.');
+      setLines(result.lines); setBlob(null);
+    } catch(e) {setError(e.message);} finally {setBusy(false);}
+  };
   const render = async () => {
     setBusy(true); setError(''); setBlob(null);
     try { setBlob(await renderStoryClip(media.url, lines, {onProgress:setProgress})); }
@@ -28,6 +39,7 @@ export default function StoryClipMaker({ media, onAttach }) {
   return <section className="rounded-xl border border-border p-4 space-y-3">
     <h3 className="font-medium">Create a 12-second motion clip</h3>
     <p className="text-sm text-muted-foreground">Animate this graphic with three story beats and crisp, correctly spelled branding. Silent vertical MP4, 1080 × 1920. Keep this tab open during export.</p>
+    <Button variant="outline" disabled={busy} onClick={writeLines}>Write scene text from this post</Button>
     {lines.map((line,i) => <label className="block text-sm" key={i}>Scene {i+1}<Input value={line} maxLength={80} disabled={busy} onChange={e => {setLines(old => old.map((v,n) => n === i ? e.target.value : v));setBlob(null);}} /></label>)}
     <Button disabled={busy || !media || media.type !== 'image' || lines.some(line => !line.trim())} onClick={render}>{busy ? 'Working… ' + progress + '%' : 'Create clip preview'}</Button>
     {url && <><video src={url} controls className="max-h-96 rounded-lg" /><Button disabled={busy} onClick={save}>Use this clip in my draft</Button></>}

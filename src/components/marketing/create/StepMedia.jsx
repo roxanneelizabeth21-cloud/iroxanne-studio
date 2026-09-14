@@ -149,7 +149,7 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
         </div>
       </div>
 
-      {media?.type === 'image' && <StoryClipMaker media={media} onAttach={async url => {
+      {media?.type === 'image' && <StoryClipMaker post={post} media={media} onAttach={async url => {
         await attachUrl(url, { format: 'Reel', requested_aspect_ratio: '9:16', media_type: 'video' });
         patch({ aspect: '9:16', savedFormat: 'Reel' });
       }} />}
