@@ -1,3 +1,4 @@
+import StoryClipMaker from './StoryClipMaker';
 import { useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -148,6 +149,10 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
         </div>
       </div>
 
+      {media?.type === 'image' && <StoryClipMaker media={media} onAttach={async url => {
+        await attachUrl(url, { format: 'Reel', requested_aspect_ratio: '9:16', media_type: 'video' });
+        patch({ aspect: '9:16', savedFormat: 'Reel' });
+      }} />}
       <div className="grid gap-2 sm:grid-cols-2">
         {OPTIONS.map((o) => (
           <button
