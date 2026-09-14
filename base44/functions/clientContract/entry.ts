@@ -4,6 +4,8 @@ import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/
 import { validateSignature } from '../../shared/studioDelivery.ts';
 import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
 
+import {validateSchedule} from '../../shared/paymentSchedule.ts';
+
 // Public, token-verified access for a client to view and e-sign their contract.
 // No user auth — the access_token in the contract link is the credential.
 export default async function(req) {
@@ -30,6 +32,8 @@ export default async function(req) {
       if (['signed', 'deposit_paid', 'active', 'completed'].includes(contract.status)) {
         return Response.json({ error: 'This contract has already been signed' }, { status: 409 });
       }
+      const installments=contract.payment_installments?.length ? validateSchedule(contract.payment_installments,contract.price_total) : [];
+      if(installments.length && installments[0].amount!==contract.deposit_amount) return Response.json({error:'The payment plan and deposit do not match. Please contact iRoxanne Studio.'},{status:409});
       const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
       const updated = await base44.asServiceRole.entities.Contract.update(id, {
         status: 'signed',
@@ -50,11 +54,12 @@ export default async function(req) {
       const total = typeof updated.price_total === 'number' ? updated.price_total : 0;
       const deposit = typeof updated.deposit_amount === 'number' ? updated.deposit_amount : 0;
 
+      let invoice: any;
       let invoiceToken = '';
       let invoiceUrl = '';
       try {
-        const existing = await base44.asServiceRole.entities.Invoice.filter({ contract_id: id }).catch(() => []);
-        let invoice: any = existing && existing[0];
+        const existing = await base44.asServiceRole.entities.Invoice.filter({ contract_id: id });
+        invoice = existing && existing[0];
         if (!invoice) {
           invoiceToken = Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('');
           invoice = await base44.asServiceRole.entities.Invoice.create({
@@ -63,6 +68,9 @@ export default async function(req) {
             client_email: updated.client_email,
             project_title: updated.project_title,
             amount_total: total,
+            payment_installments: installments,
+            square_schedule_enabled: installments.length>0,
+            ...(installments.length?{due_date:installments[0].due_date}:{}),
             deposit_amount: deposit,
             deposit_status: deposit > 0 ? 'pending' : 'waived',
             balance_amount: Math.max(total - deposit, 0),
@@ -109,7 +117,7 @@ export default async function(req) {
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
-              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">An invoice is waiting for the deposit. Payments aren't connected yet — collect it offline or wire Stripe next.</p>
+              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">An invoice is ready. Open Invoices to review and send the payment request through Square.</p>
               <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));
