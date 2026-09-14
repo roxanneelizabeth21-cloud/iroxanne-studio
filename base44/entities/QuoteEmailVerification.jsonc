@@ -1,0 +1,52 @@
+{
+  "name": "QuoteEmailVerification",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "email_hash": {
+      "type": "string"
+    },
+    "secret_hash": {
+      "type": "string"
+    },
+    "code_hash": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "verified_until": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "sent": {
+      "type": "boolean"
+    }
+  },
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

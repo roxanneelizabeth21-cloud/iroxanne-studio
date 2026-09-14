@@ -155,13 +155,23 @@
     },
     "call_pending_start": {
       "type": "string"
+    },
+    "email_verified_at": {
+      "type": "string"
+    },
+    "email_verification_id": {
+      "type": "string"
     }
   },
   "required": [
     "email"
   ],
   "rls": {
-    "create": true,
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "read": {
       "user_condition": {
         "role": "admin"
