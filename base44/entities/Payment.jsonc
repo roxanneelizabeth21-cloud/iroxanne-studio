@@ -29,7 +29,8 @@
         "deposit",
         "balance",
         "milestone",
-        "other"
+        "other",
+        "project"
       ],
       "default": "balance",
       "description": "What this payment covers"
