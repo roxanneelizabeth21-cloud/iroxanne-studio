@@ -1,34 +1,67 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import ContentCalendar from './ContentCalendar';
-import FacebookConnectionStatus from '@/components/marketing/FacebookConnectionStatus';
-import { hasValidMedia, publishTargets, platformResult } from '@/lib/postValidation';
-import { dateKey } from '@/lib/marketing';
+import { resolveMedia, publishTargets, platformResult, platformError } from '@/lib/postValidation';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export default function MarketingHub() {
- const {data:posts=[]}=useQuery({queryKey:['marketing-posts'],queryFn:()=>base44.entities.MarketingPost.list('-created_date')});
- const {data:clips=[]}=useQuery({queryKey:['clip-assets'],queryFn:()=>base44.entities.ClipAsset.list('-created_date')});
- const today=dateKey(new Date());
- const open=posts.filter(p=>!['Posted','Cancelled','Skipped'].includes(p.status));
- const attention=open.map(p=>{
-  const failed=publishTargets(p).filter(t=>['Failed','Connection Required','Permission Required'].includes(platformResult(p,t)));
-  const reason=failed.length ? failed.join(' and ')+' needs attention' : p.status==='Scheduled' && p.scheduled_date<today ? 'Planned date has passed; check publishing' : !hasValidMedia(p,clips) ? 'Add a graphic or video' : !p.caption?.trim() ? 'Add a caption' : p.approval_status!=='Approved' ? 'Ready for your review' : '';
-  return {p,reason};
- }).filter(x=>x.reason);
+ const qc=useQueryClient();
+ const [tab,setTab]=useState('review');
+ const [action,setAction]=useState(null);
+ const [reason,setReason]=useState('');
+ const [busy,setBusy]=useState(false);
+ const [error,setError]=useState('');
+ const {data:posts=[],isLoading,isError}=useQuery({queryKey:['marketing-posts'],queryFn:()=>base44.entities.MarketingPost.list('-created_date',1000)});
+ const {data:clips=[]}=useQuery({queryKey:['clip-assets'],queryFn:()=>base44.entities.ClipAsset.list('-created_date',1000)});
+ const active=posts.filter(p=>!['Cancelled','Skipped'].includes(p.status));
+ const attention=p=>['Failed','Partially Published'].includes(p.status)||publishTargets(p).some(t=>['Failed','Connection Required','Permission Required'].includes(platformResult(p,t)));
+ const ready=p=>resolveMedia(p,clips)&&publishTargets(p).length&&publishTargets(p).every(t=>String(p.create_post_state?.platformCaptions?.[t.toLowerCase()]??p.caption??'').trim());
+ const groups={
+   review:active.filter(p=>!attention(p)&&!['Posted','Publishing'].includes(p.status)&&p.publishing_status!=='Publishing'&&!(p.status==='Scheduled'&&p.approval_status==='Approved'&&p.publish_mode==='auto')&&ready(p)),
+   scheduled:active.filter(p=>!attention(p)&&((p.status==='Scheduled'&&p.approval_status==='Approved'&&p.publish_mode==='auto')||p.status==='Publishing'||p.publishing_status==='Publishing')),
+   results:active.filter(p=>p.status==='Posted'||attention(p))
+ };
+ const incomplete=active.filter(p=>!ready(p)&&!attention(p)&&!['Posted','Publishing','Scheduled'].includes(p.status));
+ const saveFeedback=async()=>{
+   if(!reason.trim()) return;
+   setBusy(true);setError('');
+   try{
+     const current=await base44.entities.MarketingPost.get(action.post.id);
+     if(['Posted','Publishing','Partially Published'].includes(current.status)||current.publishing_status==='Publishing') throw new Error('This post has already started publishing. Refresh to see its delivery status.');
+     await base44.entities.MarketingPost.update(current.id,{
+       status:action.kind==='reject'?'Skipped':'Pending Review',approval_status:'Pending Review',publish_mode:'manual',
+       admin_notes:((current.admin_notes||'')+'\n'+new Date().toISOString()+' '+(action.kind==='reject'?'REJECTED: ':'CHANGES REQUESTED: ')+reason.trim()).slice(-1000)
+     });
+     await qc.invalidateQueries({queryKey:['marketing-posts']});setAction(null);setReason('');
+   }catch(e){setError(e.message);}finally{setBusy(false);}
+ };
  return <div className="space-y-5">
-  <div><h1 className="font-display text-3xl">What are we posting?</h1><p className="text-muted-foreground mt-2">Plan four weekly stories for Facebook and Instagram. Review the words and graphics, then choose when to publish.</p></div>
-  <nav aria-label="Marketing sections" className="flex flex-wrap gap-3 text-sm">
-   <span className="font-semibold border-b-2 border-primary">This week & backlog</span>
-   {[['/marketing/media','Media'],['/marketing/performance','Results'],['/marketing/brand','Settings']].map(([to,label])=><Link key={to} to={to} className="underline">{label}</Link>)}
-   <details><summary className="cursor-pointer">More tools</summary><div className="flex flex-wrap gap-3 py-3">{[['campaigns','Campaigns'],['canvas','Case study graphics'],['templates','Templates'],['clips','Clips'],['controls','Automation'],['meta-ads','Ads'],['library','All posts']].map(([to,label])=><Link key={to} to={'/marketing/'+to}>{label}</Link>)}</div></details>
-  </nav>
-  <div className="flex flex-wrap gap-3"><Link className="rounded-xl bg-primary text-primary-foreground px-4 py-3" to="/marketing/strategist?weekly=1">Create this week's posts with the strategist</Link><Link className="rounded-xl border px-4 py-3" to="/marketing/post">Create a post myself</Link></div>
-  <details className="rounded-xl border p-4" open={attention.length>0}><summary className="cursor-pointer font-medium">Needs attention ({attention.length})</summary>
-   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">{attention.map(({p,reason})=><Link key={p.id} to={'/marketing/post/'+p.id} className="rounded-lg border p-3"><p className="font-medium line-clamp-1">{p.hook||p.caption||'Untitled post'}</p><p className="text-sm text-muted-foreground">{reason} →</p><p className="text-xs mt-2">{publishTargets(p).map(t=>t+': '+(platformResult(p,t)==='Not Selected'?'Not published':platformResult(p,t))).join(' · ')}</p></Link>)}</div>
-  </details>
-  <FacebookConnectionStatus />
-  <p className="text-sm text-muted-foreground">Dragging sets a planned date only. Approval and publishing are separate. Open a post to review both platforms. Published posts remain locked.</p>
-  <ContentCalendar planner />
+   <div><h1 className="font-display text-3xl">Your marketing</h1><p className="mt-2 text-muted-foreground">Review the finished content below. Nothing new goes out without your approval.</p></div>
+   <nav aria-label="Post status" className="flex flex-wrap gap-2">{[['review','Needs approval'],['scheduled','Scheduled'],['results','Published / Needs attention']].map(([key,label])=><Button key={key} variant={tab===key?'default':'outline'} onClick={()=>setTab(key)} aria-pressed={tab===key}>{label} ({groups[key].length})</Button>)}</nav>
+   {isLoading?<p>Loading your posts…</p>:isError?<p role="alert">Posts could not be loaded. Please refresh.</p>:groups[tab].length===0?<div className="rounded-2xl border p-6"><p>{tab==='review'?'No finished posts are waiting for approval.':tab==='scheduled'?'Nothing is scheduled yet.':'No published posts or delivery problems yet.'}</p></div>:null}
+   <div className="grid gap-5 xl:grid-cols-2">{groups[tab].map(p=>{
+     const media=resolveMedia(p,clips);
+     return <article key={p.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
+       <h2 className="font-medium">{p.hook||'Your next story'}</h2>
+       {media&&(media.type==='video'?<video controls preload="metadata" src={media.url} className="w-full max-h-80 rounded-xl" />:<img src={media.url} alt="Post graphic" className="w-full max-h-80 object-contain rounded-xl" />)}
+       {publishTargets(p).map(t=><section key={t} className="space-y-1"><h3 className="text-sm font-semibold">{t}</h3><p className="whitespace-pre-wrap break-words text-sm">{p.create_post_state?.platformCaptions?.[t.toLowerCase()]??p.caption}</p>{p.hashtags&&<p className="text-sm">{p.hashtags}</p>}{tab!=='review'&&<p className="text-sm text-muted-foreground">{platformResult(p,t)}</p>}{platformError(p,t)&&<p className="text-sm text-destructive">{platformError(p,t)}</p>}</section>)}
+       {p.scheduled_date&&<p className="text-sm text-muted-foreground">{tab==='review'?'Suggested date':'Scheduled'}: {p.scheduled_date} {p.scheduled_time} ({p.scheduled_timezone||'America/New_York'})</p>}
+       {p.admin_notes&&<details><summary className="text-sm cursor-pointer">Your feedback</summary><p className="text-sm whitespace-pre-wrap">{p.admin_notes}</p></details>}
+       <div className="flex flex-wrap gap-2"><Button asChild><Link to={'/marketing/post/'+p.id}>{tab==='review'?'Review & approve':tab==='scheduled'?'View schedule':'View details'}</Link></Button>
+       {tab==='review'&&<><Button variant="outline" onClick={()=>{setAction({post:p,kind:'changes'});setReason('');setError('');}}>Request changes</Button><Button variant="ghost" onClick={()=>{setAction({post:p,kind:'reject'});setReason('');setError('');}}>Reject</Button></>}</div>
+     </article>;
+   })}</div>
+   <details className="rounded-xl border p-4"><summary className="cursor-pointer font-medium">Create &amp; tools {incomplete.length?('— '+incomplete.length+' unfinished drafts'):''}</summary>
+     <div className="flex flex-wrap gap-3 py-4">{[['strategist','Ask the strategist'],['calendar','Calendar & backlog'],['post','Create a post'],['media','Media library'],['controls','Automation & settings'],['brand','Brand settings'],['library','All posts & rejected drafts'],['performance','Results']].map(([path,label])=><Link key={path} className="underline text-sm" to={'/marketing/'+path}>{label}</Link>)}</div>
+     {incomplete.length>0&&<p className="text-sm text-muted-foreground">Unfinished drafts need a graphic, video or caption before they appear for approval.</p>}
+   </details>
+   <Dialog open={!!action} onOpenChange={open=>{if(!open&&!busy)setAction(null);}}><DialogContent><DialogHeader><DialogTitle>{action?.kind==='reject'?'Reject this post':'What should change?'}</DialogTitle><DialogDescription>Your feedback is saved with the post. It will not be published or deleted. Revisions still need to be made before you review it again.</DialogDescription></DialogHeader>
+     <Textarea aria-label="Feedback" value={reason} maxLength={700} onChange={e=>setReason(e.target.value)} placeholder="Tell the strategist what missed the mark." />
+     {error&&<p role="alert" className="text-destructive">{error}</p>}
+     <Button disabled={busy||!reason.trim()} onClick={saveFeedback}>{busy?'Saving…':'Save feedback'}</Button>
+   </DialogContent></Dialog>
  </div>;
 }
