@@ -22,7 +22,7 @@ export default async function (req: Request) {
     if (invoice.status === 'cancelled') return Response.json({ error: 'This invoice is cancelled' }, { status: 409 });
     if (!invoice.client_email) return Response.json({ error: 'No client email on file for this invoice' }, { status: 400 });
 
-    if (!['deposit', 'milestone', 'balance'].includes(kind))
+    if (!['deposit', 'milestone', 'balance', 'project'].includes(kind))
       return Response.json({ error: 'Invalid payment kind' }, { status: 400 });
 
     if(invoice.payment_installments?.length || invoice.square_schedule_enabled) return Response.json({error:'Use the Square invoice payment plan link. Separate checkout is disabled for this invoice.'},{status:409});
@@ -32,7 +32,15 @@ export default async function (req: Request) {
     let amount: number;
     let label: string;
     let milestoneIndex: number | null = null;
-    if (kind === 'deposit') {
+    if (kind === 'project') {
+      const requested = body.amount == null ? summary.outstanding : Number(body.amount);
+      const cents = Math.round(requested * 100);
+      if (!Number.isFinite(requested) || !Number.isSafeInteger(cents) || cents < 100 || Math.abs(requested * 100 - cents) > 0.000001 || cents > Math.round(summary.outstanding * 100)) {
+        return Response.json({error:'Enter an amount of at least $1.00, no more than the outstanding balance, with at most two decimal places.'},{status:400});
+      }
+      amount = cents / 100;
+      label = `Project payment — ${invoice.project_title}`;
+    } else if (kind === 'deposit') {
       amount = summary.depositOutstanding;
       label = `Deposit — ${invoice.project_title}`;
       if (amount <= 0) return Response.json({ error: 'Deposit is already paid' }, { status: 409 });
