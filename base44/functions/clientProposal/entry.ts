@@ -2,6 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { adminLink } from '../../shared/studioUrl.ts';
 
+import {validateSchedule,scheduleText} from '../../shared/paymentSchedule.ts';
+
 // Public, token-verified access for a client to view, accept, or decline
 // their proposal. No user auth — the access_token in the link is the credential.
 // On acceptance a draft Contract is created (prefilled from the proposal) so
@@ -86,7 +88,8 @@ export default async function (req: Request) {
 
       // Create the draft contract prefilled from the proposal.
       const total = typeof proposal.price_total === 'number' ? proposal.price_total : 0;
-      const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
+      const installments=proposal.payment_installments?.length ? validateSchedule(proposal.payment_installments,total) : [];
+      const depositPct = installments.length ? installments[0].amount/total*100 : typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
       const settingsList = await base44.asServiceRole.entities.PricingSettings.list('-updated_date');
       const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
       const previous = await base44.asServiceRole.entities.Contract.filter({proposal_id:id});
@@ -104,8 +107,9 @@ export default async function (req: Request) {
           line_items: proposal.line_items || [],
           price_total: total,
           deposit_percent: depositPct,
-          deposit_amount: Math.round(total * depositPct) / 100,
-          payment_schedule: `${depositPct}% deposit to start, balance on launch`,
+          deposit_amount: installments[0]?.amount ?? Math.round(total * depositPct) / 100,
+          payment_installments: installments,
+          payment_schedule: installments.length ? scheduleText(installments) : `${depositPct}% deposit to start, balance on launch`,
           terms: settings?.standard_terms || '',
           status: 'draft',
           estimated_tier: proposal.estimated_tier || '',
@@ -128,7 +132,7 @@ export default async function (req: Request) {
           subject: `Proposal accepted — ${updated.project_title}`,
           html: brandedEmail({
             title: `Wonderful, ${esc(firstName)}!`,
-            content: `<p style="margin:0 0 16px;">You've accepted the proposal for <strong>${esc(updated.project_title)}</strong>. Next step: I'll prepare your project agreement and send it over for an online signature, followed by your ${esc(String(depositPct))}% deposit to lock in your build slot.</p>
+            content: `<p style="margin:0 0 16px;">You've accepted the proposal for <strong>${esc(updated.project_title)}</strong>. Next step: I'll prepare your project agreement and send it over for an online signature, followed by the agreed first payment to lock in your build slot.</p>
               <p style="margin:0;color:#8B7B95;font-size:13px;">Keep an eye on your inbox — the agreement is usually with you within one business day.</p>`,
             footerNote: 'iRoxanne Studio — one builder, not an agency.',
           }),
