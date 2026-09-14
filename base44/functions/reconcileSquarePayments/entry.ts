@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { applyInvoicePayment } from '../../shared/invoicePayments.ts';
 import { assertSquareBinding } from '../../shared/squareBinding.ts';
 import { brandedEmail, esc } from '../../shared/emailBrand.ts';
+import {syncSquareSchedule} from '../../shared/squareSchedule.ts';
 export default async function(req: Request) {
   const b = createClientFromRequest(req);
   const user = await b.auth.me().catch(()=>null);
@@ -47,5 +48,11 @@ export default async function(req: Request) {
       await e.SquareCheckout.update(c.id,{last_error:String((error as Error).message).slice(0,500)});
     }
   }
-  return Response.json({checked:rows.length,recorded,errors});
+  const plans=await e.Invoice.filter({square_schedule_enabled:true},'square_last_checked_at',100);
+  for(const invoice of plans) {
+    if(!invoice.square_invoice_id) continue;
+    try {await syncSquareSchedule(b,invoice);}
+    catch(error) {errors++; await e.Invoice.update(invoice.id,{square_last_checked_at:new Date().toISOString(),square_sync_error:(error as Error).message});}
+  }
+  return Response.json({checked:rows.length,plans_checked:plans.length,recorded,errors});
 }
