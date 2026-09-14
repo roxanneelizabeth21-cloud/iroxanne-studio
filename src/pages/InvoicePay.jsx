@@ -22,6 +22,7 @@ export default function InvoicePay() {
   const [error, setError] = useState('');
   const [redirecting, setRedirecting] = useState(null);
   const [verifying, setVerifying] = useState(false);
+  const [customAmount, setCustomAmount] = useState('');
   const [notice, setNotice] = useState(
     status === 'COMPLETED' ? 'Checking payment status…' :
     status === 'CANCELED' ? 'Checkout was cancelled. Completed payments are checked automatically.' : ''
@@ -85,7 +86,7 @@ export default function InvoicePay() {
     return () => { cancelled = true; };
   }, [status, id, token]);
 
-  const pay = async (kind, milestoneIndex) => {
+  const pay = async (kind, milestoneIndex, amount) => {
     // Hosted checkout must run in a top-level window, not inside the builder iframe.
     if (window.self !== window.top) {
       setError('Checkout opens in a secure payment page and only works from the published app. Open this link directly in your browser.');
@@ -95,7 +96,7 @@ export default function InvoicePay() {
     setRedirecting(key);
     setError('');
     try {
-      const res = await base44.functions.invoke('createSquareCheckout', { id, token, kind, milestone_index: milestoneIndex });
+      const res = await base44.functions.invoke('createSquareCheckout', { id, token, kind, milestone_index: milestoneIndex, ...(amount !== undefined ? {amount} : {}) });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
       else if (data.url) { window.location.href = data.url; return; }
@@ -191,6 +192,14 @@ export default function InvoicePay() {
           ) : (
             <div className="space-y-3">
               <h2 className="text-sm font-semibold text-foreground">Pay online</h2>
+              <div className="rounded-xl border border-border p-4 space-y-3">
+                <p className="text-sm text-muted-foreground">Pay in full or make an extra payment whenever you wish. Each payment reduces your balance; agreed deadlines stay the same.</p>
+                <Button disabled={!!redirecting || invoice.status === 'cancelled'} onClick={() => pay('project', null)}>Pay full outstanding balance — {money(summary?.outstanding)}</Button>
+                <label className="block text-sm font-medium" htmlFor="extra-payment">Or enter a payment amount ($)</label>
+                <input id="extra-payment" type="number" inputMode="decimal" min="1" max={summary?.outstanding} step="0.01" value={customAmount} onChange={e => setCustomAmount(e.target.value)} className="w-full rounded-md border border-input bg-background text-foreground p-3"/>
+                <Button variant="outline" disabled={!!redirecting || invoice.status === 'cancelled' || !customAmount || Number(customAmount)<1 || Number(customAmount)>summary?.outstanding} onClick={() => pay('project', null, Number(customAmount))}>Pay this amount with Square</Button>
+                <p className="text-xs text-muted-foreground">The required deposit must be paid before work begins. Full payment does not move the agreed completion date.</p>
+              </div>
               {depositRemaining > 0 && (
                 <PayRow
                   label="Deposit"
