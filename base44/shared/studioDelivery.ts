@@ -15,6 +15,7 @@ export function defaultHandoff() {
     ['permissions','Testing','Admin and client access permissions verified'],
     ['payments','Testing','Payment flow verified, or documented as outside scope'],
     ['domain','Launch','Domain, branding, and production settings checked'],
+    ['account','Access','Client Base44 account created and confirmed'],
     ['ownership','Access','Client ownership and required account access transferred securely'],
     ['backup','Access','Backup or export and recovery instructions provided'],
     ['guide','Documentation','User guide and maintenance instructions delivered'],
