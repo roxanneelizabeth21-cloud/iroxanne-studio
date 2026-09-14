@@ -7,7 +7,11 @@ export function scheduleError(rows,total) {
   if (!rows?.length) return '';
   try {validateSchedule(rows,total); return '';} catch(e) {return e.message;}
 }
-export default function PaymentScheduleEditor({value=[],total,onChange}) {
+export default function PaymentScheduleEditor(props) {
+  if (!props.value?.length) return <p className="text-sm text-muted-foreground">Deposit and final balance apply. Clients may pay in full or make voluntary extra payments. Use the agreement payment schedule for any expressly agreed project milestones.</p>;
+  return <LegacyPaymentScheduleEditor {...props}/>;
+}
+function LegacyPaymentScheduleEditor({value=[],total,onChange}) {
   const [count,setCount]=useState(value.length || 3);
   const [start,setStart]=useState(value[0]?.due_date || new Date().toLocaleDateString('en-CA'));
   const [gap,setGap]=useState(14);
