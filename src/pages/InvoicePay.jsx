@@ -202,8 +202,11 @@ export default function InvoicePay() {
                   label="Deposit"
                   amount={depositRemaining}
                   status={invoice.deposit_status}
-                  loading={redirecting === 'deposit'}
-                  onPay={() => pay('deposit')}
+                  loading={redirecting === 'square_deposit'}
+                  stripeLoading={redirecting === 'stripe_deposit'}
+                  financing={providers.financing}
+                  onPay={() => pay('deposit', null, 'square')}
+                  onPayStripe={() => pay('deposit', null, 'stripe')}
                 />
               )}
               {(invoice.milestones || []).map((m, i) => (
@@ -213,8 +216,11 @@ export default function InvoicePay() {
                   amount={m.amount}
                   status={m.status}
                   dueDate={m.due_date}
-                  loading={redirecting === `milestone_${i}`}
-                  onPay={() => pay('milestone', i)}
+                  loading={redirecting === `square_milestone_${i}`}
+                  stripeLoading={redirecting === `stripe_milestone_${i}`}
+                  financing={providers.financing}
+                  onPay={() => pay('milestone', i, 'square')}
+                  onPayStripe={() => pay('milestone', i, 'stripe')}
                 />
               ))}
               {balanceRemaining > 0 && (invoice.milestones || []).length === 0 && (
@@ -222,8 +228,11 @@ export default function InvoicePay() {
                   label="Balance"
                   amount={balanceRemaining}
                   status={invoice.balance_status}
-                  loading={redirecting === 'balance'}
-                  onPay={() => pay('balance')}
+                  loading={redirecting === 'square_balance'}
+                  stripeLoading={redirecting === 'stripe_balance'}
+                  financing={providers.financing}
+                  onPay={() => pay('balance', null, 'square')}
+                  onPayStripe={() => pay('balance', null, 'stripe')}
                 />
               )}
               {balanceRemaining > 0 && (invoice.milestones || []).length > 0 && (
@@ -231,13 +240,25 @@ export default function InvoicePay() {
                   label="Remaining balance"
                   amount={balanceRemaining}
                   status={invoice.balance_status}
-                  loading={redirecting === 'balance'}
-                  onPay={() => pay('balance')}
+                  loading={redirecting === 'square_balance'}
+                  stripeLoading={redirecting === 'stripe_balance'}
+                  financing={providers.financing}
+                  onPay={() => pay('balance', null, 'square')}
+                  onPayStripe={() => pay('balance', null, 'stripe')}
                 />
               )}
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
-                <Lock className="h-3 w-3" /> Secure checkout powered by Square.
+                <Lock className="h-3 w-3" />
+                {providers.financing
+                  ? 'Secure checkout powered by Square and Stripe.'
+                  : 'Secure checkout powered by Square.'}
               </p>
+              {providers.financing && (
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Financing options may be available through Affirm or Afterpay. Approval,
+                  terms, and eligibility are determined by the financing provider.
+                </p>
+              )}
             </div>
           )}
 
