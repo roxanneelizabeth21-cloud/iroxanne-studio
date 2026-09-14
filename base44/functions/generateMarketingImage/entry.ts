@@ -44,7 +44,7 @@ function buildPrompt(input) {
   p += 'Create a single finished marketing image for the studio.\n\n';
   if (prompt) p += `CORE IMAGE BRIEF\n${prompt}\n\n`;
 
-  p += 'Brand direction: sophisticated textured deep plum, warm cream, restrained brushed gold. A specific human idea or everyday situation, editorial composition and generous space. No generic laptops, neon technology, fake app UI or invented brand marks. Older technical context must not override this direction.\n';
+  p += 'Brand direction: iRoxanne Studio (exact spelling). Create an arresting story-led editorial composition with a strong focal subject, contrast and intentional scale. Plum, cream and gold are accents, not mandatory full-frame backgrounds. Bright natural environments and vivid subject colors are welcome. Avoid repeating the same purple-and-gold illustration. A viewer should understand the possibility shown without reading a caption. No generic laptops, neon technology, fake app UI or invented brand marks. Older technical context must not override this direction.\n';
   p += 'VISUAL DIRECTION\n';
   p += line('Visual type', vd.visual_type);
   p += line('Creative concept', vd.creative_concept);
@@ -133,6 +133,7 @@ export default async function (req) {
     if (post_id) {
       post = await base44.entities.MarketingPost.get(post_id).catch(() => null);
       if (!post) return Response.json({ ok: false, error: 'Post not found.' }, { status: 404 });
+      if (['Posted','Partially Published','Publishing'].includes(post.status) || post.publishing_status === 'Publishing') return Response.json({ok:false,error:'Create a new draft to revise a published or publishing post.'},{status:409});
     }
 
     const effPlatform = platform || post?.platform || '';
@@ -182,6 +183,17 @@ export default async function (req) {
       return Response.json({ ok: false, error: 'Image generation did not return a usable image. Nothing was saved or attached.' }, { status: 502 });
     }
 
+    // Inspect the actual generated pixels before replacing the owner's asset.
+    const review = await base44.integrations.Core.InvokeLLM({
+      prompt: 'Inspect the attached finished marketing image against this brief. Reject unreadable or misspelled lettering, malformed anatomy, fake UI, generic decorative filler that fails to convey the subject, or a composition with no clear focal point. The business name, if visible, must be exactly iRoxanne Studio. Do not accept iRoxan, Roxsan, or other variants. If you cannot inspect the image, fail. Return pass and reason. Brief: ' + finalPrompt,
+      file_urls: [image_url],
+      response_json_schema: { type:'object', properties:{pass:{type:'boolean'},reason:{type:'string'}}, required:['pass','reason'] }
+    });
+    if (review?.pass !== true) return Response.json({
+      ok:false, error:'Graphic did not pass visual review: ' + (review?.reason || 'Review unavailable'),
+      rejected_image_url:image_url, previous_image_preserved:true
+    }, {status:422});
+
     // --- Preserve the previous version, if any ---
     let previous_version_id = '';
     let previous_image_url = '';
@@ -218,11 +230,11 @@ export default async function (req) {
     // --- Attach to the draft post without touching its approval/publish state ---
     let attached = false;
     if (post) {
-      const keepStatus = post.status === 'Posted' ? post.status : (post.status || 'Draft');
+
       await base44.entities.MarketingPost.update(post.id, {
         media_file_url: image_url,
         media_clip_id: '',
-        status: keepStatus === 'Ready' ? 'Pending Review' : keepStatus,
+        status: 'Pending Review', approval_status: 'Pending Review', publish_mode: 'manual', media_type: 'image',
       });
       attached = true;
     }

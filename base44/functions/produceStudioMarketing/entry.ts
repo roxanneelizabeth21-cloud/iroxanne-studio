@@ -22,7 +22,7 @@ export default async function(req) {
    const recent=await e.MarketingPost.list('-created_date',30);
    const themes=['an early idea becoming useful','an everyday task that could be easier','a hypothetical community or family app','a warm referral invitation'];
    content=await b.asServiceRole.integrations.Core.InvokeLLM({
-    prompt:STUDIO_CONTEXT+'\nCreate one story with separate Facebook and Instagram captions. Theme: '+themes[slot.index]+'. No invented personal anecdotes, clients, results, prices or promises. Use hypothetical situations, not claims about completed work. Instagram should invite a conversation, not promise a clickable caption link. Return facebook, instagram, hook, image_prompt. Image must be a meaningful editorial illustration in plum/cream/gold, no text or fake UI. Avoid recent hooks: '+JSON.stringify(recent.map(p=>p.hook).filter(Boolean)),
+    prompt:STUDIO_CONTEXT+'\nCreate one story with separate Facebook and Instagram captions. Theme: '+themes[slot.index]+'. No invented personal anecdotes, clients, results, prices or promises. Use hypothetical situations, not claims about completed work. Instagram should invite a conversation, not promise a clickable caption link. Return facebook, instagram, hook, image_prompt. Vary the visual approach: editorial photography, narrative illustration, close-up human activity or a bold visual metaphor. Choose what best conveys this story. Plum/cream/gold are accents; avoid repetitive purple backgrounds. No text or fake UI. Avoid recent hooks: '+JSON.stringify(recent.map(p=>p.hook).filter(Boolean)),
     response_json_schema:{type:'object',properties:{facebook:{type:'string'},instagram:{type:'string'},hook:{type:'string'},image_prompt:{type:'string'}},required:['facebook','instagram','hook','image_prompt']}
    });
    validateCopy(content);
@@ -31,7 +31,7 @@ export default async function(req) {
   validateCopy(content);
   let image_url=job.image_url;
   if(!image_url) {
-   const image=await b.asServiceRole.integrations.Core.GenerateImage({prompt:content.image_prompt+' Finished editorial graphic, 4:5 portrait, textured plum, warm cream, restrained gold. No text, no logos, no invented app interface. Keep subject within generous margins.'});
+   const image=await b.asServiceRole.integrations.Core.GenerateImage({prompt:content.image_prompt+' Finished editorial graphic, 4:5 portrait, strong focal point, intentional scale and contrast, story-specific subject. Use brand plum/cream/gold as accents, not a compulsory dark backdrop. No text, no logos, no invented app interface. Keep subject within generous margins.'});
    image_url=image?.url||image?.data?.url;
    if(!image_url || !/^https:\/\//.test(image_url)) throw new Error('Image service did not return a usable asset');
    await e.MarketingProduction.update(job.id,{image_url,phase:'quality'});
@@ -41,6 +41,7 @@ export default async function(req) {
    prompt:'Review this marketing draft and image for iRoxanne Studio. Pass only if warm, nontechnical, truthful hypothetical copy, no invented client stories or outcomes, no pricing or guarantees, no gibberish or malformed imagery. Reject repetitive generic sales copy. Assess the actual attached image; if unavailable set pass=false. Return pass boolean and reason. Copy: '+JSON.stringify(content),
    file_urls:[image_url],response_json_schema:{type:'object',properties:{pass:{type:'boolean'},reason:{type:'string'}},required:['pass','reason']}
   });
+  if (quality?.pass !== true) throw new Error('Creative review failed: '+String(quality?.reason||'Image could not be inspected'));
   // Owner requires personal approval for every post; AI checks never approve.
   const automatic=false;
   if (!!job.facebook_post_id !== !!job.instagram_post_id) throw new Error('An earlier two-record story needs review before production can complete. Existing content was preserved.');
