@@ -67,6 +67,10 @@
     },
     "request_id": {
       "type": "string"
+    },
+    "milestone_index": {
+      "type": "integer",
+      "minimum": 0
     }
   },
   "required": [
