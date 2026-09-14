@@ -1,3 +1,8 @@
+export function withHandoffTerms(terms:unknown) {
+  const text=String(terms || '').trim();
+  const clause='Full app handoff, including transfer of the completed app and administrative access, takes place only after all agreed project payments have been received in full.';
+  return text.includes(clause)?text:[text,clause].filter(Boolean).join('\n\n');
+}
 export type Installment = {label:string; amount:number; due_date:string};
 export function validateSchedule(rows:any, total:number): Installment[] {
   if (!Array.isArray(rows) || rows.length < 1 || rows.length > 7) throw new Error('Choose between one and seven payments, including the deposit.');
