@@ -86,9 +86,9 @@ export default function ProposalView() {
   const expired = expiry && new Date(expiry) <= new Date();
   const settled = accepted || declined || changesRequested || expired;
   const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
-  const depositAmt = typeof proposal.price_total === 'number'
+  const depositAmt = proposal.payment_installments?.[0]?.amount ?? (typeof proposal.price_total === 'number'
     ? Math.round(proposal.price_total * depositPct) / 100
-    : null;
+    : null);
 
   return (
     <div className="studio-surface min-h-screen bg-[#FAF7F0] py-10 px-4">
@@ -178,7 +178,7 @@ export default function ProposalView() {
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">To get started</p>
                 <p className="text-xl font-bold text-foreground mt-1">{money(depositAmt)}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{depositPct}% deposit, balance on launch</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{proposal.payment_installments?.length ? 'Payments follow the dated schedule below' : depositPct+'% deposit, balance on launch'}</p>
               </div>
             )}
             {proposal.timeline_estimate && (
@@ -191,6 +191,8 @@ export default function ProposalView() {
               </div>
             )}
           </div>
+
+          {proposal.payment_installments?.length>0 && <section><h2 className="font-serif text-xl mb-3">Payment schedule</h2>{proposal.payment_installments.map((r,i)=><div className="flex flex-wrap justify-between gap-2 border-b py-3 text-sm" key={i}><span>{r.label} · due {r.due_date}</span><strong>{money(r.amount)}</strong></div>)}</section>}
 
           {proposal.valid_until && !settled && (
             <p className="text-xs text-muted-foreground text-center">
