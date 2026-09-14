@@ -4,6 +4,8 @@ import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
 import { studioUrl } from '../../shared/studioUrl.ts';
 
+import {publishSquareSchedule} from '../../shared/squareSchedule.ts';
+
 const money = (n: unknown) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
 const getBaseUrl = (req: Request) => studioUrl(req);
@@ -30,6 +32,16 @@ export default async function (req: Request) {
 
     if (!['deposit','balance','statement'].includes(which)) return Response.json({error:'Invalid request type'},{status:400});
     if (invoice.status === 'cancelled') return Response.json({error:'This invoice is cancelled'},{status:409});
+    if(invoice.payment_installments?.length) {
+      try {
+        const synced=await publishSquareSchedule(base44,invoice);
+        await base44.entities.Invoice.update(invoice_id,{last_sent_at:new Date().toISOString()});
+        return Response.json({sent:true,square_schedule:true,url:synced.square_public_url});
+      } catch(e) {
+        await base44.entities.Invoice.update(invoice_id,{square_sync_error:(e as Error).message});
+        throw e;
+      }
+    }
     const payments = await base44.entities.Payment.filter({invoice_id}, '-created_date', 1000);
     const summary = paymentSummary(invoice,payments);
     const total = summary.total;
