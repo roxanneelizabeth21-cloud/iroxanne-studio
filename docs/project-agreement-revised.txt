@@ -194,4 +194,4 @@ The parties consent to transact electronically. The Client's electronic signatur
 
 At signing, the Studio stores the complete text of this Agreement as displayed to the Client, together with the signer's name, the email address to which the agreement was sent, the date and time of signature, the IP address, the browser information, and the signature method. The stored agreement is the version the Client signed and is not altered by later changes to the Studio's standard terms.
 
-The Client receives a copy by email and may return to the agreement link at any time to view, download, or print the signed agreement. The Client may request a paper copy by written request to the Studio.
+The Client receives an email with a private link to view the saved agreement. The Client may request a downloadable or paper copy by written request to the Studio.
