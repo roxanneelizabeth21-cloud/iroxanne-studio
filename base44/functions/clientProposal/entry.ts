@@ -109,7 +109,7 @@ export default async function (req: Request) {
           deposit_percent: depositPct,
           deposit_amount: installments[0]?.amount ?? Math.round(total * depositPct) / 100,
           payment_installments: installments,
-          payment_schedule: installments.length ? scheduleText(installments) : `${depositPct}% deposit to start, balance on launch`,
+          payment_schedule: installments.length ? scheduleText(installments) : `${depositPct}% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.`,
           terms: withHandoffTerms(settings?.standard_terms),
           status: 'draft',
           estimated_tier: proposal.estimated_tier || '',
