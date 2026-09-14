@@ -48,6 +48,7 @@ export async function syncSquareSchedule(base44:any,invoice:any,api?:any) {
 export async function publishSquareSchedule(base44:any,invoice:any) {
   const db=base44.asServiceRole.entities, rows=validateSchedule(invoice.payment_installments,invoice.amount_total);
   if (invoice.status==='cancelled') throw new Error('This invoice is cancelled.');
+  if(rows[0].amount!==invoice.deposit_amount) throw new Error('The plan deposit does not match the invoice. Review it before sending.');
   const api=await squareApi(base44);
   // Never move an invoice that has been collected through another payment path.
   if (!invoice.square_invoice_id) {
@@ -69,6 +70,7 @@ export async function publishSquareSchedule(base44:any,invoice:any) {
     invoice={...invoice,square_invoice_id:s.id,square_order_id:order.id,square_location_id:location.id};
   }
   const {invoice:current}=await api('invoices/'+encodeURIComponent(invoice.square_invoice_id));
+  await syncSquareSchedule(base44,invoice,api); // Validate binding and all amounts before publishing.
   if (current.status==='DRAFT') await api('invoices/'+encodeURIComponent(current.id)+'/publish',{version:current.version,idempotency_key:'studio-publish-'+invoice.id});
   return syncSquareSchedule(base44,invoice,api);
 }
