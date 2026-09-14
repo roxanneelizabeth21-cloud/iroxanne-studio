@@ -26,7 +26,6 @@ import MessagesAdminPage from '@/pages/admin/MessagesAdminPage';
 import LegalAdminPage from '@/pages/admin/LegalAdminPage';
 import EmailTemplatesAdminPage from '@/pages/admin/EmailTemplatesAdminPage';
 import LegalPage from '@/pages/LegalPage';
-import DocumentReview from '@/pages/DocumentReview';
 import Unsubscribe from '@/pages/Unsubscribe';
 import Home from '@/pages/Home';
 import GetQuote from '@/pages/GetQuote';
@@ -109,7 +108,6 @@ const AuthenticatedApp = () => {
       <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/privacy" element={<LegalPage />} />
-      <Route path="/document-review" element={<DocumentReview />} />
       <Route path="/terms" element={<LegalPage />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/quote" element={<GetQuote />} />
