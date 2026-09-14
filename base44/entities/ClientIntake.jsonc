@@ -66,6 +66,10 @@
     "address": {
       "type": "string"
     },
+    "platform_account_email": {
+      "type": "string",
+      "description": "Email the client used to create their Base44 account. The finished app is transferred into this account at handoff, so it is collected at intake rather than on delivery day."
+    },
     "social_links": {
       "type": "object",
       "description": "Social media URLs keyed by platform (instagram, facebook, tiktok, youtube, linkedin, etc.)"
