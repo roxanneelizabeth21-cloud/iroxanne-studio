@@ -35,12 +35,22 @@ export default async function(req) {
       const installments=contract.payment_installments?.length ? validateSchedule(contract.payment_installments,contract.price_total) : [];
       if(installments.length && installments[0].amount!==contract.deposit_amount) return Response.json({error:'The payment plan and deposit do not match. Please contact iRoxanne Studio.'},{status:409});
       const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
+      let signatureUrl = '';
+      if (signatureMode === 'drawn' && signatureImage) {
+        try {
+          const uploadRes = await base44.asServiceRole.integrations.Core.UploadPublicFile({
+            file_data: signatureImage,
+            file_name: `signature_${id}_${Date.now()}.png`,
+          });
+          signatureUrl = uploadRes?.url || uploadRes?.file_url || '';
+        } catch (e) { console.log('signature upload failed', e?.message); }
+      }
       const updated = await base44.asServiceRole.entities.Contract.update(id, {
         status: 'signed',
         signed_at: new Date().toISOString(),
         signer_name: signerName.trim().slice(0,200),
         signature_mode: signatureMode,
-        signature_image: signatureMode === 'drawn' ? signatureImage : '',
+        signature_image: signatureUrl,
         signer_ip: ip,
         signature_consent: true,
         signer_user_agent: (req.headers.get('user-agent') || '').slice(0, 1000)
