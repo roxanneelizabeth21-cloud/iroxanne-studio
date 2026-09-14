@@ -58,7 +58,7 @@ const MARKETING_ALL = [
   { to: '/marketing/brand', label: 'Brand', Icon: UserCircle, subtitle: 'Brand profile, voice and connections' },
 ];
 
-const MARKETING_NAV = MARKETING_ALL.filter(item => ['/marketing', '/marketing/post', '/marketing/media', '/marketing/brand'].includes(item.to));
+const MARKETING_NAV = MARKETING_ALL.filter(item => ['/marketing', '/marketing/post', '/marketing/calendar', '/marketing/media', '/marketing/brand'].includes(item.to));
 
 // Pages kept for existing links and workflows, but no longer primary destinations.
 const MARKETING_SECONDARY = [
