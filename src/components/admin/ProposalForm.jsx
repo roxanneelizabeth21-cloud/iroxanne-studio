@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 
+import PaymentScheduleEditor, {scheduleError} from '@/components/admin/PaymentScheduleEditor';
+
 const num = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 const money = (n) => `$${num(n).toLocaleString()}`;
 
@@ -52,6 +54,7 @@ function buildInitial(initial, settings) {
     selected_package: selectedPackage,
     estimated_tier: tier || '',
     line_items: lineItems || [{ description: '', quantity: 1, amount: 0 }],
+    payment_installments: i.payment_installments || [],
     deposit_percent: i.deposit_percent ?? settings?.default_deposit_percent ?? 50,
     timeline_estimate: i.timeline_estimate || TIER_TIMELINES[tier] || '',
     saas_replacement_note: i.saas_replacement_note || '',
@@ -71,7 +74,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
   const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
 
   const total = (form.line_items || []).reduce((sum, li) => sum + num(li.amount), 0);
-  const depositAmt = Math.round(total * num(form.deposit_percent)) / 100;
+  const depositAmt = form.payment_installments?.[0]?.amount ?? Math.round(total * num(form.deposit_percent)) / 100;
 
   const addLine = () =>
     setForm((p) => ({ ...p, line_items: [...(p.line_items || []), { description: '', quantity: 1, amount: 0 }] }));
@@ -117,10 +120,11 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
   };
 
   const submit = () => {
-    onSave({ ...form, price_total: total });
+    if (scheduleError(form.payment_installments,total)) return;
+    onSave({ ...form, price_total: total, deposit_percent: form.payment_installments?.length ? depositAmt/total*100 : form.deposit_percent });
   };
 
-  const valid = form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && form.deposit_percent >= 0 && form.deposit_percent <= 100 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
+  const valid = !scheduleError(form.payment_installments,total) && form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && form.deposit_percent >= 0 && form.deposit_percent <= 100 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
 
   return (
     <div className="space-y-5">
@@ -255,7 +259,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">Deposit %</Label>
-            <Input type="number" value={form.deposit_percent ?? 50} onChange={(e) => update('deposit_percent', Number(e.target.value))} />
+            <Input disabled={!!form.payment_installments?.length} type="number" value={form.payment_installments?.length ? Math.round(depositAmt/total*10000)/100 : form.deposit_percent ?? 50} onChange={(e) => update('deposit_percent', Number(e.target.value))} />
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Deposit due</p>
@@ -276,6 +280,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
       </div>
 
       <div className="space-y-1.5">
+        <PaymentScheduleEditor value={form.payment_installments} total={total} onChange={v=>update('payment_installments',v)}/>
         <Label>What this replaces (value framing)</Label>
         <Textarea
           rows={3}
