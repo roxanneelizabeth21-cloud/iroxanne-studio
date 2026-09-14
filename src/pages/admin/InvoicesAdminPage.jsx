@@ -8,6 +8,7 @@ import { Receipt, Plus, Send, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
+import PaymentPlanDisplay from '@/components/PaymentPlanDisplay';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
@@ -71,7 +72,7 @@ export default function InvoicesAdminPage() {
       const res=await base44.functions.invoke('sendInvoice',{invoice_id:sending.invoice.id,which:sending.which});
       const data=res.data || res;
       if(data.error || !data.sent) throw new Error(data.error || 'Email was not sent. Please try again.');
-      toast({title:'Payment request sent',description:sending.invoice.client_email});
+      toast({title:data.square_schedule?'Square payment plan ready':'Payment request sent',description:data.square_schedule?'The plan is published in Square. Existing plans are refreshed without emailing again.':sending.invoice.client_email});
       setSending(null); await load();
     }catch(e){toast({title:'Could not send request',description:e.message,variant:'destructive'});}
     finally{inFlight.current=false;setBusy(false);}
@@ -109,17 +110,23 @@ export default function InvoicesAdminPage() {
         <div><p className="text-xs text-muted-foreground">Balance remaining</p><p className="font-semibold">{money(remaining(i,'balance'))}</p><p className="text-xs">{i.balance_status}</p></div>
         <div><p className="text-xs text-muted-foreground">Due date</p><p>{i.due_date || 'Per agreement'}</p></div>
       </div>
-      {i.status!=='cancelled' && <div className="flex flex-wrap gap-2">
+      {i.payment_installments?.length>0 && <div className="space-y-3"><PaymentPlanDisplay invoice={i}/>
+        {i.square_sync_error && <p role="alert" className="text-destructive text-sm">{i.square_sync_error}</p>}
+        {i.status!=='cancelled' && <Button disabled={busy} onClick={()=>setSending({invoice:i,which:'statement'})}>{i.square_invoice_id?'Refresh Square plan':'Send payment plan'}</Button>}
+        {i.square_public_url && <Button variant="outline" asChild><a href={i.square_public_url} target="_blank" rel="noopener noreferrer">View Square invoice</a></Button>}
+        <p className="text-xs text-muted-foreground">Record offline payments, refunds, and cancellations on this invoice in Square. Payment status syncs here automatically. New schedules are set in the proposal or agreement before signing.</p>
+      </div>}
+      {!i.payment_installments?.length && i.status!=='cancelled' && <div className="flex flex-wrap gap-2">
         {(remaining(i,'deposit')+remaining(i,'balance'))>0 && <Button onClick={()=>openPayment(i)} className="gap-1"><Plus className="h-4 w-4"/>Record payment</Button>}
         {remaining(i,'deposit')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'deposit'})} className="gap-1"><Send className="h-4 w-4"/>Request deposit</Button>}
         {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
         <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
         <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete invoice" onClick={()=>removeInvoice(i)}><Trash2 className="h-4 w-4"/></Button>
       </div>}
-      <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
+      {!i.payment_installments?.length && <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
         {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2 items-center"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><span className="flex items-center gap-1"><strong>{money(p.amount)}</strong><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Delete payment" onClick={()=>removePayment(p)}><Trash2 className="h-3.5 w-3.5"/></Button></span></div>)}
         {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
-      </div></details>
+      </div></details>}
     </section>)}
     <p className="text-xs text-muted-foreground">Clients can pay deposits, milestones, and balances online via Square. Use “Request deposit / balance” to email them a pay link, or share the invoice link directly.</p>
     {confirmDialog}
@@ -134,6 +141,6 @@ export default function InvoicesAdminPage() {
         <Button type="submit" disabled={busy}>{busy?'Saving…':'Save payment'}</Button>
       </form>
     </DialogContent></Dialog>
-    <Dialog open={!!sending} onOpenChange={o=>!busy&&!o&&setSending(null)}><DialogContent><DialogHeader><DialogTitle>Send {sending?.which==='statement'?'statement':sending?.which+' request'}</DialogTitle><DialogDescription>This emails {sending?.invoice.client_email} the current amount and your saved payment instructions.</DialogDescription></DialogHeader><Button onClick={send} disabled={busy}>{busy?'Sending…':'Send email'}</Button></DialogContent></Dialog>
+    <Dialog open={!!sending} onOpenChange={o=>!busy&&!o&&setSending(null)}><DialogContent><DialogHeader><DialogTitle>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id?'Refresh Square plan':'Send payment plan') : 'Send '+(sending?.which==='statement'?'statement':sending?.which+' request')}</DialogTitle><DialogDescription>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id?'Check Square for current payments. This does not send another email.':'Square will email '+sending.invoice.client_email+' the agreed payment schedule and scheduled reminders. It will not automatically charge a card.') : 'This emails '+sending?.invoice.client_email+' the current amount and your saved payment instructions.'}</DialogDescription></DialogHeader><Button onClick={send} disabled={busy}>{busy?'Working…':sending?.invoice.square_invoice_id?'Refresh plan':sending?.invoice.payment_installments?.length?'Send plan through Square':'Send email'}</Button></DialogContent></Dialog>
   </div>;
 }
