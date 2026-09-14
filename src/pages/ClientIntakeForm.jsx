@@ -98,9 +98,9 @@ export default function ClientIntakeForm() {
     (async () => {
       try {
         const res = await base44.functions.invoke('intakeJourney', { action: 'get', id, token });
-        const match = res.data.record;
-        setStep(intakeSteps(match.journey_profile).includes(match.journey_step) ? match.journey_step : 'welcome');
+        const match = res.data?.record;
         if (!match) { setError('Invalid or expired link.'); return; }
+        setStep(intakeSteps(match.journey_profile).includes(match.journey_step) ? match.journey_step : 'welcome');
         if (match.status === 'submitted' || match.status === 'reviewed') { setSubmitted(true); }
         setIntake(match);
       } catch { setError('Could not load the intake form.'); }
