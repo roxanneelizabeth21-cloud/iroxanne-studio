@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { clientLink } from '../../shared/studioUrl.ts';
+import {validateSchedule,scheduleText} from '../../shared/paymentSchedule.ts';
 export default async function(req: Request) {
   try {
     const base44=createClientFromRequest(req);
@@ -12,6 +13,10 @@ export default async function(req: Request) {
     if(!['draft','sent'].includes(contract.status)) return Response.json({error:'Only draft or sent contracts may be sent for signature.'},{status:409});
     if(!contract.client_email || !contract.terms?.trim()) return Response.json({error:'Add the client email and agreement terms before sending.'},{status:400});
     if(contract.contract_variant==='rush' && !contract.rush_terms?.trim()) return Response.json({error:'Add the rush schedule addendum before sending.'},{status:400});
+    if(contract.payment_installments?.length) {
+      const rows=validateSchedule(contract.payment_installments,contract.price_total);
+      if(rows[0].amount!==contract.deposit_amount || contract.payment_schedule!==scheduleText(rows)) return Response.json({error:'Save this agreement with the matching dated payment plan before sending.'},{status:400});
+    }
     const token=contract.access_token || Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
     const link=clientLink(req,'contract',contract_id,token);
     await base44.entities.Contract.update(contract_id,{access_token:token,status:'sent',sent_at:new Date().toISOString()});
