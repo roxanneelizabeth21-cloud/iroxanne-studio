@@ -81,7 +81,8 @@
     },
     "standard_terms": {
       "type": "string",
-      "description": "Default terms & conditions text pre-filled on new contracts"
+      "description": "Default terms & conditions text pre-filled on new contracts",
+      "maxLength": 40000
     },
     "stripe_enabled": {
       "type": "boolean",
