@@ -172,11 +172,24 @@ export default async function (req) {
       context,
     });
 
+    // Plan alternatives against recent work before spending an image generation.
+    const recent = await base44.entities.GalleryImage.list('-created_date', 8).catch(() => []);
+    const creative = await base44.integrations.Core.InvokeLLM({
+      prompt: 'Act as an editorial art director for iRoxanne Studio. Develop three materially different visual treatments of the supplied brief, then choose the strongest. Respect the owner's subject, exact approved text and references; do not change requested content. Different means different compositions and visual storytelling, not three color variations. Each needs a specific focal subject, contrast, readable hierarchy and a reason a nontechnical person would care. No generic technology devices, filler decor or compulsory purple backdrop. Do not fabricate actual app screens, people, testimonials or results. Previous directions to avoid repeating: ' + JSON.stringify(recent.map(x => x.visual_direction?.creative_concept || x.description || x.title)) + '\nBRIEF: ' + finalPrompt,
+      response_json_schema: {type:'object',properties:{
+        concepts:{type:'array',minItems:3,maxItems:3,items:{type:'object',properties:{treatment:{type:'string'},reason:{type:'string'}},required:['treatment','reason']}},
+        selected:{type:'integer',minimum:0,maximum:2}
+      },required:['concepts','selected']}
+    });
+    const chosen = creative?.concepts?.[creative.selected];
+    if (!chosen?.treatment) throw new Error('Creative planning did not return a usable concept. Your current image was preserved.');
+    const renderPrompt = finalPrompt + '\nSELECTED ART DIRECTION (subject to the exact content and spelling requirements above):\n' + chosen.treatment;
+
     // --- Generate the actual image ---
     const passedRefs = Array.isArray(reference_asset_urls) ? reference_asset_urls.filter(Boolean) : [];
     const refs = [...new Set(passedRefs.filter(Boolean))];
     const gen = await base44.integrations.Core.GenerateImage(
-      refs.length ? { prompt: finalPrompt, existing_image_urls: refs } : { prompt: finalPrompt }
+      refs.length ? { prompt: renderPrompt, existing_image_urls: refs } : { prompt: renderPrompt }
     );
     const image_url = gen?.url || gen?.data?.url;
     if (!image_url || typeof image_url !== 'string' || !/^https?:\/\//.test(image_url)) {
@@ -211,7 +224,7 @@ export default async function (req) {
       image_url,
       category: 'promo',
       source: 'ai_generated',
-      generation_prompt: finalPrompt,
+      generation_prompt: renderPrompt,
       original_request: original_request || '',
       visual_direction: { ...visual_direction, aspect_ratio: aspect, platform: effPlatform, format: effFormat },
       platform: effPlatform,
@@ -251,6 +264,8 @@ export default async function (req) {
       previous_image_url: previous_image_url || null,
       previous_version_id: previous_version_id || null,
       status: 'generated',
+      creative_concepts: creative.concepts,
+      selected_concept: chosen,
       message: attached
         ? 'Image generated, saved to the Gallery and attached to the post. The post still needs your approval.'
         : 'Image generated and saved to the Gallery. No post was attached.',
