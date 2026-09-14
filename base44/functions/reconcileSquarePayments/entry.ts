@@ -50,7 +50,10 @@ export default async function(req: Request) {
   }
   const plans=await e.Invoice.filter({square_schedule_enabled:true},'square_last_checked_at',100);
   for(const invoice of plans) {
-    if(!invoice.square_invoice_id) continue;
+    if(!invoice.square_invoice_id) {
+      await e.Invoice.update(invoice.id,{square_last_checked_at:new Date().toISOString()});
+      continue;
+    }
     try {await syncSquareSchedule(b,invoice);}
     catch(error) {errors++; await e.Invoice.update(invoice.id,{square_last_checked_at:new Date().toISOString(),square_sync_error:(error as Error).message});}
   }
