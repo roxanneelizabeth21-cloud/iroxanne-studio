@@ -84,8 +84,8 @@
     },
     "terms": {
       "type": "string",
-      "description": "Terms & conditions text the client agrees to",
-      "maxLength": 8000
+      "description": "Terms & conditions text the client agrees to. Snapshotted onto each contract at creation so the signed record preserves the exact version shown. Cap allows for the full agreement plus future clauses.",
+      "maxLength": 40000
     },
     "status": {
       "type": "string",
