@@ -45,7 +45,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
   const db = base44.asServiceRole.entities;
   const { invoice_id, request_id, reference = '', source } = opts;
   const kind = opts.kind;
-  const method = opts.method || 'stripe';
+  const method = opts.method || 'other';
   const amount = Math.round(Number(opts.amount) * 100) / 100;
   const milestoneIndex = opts.milestoneIndex ?? null;
 
@@ -61,6 +61,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
 
   const invoice = await db.Invoice.get(invoice_id);
   if (!invoice) throw new PaymentError('Invoice not found.', 404);
+  if (invoice.square_schedule_enabled || invoice.payment_installments?.length) throw new PaymentError('Record payments for this plan in Square Invoices. The app syncs them automatically.',409);
   if (invoice.status === 'cancelled') throw new PaymentError('This invoice is cancelled.', 409);
 
   // --- Idempotency -----------------------------------------------------------
