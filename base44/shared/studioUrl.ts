@@ -36,13 +36,8 @@ function normalize(raw: unknown): string {
 export function studioUrl(req?: Request, override?: unknown): string {
   const forced = normalize(override) || normalize(secretUrl());
   if (forced) return forced;
-
-  if (req) {
-    try {
-      const url = new URL(req.url);
-      if (PREVIEW_HOST.test(url.hostname)) return `${url.protocol}//${url.host}`;
-    } catch { /* fall through to canonical */ }
-  }
+  // Always return the canonical public URL.
+  // Preview hosts require Base44 login, which clients don't have.
   return CANONICAL_URL;
 }
 
