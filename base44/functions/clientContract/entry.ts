@@ -127,6 +127,7 @@ export default async function(req) {
 
     return Response.json({ contract: publicContract(contract) });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('clientContract error:', error?.message || error, error?.stack || '');
+    return Response.json({ error: String(error?.message || error || 'Server error') }, { status: 500 });
   }
 }
