@@ -74,9 +74,10 @@ export default function InvoicePay() {
           cleanUrl.searchParams.delete('order_id');
           window.history.replaceState({}, '', cleanUrl);
         }
-      } catch {
+      } catch (e) {
         if (!cancelled) {
-          setError('Could not verify your payment. If you were charged, please contact us.');
+          const backendError = e?.response?.data?.error || e?.data?.error;
+          setError(backendError || 'Could not verify your payment. If you were charged, please contact us.');
           setNotice('');
         }
       } finally {
