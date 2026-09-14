@@ -234,6 +234,16 @@ export default function ContractsAdminPage() {
                 <p className="text-xs text-muted-foreground truncate">
                   {c.client_name || c.client_email} · {money(c.price_total)} · dep {money(c.deposit_amount)}
                 </p>
+                {c.status !== 'draft' && c.status !== 'sent' && c.signer_name && (
+                  <div className="flex items-center gap-3 mt-2">
+                    {c.signature_mode === 'drawn' && c.signature_image && (
+                      <img src={c.signature_image} alt="Signature" className="h-10 bg-[#FAF7F0] rounded px-2 py-1 border border-border" />
+                    )}
+                    <p className="text-[11px] text-muted-foreground">
+                      Signed by {c.signer_name}{c.signed_at ? ` on ${new Date(c.signed_at).toLocaleDateString()}` : ''}
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="flex flex-wrap gap-1 justify-end">
                 <Button disabled={!['draft','sent'].includes(c.status)} title="Edit unsigned agreement" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ contract: c })}>
