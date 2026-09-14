@@ -140,13 +140,13 @@ export default function ContractSign() {
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div className="rounded-xl bg-secondary/40 p-4">
-              <p className="text-muted-foreground text-xs uppercase tracking-wide">Deposit due at signing</p>
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">{contract.payment_installments?.length ? 'First payment due '+contract.payment_installments[0].due_date : 'Deposit due at signing'}</p>
               <p className="text-xl font-bold text-foreground mt-1">{money(contract.deposit_amount)}</p>
             </div>
             {contract.payment_schedule && (
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">Payment schedule</p>
-                <p className="text-sm text-foreground mt-1">{contract.payment_schedule}</p>
+                <p className="text-sm text-foreground mt-1 whitespace-pre-line">{contract.payment_schedule}</p>
               </div>
             )}
           </div>
