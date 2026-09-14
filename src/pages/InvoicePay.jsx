@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle2, CreditCard, Lock } from 'lucide-react';
+import { Loader2, CheckCircle2, CreditCard, Lock, CalendarClock } from 'lucide-react';
 import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
