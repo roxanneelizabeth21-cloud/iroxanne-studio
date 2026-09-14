@@ -1,3 +1,4 @@
+import {estimateProject} from '../../shared/quoteEstimate.ts';
 import {createClientFromRequest} from 'npm:@base44/sdk@0.8.44';
 const enc=new TextEncoder();
 const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
@@ -65,6 +66,9 @@ export default async function(req:Request){
   if(!data.name.trim()||data.quick_pitch.trim().length<5||!['under_1500','1500_3000','3000_5000','5000_8000','8000_plus','not_sure'].includes(data.budget_range))fail('Please complete your name, idea and budget.');
   for(const key of ['must_have_features','nice_to_have_features','integrations_needed'])data[key]=Array.isArray(input[key])?input[key].slice(0,30).map((v:any)=>String(v).slice(0,150)):[];
   data.ongoing_support_needed=input.ongoing_support_needed===true;
+  const pricing=(await db.PricingSettings.list('-updated_date',1).catch(()=>[]))[0];
+  const estimate=estimateProject({mustHave:data.must_have_features,niceToHave:data.nice_to_have_features,integrations:data.integrations_needed,rate:pricing?.rate_per_hour});
+  Object.assign(data,{estimated_tier:estimate.tier,estimated_hours_low:estimate.hoursLow,estimated_hours_high:estimate.hoursHigh,estimated_price_low:estimate.priceLow,estimated_price_high:estimate.priceHigh});
   const token=hex(crypto.getRandomValues(new Uint8Array(32)));
   const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
   await db.QuoteEmailVerification.update(record.id,{lead_id:lead.id});
