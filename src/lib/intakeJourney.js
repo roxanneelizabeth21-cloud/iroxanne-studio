@@ -2,6 +2,7 @@ export const INTAKE_LABELS = {
   pending: 'Link ready', sent: 'Sent', in_progress: 'In progress', submitted: 'Completed', reviewed: 'Reviewed',
 };
 export function intakeSteps(profile = {}) {
+  profile = profile ?? {};
   const steps = ['welcome', 'idea', 'workflow', 'brand'];
   if (profile.content === 'ready') steps.push('home', 'about');
   if (profile.features?.includes('services')) steps.push('services');
