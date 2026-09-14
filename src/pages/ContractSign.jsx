@@ -154,7 +154,7 @@ export default function ContractSign() {
           {contract.terms && (
             <div>
               <h2 className="text-sm font-semibold text-foreground mb-2">Terms &amp; conditions</h2>
-              <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-6 max-h-72 overflow-y-auto print:max-h-none print:overflow-visible rounded-xl bg-muted/40 p-4">
+              <div className="text-sm text-foreground whitespace-pre-wrap leading-7 rounded-xl bg-muted/40 p-4">
                 {contract.terms}
               </div>
             </div>

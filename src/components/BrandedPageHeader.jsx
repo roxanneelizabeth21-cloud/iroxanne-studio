@@ -53,7 +53,7 @@ export function BrandedFooter() {
   return (
     <div className="text-center text-xs text-gray-400 dark:text-gray-600 mt-8 pt-4 border-t border-gray-200 dark:border-gray-800">
       <p className="font-medium">iRoxanne Studio</p>
-      <p className="mt-0.5">Custom apps built by a real person. • roxanneelizabeth21@gmail.com</p>
+      <p className="mt-0.5">Custom apps built by a real person. • roxanne@iroxannestudio.com</p>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 export function withHandoffTerms(terms:unknown) {
   const text=String(terms || '').trim();
   const clause='Full app handoff, including transfer of the completed app and administrative access, takes place only after all agreed project payments have been received in full.';
-  return text.includes(clause)?text:[text,clause].filter(Boolean).join('\n\n');
+  const currentAgreement = text.includes('Full ownership and administrative handoff occur only after completion and payment in full under Sections 9 and 10.');
+  return text.includes(clause) || currentAgreement ? text : [text,clause].filter(Boolean).join('\n\n');
 }
 export type Installment = {label:string; amount:number; due_date:string};
 export function validateSchedule(rows:any, total:number): Installment[] {
