@@ -193,7 +193,7 @@ export default function InvoicePay() {
             <div className="space-y-3">
               <h2 className="text-sm font-semibold text-foreground">Pay online</h2>
               <div className="rounded-xl border border-border p-4 space-y-3">
-                <p className="text-sm text-muted-foreground">Pay in full or make an extra payment whenever you wish. Each payment reduces your balance; agreed deadlines stay the same.</p>
+                <p className="text-sm text-muted-foreground">Pay your agreed amount, pay the full outstanding balance, or make extra payments toward your balance at any time, with no prepayment fee. Payments are made through Square. Each payment reduces your balance; agreed payment deadlines still apply.</p>
                 <Button disabled={!!redirecting || invoice.status === 'cancelled'} onClick={() => pay('project', null)}>Pay full outstanding balance — {money(summary?.outstanding)}</Button>
                 <label className="block text-sm font-medium" htmlFor="extra-payment">Or enter a payment amount ($)</label>
                 <input id="extra-payment" type="number" inputMode="decimal" min="1" max={summary?.outstanding} step="0.01" value={customAmount} onChange={e => setCustomAmount(e.target.value)} className="w-full rounded-md border border-input bg-background text-foreground p-3"/>

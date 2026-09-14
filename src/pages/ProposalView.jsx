@@ -194,6 +194,12 @@ export default function ProposalView() {
 
           {proposal.payment_installments?.length>0 && <section><h2 className="font-serif text-xl mb-3">Payment schedule</h2>{proposal.payment_installments.map((r,i)=><div className="flex flex-wrap justify-between gap-2 border-b py-3 text-sm" key={i}><span>{r.label} · due {r.due_date}</span><strong>{money(r.amount)}</strong></div>)}</section>}
 
+          {!settled && !proposal.payment_installments?.length && <section className="rounded-xl border border-border p-5 space-y-2">
+            <h2 className="font-serif text-xl">Payment options</h2>
+            <p className="text-sm leading-6">Choose a payment approach that works for your project: pay in full, pay the agreed deposit and final balance, or arrange up to four payments tied to project milestones. You are also welcome to make extra payments toward your balance at any time, with no prepayment fee.</p>
+            <p className="text-sm text-muted-foreground">We will confirm your schedule before you sign. Extra payments reduce your balance; agreed payment deadlines still apply. Payments are made through Square.</p>
+          </section>}
+
           {proposal.valid_until && !settled && (
             <p className="text-xs text-muted-foreground text-center">
               This proposal is valid through {new Date(expiry).toLocaleString()}.

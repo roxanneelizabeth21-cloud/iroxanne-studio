@@ -151,6 +151,12 @@ export default function ContractSign() {
             )}
           </div>
 
+          {!signed && !contract.payment_installments?.length && <aside className="rounded-xl border border-border p-4 space-y-2 print:hidden">
+            <h2 className="text-sm font-semibold">Before you sign</h2>
+            <p className="text-sm leading-6">You may pay in full or make extra payments toward your balance with no prepayment fee. If you would prefer up to four payments tied to project milestones, contact me before signing so we can agree on the amounts and update the schedule above.</p>
+            <p className="text-xs text-muted-foreground">The schedule shown above applies unless we agree to change it. Extra payments reduce your balance; agreed deadlines still apply. Payments are made through Square.</p>
+          </aside>}
+
           {contract.terms && (
             <div>
               <h2 className="text-sm font-semibold text-foreground mb-2">Terms &amp; conditions</h2>
