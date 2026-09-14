@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import ContentCalendar from './ContentCalendar';
+import FacebookConnectionStatus from '@/components/marketing/FacebookConnectionStatus';
 import { hasValidMedia, publishTargets, platformResult } from '@/lib/postValidation';
 import { dateKey } from '@/lib/marketing';
 
@@ -26,6 +27,7 @@ export default function MarketingHub() {
   <details className="rounded-xl border p-4" open={attention.length>0}><summary className="cursor-pointer font-medium">Needs attention ({attention.length})</summary>
    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">{attention.map(({p,reason})=><Link key={p.id} to={'/marketing/post/'+p.id} className="rounded-lg border p-3"><p className="font-medium line-clamp-1">{p.hook||p.caption||'Untitled post'}</p><p className="text-sm text-muted-foreground">{reason} →</p><p className="text-xs mt-2">{publishTargets(p).map(t=>t+': '+(platformResult(p,t)==='Not Selected'?'Not published':platformResult(p,t))).join(' · ')}</p></Link>)}</div>
   </details>
+  <FacebookConnectionStatus />
   <p className="text-sm text-muted-foreground">Dragging sets a planned date only. Approval and publishing are separate. Open a post to review both platforms. Published posts remain locked.</p>
   <ContentCalendar planner />
  </div>;
