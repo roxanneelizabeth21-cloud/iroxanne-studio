@@ -240,6 +240,32 @@
           }
         }
       }
+    },
+    "payment_installments": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "label",
+          "amount",
+          "due_date"
+        ]
+      }
     }
   },
   "required": [
