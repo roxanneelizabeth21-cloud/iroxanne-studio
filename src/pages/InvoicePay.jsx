@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, CreditCard, Lock } from 'lucide-react';
 import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader';
 
+import PaymentPlanDisplay from '@/components/PaymentPlanDisplay';
+
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
 export default function InvoicePay() {
@@ -176,7 +178,11 @@ export default function InvoicePay() {
             </div>
           </div>
 
-          {fullyPaid ? (
+          {invoice.payment_installments?.length>0 ? <div className="space-y-4">
+            <PaymentPlanDisplay invoice={invoice}/>
+            {invoice.status==='cancelled' ? <p>This invoice has been cancelled. Please contact iRoxanne Studio.</p> : invoice.square_needs_review ? <p role="alert">This payment plan needs a review. Please contact iRoxanne Studio before making another payment.</p> : fullyPaid ? <p className="font-semibold">Thank you — your payment plan is paid in full.</p> : invoice.square_public_url ? <Button asChild><a href={invoice.square_public_url}>View and pay securely with Square</a></Button> : <p className="text-sm text-muted-foreground">Your payment plan is being prepared. You'll receive an email from Square when it is ready.</p>}
+            <Button variant="outline" onClick={load}>Refresh payment status</Button>
+          </div> : fullyPaid ? (
             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 text-center">
               <CheckCircle2 className="h-10 w-10 mx-auto text-green-500 mb-2" />
               <p className="font-semibold text-foreground">This invoice is paid in full</p>
