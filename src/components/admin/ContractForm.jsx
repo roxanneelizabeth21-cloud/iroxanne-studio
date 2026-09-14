@@ -102,7 +102,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         </div>
         <div className="space-y-1.5">
           <Label>Payment schedule</Label>
-          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% upfront, 50% on launch" />
+          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
         </div>
       </div>
 
@@ -203,7 +203,7 @@ function buildInitial(initial, settings) {
       ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
       : [],
     deposit_amount: 0,
-    payment_schedule: '50% upfront, 50% on launch',
+    payment_schedule: '50% deposit at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.',
     terms: settings?.standard_terms || '',
     contract_variant: 'standard',
     rush_terms: settings?.rush_terms || RUSH_TERMS,
