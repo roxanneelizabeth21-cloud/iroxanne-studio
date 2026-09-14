@@ -88,6 +88,9 @@
               "paid"
             ],
             "default": "pending"
+          },
+          "paid_amount": {
+            "type": "number"
           }
         },
         "required": [
@@ -192,6 +195,89 @@
     "reminder_last_sent_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "payment_installments": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "label",
+          "amount",
+          "due_date"
+        ]
+      }
+    },
+    "square_schedule_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "square_invoice_id": {
+      "type": "string"
+    },
+    "square_order_id": {
+      "type": "string"
+    },
+    "square_location_id": {
+      "type": "string"
+    },
+    "square_status": {
+      "type": "string"
+    },
+    "square_public_url": {
+      "type": "string"
+    },
+    "square_sync_error": {
+      "type": "string"
+    },
+    "square_last_checked_at": {
+      "type": "string"
+    },
+    "square_payment_snapshot": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "paid_amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "amount",
+          "due_date"
+        ]
+      }
     }
   },
   "required": [
