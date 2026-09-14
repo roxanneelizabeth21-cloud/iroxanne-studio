@@ -15,6 +15,8 @@ Deno.serve(async (req) => {
     const stripCRLF = (v: unknown) => String(v == null ? '' : v).replace(/[\r\n]+/g, ' ').trim();
     const name = stripCRLF(data.name) || 'Unknown';
     const email = stripCRLF(data.email) || 'No email provided';
+    const phone = stripCRLF(data.phone) || '';
+    const bestTime = stripCRLF(data.best_time_to_contact) || '';
     const inquiryType = stripCRLF(data.inquiry_type) || 'general';
     const subject = stripCRLF(data.subject) || '(No subject)';
     const message = data.message || '(No message)';
@@ -59,11 +61,13 @@ Deno.serve(async (req) => {
       title: 'New inquiry',
       content: `${textToHtmlParagraphs(escapeHtml(intro))}
 ${detailRows([
-  ['Name', escapeHtml(name)],
-  ['Email', escapeHtml(email)],
-  ['Inquiry Type', escapeHtml(inquiryType)],
-  ['Subject', escapeHtml(subject)],
-  ['Submitted', createdAt],
+ ['Name', escapeHtml(name)],
+ ['Email', escapeHtml(email)],
+ ['Phone', escapeHtml(phone)],
+ ['Best time to contact', escapeHtml(bestTime)],
+ ['Inquiry Type', escapeHtml(inquiryType)],
+ ['Subject', escapeHtml(subject)],
+ ['Submitted', createdAt],
 ])}
 <p style="margin:22px 0 8px;color:#8B7B95;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;">Message</p>
 <div style="white-space:pre-wrap;background:#F5EFF8;border-radius:10px;padding:16px;">${escapeHtml(message)}</div>`,

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
-import {validateSchedule} from '../../../base44/shared/paymentSchedule.ts';
+import {validateSchedule} from '@/lib/paymentSchedule';
 
 export function scheduleError(rows,total) {
   if (!rows?.length) return '';

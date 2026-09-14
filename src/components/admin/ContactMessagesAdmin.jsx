@@ -26,6 +26,7 @@ export default function ContactMessagesAdmin() {
     ? messages.filter((m) =>
         (m.name || '').toLowerCase().includes(search.toLowerCase()) ||
         (m.email || '').toLowerCase().includes(search.toLowerCase()) ||
+        (m.phone || '').toLowerCase().includes(search.toLowerCase()) ||
         (m.subject || '').toLowerCase().includes(search.toLowerCase()) ||
         (m.message || '').toLowerCase().includes(search.toLowerCase()))
     : messages;
@@ -102,6 +103,12 @@ export default function ContactMessagesAdmin() {
                 <p className="text-sm text-muted-foreground mt-1">
                   <span className="text-foreground">{selected.name}</span> · {selected.email}
                 </p>
+                {selected.phone ? (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    <span className="text-foreground">{selected.phone}</span>
+                    {selected.best_time_to_contact ? <span> · Best time: {selected.best_time_to_contact}</span> : null}
+                  </p>
+                ) : null}
                 <p className="text-xs text-muted-foreground mt-1">{formatDate(selected.created_date)}</p>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelected(null)}>

@@ -9,7 +9,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { isRushDate, RUSH_TERMS } from '@/lib/studioDelivery';
 
 import PaymentScheduleEditor, {scheduleError} from '@/components/admin/PaymentScheduleEditor';
-import {scheduleText,withHandoffTerms} from '../../../base44/shared/paymentSchedule.ts';
+import {scheduleText,withHandoffTerms} from '@/lib/paymentSchedule';
 
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 

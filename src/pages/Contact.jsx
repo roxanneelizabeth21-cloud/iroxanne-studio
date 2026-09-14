@@ -10,15 +10,19 @@ import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', inquiry_type: 'general', subject: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', best_time_to_contact: '', inquiry_type: 'general', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
 
   const update = (f, v) => setForm((p) => ({ ...p, [f]: v }));
 
   const submit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
+    const phoneDigits = (form.phone || '').replace(/\D/g, '');
+    if (phoneDigits.length < 7) { setPhoneError('Please enter a valid phone number (at least 7 digits).'); return; }
+    setPhoneError('');
     setSubmitting(true);
     try {
       const created = await base44.entities.ContactMessage.create(form);
@@ -64,6 +68,14 @@ export default function Contact() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-name">Name *</Label><Input id="c-name" value={form.name} onChange={(e) => update('name', e.target.value)} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-email">Email *</Label><Input id="c-email" type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-[13px] text-muted-foreground" htmlFor="c-phone">Phone *</Label>
+                  <Input id="c-phone" type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => { update('phone', e.target.value); setPhoneError(''); }} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" />
+                  {phoneError ? <p className="text-[12px] text-red-600">{phoneError}</p> : null}
+                </div>
+                <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-best-time">Best time to contact</Label><Input id="c-best-time" value={form.best_time_to_contact} onChange={(e) => update('best_time_to_contact', e.target.value)} placeholder="e.g. Weekday mornings, after 5 PM" className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground">Inquiry type</Label><Select value={form.inquiry_type} onValueChange={(v) => update('inquiry_type', v)}><SelectTrigger className="border-[#2D2A4A]/10 bg-background text-foreground"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="general">General</SelectItem><SelectItem value="project">New project</SelectItem><SelectItem value="collaboration">Collaboration</SelectItem><SelectItem value="other">Other</SelectItem></SelectContent></Select></div>

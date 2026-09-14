@@ -10,6 +10,14 @@
       "type": "string",
       "description": "Sender email"
     },
+    "phone": {
+      "type": "string",
+      "description": "Sender phone number"
+    },
+    "best_time_to_contact": {
+      "type": "string",
+      "description": "Best time to contact the sender (e.g. weekday mornings, after 5 PM)"
+    },
     "inquiry_type": {
       "type": "string",
       "enum": [
