@@ -20,8 +20,15 @@ export default function Contact() {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setSubmitting(true);
-    try { await base44.entities.ContactMessage.create(form); setDone(true); }
-    finally { setSubmitting(false); }
+    try {
+      const created = await base44.entities.ContactMessage.create(form);
+      // Fire the admin email notification — non-blocking so the user isn't
+      // delayed by email delivery. The record is already saved in the backend.
+      base44.functions.invoke('sendContactNotification', {
+        data: { ...created, id: created.id, created_date: created.created_date },
+      }).catch(() => {});
+      setDone(true);
+    } finally { setSubmitting(false); }
   };
 
   return (
