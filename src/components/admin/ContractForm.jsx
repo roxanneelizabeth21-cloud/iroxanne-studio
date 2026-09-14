@@ -8,6 +8,9 @@ import { Plus, Trash2 } from 'lucide-react';
 
 import { isRushDate, RUSH_TERMS } from '@/lib/studioDelivery';
 
+import PaymentScheduleEditor, {scheduleError} from '@/components/admin/PaymentScheduleEditor';
+import {scheduleText} from '../../../base44/shared/paymentSchedule.ts';
+
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 
 export default function ContractForm({ initial, settings, onSave, saving }) {
@@ -32,15 +35,18 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
     }));
 
   const computeDeposit = (price) => {
+    if(form.payment_installments?.length) return form.payment_installments[0].amount;
     const p = money(price);
     const pct = form.deposit_percent ?? settings?.default_deposit_percent ?? 50;
     return Math.round(p * pct) / 100;
   };
 
   const submit = () => {
+    if(scheduleError(form.payment_installments,total)) return;
     const payload = {
       ...form,
       price_total: total,
+      payment_schedule: form.payment_installments?.length ? scheduleText(form.payment_installments) : form.payment_schedule,
       deposit_amount: computeDeposit(total),
       deposit_percent: form.deposit_percent ?? settings?.default_deposit_percent ?? 50,
     };
@@ -161,6 +167,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       </div>
 
       <div className="space-y-1.5">
+        <PaymentScheduleEditor value={form.payment_installments || []} total={total} onChange={v=>update('payment_installments',v)}/>
         <Label>Terms &amp; conditions</Label>
         <Textarea
           rows={5}
@@ -171,7 +178,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       </div>
 
       <div className="flex justify-end pt-2 border-t border-border">
-        <Button onClick={submit} disabled={saving || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
+        <Button onClick={submit} disabled={saving || !!scheduleError(form.payment_installments,total) || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
           {saving ? 'Saving...' : 'Save Contract'}
         </Button>
       </div>
