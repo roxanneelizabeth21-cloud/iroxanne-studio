@@ -185,17 +185,10 @@ export default function PostWorkflowActions({ post: postProp, clips = [], brandP
       {/* Publishing — always via Final Review */}
       {!locked && targets.length > 0 && (
         <div className="grid gap-2">
-          {PUBLISHING_PLATFORMS.filter((p) => targets.includes(p.entityValue)).map((p) => (
-            <Button key={p.id} type="button" variant="outline" onClick={() => openReview([p.entityValue])} title={p.tooltip} className="gap-2">
-              <p.Icon className="h-4 w-4" aria-hidden="true" /> {p.actionLabel}
-            </Button>
-          ))}
-          {targets.length > 1 && (
-            <Button type="button" onClick={() => openReview(targets)} className="gap-2">
-              <Send className="h-4 w-4" /> Publish to Instagram + Facebook
-            </Button>
-          )}
-          <p className="text-[11px] text-muted-foreground">Each opens a final review — nothing is sent until you confirm there.</p>
+          <Button type="button" size="lg" onClick={() => openReview(targets)} disabled={!!busy} className="gap-2 w-full">
+            {busy === 'review' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Publish Now to {targets.join(' + ')}
+          </Button>
+          <p className="text-[11px] text-muted-foreground">Opens a final review — nothing is sent until you confirm there. This publishes immediately, ignoring any scheduled date.</p>
         </div>
       )}
 
