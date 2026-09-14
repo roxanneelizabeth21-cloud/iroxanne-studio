@@ -3,7 +3,7 @@ export const INTAKE_LABELS = {
 };
 export function intakeSteps(profile = {}) {
   profile = profile ?? {};
-  const steps = ['welcome', 'idea', 'workflow', 'brand'];
+  const steps = ['welcome', 'idea', 'account', 'workflow', 'brand'];
   if (profile.content === 'ready') steps.push('home', 'about');
   if (profile.features?.includes('services')) steps.push('services');
   if (profile.features?.includes('gallery')) steps.push('gallery');

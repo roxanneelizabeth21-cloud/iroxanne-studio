@@ -11,7 +11,7 @@ import BrandedPageHeader, { BrandedFooter } from '@/components/BrandedPageHeader
 import { intakeSteps, readableIntake } from '@/lib/intakeJourney';
 
 const SECTION_LABELS = {
-  basics: 'Your Idea / Business', brand: 'Brand & Design', home: 'Home Page',
+  account: 'Your Base44 account', basics: 'Your Idea / Business', brand: 'Brand & Design', home: 'Home Page',
   about: 'About Page', services: 'Services & Pricing', gallery: 'Gallery / Portfolio',
   testimonials: 'Testimonials', contact: 'Contact Info', legal: 'Legal & Policies',
   workflow: 'How Your App Could Work', data: 'Data & Automations', documents: 'Documents & Templates', notes: 'Anything Else',
@@ -167,6 +167,16 @@ export default function ClientIntakeForm() {
           <Field label="What would you like to create or improve?"><Textarea rows={4} value={profile.idea||''} onChange={e=>patchNested('journey_profile','idea',e.target.value)} placeholder="Tell me in your own words. No technical terms needed."/></Field>
           <Field label="Who would this help?"><Textarea rows={3} value={profile.audience||''} onChange={e=>patchNested('journey_profile','audience',e.target.value)} placeholder="Your customers, a community, your team, or still exploring"/></Field>
         </Section>}
+        {step==='account' && <Section label="Your Base44 account" description="Your app will have a home in your own account. Already have one? Just enter the email you use.">
+            <div className="space-y-3">
+              <Field label="Base44 account email" hint="Already have an account? Enter its email below. Your completed app transfers to your account after payment in full. Before handoff, I'll confirm the lowest suitable subscription for your app. Your Base44 subscription is separate from your project price."><Input type="email" value={intake.platform_account_email || ''} onChange={(e) => patch('platform_account_email', e.target.value)} placeholder="you@yourbusiness.com" /></Field>
+              <p className="text-sm text-foreground">Need an account? Start with a free Base44 account, then return here and enter its email. You do not need to choose a paid plan now.</p>
+              <p className="text-sm text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without using my referral link.</p>
+              <Button asChild className="min-h-11 whitespace-normal">
+                <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
+              </Button>
+            </div>
+        </Section>}
         {step==='review' && <Section label="Ready when you are" description="Review what you’ve shared. Blank answers are fine. Use Back to make changes, or send this to Roxanne.">
           {Object.entries(intake).filter(([k,v])=>!['id','client_name','project_title','project_tier','status','journey_step'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border pb-4"><h3 className="text-sm font-semibold capitalize mb-1">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">{readableIntake(v)}</p></div>)}
           <Button variant="outline" disabled={saving} onClick={()=>go('welcome')}>Edit my choices</Button>
@@ -182,14 +192,7 @@ export default function ClientIntakeForm() {
               <Field label="Email to show on site"><Input value={intake.email_for_site || ''} onChange={(e) => patch('email_for_site', e.target.value)} placeholder="hello@yourbusiness.com" /></Field>
             </div>
             <Field label="Business address (if applicable)"><Input value={intake.address || ''} onChange={(e) => patch('address', e.target.value)} placeholder="City, State or full address" /></Field>
-            <div className="space-y-3">
-              <Field label="Base44 account email" hint="Already have an account? Enter its email below. Your completed app transfers to your account after payment in full. Before handoff, I'll confirm the lowest suitable subscription for your app. Your Base44 subscription is separate from your project price."><Input type="email" value={intake.platform_account_email || ''} onChange={(e) => patch('platform_account_email', e.target.value)} placeholder="you@yourbusiness.com" /></Field>
-              <p className="text-sm text-foreground">Need an account? Start with a free Base44 account, then return here and enter its email. You do not need to choose a paid plan now.</p>
-              <p className="text-sm text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without using my referral link.</p>
-              <Button asChild className="min-h-11 whitespace-normal">
-                <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
-              </Button>
-            </div>
+
             <Field label="Social media links" hint="Paste your URLs — Instagram, Facebook, TikTok, YouTube, LinkedIn, etc."><Textarea rows={3} value={typeof intake.social_links === 'string' ? intake.social_links : JSON.stringify(intake.social_links || '', null, 2)} onChange={(e) => patch('social_links', { links: e.target.value })} placeholder="Instagram: https://instagram.com/yourbiz&#10;Facebook: https://facebook.com/yourbiz" /></Field>
           </Section>
         )}
