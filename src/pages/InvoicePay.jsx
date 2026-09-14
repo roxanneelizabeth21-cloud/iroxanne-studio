@@ -276,7 +276,7 @@ function PayRow({ label, amount, status, dueDate, loading, onPay }) {
         <div>
           <p className="font-medium text-foreground">{label}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Due now'}
+            {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Deadline per your agreement; early payment welcome'}
           </p>
         </div>
         <span className="font-bold text-foreground">{money(amount)}</span>
