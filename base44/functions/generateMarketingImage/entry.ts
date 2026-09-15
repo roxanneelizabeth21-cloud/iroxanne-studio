@@ -16,7 +16,7 @@ const ASPECT_BY_FORMAT = {
 
 const ASPECT_GUIDE = {
   '9:16': 'Compose as a tall vertical 9:16 frame. Keep the subject and any text inside the central vertical band, with generous empty space in the top 15% and bottom 20% so platform interface overlays never cover important detail.',
-  '4:5': 'Compose as a portrait 4:5 frame. Subject weighted slightly above centre, breathing room at the edges, nothing critical within the outer 8% margin.',
+  '4:5': 'Compose as a portrait 4:5 frame. The subject should FILL the frame: it occupies roughly 60 to 75 percent of the area, not a small element floating in empty background. Margins are deliberate breathing space, never dead space. Keep nothing critical within the outer 8 percent.',
   '1:1': 'Compose as a balanced square 1:1 frame with the focal point centred and even margins on all sides.',
   '16:9': 'Compose as a wide horizontal 16:9 frame with the focal point off-centre and clear headroom.',
 };
@@ -45,6 +45,9 @@ function buildPrompt(input) {
   if (prompt) p += `CORE IMAGE BRIEF\n${prompt}\n\n`;
 
   p += 'Brand direction: iRoxanne Studio (exact spelling). Create an arresting story-led editorial composition with a strong focal subject, contrast and intentional scale. Plum, cream and gold are accents, not mandatory full-frame backgrounds. Bright natural environments and vivid subject colors are welcome. Avoid repeating the same purple-and-gold illustration. A viewer should understand the possibility shown without reading a caption. No generic laptops, neon technology, fake app UI or invented brand marks. Older technical context must not override this direction.\n';
+  // The studio sells app building, not the apps in the picture. A graphic with
+  // no words reads as an advert for the client's app instead of for Roxanne.
+  p += 'WHAT THIS IMAGE IS SELLING\nThis is marketing for iRoxanne Studio, a studio that builds custom apps and websites for small businesses and people with an idea. Any app shown is evidence of that work, never the product being sold. The image must make a viewer think "someone could build that for me", not "I should get that app". Unless the brief says otherwise, include a short headline about the possibility or the service, and set the words iRoxanne Studio small and legible in a corner as a signature. Spell it exactly: lowercase i, capital R, capital S, final e.\n';
   p += 'VISUAL DIRECTION\n';
   p += line('Visual type', vd.visual_type);
   p += line('Creative concept', vd.creative_concept);
