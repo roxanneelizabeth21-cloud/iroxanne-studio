@@ -201,7 +201,7 @@ export default async function (req) {
 
     // Inspect the actual generated pixels before replacing the owner's asset.
     const review = await base44.integrations.Core.InvokeLLM({
-      prompt: 'Inspect the attached finished marketing image against this brief. Reject unreadable or misspelled lettering, malformed anatomy, fake UI, generic decorative filler that fails to convey the subject, or a composition with no clear focal point. The business name, if visible, must be exactly iRoxanne Studio. Do not accept iRoxan, Roxsan, or other variants. If you cannot inspect the image, fail. Return pass and reason. Brief: ' + finalPrompt,
+      prompt: 'Inspect the attached finished marketing image against this brief. This is marketing for iRoxanne Studio, which builds custom apps and websites; any app shown is evidence of that work.\n\nFail it only for a real defect: lettering that is actually unreadable or misspelled, malformed anatomy, fabricated app UI presented as real, or a composition with no clear focal point. If the business name appears it must read exactly iRoxanne Studio; reject iRoxan, Roxanne Studios, Roxsan or other variants.\n\nDo NOT fail an image merely for containing text, for imperfect kerning or spacing, or for a minor flaw that does not stop a viewer reading it. Legible text carrying the studio name or a headline is wanted, not a defect. If you cannot inspect the image, fail. Return pass and reason. Brief: ' + finalPrompt,
       file_urls: [image_url],
       response_json_schema: { type:'object', properties:{pass:{type:'boolean'},reason:{type:'string'}}, required:['pass','reason'] }
     });
