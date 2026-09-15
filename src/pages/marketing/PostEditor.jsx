@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Loader2, Save, CheckCircle2, Trash2, Type, Image as ImageIcon, CalendarClock, Send, Target } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, CheckCircle2, Trash2, Type, Image as ImageIcon, CalendarClock, Send, Target, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { platformColor } from '@/lib/marketing';
 import { usePostEditor } from '@/lib/usePostEditor';
@@ -12,6 +12,7 @@ import PostEditorMediaTab from '@/components/marketing/PostEditorMediaTab';
 import PostEditorSetupTab from '@/components/marketing/PostEditorSetupTab';
 import CopyEverythingButton from '@/components/marketing/CopyEverythingButton';
 import PostPublishPanel from '@/components/marketing/PostPublishPanel';
+import JadePostPanel from '@/components/agent/JadePostPanel';
 
 export default function PostEditor() {
   const { id } = useParams();
@@ -25,6 +26,29 @@ export default function PostEditor() {
   const back = () => navigate(-1);
   const ed = usePostEditor(post, back);
   const { form } = ed;
+
+  // Real screenshots for whatever app this post is about. Jade needs the URLs so
+  // she composes the actual interface instead of inventing one. Both stores are
+  // checked: the gallery is where uploads land, the array is the backfill.
+  const { data: screenshots = [] } = useQuery({
+    queryKey: ['post-screenshots', post?.portfolio_item_id],
+    enabled: !!post?.portfolio_item_id,
+    staleTime: 300000,
+    queryFn: async () => {
+      const [gallery, item] = await Promise.all([
+        base44.entities.GalleryImage.filter({ portfolio_item_id: post.portfolio_item_id }, '-created_date', 40).catch(() => []),
+        base44.entities.PortfolioItem.get(post.portfolio_item_id).catch(() => null),
+      ]);
+      const rows = (gallery || [])
+        .filter((g) => g.image_url)
+        .map((g) => ({ title: g.title, image_url: g.image_url }));
+      const seen = new Set(rows.map((r) => r.image_url));
+      for (const url of item?.screenshots || []) {
+        if (url && !seen.has(url)) { rows.push({ title: 'screen', image_url: url }); seen.add(url); }
+      }
+      return rows;
+    },
+  });
 
   if (isLoading || !form) {
     return (
@@ -101,6 +125,15 @@ export default function PostEditor() {
         </div>
 
         <div className="md:sticky md:top-4 space-y-5">
+          <PostEditorSection icon={MessageCircle} title="Ask Jade" hint="She can see this post and can change it for you.">
+            <JadePostPanel
+              post={post}
+              portfolioTitle={ed.portfolioItem?.title}
+              screenshots={screenshots}
+              clips={ed.clips}
+            />
+          </PostEditorSection>
+
           <PostEditorSection icon={CalendarClock} title="Schedule & publishing" hint="Dates, times, link and status.">
             <PostEditorSetupTab
               form={form}
