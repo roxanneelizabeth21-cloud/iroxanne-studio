@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { CalendarDays, Loader2, Sparkles } from 'lucide-react';
+import { CalendarDays, Loader2, Sparkles, Sun, PenLine, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import TodayPostCard from '@/components/marketing/TodayPostCard';
 import PostEditorDrawer from '@/components/marketing/PostEditorDrawer';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
+import JadeAvatar from '@/components/agent/JadeAvatar';
+import { mediaState } from '@/lib/postValidation';
 import { dateKey, formatDate, platformColor } from '@/lib/marketing';
 
 function addDays(d, n) { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() + n); return x; }
@@ -24,8 +27,24 @@ export default function Today() {
   const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts'], queryFn: () => base44.entities.MarketingPost.list('-created_date') });
   const { data: templates = [] } = useQuery({ queryKey: ['video-templates'], queryFn: () => base44.entities.VideoTemplate.list() });
   const { data: portfolioItems = [] } = useQuery({ queryKey: ['portfolio-items'], queryFn: () => base44.entities.PortfolioItem.list() });
+  const { data: brandProfiles = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
+  const brand = brandProfiles[0] || null;
 
   const dueToday = posts.filter((p) => p.scheduled_date === today && p.status !== 'Skipped' && p.status !== 'Posted');
+
+  // Counts and problems for the three action cards and the attention strip.
+  const weekAhead = (() => {
+    const end = dateKey(addDays(new Date(), 7));
+    return posts.filter((p) => p.scheduled_date && p.scheduled_date >= today && p.scheduled_date <= end
+      && !['Posted', 'Skipped', 'Cancelled'].includes(p.status));
+  })();
+
+  const needsAttention = posts.filter((p) => {
+    if (['Skipped', 'Cancelled'].includes(p.status)) return false;
+    if (p.status === 'Failed' || p.status === 'Partially Published') return true;
+    // Anything dated but with no usable graphic will not go out looking right.
+    return !!p.scheduled_date && p.status !== 'Posted' && mediaState(p).tone === 'bad';
+  });
   const comingUp = [1, 2, 3].map((n) => {
     const key = dateKey(addDays(new Date(), n));
     return { key, label: formatDate(key), posts: posts.filter((p) => p.scheduled_date === key && p.status !== 'Skipped' && p.status !== 'Posted') };
