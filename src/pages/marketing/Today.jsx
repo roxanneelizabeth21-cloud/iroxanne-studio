@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { CalendarDays, Loader2, Sparkles, Sun, PenLine, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { CalendarDays, Sparkles, Sun, PenLine, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import TodayPostCard from '@/components/marketing/TodayPostCard';
 import PostEditorDrawer from '@/components/marketing/PostEditorDrawer';
