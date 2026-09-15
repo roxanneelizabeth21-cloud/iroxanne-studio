@@ -47,6 +47,7 @@ import Feedback from '@/pages/Feedback';
 import TestimonialsAdminPage from '@/pages/admin/TestimonialsAdminPage';
 
 import MarketingHub from '@/pages/marketing/MarketingHub';
+import Today from '@/pages/marketing/Today';
 import CampaignBuilder from '@/pages/marketing/CampaignBuilder';
 import ContentCalendar from '@/pages/marketing/ContentCalendar';
 import ContentLibrary from '@/pages/marketing/ContentLibrary';
@@ -141,8 +142,10 @@ const AuthenticatedApp = () => {
         <Route path="/admin/messages" element={<MessagesAdminPage />} />
         <Route path="/admin/legal" element={<LegalAdminPage />} />
         <Route path="/admin/email-templates" element={<EmailTemplatesAdminPage />} />
-        <Route path="/marketing" element={<MarketingHub />} />
+        {/* Today is the front door: one screen, the next three actions, and what is broken. */}
+        <Route path="/marketing" element={<Today />} />
         <Route path="/marketing/today" element={<Navigate to="/marketing" replace />} />
+        <Route path="/marketing/hub-old" element={<MarketingHub />} />
         <Route path="/marketing/controls" element={<AutomationControls />} />
         <Route path="/marketing/media" element={<MediaLibrary />} />
         <Route path="/marketing/canvas" element={<CaseStudyCanvasStudio />} />
