@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 /* Caption fonts for the image caption tool */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Bebas+Neue&family=Caveat:wght@600;700&display=swap');
+/* Cormorant Garamond is used inline by the marketing cards and the homepage
+   hero. Without this import it silently fell back to a generic serif. */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
