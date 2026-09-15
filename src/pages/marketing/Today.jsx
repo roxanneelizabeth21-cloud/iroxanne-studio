@@ -101,6 +101,83 @@ export default function Today() {
 
   return (
     <div className="space-y-4">
+      {/* Front door. Matches the layout on the music side so it's one habit. */}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="flex items-center gap-2 font-display text-xl font-semibold">
+            <Sun className="h-5 w-5 text-primary" /> Today
+          </h1>
+          <p className="text-sm text-muted-foreground">Make a post, see what is coming, fix what went wrong</p>
+        </div>
+        <Link
+          to="/marketing/strategist"
+          className="flex items-center gap-2 rounded-full bg-secondary/60 pl-1.5 pr-3 py-1.5 hover:bg-secondary shrink-0"
+        >
+          <JadeAvatar src={brand?.agent_avatar_url} size={28} />
+          <span className="text-sm font-medium">Jade</span>
+        </Link>
+      </div>
+
+      <h2 className="font-display text-3xl font-bold border-b border-primary/30 pb-3">What are we posting?</h2>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link to="/marketing/post" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors group">
+          <PenLine className="h-5 w-5 text-primary mb-3" />
+          <h3 className="font-display text-lg font-semibold">Create a post</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">Pick a project or write from scratch. Picture, link and words are filled in. You say when.</p>
+        </Link>
+
+        <Link to="/marketing/calendar" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
+          <CalendarDays className="h-5 w-5 text-primary mb-3" />
+          <h3 className="font-display text-lg font-semibold">Calendar</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {weekAhead.length} scheduled in the next 7 days.
+          </p>
+        </Link>
+
+        <Link to="/marketing/strategist" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
+          <JadeAvatar src={brand?.agent_avatar_url} size={22} className="mb-3" />
+          <h3 className="font-display text-lg font-semibold">Ask Jade</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">Ideas, a week of content, or a read on what is working.</p>
+        </Link>
+      </div>
+
+      {/* Needs attention: dated posts with no usable graphic, and failed publishes. */}
+      <section className="space-y-2">
+        <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <AlertTriangle className="h-3.5 w-3.5" /> Needs attention
+        </h3>
+        {needsAttention.length === 0 ? (
+          <div className="glass rounded-2xl p-4 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <p className="text-sm">Nothing needs fixing.</p>
+          </div>
+        ) : (
+          <div className="glass rounded-2xl divide-y divide-border/50">
+            {needsAttention.slice(0, 6).map((p) => {
+              const ms = mediaState(p);
+              return (
+                <Link
+                  key={p.id}
+                  to={`/marketing/post/${p.id}`}
+                  className="flex items-center justify-between gap-3 p-3 hover:bg-secondary/40 first:rounded-t-2xl last:rounded-b-2xl"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{p.hook || p.caption?.slice(0, 60) || 'Untitled post'}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {p.scheduled_date || 'no date'} · {p.status === 'Failed' || p.status === 'Partially Published' ? p.status : ms.label}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                </Link>
+              );
+            })}
+            {needsAttention.length > 6 && (
+              <p className="p-3 text-xs text-muted-foreground">and {needsAttention.length - 6} more</p>
+            )}
+          </div>
+        )}
+      </section>
       <HowThisWorks
         steps={[
           'Everything due today shows up as a card, newest plans first.',
