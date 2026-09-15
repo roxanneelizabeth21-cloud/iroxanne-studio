@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import CanvasStepBar from '@/components/marketing/canvas/CanvasStepBar';
+import JadePostPanel from '@/components/agent/JadePostPanel';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
 import StepProject from '@/components/marketing/create/StepProject';
 import StepMedia from '@/components/marketing/create/StepMedia';
@@ -314,6 +315,28 @@ function GuidedPost() {
     <div className="mx-auto w-full max-w-5xl space-y-3">
       <Link to="/marketing" className="inline-block py-2 text-sm underline">← Back to planner</Link>
       {!['Posted', 'Partially Published', 'Publishing'].includes(post?.status) && post?.publishing_status !== 'Publishing' && <CanvasStepBar steps={STEPS} step={step} maxStep={maxStep} onGoTo={goToStep} />}
+
+      {/* Jade, inside the post she is looking at. Collapsed by default so the
+          wizard stays the focus, but one click away at every step. */}
+      {post?.id && (
+        <details className="glass rounded-2xl px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold">
+            <JadeAvatar src={brandProfile?.agent_avatar_url} size={28} />
+            Ask Jade about this post
+            <span className="ml-auto text-xs font-normal text-muted-foreground">
+              {jadeScreens.length ? `${jadeScreens.length} real screens on file` : 'no screenshots on file'}
+            </span>
+          </summary>
+          <div className="pt-3">
+            <JadePostPanel
+              post={post}
+              portfolioTitle={projectTitle}
+              screenshots={jadeScreens}
+              clips={clips}
+            />
+          </div>
+        </details>
+      )}
 
       <div className="min-w-0">
       <div className="mb-2 flex items-center justify-end">
