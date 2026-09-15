@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import CanvasStepBar from '@/components/marketing/canvas/CanvasStepBar';
 import JadePostPanel from '@/components/agent/JadePostPanel';
+import JadeAvatar from '@/components/agent/JadeAvatar';
 import HowThisWorks from '@/components/marketing/HowThisWorks';
 import StepProject from '@/components/marketing/create/StepProject';
 import StepMedia from '@/components/marketing/create/StepMedia';
@@ -75,6 +76,30 @@ function GuidedPost() {
   const { data: clips = [] } = useQuery({ queryKey: ['clip-assets'], queryFn: () => base44.entities.ClipAsset.list('-created_date') });
   const { data: bpList = [] } = useQuery({ queryKey: ['brand-profile'], queryFn: () => base44.entities.BrandProfile.list() });
   const brandProfile = bpList[0] || null;
+
+  // Real screenshots for whichever app this post is about. Jade needs the URLs
+  // so she composes from the actual interface instead of inventing a scene.
+  // Uploads land in GalleryImage; PortfolioItem.screenshots is the backfill.
+  const jadePortfolioId = post?.portfolio_item_id && post.portfolio_item_id !== '__studio_service__'
+    ? post.portfolio_item_id
+    : null;
+  const { data: jadeScreens = [] } = useQuery({
+    queryKey: ['post-screenshots', jadePortfolioId],
+    enabled: !!jadePortfolioId,
+    staleTime: 300000,
+    queryFn: async () => {
+      const gallery = await base44.entities.GalleryImage
+        .filter({ portfolio_item_id: jadePortfolioId }, '-created_date', 40).catch(() => []);
+      const rows = (gallery || []).filter((g) => g.image_url)
+        .map((g) => ({ title: g.title, image_url: g.image_url }));
+      const seen = new Set(rows.map((r) => r.image_url));
+      const item = portfolioItems.find((p) => p.id === jadePortfolioId);
+      for (const url of item?.screenshots || []) {
+        if (url && !seen.has(url)) { rows.push({ title: 'screen', image_url: url }); seen.add(url); }
+      }
+      return rows;
+    },
+  });
 
   // Look for an unfinished draft once, on open.
   useEffect(() => {
