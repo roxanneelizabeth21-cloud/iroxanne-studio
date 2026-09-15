@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import html2canvas from 'html2canvas';
 import { Download, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import CardCanvas, { PALETTES, LAYOUTS, CARD_W, CARD_H } from '@/components/marketing/cards/CardCanvas';
+import JadeCardPanel from '@/components/marketing/cards/JadeCardPanel';
 
 // Starter set, taken from the studio's own pages rather than invented. The rule
 // these follow: say the thing the reader is already thinking, then answer it in
@@ -59,6 +60,16 @@ export default function CardStudio() {
 
   const setItem = (idx, value) => patch({ items: (card.items || []).map((it, i) => (i === idx ? value : it)) });
 
+  // Jade's sets land at the end of the board and the first one opens, so her
+  // work is on screen rather than something you have to go looking for.
+  const addFromJade = useCallback((incoming) => {
+    setCards((cs) => {
+      const next = [...cs, ...incoming.map((c) => ({ palette: 'cream', layout: 'statement', ...c }))];
+      setActive(cs.length);
+      return next;
+    });
+  }, []);
+
   return (
     <div className="space-y-4">
       <div>
@@ -86,6 +97,7 @@ export default function CardStudio() {
       <div className="grid gap-5 lg:grid-cols-[400px_1fr]">
         {/* Controls */}
         <div className="space-y-4">
+          <JadeCardPanel onCards={addFromJade} currentCount={cards.length} />
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Layout</Label>
