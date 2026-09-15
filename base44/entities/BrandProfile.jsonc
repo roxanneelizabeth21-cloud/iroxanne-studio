@@ -2,6 +2,11 @@
   "name": "BrandProfile",
   "type": "object",
   "properties": {
+    "agent_avatar_url": {
+      "type": "string",
+      "description": "Optional picture for Jade, the marketing agent. When set it replaces her built-in illustrated avatar in the post panel."
+    },
+
     "studio_name": {
       "type": "string",
       "default": "iRoxanne Studio",
