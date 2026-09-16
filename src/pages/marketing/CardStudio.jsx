@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import CardCanvas, { PALETTES, LAYOUTS, CARD_W, CARD_H } from '@/components/marketing/cards/CardCanvas';
 import JadeCardPanel from '@/components/marketing/cards/JadeCardPanel';
+import ReelVoicePanel from '@/components/marketing/cards/ReelVoicePanel';
 
 // Starter set, taken from the studio's own pages rather than invented. The rule
 // these follow: say the thing the reader is already thinking, then answer it in
@@ -27,6 +28,8 @@ export default function CardStudio() {
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
   const [reel, setReel] = useState(null);
+  const [uploaded, setUploaded] = useState([]);
+  const [audioUrl, setAudioUrl] = useState('');
   const stageRef = useRef(null);
 
   const card = cards[active] || STARTERS[0];
@@ -67,8 +70,12 @@ export default function CardStudio() {
       }
       setActive(keep);
 
-      const { blob, mime } = await renderCardReel(urls, {
+      // Cards made elsewhere play first, then the board.
+      const frames = [...uploaded.map((u) => u.url), ...urls];
+
+      const { blob, mime } = await renderCardReel(frames, {
         secondsPerCard: 2.6,
+        audioUrl,
         onProgress: ({ pct }) => setReel({ pct: 30 + Math.round(pct * 0.7), stage: 'Building the reel' }),
       });
 
@@ -214,12 +221,21 @@ export default function CardStudio() {
           <div className="rounded-xl border border-border/60 p-3 space-y-2">
             <Button variant="outline" onClick={makeReel} disabled={!!reel || busy} className="w-full gap-1.5">
               {reel ? <Loader2 className="h-4 w-4 animate-spin" /> : <Film className="h-4 w-4" />}
-              {reel ? `${reel.stage}… ${reel.pct}%` : `Make a reel from all ${cards.length} cards`}
+              {reel ? `${reel.stage}… ${reel.pct}%` : `Make a reel from ${uploaded.length + cards.length} cards`}
             </Button>
             <p className="text-[11px] text-muted-foreground">
-              Vertical 1080 x 1920, about {Math.round(cards.length * 2.6)} seconds. Cards play in the order above, so reorder by editing before exporting. Keep this tab visible while it renders.
+              Vertical 1080 x 1920, about {Math.round((uploaded.length + cards.length) * 2.6)} seconds{audioUrl ? ', with narration' : ''}. Keep this tab visible while it renders.
             </p>
           </div>
+
+          <ReelVoicePanel
+            cards={cards}
+            uploaded={uploaded}
+            onUploaded={setUploaded}
+            audioUrl={audioUrl}
+            onAudio={setAudioUrl}
+            disabled={!!reel || busy}
+          />
         </div>
 
         {/* Preview. The card renders at full size and is scaled down visually, so
