@@ -45,7 +45,7 @@ const NAV_REST = [
 const MARKETING_ALL = [
   { to: '/marketing', label: 'Marketing', Icon: LayoutDashboard, end: true },
   { to: '/marketing/post', label: 'Create a Post', Icon: PenLine, subtitle: 'Pick a project, add media, create the copy, and decide when to share it.' },
-  { to: '/marketing/cards', label: 'Card Studio', Icon: Palette, subtitle: 'Ads and cards with Jade. Download a PNG or build a reel.' },
+  { to: '/marketing/cards', label: 'Card Studio', Icon: Palette, subtitle: 'Ads and cards with Sam. Download a PNG or build a reel.' },
   { to: '/marketing/reel', label: 'Create a Reel', Icon: Clapperboard, subtitle: 'Build a short vertical video from your clips.' },
   { to: '/marketing/campaigns', label: 'Campaigns', Icon: Megaphone, subtitle: 'Plan and manage campaigns' },
   { to: '/marketing/calendar', label: 'Content Calendar', Icon: CalendarDays, subtitle: 'Review, schedule and publish your content' },

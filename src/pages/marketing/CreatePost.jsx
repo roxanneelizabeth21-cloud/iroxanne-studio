@@ -347,7 +347,7 @@ function GuidedPost() {
         <details className="glass rounded-2xl px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold">
             <JadeAvatar src={brandProfile?.agent_avatar_url} size={28} />
-            Ask Jade about this post
+            Ask Sam about this post
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               {jadeScreens.length ? `${jadeScreens.length} real screens on file` : 'no screenshots on file'}
             </span>

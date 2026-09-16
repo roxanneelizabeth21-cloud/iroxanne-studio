@@ -74,7 +74,7 @@ export default function JadeCardPanel({ onCards, currentCount }) {
       if (!conv) {
         conv = await base44.agents.createConversation({
           agent_name: AGENT,
-          metadata: { name: 'Jade · Card studio', description: 'Writes copy for the marketing card maker', surface: 'card_studio' },
+          metadata: { name: 'Sam · Card studio', description: 'Writes copy for the marketing card maker', surface: 'card_studio' },
         });
         seeded.current = false;
       }
@@ -82,7 +82,7 @@ export default function JadeCardPanel({ onCards, currentCount }) {
       setMessages(conv.messages || []);
       (conv.messages || []).forEach((m) => m.id && handled.current.add(m.id));
     } catch {
-      toast({ title: 'Could not open Jade', variant: 'destructive' });
+      toast({ title: 'Could not open Sam', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ export default function JadeCardPanel({ onCards, currentCount }) {
       handled.current.add(key);
       if (cards?.length) {
         onCards(cards);
-        toast({ title: `${cards.length} card${cards.length > 1 ? 's' : ''} from Jade`, description: 'Added below. Edit anything you like.' });
+        toast({ title: `${cards.length} card${cards.length > 1 ? 's' : ''} from Sam`, description: 'Added below. Edit anything you like.' });
       }
     }
   }, [messages, onCards, toast]);
@@ -146,7 +146,7 @@ export default function JadeCardPanel({ onCards, currentCount }) {
       <div className="flex items-center gap-2">
         <JadeAvatar size={34} />
         <div className="min-w-0">
-          <p className="text-sm font-semibold leading-tight">Jade writes the cards</p>
+          <p className="text-sm font-semibold leading-tight">Sam writes the cards</p>
           <p className="text-[11px] text-muted-foreground">
             {loading ? 'Opening…' : `Ask for a set. ${currentCount} on the board.`}
           </p>
@@ -179,10 +179,10 @@ export default function JadeCardPanel({ onCards, currentCount }) {
       <div className="flex items-end gap-1.5">
         <Textarea rows={2} value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Ask Jade for cards…" disabled={!conversation || sending}
+          placeholder="Ask Sam for cards…" disabled={!conversation || sending}
           className="min-h-0 resize-none text-sm" />
         <VoiceInputButton onResult={(t) => setInput((v) => (v ? `${v} ${t}` : t))} disabled={!conversation || sending} />
-        <Button onClick={() => send()} disabled={!input.trim() || sending || !conversation} size="icon" aria-label="Send to Jade">
+        <Button onClick={() => send()} disabled={!input.trim() || sending || !conversation} size="icon" aria-label="Send to Sam">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>

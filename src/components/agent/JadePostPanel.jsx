@@ -39,7 +39,7 @@ export function buildPostContext(post, { portfolioTitle, screenshots = [], media
     `cta: ${post.cta || ''}`,
     post.admin_notes ? `owner notes / prior feedback: ${post.admin_notes}` : '',
     '',
-    'Roxanne opened you inside this post. Greet her as Jade in one line and give ONE specific suggestion for this post. Edit only this post when asked. Never approve, schedule or publish from here.',
+    'Roxanne opened you inside this post. Greet her as Sam in one line and give ONE specific suggestion for this post. Edit only this post when asked. Never approve, schedule or publish from here.',
   ];
   return lines.filter((l) => l !== '').join('\n');
 }
@@ -81,7 +81,7 @@ export default function JadePostPanel({ post, portfolioTitle, screenshots = [], 
         conv = await base44.agents.createConversation({
           agent_name: AGENT,
           metadata: {
-            name: `Jade · ${portfolioTitle || 'post'}`,
+            name: `Sam · ${portfolioTitle || 'post'}`,
             description: `In-post chat for MarketingPost ${post.id}`,
             post_id: post.id,
           },
@@ -92,7 +92,7 @@ export default function JadePostPanel({ post, portfolioTitle, screenshots = [], 
       setMessages(conv.messages || []);
       lastAgentCount.current = (conv.messages || []).filter((m) => m.role === 'assistant').length;
     } catch {
-      toast({ title: 'Could not open Jade for this post', variant: 'destructive' });
+      toast({ title: 'Could not open Sam for this post', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -157,7 +157,7 @@ export default function JadePostPanel({ post, portfolioTitle, screenshots = [], 
       <div className="flex items-center gap-2">
         <JadeAvatar src={brand?.agent_avatar_url} size={36} />
         <div className="min-w-0">
-          <p className="text-sm font-semibold leading-tight">Jade</p>
+          <p className="text-sm font-semibold leading-tight">Sam</p>
           <p className="text-[11px] text-muted-foreground truncate">
             {loading ? 'Opening…' : 'Knows this post. Ask her to change it.'}
           </p>
@@ -175,7 +175,7 @@ export default function JadePostPanel({ post, portfolioTitle, screenshots = [], 
         {loading && <div className="flex justify-center py-6"><Loader2 className="h-4 w-4 animate-spin text-primary" /></div>}
         {!loading && visible.length === 0 && (
           <p className="text-xs text-muted-foreground py-2">
-            Jade is reading this post. She can rewrite the hook or caption, or build the graphic from a real screenshot.
+            Sam is reading this post. She can rewrite the hook or caption, or build the graphic from a real screenshot.
           </p>
         )}
         {visible.map((m, i) => <AgentMessageBubble key={m.id || i} message={m} />)}
@@ -196,16 +196,16 @@ export default function JadePostPanel({ post, portfolioTitle, screenshots = [], 
         <Textarea
           rows={2} value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Ask Jade to change this post…"
+          placeholder="Ask Sam to change this post…"
           disabled={!conversation || sending}
           className="min-h-0 resize-none text-sm"
         />
         <VoiceInputButton onResult={(t) => setInput((v) => (v ? `${v} ${t}` : t))} disabled={!conversation || sending} />
-        <Button onClick={() => send()} disabled={!input.trim() || sending || !conversation} size="icon" aria-label="Send to Jade">
+        <Button onClick={() => send()} disabled={!input.trim() || sending || !conversation} size="icon" aria-label="Send to Sam">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>
-      <p className="text-[11px] text-muted-foreground">Jade drafts and edits. She never approves, schedules or publishes.</p>
+      <p className="text-[11px] text-muted-foreground">Sam drafts and edits. She never approves, schedules or publishes.</p>
     </div>
   );
 }

@@ -3,10 +3,10 @@
 // on the BrandProfile; otherwise the built-in illustrated avatar.
 export default function JadeAvatar({ src, size = 40, className = '' }) {
   if (src) {
-    return <img src={src} alt="Jade" width={size} height={size} className={`rounded-full object-cover shrink-0 ${className}`} style={{ width: size, height: size }} />;
+    return <img src={src} alt="Sam" width={size} height={size} className={`rounded-full object-cover shrink-0 ${className}`} style={{ width: size, height: size }} />;
   }
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Jade" className={`rounded-full shrink-0 ${className}`}>
+    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Sam" className={`rounded-full shrink-0 ${className}`}>
       <defs>
         <linearGradient id="jade-bg-studio" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#1f6f5f" />

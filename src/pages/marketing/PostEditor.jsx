@@ -125,7 +125,7 @@ export default function PostEditor() {
         </div>
 
         <div className="md:sticky md:top-4 space-y-5">
-          <PostEditorSection icon={MessageCircle} title="Ask Jade" hint="She can see this post and can change it for you.">
+          <PostEditorSection icon={MessageCircle} title="Ask Sam" hint="She can see this post and can change it for you.">
             <JadePostPanel
               post={post}
               portfolioTitle={ed.portfolioItem?.title}
