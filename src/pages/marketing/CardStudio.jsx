@@ -15,6 +15,7 @@ import ReelVoicePanel from '@/components/marketing/cards/ReelVoicePanel';
 // these follow: say the thing the reader is already thinking, then answer it in
 // one line. One idea per card.
 const STARTERS = [
+  { layout: 'feature', palette: 'cream', eyebrow: 'Custom apps | Websites', headline: 'You don’t need a plan.', headlineAccent: 'You need a place to begin.', body: 'Bring the idea you keep thinking about. We’ll work out **what it could be**, and I’ll build it around **the way you actually work**.', items: ['No plan needed', 'Built around you', 'Yours at the end'], footerTagline: 'A place to begin', cta: 'Tell me your idea.', ctaUrl: 'IROXANNESTUDIO.COM', headlineSize: 62, imageUrl: '' },
   { layout: 'statement', palette: 'forest', headline: 'You have the idea.\nI’ll help you bring\nit to life.', body: 'Custom apps and websites for real people, real goals, real impact.', headlineSize: 84 },
   { layout: 'checklist', palette: 'cream', headline: 'You don’t need…', items: ['A business name', 'A finished plan', 'A list of features'], body: 'You just need\na starting point.' },
   { layout: 'photo', palette: 'ink', headline: 'Big ideas\nSmall ideas\nGood ideas\nall belong here.', body: '', imageUrl: '' },
@@ -169,6 +170,45 @@ export default function CardStudio() {
             <Textarea rows={3} value={card.headline || ''} onChange={(e) => patch({ headline: e.target.value })} />
             <p className="text-xs text-muted-foreground">Press Enter to control where lines break.</p>
           </div>
+
+          {card.layout === 'feature' && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Eyebrow</Label>
+                <Input value={card.eyebrow || ''} onChange={(e) => patch({ eyebrow: e.target.value })} placeholder="Custom apps | Websites" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Second line (italic, accent colour)</Label>
+                <Input value={card.headlineAccent || ''} onChange={(e) => patch({ headlineAccent: e.target.value })} placeholder="You need a place to begin." />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Three benefits</Label>
+                {[0, 1, 2].map((i) => (
+                  <Input key={i} value={(card.items || [])[i] || ''} placeholder={['No plan needed', 'Built around you', 'Yours at the end'][i]}
+                    onChange={(e) => {
+                      const items = [...(card.items || ['', '', ''])];
+                      items[i] = e.target.value;
+                      patch({ items });
+                    }} />
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Footer tagline</Label>
+                  <Input value={card.footerTagline || ''} onChange={(e) => patch({ footerTagline: e.target.value })} placeholder="A place to begin" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Handwritten CTA</Label>
+                  <Input value={card.cta || ''} onChange={(e) => patch({ cta: e.target.value })} placeholder="Tell me your idea." />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Photo URL (optional)</Label>
+                <Input value={card.imageUrl || ''} onChange={(e) => patch({ imageUrl: e.target.value })} placeholder="https://…" />
+                <p className="text-xs text-muted-foreground">Leave empty and the words fill the whole card.</p>
+              </div>
+            </>
+          )}
 
           {['checklist', 'list'].includes(card.layout) && (
             <div className="space-y-1.5">
