@@ -70,7 +70,7 @@
     },
     {
       "function_name": "composeMarketingGraphic",
-      "description": "Compose exact marketing text (headline, supporting line, signature) onto an EXISTING photo and attach the finished PNG to a draft post. Non-generative \u2014 no AI image generation, no templates. Pass post_id, image_url (an existing photo), headline, supporting_line, signature (always 'iRoxanne Studio'), aspect_ratio (4:5, 1:1, 9:16, 16:9), optional text_position (bottom/top/center) and text_color (white/black). Returns ok, media_id, image_url, post_id, pixel_size. Never approves, schedules or publishes. Use this when you have a real photo and want to brand it with studio text without generating new imagery."
+      "description": "Compose exact marketing text onto an existing photo and attach the finished PNG to a draft post. Non-generative, no templates."
     },
     {
       "function_name": "publishPostToSocial",
