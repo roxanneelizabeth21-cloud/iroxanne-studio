@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 import html2canvas from 'html2canvas';
-import { Download, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Download, Loader2, Plus, Trash2, Film } from 'lucide-react';
+import { renderCardReel } from '@/lib/renderCardReel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,6 +26,7 @@ export default function CardStudio() {
   const [cards, setCards] = useState(STARTERS);
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [reel, setReel] = useState(null);
   const stageRef = useRef(null);
 
   const card = cards[active] || STARTERS[0];
@@ -44,6 +46,42 @@ export default function CardStudio() {
       toast({ title: 'Could not export the card', description: e.message, variant: 'destructive' });
     } finally {
       setBusy(false);
+    }
+  };
+
+  // Turn the whole board into one vertical reel. Each card is rendered to a PNG
+  // first, exactly as the download does, so the reel matches what you see.
+  const makeReel = async () => {
+    if (!stageRef.current) return;
+    setReel({ pct: 0, stage: 'Rendering cards' });
+    const keep = active;
+    try {
+      const urls = [];
+      for (let i = 0; i < cards.length; i++) {
+        setActive(i);
+        // let the canvas repaint with the newly selected card
+        await new Promise((r) => setTimeout(r, 120));
+        const canvas = await html2canvas(stageRef.current, { width: CARD_W, height: CARD_H, scale: 1, useCORS: true, backgroundColor: null, logging: false });
+        urls.push(canvas.toDataURL('image/png'));
+        setReel({ pct: Math.round(((i + 1) / cards.length) * 30), stage: 'Rendering cards' });
+      }
+      setActive(keep);
+
+      const { blob, mime } = await renderCardReel(urls, {
+        secondsPerCard: 2.6,
+        onProgress: ({ pct }) => setReel({ pct: 30 + Math.round(pct * 0.7), stage: 'Building the reel' }),
+      });
+
+      const link = document.createElement('a');
+      link.download = `iroxanne-reel.${mime.includes('mp4') ? 'mp4' : 'webm'}`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      toast({ title: 'Reel downloaded', description: `${cards.length} cards, about ${Math.round(cards.length * 2.6)} seconds, 1080 x 1920.` });
+    } catch (e) {
+      setActive(keep);
+      toast({ title: 'Could not build the reel', description: e.message, variant: 'destructive' });
+    } finally {
+      setReel(null);
     }
   };
 
@@ -164,13 +202,23 @@ export default function CardStudio() {
           </div>
 
           <div className="flex gap-2 pt-1">
-            <Button onClick={download} disabled={busy} className="gap-1.5 flex-1">
+            <Button onClick={download} disabled={busy || !!reel} className="gap-1.5 flex-1">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Download PNG
             </Button>
-            <Button variant="outline" onClick={removeCard} disabled={cards.length <= 1} className="shrink-0">
+            <Button variant="outline" onClick={removeCard} disabled={cards.length <= 1 || !!reel} className="shrink-0">
               <Trash2 className="h-4 w-4" />
             </Button>
+          </div>
+
+          <div className="rounded-xl border border-border/60 p-3 space-y-2">
+            <Button variant="outline" onClick={makeReel} disabled={!!reel || busy} className="w-full gap-1.5">
+              {reel ? <Loader2 className="h-4 w-4 animate-spin" /> : <Film className="h-4 w-4" />}
+              {reel ? `${reel.stage}… ${reel.pct}%` : `Make a reel from all ${cards.length} cards`}
+            </Button>
+            <p className="text-[11px] text-muted-foreground">
+              Vertical 1080 x 1920, about {Math.round(cards.length * 2.6)} seconds. Cards play in the order above, so reorder by editing before exporting. Keep this tab visible while it renders.
+            </p>
           </div>
         </div>
 
