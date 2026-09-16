@@ -19,6 +19,7 @@ export const LAYOUTS = {
   checklist: "You don't need…",
   photo: 'Photo with words',
   list: 'Built for',
+  feature: 'Full ad (photo + benefits)',
 };
 
 const W = 1080;
@@ -29,6 +30,20 @@ const script = "'Caveat', 'Segoe Script', cursive";
 
 function Rule({ color }) {
   return <div style={{ width: 92, height: 5, background: color, borderRadius: 3, margin: '38px 0' }} />;
+}
+
+/** Bold anything wrapped in **asterisks**, so a supporting line can emphasise. */
+function RichText({ text, style }) {
+  const parts = String(text || '').split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <p style={style}>
+      {parts.map((part, i) =>
+        part.startsWith('**') && part.endsWith('**')
+          ? <strong key={i} style={{ fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+          : <span key={i}>{part}</span>
+      )}
+    </p>
+  );
 }
 
 /** One card at full 1080x1350. The preview scales this with a CSS transform. */
