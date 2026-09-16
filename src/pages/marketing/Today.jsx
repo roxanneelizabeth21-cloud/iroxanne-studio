@@ -143,7 +143,7 @@ export default function Today() {
 
         <Link to="/marketing/strategist" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
           <JadeAvatar src={brand?.agent_avatar_url} size={22} className="mb-3" />
-          <h3 className="font-display text-lg font-semibold">Ask Jade</h3>
+          <h3 className="font-display text-lg font-semibold">Ask Sam</h3>
           <p className="text-sm text-muted-foreground mt-0.5">Ideas, a week of content, or a read on what is working.</p>
         </Link>
       </div>
