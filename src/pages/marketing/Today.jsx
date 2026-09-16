@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { CalendarDays, Sparkles, Sun, PenLine, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { CalendarDays, Sparkles, Sun, PenLine, AlertTriangle, CheckCircle2, ArrowRight, Palette } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import TodayPostCard from '@/components/marketing/TodayPostCard';
 import PostEditorDrawer from '@/components/marketing/PostEditorDrawer';
@@ -133,6 +133,12 @@ export default function Today() {
           <p className="text-sm text-muted-foreground mt-0.5">
             {weekAhead.length} scheduled in the next 7 days.
           </p>
+        </Link>
+
+        <Link to="/marketing/cards" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
+          <Palette className="h-5 w-5 text-primary mb-3" />
+          <h3 className="font-display text-lg font-semibold">Card studio</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">Make an ad or a set of cards with Jade. Download a PNG, or build a reel.</p>
         </Link>
 
         <Link to="/marketing/strategist" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
