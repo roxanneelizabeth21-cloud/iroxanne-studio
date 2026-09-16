@@ -19,7 +19,6 @@ export const LAYOUTS = {
   checklist: "You don't need…",
   photo: 'Photo with words',
   list: 'Built for',
-  feature: 'Full ad (photo + benefits)',
 };
 
 const W = 1080;
@@ -30,20 +29,6 @@ const script = "'Caveat', 'Segoe Script', cursive";
 
 function Rule({ color }) {
   return <div style={{ width: 92, height: 5, background: color, borderRadius: 3, margin: '38px 0' }} />;
-}
-
-/** Bold anything wrapped in **asterisks**, so a supporting line can emphasise. */
-function RichText({ text, style }) {
-  const parts = String(text || '').split(/(\*\*[^*]+\*\*)/g);
-  return (
-    <p style={style}>
-      {parts.map((part, i) =>
-        part.startsWith('**') && part.endsWith('**')
-          ? <strong key={i} style={{ fontWeight: 700 }}>{part.slice(2, -2)}</strong>
-          : <span key={i}>{part}</span>
-      )}
-    </p>
-  );
 }
 
 /** One card at full 1080x1350. The preview scales this with a CSS transform. */
@@ -218,89 +203,12 @@ export default function CardCanvas({ card, innerRef }) {
           </div>
         )}
 
-        {/* FEATURE: a full ad. Logo lockup, two-tone headline, supporting copy,
-            benefit row, image panel, and a footer call to action. */}
-        {card.layout === 'feature' && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ flex: 1, display: 'flex', padding: '72px 0 0 72px', gap: 36 }}>
-              {/* Left: the words */}
-              <div style={{ width: card.imageUrl ? '56%' : '100%', paddingRight: card.imageUrl ? 0 : 72, display: 'flex', flexDirection: 'column' }}>
-                <Wordmark size={46} tone={p.tone} align="left" />
-                <div style={{ fontFamily: sans, fontSize: 17, letterSpacing: '0.16em', opacity: 0.6, marginTop: 14 }}>
-                  {(card.eyebrow || 'CUSTOM APPS | WEBSITES').toUpperCase()}
-                </div>
-
-                <h1 style={{ fontFamily: sans, fontWeight: 800, fontSize: card.headlineSize || 62, lineHeight: 1.06, letterSpacing: '-0.02em', margin: '54px 0 0', whiteSpace: 'pre-wrap' }}>
-                  {card.headline}
-                </h1>
-                {card.headlineAccent && (
-                  <div style={{ display: 'inline-block', marginTop: 8 }}>
-                    <div style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 600, fontSize: (card.headlineSize || 62) * 1.06, lineHeight: 1.08, color: p.accent, whiteSpace: 'pre-wrap' }}>
-                      {card.headlineAccent}
-                    </div>
-                    <div style={{ height: 4, background: p.accent, opacity: 0.55, borderRadius: 3, marginTop: 6 }} />
-                  </div>
-                )}
-
-                {card.body && (
-                  <RichText text={card.body} style={{ fontFamily: sans, fontSize: 27, lineHeight: 1.5, margin: '40px 0 0', opacity: 0.9, whiteSpace: 'pre-wrap' }} />
-                )}
-
-                {(card.items || []).length > 0 && (
-                  <div style={{ display: 'flex', gap: 0, marginTop: 'auto', paddingBottom: 46 }}>
-                    {card.items.slice(0, 3).map((item, i) => (
-                      <div key={i} style={{ flex: 1, paddingRight: 18, borderLeft: i ? `1px solid ${p.text}22` : 'none', paddingLeft: i ? 22 : 0 }}>
-                        <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke={p.accent} strokeWidth="1.3" strokeLinecap="round">
-                          {i === 0 && <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />}
-                          {i === 1 && <><circle cx="9" cy="8" r="3" /><circle cx="17" cy="10" r="2.2" /><path d="M3.5 19c.6-3 3-4.5 5.5-4.5S14 16 14.6 19" /></>}
-                          {i === 2 && <><path d="M3 12a9 9 0 0115.5-6.2" /><path d="M21 12a9 9 0 01-15.5 6.2" /><path d="M18.5 3v3h-3M5.5 21v-3h3" /></>}
-                        </svg>
-                        <div style={{ fontFamily: sans, fontWeight: 700, fontSize: 21, letterSpacing: '0.07em', lineHeight: 1.3, marginTop: 14, textTransform: 'uppercase' }}>
-                          {item}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Right: the picture, bled off the edge */}
-              {card.imageUrl && (
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderTopLeftRadius: 28, borderBottomLeftRadius: 28 }}>
-                  <img src={card.imageUrl} alt="" crossOrigin="anonymous"
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              )}
-            </div>
-
-            {/* Footer: tagline strip over the call to action bar */}
-            <div style={{ textAlign: 'center', fontFamily: sans, fontSize: 21, letterSpacing: '0.16em', padding: '26px 0', opacity: 0.75 }}>
-              {(card.footerTagline || 'A PLACE TO BEGIN').toUpperCase()}
-            </div>
-            <div style={{ background: p.tone === 'light' ? '#00000033' : p.accent, color: p.tone === 'light' ? '#FAF7F0' : '#FAF7F0', display: 'flex', alignItems: 'center', gap: 26, padding: '30px 72px' }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
-                <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.6 2.5 15 0 18M12 3c-2.5 2.6-2.5 15 0 18" />
-              </svg>
-              <span style={{ fontFamily: sans, fontWeight: 700, fontSize: 24, letterSpacing: '0.06em' }}>
-                {card.ctaUrl || 'IROXANNESTUDIO.COM'}
-              </span>
-              <span style={{ width: 1, height: 38, background: 'currentColor', opacity: 0.4 }} />
-              <span style={{ fontFamily: script, fontSize: 40 }}>{card.cta || 'Tell me your idea.'}</span>
-              <svg width="46" height="28" viewBox="0 0 46 28" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ marginLeft: 'auto' }}>
-                <path d="M2 14h40M32 5l10 9-10 9" />
-              </svg>
-            </div>
-          </div>
-        )}
-
         <div style={{ marginTop: 'auto' }}>
-        {card.layout !== 'feature' && (
           <Wordmark
             size={card.layout === 'photo' ? 46 : 52}
             tone={card.layout === 'photo' ? 'light' : p.tone}
             align={card.layout === 'photo' ? 'center' : 'left'}
           />
-        )}
         </div>
       </div>
     </div>
