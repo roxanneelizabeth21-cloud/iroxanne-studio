@@ -60,12 +60,21 @@ export async function renderCardReel(imageUrls, {
 
   const stream = canvas.captureStream(30);
 
-  // Optional narration or music, mixed in if the browser allows it.
+  // Optional narration or music, mixed in if the browser allows it. The clip
+  // stretches to fit it: narration running past the last card would otherwise
+  // be cut off mid-sentence.
   let audioEl = null;
+  let audioSeconds = 0;
   if (audioUrl) {
     try {
       audioEl = new Audio(audioUrl);
       audioEl.crossOrigin = 'anonymous';
+      await new Promise((resolve) => {
+        const done = () => resolve();
+        audioEl.addEventListener('loadedmetadata', () => { audioSeconds = audioEl.duration || 0; done(); }, { once: true });
+        audioEl.addEventListener('error', done, { once: true });
+        setTimeout(done, 4000);
+      });
       const actx = new (window.AudioContext || window.webkitAudioContext)();
       const src = actx.createMediaElementSource(audioEl);
       const dest = actx.createMediaStreamDestination();
@@ -73,6 +82,7 @@ export async function renderCardReel(imageUrls, {
       dest.stream.getAudioTracks().forEach((t) => stream.addTrack(t));
     } catch {
       audioEl = null; // silent clip rather than a failed export
+      audioSeconds = 0;
     }
   }
 
@@ -80,7 +90,12 @@ export async function renderCardReel(imageUrls, {
   const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
   recorder.ondataavailable = (e) => { if (e.data?.size) chunks.push(e.data); };
 
-  const total = imageUrls.length * secondsPerCard;
+  // Each card holds long enough to read, and the whole reel is never shorter
+  // than the narration.
+  const perCard = audioSeconds > 0
+    ? Math.max(secondsPerCard, audioSeconds / imageUrls.length)
+    : secondsPerCard;
+  const total = Math.max(imageUrls.length * perCard, audioSeconds + 0.6);
   let failed = null;
 
   const onHide = () => {
@@ -122,9 +137,9 @@ export async function renderCardReel(imageUrls, {
       const elapsed = (performance.now() - startedAt) / 1000;
       if (elapsed >= total) { resolve(); return; }
 
-      const idx = Math.min(images.length - 1, Math.floor(elapsed / secondsPerCard));
-      const local = elapsed - idx * secondsPerCard;
-      const t = local / secondsPerCard;
+      const idx = Math.min(images.length - 1, Math.floor(elapsed / perCard));
+      const local = elapsed - idx * perCard;
+      const t = Math.min(1, local / perCard);
 
       ctx.fillStyle = background;
       ctx.fillRect(0, 0, W, H);
