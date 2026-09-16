@@ -65,7 +65,7 @@ ${projectInstruction}
 ${noteLine}
 
 Return a single post with: platform, format, content_bucket, caption, hashtags, hook, cta, image_prompt, image_style_preset, link_target, and (if the format is video: Reel/Short/Video) template_id, slot_values, video_brief.
-- Image prompt: Story-led editorial imagery in plum, cream and restrained gold; accurate screenshots only when supplied.
+- Image prompt: a visual treatment that serves the message — photography, illustration, collage, typography-led composition, or other approaches. Vary subjects, scale, lighting, palette, and composition.
 - Follow the PERFORMANCE-BASED CONTENT RULES.
 
 Return ONLY a JSON object with those fields. No commentary, no markdown fences.`;

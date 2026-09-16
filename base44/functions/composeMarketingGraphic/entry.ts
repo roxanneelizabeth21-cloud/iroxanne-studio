@@ -1,18 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
-import PImage from 'npm:pureimage@0.4.13';
 import jpeg from 'npm:jpeg-js@0.4.4';
 import { PNG } from 'npm:pngjs@7.0.0';
+import opentype from 'npm:opentype.js@1.3.4';
 import { Buffer } from 'node:buffer';
-
-// pureimage detects a browser via `window` (which Deno exposes) then accesses
-// `document` (which Deno lacks). Stub a document whose createElement returns a
-// non-functional canvas so pureimage's make() falls back to its pure-JS Bitmap.
-(globalThis as any).document = (globalThis as any).document || {
-  createElement: () => ({ getContext: () => null, width: 0, height: 0, style: {} }),
-  fonts: { load: async () => {}, check: async () => true, ready: Promise.resolve() },
-};
-const PImageKeys = Object.keys(PImage as any);
-const BitmapCtor: any = (PImage as any).Bitmap;
 
 // composeMarketingGraphic — non-generative image composition.
 // Takes an EXISTING image URL, composes it with exact marketing text
@@ -21,6 +11,10 @@ const BitmapCtor: any = (PImage as any).Bitmap;
 // attaches it to the identified draft post. No AI image generation, no
 // approval, no scheduling, no publishing. Preserves the previous asset URL
 // for recovery.
+//
+// Rendering is done entirely in pure JS: pngjs/jpeg-js for decode, opentype.js
+// for font glyph paths, and a custom scanline rasterizer for text fill — no
+// browser canvas required (Deno has no DOM).
 
 const SIZES: Record<string, { w: number; h: number }> = {
   '4:5': { w: 1080, h: 1350 },
@@ -29,48 +23,162 @@ const SIZES: Record<string, { w: number; h: number }> = {
   '16:9': { w: 1920, h: 1080 },
 };
 
-const FONT_SOURCES = [
-  { family: 'StudioBold', url: 'https://cdn.jsdelivr.net/gh/google/fonts/ofl/lato/Lato-Bold.ttf' },
-  { family: 'StudioRegular', url: 'https://cdn.jsdelivr.net/gh/google/fonts/ofl/lato/Lato-Regular.ttf' },
-  { family: 'StudioBlack', url: 'https://cdn.jsdelivr.net/gh/google/fonts/ofl/lato/Lato-Black.ttf' },
-];
+// ---------------------------------------------------------------------------
+// Font loading (opentype.js — pure JS, no DOM)
+// ---------------------------------------------------------------------------
 
-let fontPromise: Promise<Set<string>> | null = null;
+type Font = any;
+const fonts: { bold?: Font; regular?: Font; black?: Font } = {};
+let fontPromise: Promise<void> | null = null;
 
-function loadFonts(): Promise<Set<string>> {
+function loadFonts(): Promise<void> {
   if (fontPromise) return fontPromise;
   fontPromise = (async () => {
-    const loaded = new Set<string>();
-    for (const src of FONT_SOURCES) {
+    const base = 'https://cdn.jsdelivr.net/fontsource/fonts/lato@latest';
+    const sources: [keyof typeof fonts, string][] = [
+      ['black', `${base}/latin-900-normal.ttf`],
+      ['bold', `${base}/latin-700-normal.ttf`],
+      ['regular', `${base}/latin-400-normal.ttf`],
+    ];
+    for (const [key, url] of sources) {
       try {
-        const res = await fetch(src.url);
+        const res = await fetch(url);
         if (!res.ok) continue;
-        const buf = Buffer.from(await res.arrayBuffer());
-        const f = PImage.registerFont(buf, src.family);
-        await f.load();
-        loaded.add(src.family);
-      } catch {
-        // skip — another registered family will be used
-      }
+        const buf = await res.arrayBuffer();
+        fonts[key] = opentype.parse(buf);
+      } catch { /* skip */ }
     }
-    return loaded;
+    if (!fonts.bold) fonts.bold = fonts.black || fonts.regular;
+    if (!fonts.regular) fonts.regular = fonts.bold;
+    if (!fonts.black) fonts.black = fonts.bold;
   })();
   return fontPromise;
 }
 
-function pickFont(loaded: Set<string>, pref: string[]): string {
-  for (const p of pref) if (loaded.has(p)) return p;
-  return loaded.size ? Array.from(loaded)[0] : 'sans-serif';
+function pickFont(pref: ('black' | 'bold' | 'regular')[]): Font {
+  for (const p of pref) if (fonts[p]) return fonts[p];
+  return fonts.bold || fonts.regular || null;
 }
 
-function wrapText(ctx: any, text: string, maxWidth: number): string[] {
+// ---------------------------------------------------------------------------
+// Image buffer helpers
+// ---------------------------------------------------------------------------
+
+interface Img { width: number; height: number; data: Uint8Array; }
+
+function newImg(w: number, h: number, fill: [number, number, number]): Img {
+  const data = new Uint8Array(w * h * 4);
+  for (let i = 0; i < w * h; i++) {
+    data[i * 4] = fill[0];
+    data[i * 4 + 1] = fill[1];
+    data[i * 4 + 2] = fill[2];
+    data[i * 4 + 3] = 255;
+  }
+  return { width: w, height: h, data };
+}
+
+function blendPixel(img: Img, x: number, y: number, r: number, g: number, b: number, a: number) {
+  if (a <= 0) return;
+  if (a >= 1) { img.data[(y * img.width + x) * 4] = r; img.data[(y * img.width + x) * 4 + 1] = g; img.data[(y * img.width + x) * 4 + 2] = b; return; }
+  const idx = (y * img.width + x) * 4;
+  const ia = 1 - a;
+  img.data[idx] = Math.round(img.data[idx] * ia + r * a);
+  img.data[idx + 1] = Math.round(img.data[idx + 1] * ia + g * a);
+  img.data[idx + 2] = Math.round(img.data[idx + 2] * ia + b * a);
+}
+
+function fillRect(img: Img, x0: number, y0: number, x1: number, y1: number, r: number, g: number, b: number, a: number) {
+  const xa = Math.max(0, Math.floor(x0)), xb = Math.min(img.width - 1, Math.ceil(x1));
+  const ya = Math.max(0, Math.floor(y0)), yb = Math.min(img.height - 1, Math.ceil(y1));
+  for (let y = ya; y <= yb; y++)
+    for (let x = xa; x <= xb; x++)
+      blendPixel(img, x, y, r, g, b, a);
+}
+
+function fillGradientV(img: Img, x0: number, y0: number, w: number, h: number, stops: { t: number; r: number; g: number; b: number; a: number }[]) {
+  const xa = Math.max(0, Math.floor(x0)), xb = Math.min(img.width - 1, Math.floor(x0 + w));
+  const ya = Math.max(0, Math.floor(y0)), yb = Math.min(img.height - 1, Math.floor(y0 + h));
+  for (let y = ya; y <= yb; y++) {
+    const t = h > 0 ? (y - y0) / h : 0;
+    // Interpolate between stops
+    let r = stops[0].r, g = stops[0].g, b = stops[0].b, a = stops[0].a;
+    for (let i = 0; i < stops.length - 1; i++) {
+      if (t >= stops[i].t && t <= stops[i + 1].t) {
+        const span = stops[i + 1].t - stops[i].t || 1;
+        const lt = (t - stops[i].t) / span;
+        r = Math.round(stops[i].r * (1 - lt) + stops[i + 1].r * lt);
+        g = Math.round(stops[i].g * (1 - lt) + stops[i + 1].g * lt);
+        b = Math.round(stops[i].b * (1 - lt) + stops[i + 1].b * lt);
+        a = stops[i].a * (1 - lt) + stops[i + 1].a * lt;
+        break;
+      }
+    }
+    // Beyond last stop — clamp to last
+    if (t > stops[stops.length - 1].t) { r = stops[stops.length - 1].r; g = stops[stops.length - 1].g; b = stops[stops.length - 1].b; a = stops[stops.length - 1].a; }
+    for (let x = xa; x <= xb; x++)
+      blendPixel(img, x, y, r, g, b, a);
+  }
+}
+
+function drawImageCover(target: Img, src: Img, dw: number, dh: number, dx: number, dy: number) {
+  // Nearest-neighbor cover-fit blit (crop overflow).
+  const sx0 = dx < 0 ? -dx : 0;
+  const sy0 = dy < 0 ? -dy : 0;
+  const sx1 = Math.min(dw, target.width - dx) - sx0;
+  const sy1 = Math.min(dh, target.height - dy) - sy0;
+  for (let ty = 0; ty < sy1; ty++) {
+    const sy = Math.floor((sy0 + ty) / dh * src.height);
+    for (let tx = 0; tx < sx1; tx++) {
+      const sx = Math.floor((sx0 + tx) / dw * src.width);
+      const si = (sy * src.width + sx) * 4;
+      const ti = ((dy + ty + sy0) * target.width + (dx + tx + sx0)) * 4;
+      target.data[ti] = src.data[si];
+      target.data[ti + 1] = src.data[si + 1];
+      target.data[ti + 2] = src.data[si + 2];
+      target.data[ti + 3] = 255;
+    }
+  }
+}
+
+async function decodeSourceImage(url: string): Promise<Img> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Could not fetch source image (HTTP ${res.status}).`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length < 3) throw new Error('Source image is empty or unreadable.');
+  if (buf[0] === 0x89 && buf[1] === 0x50) {
+    const png = PNG.sync.read(buf);
+    return { width: png.width, height: png.height, data: new Uint8Array(png.data) };
+  }
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    const raw = jpeg.decode(buf, { useTArray: true });
+    return { width: raw.width, height: raw.height, data: new Uint8Array(raw.data) };
+  }
+  throw new Error('Unsupported image format (only PNG and JPEG are supported).');
+}
+
+function encodePNG(img: Img): Uint8Array {
+  const png = new PNG({ width: img.width, height: img.height });
+  png.data.set(img.data);
+  const out = PNG.sync.write(png);
+  return new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
+}
+
+// ---------------------------------------------------------------------------
+// Text rendering (scanline rasterizer via opentype.js glyph paths)
+// ---------------------------------------------------------------------------
+
+function measureText(font: Font, text: string, fontSize: number): number {
+  return font.getAdvanceWidth(text, fontSize);
+}
+
+function wrapText(font: Font, text: string, maxWidth: number, fontSize: number): string[] {
   const lines: string[] = [];
   for (const paragraph of String(text).split('\n')) {
     const words = paragraph.split(/\s+/).filter(Boolean);
     let line = '';
     for (const word of words) {
       const test = line ? `${line} ${word}` : word;
-      if (ctx.measureText(test).width > maxWidth && line) {
+      if (measureText(font, test, fontSize) > maxWidth && line) {
         lines.push(line);
         line = word;
       } else {
@@ -83,43 +191,97 @@ function wrapText(ctx: any, text: string, maxWidth: number): string[] {
   return lines;
 }
 
-async function decodeSourceImage(url: string): Promise<{ width: number; height: number; data: Uint8Array }> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Could not fetch source image (HTTP ${res.status}).`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length < 3) throw new Error('Source image is empty or unreadable.');
-  // PNG magic
-  if (buf[0] === 0x89 && buf[1] === 0x50) {
-    const png = PNG.sync.read(buf);
-    return { width: png.width, height: png.height, data: new Uint8Array(png.data) };
+interface Edge { x1: number; y1: number; x2: number; y2: number; }
+
+function flattenPath(commands: any[], x: number, y: number): Edge[] {
+  const edges: Edge[] = [];
+  let cx = x, cy = y, sx = x, sy = y;
+  for (const cmd of commands) {
+    switch (cmd.type) {
+      case 'M':
+        cx = x + cmd.x; cy = y + cmd.y; sx = cx; sy = cy;
+        break;
+      case 'L':
+        edges.push({ x1: cx, y1: cy, x2: x + cmd.x, y2: y + cmd.y });
+        cx = x + cmd.x; cy = y + cmd.y;
+        break;
+      case 'Q': {
+        const steps = 6;
+        const px = cx, py = cy;
+        const c1x = x + cmd.x1, c1y = y + cmd.y1;
+        const ex = x + cmd.x, ey = y + cmd.y;
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps, mt = 1 - t;
+          const nx = mt * mt * px + 2 * mt * t * c1x + t * t * ex;
+          const ny = mt * mt * py + 2 * mt * t * c1y + t * t * ey;
+          edges.push({ x1: cx, y1: cy, x2: nx, y2: ny });
+          cx = nx; cy = ny;
+        }
+        break;
+      }
+      case 'C': {
+        const steps = 10;
+        const px = cx, py = cy;
+        const c1x = x + cmd.x1, c1y = y + cmd.y1;
+        const c2x = x + cmd.x2, c2y = y + cmd.y2;
+        const ex = x + cmd.x, ey = y + cmd.y;
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps, mt = 1 - t;
+          const nx = mt * mt * mt * px + 3 * mt * mt * t * c1x + 3 * mt * t * t * c2x + t * t * t * ex;
+          const ny = mt * mt * mt * py + 3 * mt * mt * t * c1y + 3 * mt * t * t * c2y + t * t * t * ey;
+          edges.push({ x1: cx, y1: cy, x2: nx, y2: ny });
+          cx = nx; cy = ny;
+        }
+        break;
+      }
+      case 'Z':
+        if (cx !== sx || cy !== sy) edges.push({ x1: cx, y1: cy, x2: sx, y2: sy });
+        cx = sx; cy = sy;
+        break;
+    }
   }
-  // JPEG magic
-  if (buf[0] === 0xff && buf[1] === 0xd8) {
-    const raw = jpeg.decode(buf, { useTArray: true });
-    return { width: raw.width, height: raw.height, data: new Uint8Array(raw.data) };
-  }
-  throw new Error('Unsupported image format (only PNG and JPEG are supported).');
+  return edges;
 }
 
-function bitmapFromRGBA(w: number, h: number, rgba: Uint8Array): any {
-  const img = PImage.make(w, h);
-  // pureimage bitmaps expose a .data Uint8Array (RGBA). Copy decoded pixels in.
-  const dst = img.data as Uint8Array;
-  if (dst.length >= rgba.length) dst.set(rgba);
-  return img;
+function fillText(img: Img, font: Font, text: string, x: number, baselineY: number, fontSize: number, color: [number, number, number]) {
+  if (!text || !font) return;
+  const [r, g, b] = color;
+  const glyphs = font.stringToGlyphs(text);
+  let penX = x;
+  for (const glyph of glyphs) {
+    if (glyph.unicode !== 32 && glyph.index !== 0) {
+      const path = glyph.getPath(penX, baselineY, fontSize);
+      const edges = flattenPath(path.commands, 0, 0);
+      if (edges.length) {
+        let minY = Infinity, maxY = -Infinity;
+        for (const e of edges) { minY = Math.min(minY, e.y1, e.y2); maxY = Math.max(maxY, e.y1, e.y2); }
+        const yStart = Math.max(0, Math.floor(minY));
+        const yEnd = Math.min(img.height - 1, Math.ceil(maxY));
+        for (let y = yStart; y <= yEnd; y++) {
+          const yc = y + 0.5; // sample at pixel center
+          const xs: number[] = [];
+          for (const e of edges) {
+            const y1 = e.y1, y2 = e.y2;
+            if ((y1 <= yc && y2 > yc) || (y2 <= yc && y1 > yc)) {
+              xs.push(e.x1 + (yc - y1) / (y2 - y1) * (e.x2 - e.x1));
+            }
+          }
+          xs.sort((a, c) => a - c);
+          for (let i = 0; i + 1 < xs.length; i += 2) {
+            const xa = Math.max(0, Math.floor(xs[i]));
+            const xb = Math.min(img.width - 1, Math.ceil(xs[i + 1]));
+            for (let xi = xa; xi <= xb; xi++) blendPixel(img, xi, y, r, g, b, 1);
+          }
+        }
+      }
+    }
+    penX += glyph.advanceWidth * (fontSize / font.unitsPerEm);
+  }
 }
 
-async function encodeCanvasToPNG(canvas: any): Promise<Uint8Array> {
-  // Read raw RGBA straight off the bitmap, then encode with pngjs (no streams).
-  const w = canvas.width;
-  const h = canvas.height;
-  const png = new PNG({ width: w, height: h });
-  const src = canvas.data as Uint8Array;
-  const dst = png.data as Uint8Array;
-  dst.set(src);
-  const encoded = PNG.sync.write(png);
-  return new Uint8Array(encoded.buffer, encoded.byteOffset, encoded.byteLength);
-}
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
 
 export default async function (req: Request) {
   try {
@@ -130,18 +292,6 @@ export default async function (req: Request) {
 
     const body = await req.json().catch(() => ({}));
 
-    // DIAGNOSTIC — inspect pureimage exports to locate the Bitmap constructor
-    if (body?.diag) {
-      return Response.json({
-        keys: PImageKeys,
-        types: PImageKeys.map(k => `${k}: ${typeof (PImage as any)[k]}`),
-        BitmapType: typeof BitmapCtor,
-        hasMake: typeof (PImage as any).make,
-        hasRegisterFont: typeof (PImage as any).registerFont,
-        defaultExport: typeof PImage,
-        defaultKeys: PImage && typeof PImage === 'object' ? Object.keys(PImage) : null,
-      });
-    }
     const {
       post_id, image_url, headline = '', supporting_line: supportingLine = '',
       signature = 'iRoxanne Studio', aspect_ratio: aspectRatio = '4:5',
@@ -171,47 +321,44 @@ export default async function (req: Request) {
     const previous_image_url = post?.media_file_url || '';
 
     // --- Fonts ---
-    const loaded = await loadFonts();
-    const boldFont = pickFont(loaded, ['StudioBlack', 'StudioBold']);
-    const regularFont = pickFont(loaded, ['StudioRegular', 'StudioBold']);
+    await loadFonts();
+    const boldFont = pickFont(['black', 'bold', 'regular']);
+    const regularFont = pickFont(['regular', 'bold', 'black']);
+    if (!boldFont) return Response.json({ ok: false, error: 'Font loading failed. No fonts available.' }, { status: 500 });
 
     // --- Decode the source photo ---
     const src = await decodeSourceImage(image_url);
-    const srcBitmap = bitmapFromRGBA(src.width, src.height, src.data);
 
-    // --- Create the output canvas (pure-JS bitmap, no DOM) ---
-    const canvas: any = PImage.make(W, H);
-    const ctx = canvas.getContext('2d');
+    // --- Create the output canvas ---
+    const inkColor: [number, number, number] = textColor === 'black' ? [17, 17, 17] : [255, 255, 255];
+    const scrimInk = textColor === 'black' ? [255, 255, 255] : [0, 0, 0];
+    const canvas = newImg(W, H, [21, 19, 26]);
 
-    // Fill with a dark base so any letterboxing is intentional, not white.
-    ctx.fillStyle = '#15131a';
-    ctx.fillRect(0, 0, W, H);
-
-    // Cover-fit the source image into the target frame (crop overflow).
+    // Cover-fit the source image
     const scale = Math.max(W / src.width, H / src.height);
     const dw = Math.round(src.width * scale);
     const dh = Math.round(src.height * scale);
     const dx = Math.round((W - dw) / 2);
     const dy = Math.round((H - dh) / 2);
-    ctx.drawImage(srcBitmap, dx, dy, dw, dh);
+    drawImageCover(canvas, src, dw, dh, dx, dy);
 
     // --- Scrim for text legibility ---
-    const ink = textColor === 'black' ? '255,255,255' : '0,0,0';
     const scrimH = Math.round(H * 0.62);
     const scrimTop = textPosition === 'bottom' ? H - scrimH : 0;
-    const grad = ctx.createLinearGradient(0, scrimTop, 0, scrimTop + scrimH);
     if (textPosition === 'bottom') {
-      grad.addColorStop(0, `rgba(${ink},0)`);
-      grad.addColorStop(0.30, `rgba(${ink},0.45)`);
-      grad.addColorStop(0.70, `rgba(${ink},0.78)`);
-      grad.addColorStop(1, `rgba(${ink},0.86)`);
+      fillGradientV(canvas, 0, scrimTop, W, scrimH, [
+        { t: 0, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0 },
+        { t: 0.30, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0.45 },
+        { t: 0.70, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0.78 },
+        { t: 1, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0.86 },
+      ]);
     } else {
-      grad.addColorStop(0, `rgba(${ink},0.86)`);
-      grad.addColorStop(0.50, `rgba(${ink},0.55)`);
-      grad.addColorStop(1, `rgba(${ink},0)`);
+      fillGradientV(canvas, 0, scrimTop, W, scrimH, [
+        { t: 0, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0.86 },
+        { t: 0.50, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0.55 },
+        { t: 1, r: scrimInk[0], g: scrimInk[1], b: scrimInk[2], a: 0 },
+      ]);
     }
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, scrimTop, W, scrimH);
 
     // --- Text layout ---
     const pad = Math.round(W * 0.082);
@@ -223,14 +370,8 @@ export default async function (req: Request) {
     const supportLineH = Math.round(supportSize * 1.42);
     const sigSize = Math.round(W * 0.034);
 
-    ctx.fillStyle = textColor === 'black' ? '#111111' : '#ffffff';
-
-    const headLines = headline
-      ? (ctx.font = `${headlineSize}px ${boldFont}`, wrapText(ctx, headline.trim(), maxTextW))
-      : [];
-    const supportLines = supportingLine
-      ? (ctx.font = `${supportSize}px ${regularFont}`, wrapText(ctx, supportingLine.trim(), maxTextW))
-      : [];
+    const headLines = headline ? wrapText(boldFont, headline.trim(), maxTextW, headlineSize) : [];
+    const supportLines = supportingLine ? wrapText(regularFont, supportingLine.trim(), maxTextW, supportSize) : [];
 
     const headBlockH = headLines.length * headlineLineH;
     const supportBlockH = supportLines.length * supportLineH;
@@ -248,26 +389,19 @@ export default async function (req: Request) {
       startY = H - pad - totalTextH + headlineSize;
     }
 
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-
     let y = startY;
     if (headLines.length) {
-      ctx.font = `${headlineSize}px ${boldFont}`;
-      for (const line of headLines) { ctx.fillText(line, pad, y); y += headlineLineH; }
+      for (const line of headLines) { fillText(canvas, boldFont, line, pad, y, headlineSize, inkColor); y += headlineLineH; }
     }
     y += gapHeadSupport;
     if (supportLines.length) {
-      ctx.font = `${supportSize}px ${regularFont}`;
-      for (const line of supportLines) { ctx.fillText(line, pad, y); y += supportLineH; }
+      for (const line of supportLines) { fillText(canvas, regularFont, line, pad, y, supportSize, inkColor); y += supportLineH; }
     }
     y += gapSupportSig;
-    // Signature — always exactly iRoxanne Studio (validated caller-side too).
-    ctx.font = `${sigSize}px ${boldFont}`;
-    ctx.fillText(String(signature || 'iRoxanne Studio').trim(), pad, y);
+    fillText(canvas, boldFont, String(signature || 'iRoxanne Studio').trim(), pad, y, sigSize, inkColor);
 
-    // --- Encode PNG (no streams) ---
-    const pngBytes = await encodeCanvasToPNG(canvas);
+    // --- Encode PNG ---
+    const pngBytes = encodePNG(canvas);
     if (!pngBytes || pngBytes.byteLength < 1000) {
       return Response.json({ ok: false, error: 'PNG encoding produced no usable data. The previous asset was preserved.' }, { status: 500 });
     }
@@ -293,7 +427,7 @@ export default async function (req: Request) {
     }
 
     const media = await base44.entities.GalleryImage.create({
-      title: `${effPortfolioItemId && effPortfolioItemId !== '__studio_service__' ? 'Studio' : 'iRoxanne Studio'} composed graphic (${ar})`,
+      title: `iRoxanne Studio composed graphic (${ar})`,
       image_url: imageUrl,
       category: 'promo',
       source: 'upload',
@@ -319,7 +453,6 @@ export default async function (req: Request) {
         media_clip_id: '',
         gallery_image_id: media.id,
         media_type: 'image',
-        // Keep current status/approval — never auto-approve or auto-schedule.
       });
       attached = true;
     }
