@@ -75,6 +75,10 @@
     {
       "function_name": "publishPostToSocial",
       "description": "Publish a Ready post to Facebook or Instagram (only when explicitly asked)"
+    },
+    {
+      "function_name": "generateCaseStudyVideo",
+      "description": "Generate a HeyGen video presentation for a portfolio case study. Pass portfolio_item_id. Returns a session id and watch URL; the finished video is saved to the portfolio item automatically."
     }
   ],
   "context_files": [],
