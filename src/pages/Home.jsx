@@ -7,6 +7,7 @@ import Hero from '@/components/home/Hero';
 import Process from '@/components/home/Process';
 import Services from '@/components/home/Services';
 import Testimonials from '@/components/home/Testimonials';
+import VideoShowcase from '@/components/home/VideoShowcase';
 import SiteFooter from '@/components/home/SiteFooter';
 
 export default function Home() {
@@ -83,6 +84,8 @@ export default function Home() {
           items={testimonials}
           loading={loading}
         />
+
+        <VideoShowcase />
 
       </main>
 
