@@ -77,8 +77,6 @@ function VideoCard({ video = {} }) {
   );
 }
 
-VideoCard.defaultProps = { video: {} };
-
 export default function VideoShowcase({ limit = 6 }) {
   const [videos, setVideos] = useState(null);
   const [loading, setLoading] = useState(true);
