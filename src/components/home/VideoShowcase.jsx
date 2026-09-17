@@ -5,7 +5,7 @@ import { Play } from 'lucide-react';
 function VideoCard({ video = {} }) {
   const [open, setOpen] = useState(false);
   const hasYouTube = !!video?.youtube_url;
-  const hasFile = !!video?.optional_video_file;
+  const hasFile = !!video?.file;
   const embedUrl = hasYouTube
     ? video.youtube_url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')
     : null;
@@ -21,7 +21,7 @@ function VideoCard({ video = {} }) {
         {video.thumbnail ? (
           <img src={video.thumbnail} alt={video.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
         ) : (
-          <div className="grid h-full w-full place-items-center text-sm text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <div className="grid h-full w-full place-items-center bg-[#2D2A4A]/5 text-sm text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
             {video.title}
           </div>
         )}
@@ -56,7 +56,7 @@ function VideoCard({ video = {} }) {
               </div>
             ) : hasFile ? (
               <video
-                src={video.optional_video_file}
+                src={video.file}
                 controls
                 autoPlay
                 className="aspect-video w-full rounded-xl bg-black shadow-2xl"
@@ -85,8 +85,9 @@ export default function VideoShowcase({ limit = 6 }) {
     let active = true;
     (async () => {
       try {
-        const list = await base44.entities.Video.list('-created_date', limit);
-        if (active) setVideos(list || []);
+        const res = await base44.functions.invoke('getPublicVideos', {});
+        const data = res?.data ?? res;
+        if (active) setVideos((data?.videos || []).slice(0, limit));
       } catch {
         if (active) setVideos([]);
       } finally {
