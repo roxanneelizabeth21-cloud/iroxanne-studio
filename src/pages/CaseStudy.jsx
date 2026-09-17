@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, ArrowUpRight, Calendar } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Calendar, Video, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
 
 export default function CaseStudy() {
   const { slug } = useParams();
+  const { toast } = useToast();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -21,6 +24,26 @@ export default function CaseStudy() {
     })();
     return () => { active = false; };
   }, [slug]);
+
+  const generateVideo = async () => {
+    if (!item?.id || generating) return;
+    setGenerating(true);
+    try {
+      const res = await base44.functions.invoke('generateCaseStudyVideo', { portfolio_item_id: item.id });
+      const data = res?.data ?? res;
+      if (data?.error) throw new Error(data.error);
+      if (data?.watch_url) {
+        toast({ title: 'Video generation started', description: 'Watch it build in HeyGen. The finished video will be saved here automatically.' });
+        window.open(data.watch_url, '_blank');
+      } else {
+        toast({ title: 'Video generation started' });
+      }
+    } catch (e) {
+      toast({ title: 'Video generation failed', description: e.message, variant: 'destructive' });
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -132,6 +155,16 @@ export default function CaseStudy() {
                 Visit live project <ArrowUpRight className="h-4 w-4" />
               </a>
             )}
+
+            <button
+              onClick={generateVideo}
+              disabled={generating}
+              className="mt-4 inline-flex items-center gap-2 h-12 px-7 rounded-full border border-[#2D2A4A]/20 bg-card text-[#2D2A4A] dark:text-[#D5BB82] text-[14px] font-semibold transition hover:bg-[#2D2A4A]/5 disabled:opacity-60 shadow-sm"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
+              {generating ? 'Generating…' : 'Generate video presentation'}
+            </button>
           </article>
         )}
       </main>
