@@ -48,7 +48,7 @@ export default function CaseStudy() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
-      <main className="mx-auto max-w-4xl px-5 md:px-8 pt-[130px] pb-20">
+      <main className="mx-auto max-w-4xl px-5 md:px-8 pt-[100px] pb-12">
         <Link to="/#work" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
           <ArrowLeft className="h-4 w-4" /> Back to work
         </Link>

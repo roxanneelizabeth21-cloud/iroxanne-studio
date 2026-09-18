@@ -12,7 +12,7 @@ export default function Hero({ projects, loading }) {
     <div className="pt-[72px]">
     <section className="relative isolate overflow-hidden bg-[#302634]">
       <img src="/images/hero-facebook-plum.png" alt="" aria-hidden="true" fetchPriority="high" className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center" />
-      <div className="relative mx-auto flex min-h-[340px] max-w-6xl items-center justify-center px-5 py-10 text-center md:min-h-[400px] md:px-8 md:py-12">
+      <div className="relative mx-auto flex min-h-[300px] max-w-6xl items-center justify-center px-5 py-6 text-center md:min-h-[360px] md:px-8 md:py-8">
         <div className="w-full max-w-[800px]">
           <p className="text-[13px] font-medium text-[#D5BB82] tracking-[0.16em] mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
             Custom apps for new ideas and small businesses
@@ -48,10 +48,10 @@ export default function Hero({ projects, loading }) {
       </div>
     </section>
     <div className="bg-background text-foreground">
-      <div className="mx-auto max-w-6xl px-5 py-8 md:px-8">
+      <div className="mx-auto max-w-6xl px-5 py-5 md:px-8">
         {/* Value strip */}
         <div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
               <p className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your idea</p>
               <p className="text-[13px] text-muted-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>A starting point for our conversation</p>
@@ -73,7 +73,7 @@ export default function Hero({ projects, loading }) {
 
         {/* Trust strip */}
         {trustNames.length > 0 && (
-          <div className="mt-8 flex flex-wrap items-center justify-start gap-x-8 gap-y-3">
+          <div className="mt-5 flex flex-wrap items-center justify-start gap-x-6 gap-y-2">
             {trustNames.map((name) => (
               <span key={name} className="text-[13px] font-medium text-muted-foreground tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{name}</span>
             ))}

@@ -27,7 +27,7 @@ export default function About() {
       <main className="pt-[72px]">
         <section className="relative isolate overflow-hidden bg-[#302634] text-[#FAF3E5]">
           <img src="/images/hero-facebook-plum.png" alt="" aria-hidden="true" className="absolute inset-0 -z-10 h-full w-full object-cover pointer-events-none" />
-          <div className="mx-auto max-w-5xl px-5 md:px-8 py-12 grid gap-8 md:grid-cols-[240px_1fr] items-center">
+          <div className="mx-auto max-w-5xl px-5 md:px-8 py-8 grid gap-6 md:grid-cols-[240px_1fr] items-center">
             {headshotUrl && <img src={headshotUrl} alt="Roxanne, founder of iRoxanne Studio" className="w-48 md:w-60 aspect-[3/4] object-cover object-top rounded-2xl border border-[#D5BB82]/40 shadow-xl mx-auto" />}
             <div>
               <p className="text-sm tracking-widest text-[#D5BB82]">ABOUT IROXANNE STUDIO</p>
@@ -37,9 +37,9 @@ export default function About() {
             </div>
           </div>
         </section>
-        <section className="mx-auto max-w-3xl px-5 md:px-8 py-14">
+        <section className="mx-auto max-w-3xl px-5 md:px-8 py-8">
         <h2 className="font-display text-3xl">A little about me and how I work</h2>
-        <div className="mt-8 space-y-5 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="mt-6 space-y-4 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
           <p>I’ve been building apps for nearly 20 years, starting when bringing an idea to life meant writing the code behind it. Those years have taught me how to ask the right questions, work through challenges, and build around what people actually need.</p>
           <p>Today, newer tools let me bring that experience to projects in a different way. They can reduce the time and cost involved in development, making a custom app more accessible to someone starting a business or exploring an idea.</p>
           <p>That’s what excites me about iRoxanne Studio: combining years of hands-on experience with new possibilities to help people create something they might once have thought was out of reach.</p>

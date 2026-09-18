@@ -26,14 +26,14 @@ export default function Ideas() {
   return <div className="min-h-screen bg-background text-foreground">
     <SiteNav/>
     <main className="pt-[72px]">
-      <header className="bg-[#302634] text-[#FAF3E5] px-5 py-14 md:py-20">
+      <header className="bg-[#302634] text-[#FAF3E5] px-5 py-8 md:py-10">
         <div className="mx-auto max-w-5xl">
           <p className="text-[#D5BB82] text-sm tracking-wide">Different ideas. Real possibilities.</p>
           <h1 className="font-display text-4xl md:text-5xl mt-4">Ideas brought to life</h1>
           <p className="mt-5 max-w-2xl leading-relaxed text-[#E4DCE2]">An app can begin with a business, a shared challenge, or a simple “wouldn’t it be helpful if…” These projects show a few different starting points. Your idea does not need to look like any of them.</p>
         </div>
       </header>
-      <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-12">
+      <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-8">
         {error?<p role="alert">The examples could not load. Please refresh to try again.</p>:!items?<p role="status">Loading examples…</p>:
           <div className="grid gap-5 md:grid-cols-2">{EXAMPLES.map(([slug,idea,description])=>{
             const app=items.find(item=>item.slug===slug);

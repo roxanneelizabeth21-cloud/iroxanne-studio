@@ -42,7 +42,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
-      <main className="mx-auto max-w-2xl px-5 md:px-8 pt-[130px] pb-20">
+      <main className="mx-auto max-w-2xl px-5 md:px-8 pt-[100px] pb-12">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Contact</p>
         <h1 className="text-[34px] md:text-[42px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Get in touch</h1>
         <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed max-w-md" style={{ fontFamily: "'Inter', sans-serif" }}>

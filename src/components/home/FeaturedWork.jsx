@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 export default function FeaturedWork({ items, loading }) {
   if (!loading && (!items || items.length === 0)) return null;
   return (
-    <section id="work" tabIndex={-1} aria-label="Project examples" className="scroll-mt-24 focus:outline-none bg-card py-10 px-5 md:px-8">
+    <section id="work" tabIndex={-1} aria-label="Project examples" className="scroll-mt-24 focus:outline-none bg-card py-8 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>App examples</p>
         <h2 className="text-[28px] md:text-[32px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
@@ -14,7 +14,7 @@ export default function FeaturedWork({ items, loading }) {
           Each project starts with someone’s idea. These examples show some of the different ways an app can support a new venture or an existing business.
         </p>
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {(loading ? Array.from({ length: 3 }) : items.slice(0,3)).map((item, i) => {
             const hasCaseStudy = !!item?.slug;
             const inner = (

@@ -29,19 +29,19 @@ export default function VideoShowcase() {
   const closeVideo = () => setActive(null);
 
   return (
-    <section id="videos" className="mx-auto max-w-6xl px-5 md:px-8 py-16 md:py-20">
+    <section id="videos" className="mx-auto max-w-6xl px-5 md:px-8 py-8 md:py-10">
       <p className="text-[12px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-[0.2em] uppercase mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Watch</p>
       <h2 className="text-[32px] md:text-[40px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Videos</h2>
       <p className="mt-3 text-[15px] text-muted-foreground max-w-xl" style={{ fontFamily: "'Inter', sans-serif" }}>A look at some of the projects and moments I've shared.</p>
 
       {loading ? (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="aspect-video rounded-xl bg-muted animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {videos.map((video) => (
             <VideoCard key={video.id} video={video} onPlay={openVideo} />
           ))}
@@ -99,7 +99,7 @@ function VideoCard({ video, onPlay }) {
           </span>
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-3">
         <h3 className="text-[14px] font-semibold text-foreground line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>{video.title}</h3>
         {video.description && (
           <p className="mt-1 text-[12px] text-muted-foreground line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>{video.description}</p>

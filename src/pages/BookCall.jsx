@@ -16,7 +16,7 @@ export default function BookCall(){
  const book=async()=>{if(busy)return;setBusy(true);setError('');try{const d=await call('book');if(d.booked){base44.analytics.track({eventName:'call_booked'});}setData(d);}catch(e){setError(e.message);setSelected('');}finally{setBusy(false);}};
  const days=[...new Set((data?.slots||[]).map(dateKey))];
  const chosenDay=days.includes(day)?day:days[0];
- return <div className="studio-surface min-h-screen bg-background px-4 py-10"><div className="max-w-2xl mx-auto"><BrandedPageHeader title="Schedule an optional call" subtitle="Choose a time to talk through your project."/>
+ return <div className="studio-surface min-h-screen bg-background px-4 py-8"><div className="max-w-2xl mx-auto"><BrandedPageHeader title="Schedule an optional call" subtitle="Choose a time to talk through your project."/>
  <div className="rounded-2xl border bg-card p-6 space-y-5">
  {error&&<div role="alert"><p className="text-destructive">{error}</p><Button variant="outline" onClick={load} disabled={busy}>Refresh available times</Button></div>}
  {busy&&!data&&<p role="status">Checking availability…</p>}

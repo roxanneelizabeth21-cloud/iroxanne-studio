@@ -27,7 +27,7 @@ export default function Feedback() {
       const d=r.data || r;if(d.error)throw new Error(d.error);setState('done');
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
-  return <div className="min-h-screen bg-background text-foreground"><SiteNav/><main className="max-w-2xl mx-auto px-5 pt-28 pb-16">
+  return <div className="min-h-screen bg-background text-foreground"><SiteNav/><main className="max-w-2xl mx-auto px-5 pt-24 pb-12">
     <h1 className="font-display text-4xl">Share your experience</h1>
     <p className="mt-4 text-muted-foreground">Thank you for working with me. I would love to hear what the experience was like for you. Honest feedback helps me improve.</p>
     {error&&<p role="alert" className="mt-5 text-destructive">{error}</p>}

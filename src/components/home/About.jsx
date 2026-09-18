@@ -2,9 +2,9 @@ const FALLBACK_HEADSHOT_URL = '/uploads/56D3C09F-D8D3-4958-A480-47CAE6B4970C.jpe
 
 export default function About({ headshotUrl }) {
   return (
-    <section id="about" className="bg-card py-14 px-5 md:px-8">
+    <section id="about" className="bg-card py-8 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="grid md:grid-cols-[0.7fr_1.3fr] gap-12 lg:gap-16 items-start">
+        <div className="grid md:grid-cols-[0.7fr_1.3fr] gap-8 lg:gap-12 items-start">
           {/* Left: photo + name */}
           <div>
             <div className="overflow-hidden rounded-[20px] shadow-[0_16px_48px_rgba(45,42,74,0.08)] max-w-[200px] sm:max-w-[240px]">
@@ -27,8 +27,8 @@ export default function About({ headshotUrl }) {
             <h2 className="text-[34px] md:text-[40px] font-semibold text-foreground tracking-tight leading-[1.1]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Hi, I’m Roxanne.<br />Let’s talk about your idea.
             </h2>
-            <div className="mt-8 h-1 w-12 bg-[#C9A84C]/40 rounded-full" />
-            <div className="mt-8 space-y-5 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <div className="mt-5 h-1 w-12 bg-[#C9A84C]/40 rounded-full" />
+            <div className="mt-5 space-y-4 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
               <p>
                 I’m <span className="font-semibold text-foreground">Roxanne</span>, the person behind iRoxanne Studio. I help people explore their ideas and turn them into apps, whether they are just starting out or already running a business.
               </p>

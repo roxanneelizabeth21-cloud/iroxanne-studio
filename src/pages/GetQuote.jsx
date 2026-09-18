@@ -167,7 +167,7 @@ export default function GetQuote() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-12 px-4">
+    <div className="min-h-screen bg-background text-foreground py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>Get a Quote</p>

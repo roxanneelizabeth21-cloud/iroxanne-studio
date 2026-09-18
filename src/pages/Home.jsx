@@ -72,7 +72,7 @@ export default function Home() {
 
         <Services />
         <Process />
-        <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-10">
+        <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-8">
           <div className="max-w-5xl mx-auto md:flex items-center justify-between gap-8">
             <div><h2 className="font-display text-3xl">Different ideas. Real possibilities.</h2>
             <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">From family life and travel to relationships and small businesses, explore a few ideas I’ve helped bring to life.</p></div>

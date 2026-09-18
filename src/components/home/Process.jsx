@@ -11,7 +11,7 @@ const STEPS = [
 
 export default function Process() {
   return (
-    <section id="process" className="scroll-mt-24 bg-background py-14 px-5 md:px-8">
+    <section id="process" className="scroll-mt-24 bg-background py-8 px-5 md:px-8">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>How it works</p>
         <h2 className="text-[34px] md:text-[40px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
@@ -19,9 +19,9 @@ export default function Process() {
         </h2>
 
         <p className="mt-4 max-w-2xl text-muted-foreground leading-relaxed">Here is what to expect when I build your app. If you are building it yourself and need guidance, we agree on the sessions and support that fit your needs.</p>
-        <div className="mt-10 grid gap-x-8 gap-y-10 md:grid-cols-3">
+        <div className="mt-6 grid gap-x-8 gap-y-6 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <div key={step.title} className="relative pl-10 md:pl-0 md:pr-8 pb-12 md:pb-0">
+            <div key={step.title} className="relative pl-10 md:pl-0 md:pr-8 pb-8 md:pb-0">
               {/* Vertical connector (mobile) */}
               {i < STEPS.length - 1 && <div className="absolute left-[15px] top-[40px] bottom-0 w-px bg-[#2D2A4A]/8 md:hidden" />}
               {/* Horizontal connector (desktop) */}
