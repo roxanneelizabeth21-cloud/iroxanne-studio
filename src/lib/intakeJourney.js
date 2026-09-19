@@ -1,7 +1,7 @@
 export const INTAKE_LABELS = {
   pending: 'Link ready', sent: 'Sent', in_progress: 'In progress', submitted: 'Completed', reviewed: 'Reviewed',
 };
-export function intakeSteps(profile = {}) {
+export function intakeSteps(profile = {}, scope = {}) {
   profile = profile ?? {};
   const steps = ['welcome', 'idea', 'account', 'basics', 'workflow', 'brand'];
   if (profile.content === 'ready') steps.push('home', 'about');
@@ -11,6 +11,9 @@ export function intakeSteps(profile = {}) {
   if (profile.features?.includes('contact')) steps.push('contact');
   if (profile.connections === 'yes' || profile.start === 'existing') steps.push('data');
   if (profile.content === 'ready') steps.push('documents', 'legal');
+  if(scope?.selected_package==='Business Website') {
+    for(const section of ['home','about','services','contact']) if(!steps.includes(section))steps.push(section);
+  }
   steps.push('notes', 'review');
   return steps;
 }
