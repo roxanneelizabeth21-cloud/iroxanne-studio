@@ -100,10 +100,10 @@ export default function ClientIntakeForm() {
         const res = await base44.functions.invoke('intakeJourney', { action: 'get', id, token });
         const match = res.data?.record;
         if (!match) { setError('Invalid or expired link.'); return; }
-        setStep(intakeSteps(match.journey_profile).includes(match.journey_step) ? match.journey_step : 'welcome');
+        setStep(intakeSteps(match.journey_profile, match.scope_snapshot).includes(match.journey_step) ? match.journey_step : 'welcome');
         if (match.status === 'submitted' || match.status === 'reviewed') { setSubmitted(true); }
         setIntake(match);
-      } catch { setError('Could not load the intake form.'); }
+      } catch(e) { setError(e.response?.data?.error || 'Could not load the intake form.'); }
       finally { setLoading(false); }
     })();
   }, [id, token]);
@@ -133,7 +133,7 @@ export default function ClientIntakeForm() {
   if (submitted) return <div className="min-h-screen flex items-center justify-center ir-app-bg px-4"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-500" /><h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">All set, {intake.client_name?.split(' ')[0] || 'there'}!</h1><p className="text-gray-600 dark:text-gray-400">We've received your content. We'll review everything and reach out if we have any questions before we start building.</p></div></div>;
 
   const profile = intake.journey_profile || {};
-  const steps = intakeSteps(profile);
+  const steps = intakeSteps(profile, intake?.scope_snapshot);
   const position = Math.max(0, steps.indexOf(step));
   const sections = [step];
   const toggleSection = () => {};
@@ -303,6 +303,7 @@ export default function ClientIntakeForm() {
           <Button disabled={saving} className="rounded-full px-6" onClick={()=>step==='review'?handleSave(true):go(steps[position+1])}>{saving?<Loader2 className="w-4 h-4 animate-spin"/>:step==='review'?'Send to Roxanne':<>Continue<ArrowRight className="w-4 h-4 ml-2"/></>}</Button>
         </div>
         <p role="status" className="text-xs text-center text-muted-foreground">{dirty?'You have unsaved answers.':'Your saved answers will be here when you return using the same private link.'} Continue saves your progress.</p>
+        {intake?.scope_snapshot&&<aside className="rounded-2xl border border-border p-5 my-5 text-sm"><h2 className="font-semibold">Your agreed project scope</h2><p className="mt-2">{intake.scope_snapshot.selected_package}</p><p className="whitespace-pre-wrap mt-2">{intake.scope_snapshot.scope_summary}</p><ul className="list-disc pl-5 mt-2">{intake.scope_snapshot.line_items?.map((item,i)=><li key={i}>{item.description}</li>)}</ul><p className="mt-3 text-muted-foreground">This intake gathers details for your agreement. Additional requests will be reviewed and quoted separately before work begins.</p></aside>}
         <BrandedFooter />
       </div>
     </div>
