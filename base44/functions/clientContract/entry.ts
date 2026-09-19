@@ -39,9 +39,10 @@ export default async function(req) {
       let signatureUrl = '';
       if (signatureMode === 'drawn' && signatureImage) {
         try {
-          const uploadRes = await base44.asServiceRole.integrations.Core.UploadPublicFile({
-            file_data: signatureImage,
-            file_name: `signature_${id}_${Date.now()}.png`,
+          const encoded=String(signatureImage).split(',')[1];
+          const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
+          const uploadRes = await base44.asServiceRole.integrations.Core.UploadFile({
+            file:new File([bytes], `signature_${id}_${Date.now()}.png`, {type:'image/png'}),
           });
           signatureUrl = uploadRes?.url || uploadRes?.file_url || '';
         } catch (e) { console.log('signature upload failed', e?.message); }
