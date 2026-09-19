@@ -1,0 +1,167 @@
+/* Shared sidebar base — QTDaily quiet-studio pattern */
+.irx-sidebar {
+  background: #f1eee5;
+  border-right: 1px solid #dddcd1;
+  padding: 22px 14px;
+  overflow-y: auto;
+  padding-top: 60px; /* room for ViewSwitcher */
+}
+
+.irx-sidebar .brand-header { padding: 12px 12px 26px; }
+.irx-sidebar .brand-header h1 {
+  font: 500 34px/1 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -1.2px;
+  color: #213b45;
+  margin: 0;
+}
+.irx-sidebar .brand-header p {
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #66736e;
+  margin: 8px 0 0;
+}
+.irx-sidebar .brand-mark {
+  width: 42px;
+  height: 42px;
+  background: #213b45;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fffdf8;
+  margin-bottom: 12px;
+}
+
+.irx-sidebar nav { display: flex; flex-direction: column; gap: 5px; }
+.irx-sidebar nav a {
+  min-height: 46px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 9px;
+  color: #4f625f;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.irx-sidebar nav a:hover { background: #e4e7dc; color: #213b45; }
+.irx-sidebar nav a.active {
+  background: #213b45;
+  color: #fffdf8;
+  box-shadow: 0 5px 12px rgba(33,59,69,.06);
+}
+
+.irx-sidebar .sidebar-footer-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 12px;
+  margin-top: 16px;
+  color: #536e61;
+  font-size: 13px;
+  border-top: 1px solid #dcdccf;
+  text-decoration: none;
+}
+.irx-sidebar .sidebar-footer-link:hover { color: #213b45; }
+
+.irx-sidebar .sidebar-motto {
+  background: #e7eadd;
+  border-radius: 12px;
+  margin-top: 18px;
+  padding: 18px;
+}
+.irx-sidebar .sidebar-motto span {
+  color: #597064;
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.irx-sidebar .sidebar-motto p {
+  font: italic 19px/1.5 'Cormorant Garamond', Georgia, serif;
+  color: #334f49;
+  margin: 6px 0 0;
+}
+
+/* View Switcher */
+.view-switcher {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  z-index: 50;
+  padding: 0 16px;
+  gap: 8px;
+}
+.view-switcher .vs-brand {
+  font: 600 16px/1 'DM Sans', sans-serif;
+  color: #fff;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.view-switcher button {
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all .15s;
+}
+.view-switcher button:hover { color: rgba(255,255,255,0.85); }
+.view-switcher button.active {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+}
+.view-switcher .vs-site-link {
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  text-decoration: none;
+  margin-left: 12px;
+}
+.view-switcher .vs-site-link:hover { color: rgba(255,255,255,0.8); }
+.view-switcher .vs-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+.view-switcher .vs-actions button {
+  padding: 4px;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+}
+.view-switcher .vs-actions button:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+/* Mobile sidebar slide-out */
+.irx-mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.irx-mobile-drawer .irx-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+.irx-mobile-drawer .irx-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: #f1eee5;
+  overflow-y: auto;
+}
