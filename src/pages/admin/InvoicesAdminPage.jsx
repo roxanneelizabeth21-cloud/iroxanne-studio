@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,8 @@ const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', c
 const methods = ['square','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
 export default function InvoicesAdminPage() {
   const { toast } = useToast();
+  const [params] = useSearchParams();
+  const contractFilter=params.get('contract');
   const [invoices,setInvoices] = useState([]);
   const [payments,setPayments] = useState([]);
   const [loading,setLoading] = useState(true);
@@ -102,7 +105,8 @@ export default function InvoicesAdminPage() {
     {error && <p role="alert" className="text-destructive">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
     {loading && <p role="status">Loading invoices…</p>}
     {!loading && !error && !invoices.length && <div className="rounded-2xl bg-card border p-8">Invoices appear here when a client signs their agreement.</div>}
-    {invoices.map(i=><section key={i.id} className="rounded-2xl border border-border bg-card p-5 space-y-4">
+    {contractFilter&&<p className="text-sm">Showing invoices for this agreement. <Link className="underline" to="/admin/invoices">Show all invoices</Link></p>}
+    {invoices.filter(i=>!contractFilter||i.contract_id===contractFilter).map(i=><section key={i.id} className="rounded-2xl border border-border bg-card p-5 space-y-4">
       <div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-display text-xl font-semibold">{i.project_title}</h2><p className="text-sm text-muted-foreground">{i.client_name || i.client_email}</p></div><span className="text-sm font-medium text-primary">{i.status?.replaceAll('_',' ')}</span></div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div><p className="text-xs text-muted-foreground">Project total</p><p className="font-semibold">{money(i.amount_total)}</p></div>
