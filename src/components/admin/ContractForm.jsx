@@ -109,7 +109,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       {settings?.packages?.length > 0 && form.pricing_mode !== 'custom_quote' && (
         <div className="space-y-1.5">
           <Label>Selected package</Label>
-          <Select value={form.selected_package || ''} onValueChange={(v) => update('selected_package', v)}>
+          <Select value={form.selected_package || ''} onValueChange={v=>{const pkg=settings.packages.find(p=>p.name===v);if(!pkg)return;setForm(p=>({...p,selected_package:v,estimated_tier:v==='Business Website'?'starter':(['starter','business','custom'].includes(v.toLowerCase())?v.toLowerCase():'custom'),line_items:[{description:pkg.name+' — '+(pkg.description||''),quantity:1,amount:pkg.price},...(p.line_items||[]).slice(1)],deposit_amount:p.payment_installments?.[0]?.amount||Math.round((pkg.price+(p.line_items||[]).slice(1).reduce((s,i)=>s+money(i.amount),0))*(p.deposit_percent??settings?.default_deposit_percent??50))/100}));}}>
             <SelectTrigger><SelectValue placeholder="Choose a package" /></SelectTrigger>
             <SelectContent>
               {settings.packages.map((pkg) => (
