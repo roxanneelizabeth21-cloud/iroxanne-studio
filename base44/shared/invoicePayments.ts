@@ -71,14 +71,15 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
     const sameDetails =
       Math.round(Number(existing.amount) * 100) === Math.round(amount * 100) &&
       existing.kind === kind &&
-      existing.method === method;
+      existing.method === method &&
+      (kind !== 'milestone' || existing.milestone_index === milestoneIndex);
     if (!sameDetails) {
       throw new PaymentError(
         'This request was already recorded with different details. Refresh the invoice before entering another payment.',
         409
       );
     }
-    return { duplicate: true, payment: existing, invoice, summary: paymentSummary(invoice, payments) };
+    return reconcilePayment(db, invoice, payments, existing, true);
   }
 
   // --- Milestone validation --------------------------------------------------
@@ -89,7 +90,8 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
     }
     const m = milestones[milestoneIndex];
     if (m.status === 'paid') throw new PaymentError('That milestone is already paid.', 409);
-    if (opts.enforceOutstanding && amount > Number(m.amount) + 0.001) {
+    const paid=payments.filter(p=>p.kind==='milestone'&&p.milestone_index===milestoneIndex).reduce((sum,p)=>sum+Number(p.amount||0),0);
+    if (opts.enforceOutstanding && amount > Number(m.amount) - paid + 0.001) {
       throw new PaymentError('Amount exceeds this milestone.', 400);
     }
   }
@@ -100,7 +102,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
   // Milestones draw down the balance, so they're checked against it too.
   if (opts.enforceOutstanding) {
     const cap = kind === 'project' ? before.outstanding : kind === 'deposit' ? before.depositOutstanding : before.balanceOutstanding;
-    if (kind !== 'other' && amount > cap + 0.001) {
+    if (amount > cap + 0.001) {
       throw new PaymentError('Amount exceeds the unpaid amount for this payment stage.', 400);
     }
   }
@@ -127,18 +129,21 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
     reference: String(reference).slice(0, 300),
     notes: String(opts.notes || (source ? `Stripe checkout (${source})` : '')).slice(0, 1000),
     paid_at: paidAt,
+    ...(kind === 'milestone' ? {milestone_index:milestoneIndex} : {}),
   });
 
-  // Mark the specific milestone paid when this payment targets one.
-  if (kind === 'milestone' && milestoneIndex != null && milestones[milestoneIndex]) {
-    const next = milestones.map((m: any, i: number) => (i === milestoneIndex ? { ...m, status: 'paid' } : m));
-    await db.Invoice.update(invoice_id, { milestones: next }).catch(() => {});
-  }
-
-  // --- Recompute -------------------------------------------------------------
   payments = await db.Payment.filter({ invoice_id }, '-created_date', 1000);
-  const summary = paymentSummary({ ...invoice, ...baseline }, payments);
+  return reconcilePayment(db, {...invoice,...baseline}, payments, payment, false);
+}
 
+async function reconcilePayment(db, invoice, payments, payment, duplicate) {
+  const invoice_id=invoice.id, kind=payment.kind, method=payment.method, reference=payment.reference;
+  const paidAt=payment.paid_at || new Date().toISOString();
+  const summary=paymentSummary(invoice,payments);
+  const milestones=(invoice.milestones||[]).map((m,index)=>{
+    const paid=payments.filter(p=>p.kind==='milestone'&&p.milestone_index===index).reduce((sum,p)=>sum+Math.round(Number(p.amount||0)*100),0);
+    return paid>=Math.round(Number(m.amount)*100)&&paid>0?{...m,status:'paid'}:m;
+  });
   const depositStatus =
     invoice.deposit_status === 'waived' || summary.deposit === 0
       ? 'waived'
@@ -155,6 +160,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
           : 'pending';
 
   const updated = await db.Invoice.update(invoice_id, {
+    milestones,
     deposit_status: depositStatus,
     deposit_paid_amount: summary.depositPaid,
     deposit_paid_at: depositStatus === 'paid' ? invoice.deposit_paid_at || paidAt : invoice.deposit_paid_at,
@@ -181,9 +187,9 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
         if (Object.keys(changes).length > 0) await db.Contract.update(contract.id, changes);
       }
     } catch (e) {
-      console.log('contract roll-forward failed', (e as Error)?.message);
+      throw new Error('Payment saved, but project status needs updating. Retry the same payment to complete the update without recording it twice.');
     }
   }
 
-  return { duplicate: false, payment, invoice: updated, summary };
+  return { duplicate, payment, invoice: updated, summary };
 }
