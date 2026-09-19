@@ -178,6 +178,26 @@
       "type": "string",
       "maxLength": 8000
     },
+    "welcome_video_url": {
+      "type": "string",
+      "description": "Personalized HeyGen welcome video URL, auto-generated after the client signs."
+    },
+    "welcome_video_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "generating",
+        "ready",
+        "failed"
+      ],
+      "default": "none",
+      "description": "Status of the auto-generated welcome video"
+    },
+    "welcome_video_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the welcome video was emailed to the client"
+    },
     "handoff_status": {
       "type": "string",
       "enum": [

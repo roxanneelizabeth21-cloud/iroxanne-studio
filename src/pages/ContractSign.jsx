@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Loader2, CheckCircle2, ShieldCheck, Video } from 'lucide-react';
 import BrandedPageHeader, { PrintButton, BrandedFooter } from '@/components/BrandedPageHeader';
 
 import SignaturePad from '@/components/SignaturePad';
@@ -25,6 +25,8 @@ export default function ContractSign() {
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
   const [invoiceUrl, setInvoiceUrl] = useState('');
+  const [welcomeVideoUrl, setWelcomeVideoUrl] = useState('');
+  const [welcomeVideoStatus, setWelcomeVideoStatus] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -34,6 +36,8 @@ export default function ContractSign() {
         if (data.error) { setError(data.error); }
         else {
           setContract(data.contract);
+          setWelcomeVideoUrl(data.contract?.welcome_video_url || '');
+          setWelcomeVideoStatus(data.contract?.welcome_video_status || '');
           if (['signed', 'deposit_paid', 'active', 'completed'].includes(data.contract?.status)) setSigned(true);
         }
       } catch {
@@ -52,7 +56,13 @@ export default function ContractSign() {
       const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree, signatureMode, signatureImage });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
-      else { setSigned(true); setContract(data.contract); if (data.invoice_id && data.invoice_token) setInvoiceUrl(`/invoice/${data.invoice_id}?t=${data.invoice_token}`); }
+      else {
+        setSigned(true);
+        setContract(data.contract);
+        setWelcomeVideoUrl(data.contract?.welcome_video_url || '');
+        setWelcomeVideoStatus(data.contract?.welcome_video_status || '');
+        if (data.invoice_id && data.invoice_token) setInvoiceUrl(`/invoice/${data.invoice_id}?t=${data.invoice_token}`);
+      }
     } catch (e) {
       const backendError = e?.response?.data?.error || e?.data?.error;
       setError(backendError || e?.message || 'Signing failed. Please try again.');
@@ -66,6 +76,24 @@ export default function ContractSign() {
     const timer = setTimeout(() => { window.location.href = invoiceUrl; }, 4500);
     return () => clearTimeout(timer);
   }, [signed, invoiceUrl]);
+
+  // Poll for the welcome video while it's generating (it takes a few minutes).
+  useEffect(() => {
+    if (!signed || welcomeVideoUrl || welcomeVideoStatus !== 'generating') return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await base44.functions.invoke('clientContract', { id, token, action: 'view' });
+        const data = res.data || res;
+        if (data.contract?.welcome_video_url) {
+          setWelcomeVideoUrl(data.contract.welcome_video_url);
+          setWelcomeVideoStatus(data.contract.welcome_video_status || 'ready');
+        } else if (data.contract?.welcome_video_status === 'failed') {
+          setWelcomeVideoStatus('failed');
+        }
+      } catch { /* ignore — will retry */ }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [signed, welcomeVideoUrl, welcomeVideoStatus, id, token]);
 
   if (loading) {
     return (
@@ -173,6 +201,23 @@ export default function ContractSign() {
           {signed ? (
             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 text-center">
               <CheckCircle2 className="h-10 w-10 mx-auto text-green-500 mb-2" />
+              {welcomeVideoUrl && (
+                <div className="mb-6 text-left">
+                  <div className="flex items-center gap-2 mb-3 justify-center">
+                    <Video className="h-4 w-4 text-[#876b26]" />
+                    <p className="text-sm font-medium text-foreground">A personal welcome from Roxanne</p>
+                  </div>
+                  <div className="aspect-video overflow-hidden rounded-xl border border-border shadow-sm bg-black">
+                    <video src={welcomeVideoUrl} controls className="h-full w-full" />
+                  </div>
+                </div>
+              )}
+              {!welcomeVideoUrl && welcomeVideoStatus === 'generating' && (
+                <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Generating a personal welcome video from Roxanne…</span>
+                </div>
+              )}
               <p className="font-semibold text-foreground">Agreement signed</p>
               {contract.signature_mode === 'drawn' && contract.signature_image && <img src={contract.signature_image} alt="Recorded signature" className="max-w-full w-72 mx-auto bg-[#FAF7F0] rounded-lg" />}
               <p className="text-sm text-muted-foreground mt-1">
