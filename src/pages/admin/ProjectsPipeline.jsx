@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -92,7 +92,9 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 
 export default function ProjectsPipeline() {
   const [searchParams] = useSearchParams();
-  const [view,setView]=useState(searchParams.get('view') === 'intakes' ? 'intakes' : 'pipeline');
+  const requestedView=searchParams.get('view');
+  const [view,setView]=useState(requestedView === 'intakes' ? 'intakes' : 'pipeline');
+  useEffect(()=>{setView(requestedView === 'intakes' ? 'intakes' : 'pipeline');},[requestedView]);
   const { data: leads = [], isLoading: lLoading, error: lErr } = useQuery({ queryKey: ['pipeline-leads'], queryFn: () => base44.entities.Lead.list('-created_date', 500) });
   const { data: proposals = [], isLoading: pLoading, error: pErr } = useQuery({ queryKey: ['pipeline-proposals'], queryFn: () => base44.entities.Proposal.list('-created_date', 500) });
   const { data: contracts = [], isLoading: cLoading, error: cErr } = useQuery({ queryKey: ['pipeline-contracts'], queryFn: () => base44.entities.Contract.list('-created_date', 500) });
