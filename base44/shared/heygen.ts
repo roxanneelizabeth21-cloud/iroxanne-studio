@@ -1,4 +1,7 @@
 // Shared HeyGen helpers used by generateCaseStudyVideo and generateWelcomeVideo.
+// GUARD: HeyGen calls cost real credits. Every function that creates a session
+// MUST pass allow_heygen=true explicitly — this prevents accidental credit drain
+// from stray triggers, test calls, or automated loops.
 import { waitUntil } from 'base44:runtime';
 import { secrets } from 'base44:runtime';
 
@@ -8,6 +11,14 @@ export function getHeyGenApiKey() {
   const apiKey = secrets.get('HEYGEN_API_KEY');
   if (!apiKey) throw new Error('HeyGen API key is not configured. Add HEYGEN_API_KEY in Settings → Secrets.');
   return apiKey;
+}
+
+// Hard guard — throws if the caller did not explicitly opt in with allow_heygen=true.
+// This is the single chokepoint that prevents accidental HeyGen credit usage.
+export function guardHeyGenCall(opts) {
+  if (!opts?.allow_heygen) {
+    throw new Error('HeyGen API calls are blocked unless explicitly enabled with allow_heygen=true. This guard prevents accidental credit usage.');
+  }
 }
 
 // Creates a HeyGen Video Agent session from a prompt, returns { sessionId, watchUrl }.

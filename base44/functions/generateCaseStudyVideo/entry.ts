@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin, loadPortfolioItem } from '../../shared/marketingAdmin.ts';
-import { getHeyGenApiKey, createHeyGenSession, pollHeyGenVideo } from '../../shared/heygen.ts';
+import { getHeyGenApiKey, createHeyGenSession, pollHeyGenVideo, guardHeyGenCall } from '../../shared/heygen.ts';
 
 export default async function(req) {
   try {
@@ -11,6 +11,9 @@ export default async function(req) {
     const body = await req.json().catch(() => ({}));
     const { portfolio_item_id } = body || {};
     if (!portfolio_item_id) return Response.json({ error: 'portfolio_item_id is required' }, { status: 400 });
+
+    // Hard guard — prevents accidental HeyGen credit usage.
+    guardHeyGenCall(body);
 
     const apiKey = getHeyGenApiKey();
 

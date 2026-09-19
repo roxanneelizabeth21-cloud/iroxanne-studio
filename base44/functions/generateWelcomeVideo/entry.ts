@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { getHeyGenApiKey, createHeyGenSession, pollHeyGenVideo } from '../../shared/heygen.ts';
+import { getHeyGenApiKey, createHeyGenSession, pollHeyGenVideo, guardHeyGenCall } from '../../shared/heygen.ts';
 import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { clientLink } from '../../shared/studioUrl.ts';
@@ -22,6 +22,9 @@ export default async function(req) {
 
     const contract = await base44.asServiceRole.entities.Contract.get(contract_id);
     if (!contract) return Response.json({ error: 'Contract not found' }, { status: 404 });
+
+    // Hard guard — prevents accidental HeyGen credit usage.
+    guardHeyGenCall(body);
 
     const apiKey = getHeyGenApiKey();
 
