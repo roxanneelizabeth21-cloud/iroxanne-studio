@@ -198,11 +198,11 @@ function buildInitial(initial, settings) {
     project_title: initial?.project_title || initial?.quick_pitch?.slice(0, 60) || '',
     scope_summary: initial?.scope_summary || buildScopeFromLead(initial),
     pricing_mode: settings?.pricing_mode || 'packages_addons',
-    selected_package: '',
-    line_items: initial?.estimated_price_low
+    selected_package: initial?.selected_package || '',
+    line_items: initial?.selected_package==='Business Website' ? [{description:'Business Website — up to four pages, service-request form, owner dashboard, social links, supported call scheduling, one revision round and launch handoff. Third-party costs and add-ons separate.',quantity:1,amount:650}] : initial?.estimated_price_low
       ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
       : [],
-    deposit_amount: 500,
+    deposit_amount: Math.round((initial?.selected_package==='Business Website'?650:Number(initial?.estimated_price_low||0))*(settings?.default_deposit_percent??50))/100,
     payment_schedule: 'Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.',
     terms: settings?.standard_terms || '',
     contract_variant: 'standard',
@@ -215,7 +215,7 @@ function buildScopeFromLead(lead) {
   if (!lead) return '';
   const parts = [];
   if (lead.quick_pitch) parts.push(lead.quick_pitch);
-  if (lead.must_have_features?.length) parts.push(`Must-have features: ${lead.must_have_features.join(', ')}`);
+  if (lead.must_have_features?.length) parts.push(`Requested add-ons for review — include only after scope and price are agreed: ${lead.must_have_features.join(', ')}`);
   if (lead.integrations_needed?.length) parts.push(`Integrations: ${lead.integrations_needed.join(', ')}`);
   if (lead.estimated_tier) parts.push(`Estimated tier: ${lead.estimated_tier} (${lead.estimated_hours_low}–${lead.estimated_hours_high} hrs)`);
   return parts.join('\n\n');
