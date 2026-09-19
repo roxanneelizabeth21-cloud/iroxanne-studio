@@ -1,3 +1,4 @@
+import { requireAuthenticated } from '../../shared/marketingAdmin.ts';
 import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
@@ -7,6 +8,8 @@ import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    const guard=await requireAuthenticated(base44);
+    if(!guard.ok)return guard.response;
     const body = await req.json().catch(() => ({}));
     const leadId = body.lead_id || body.id || body.entity_id;
     if (!leadId) return Response.json({ error: 'Missing lead_id' }, { status: 400 });
@@ -18,6 +21,7 @@ export default async function(req) {
       return Response.json({ skipped: true, reason: 'not found' });
     }
 
+    if(lead.is_test_record)return Response.json({skipped:true,reason:'test record'});
     // Only nudge if the lead is still waiting (no proposal sent, not won/lost)
     if (!['new', 'contacted'].includes(lead.status)) {
       return Response.json({ skipped: true, reason: `status is ${lead.status}` });
@@ -36,7 +40,7 @@ export default async function(req) {
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,
           footerNote: 'iRoxanne Studio — one builder, not an agency.',
         }),
-      }).catch((e) => console.log('followup failed', e?.message));
+      });
     }
 
     return Response.json({ success: true });

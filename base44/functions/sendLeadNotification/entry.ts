@@ -1,3 +1,4 @@
+import { requireAuthenticated } from '../../shared/marketingAdmin.ts';
 import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
@@ -9,6 +10,8 @@ import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    const guard=await requireAuthenticated(base44);
+    if(!guard.ok)return guard.response;
     const body = await req.json().catch(() => ({}));
     const leadId = body.lead_id || body.id || body.entity_id;
     if (!leadId) return Response.json({ error: 'Missing lead_id' }, { status: 400 });
@@ -16,6 +19,8 @@ export default async function(req) {
     const lead = await base44.asServiceRole.entities.Lead.get(leadId);
     if (!lead) return Response.json({ error: 'Lead not found' }, { status: 404 });
 
+    if(lead.is_test_record)return Response.json({skipped:true,reason:'test record'});
+    const deliveryErrors=[];
     const adminEmail = await resolveAdminEmail(base44).catch(() => '');
     const arr = (a) => Array.isArray(a) ? a.join(', ') : (a || '');
     const BUDGET_LABELS = { under_1500:'Under $1,500','1500_3000':'$1,500–$3,000','3000_5000':'$3,000–$5,000','5000_8000':'$5,000–$8,000','8000_plus':'$8,000+',not_sure:'Not sure yet' };
@@ -29,7 +34,7 @@ export default async function(req) {
         ['Email', lead.email || ''],
         ['Business', lead.business_name || ''],
         ['Budget', budgetLabel(lead.budget_range)],
-        ['Estimated', lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
+        ['Estimated', lead.selected_package==='Business Website' ? '$650 base website; requested add-ons require a quote' : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
         ['Pitch', lead.quick_pitch || ''],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
@@ -37,10 +42,10 @@ export default async function(req) {
         subject: `New quote request: ${lead.name || lead.email}`,
         body: brandedEmail({
           title: 'New quote request',
-          content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', adminLink(req, 'contracts'))}</p>`,
+          content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', adminLink(req, 'proposals')+'?lead='+encodeURIComponent(lead.id))}</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
-      }).catch((e) => console.log('admin notify failed', e?.message));
+      }).catch((e) => deliveryErrors.push('Admin notification: '+e.message));
     }
 
     const callSettings=await base44.asServiceRole.entities.CallSettings.list('-updated_date',1).catch(()=>[]);
@@ -52,7 +57,7 @@ export default async function(req) {
         ['Business', lead.business_name || ''],
         ['What it does', lead.quick_pitch || ''],
         ['The problem', lead.problem_to_solve || ''],
-        ['Must-have features', arr(lead.must_have_features)],
+        ['Requested add-ons (not yet quoted)', arr(lead.must_have_features)],
         ['Integrations needed', arr(lead.integrations_needed)],
         ['Budget', budgetLabel(lead.budget_range)],
         ['Pricing preference', PRICING_LABELS[lead.pricing_model_preference] || lead.pricing_model_preference || ''],
@@ -65,17 +70,17 @@ export default async function(req) {
         subject: "We've got your project details — iRoxanne Studio",
         body: brandedEmail({
           title: `Thanks, ${esc(firstName)}!`,
-          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
+          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 2 business days with next steps and a rough estimate.</p>
             ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}
             ${bookingLink ? '<p style="margin:20px 0 8px;">If a conversation would help, choose an available time for an optional call.</p><p>'+brandButton('Schedule an optional call',bookingLink)+'</p>' : ''}
             <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
-      }).catch((e) => console.log('client welcome failed', e?.message));
+      }).catch((e) => deliveryErrors.push('Client confirmation: '+e.message));
     }
 
-    return Response.json({ success: true });
+    return Response.json({success:deliveryErrors.length===0,errors:deliveryErrors});
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
