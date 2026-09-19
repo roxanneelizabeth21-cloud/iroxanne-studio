@@ -41,6 +41,8 @@ The existing application requires full payment before releasing final handoff. W
 - Added authentication checks and test-record suppression to lead notification/follow-up handlers.
 
 ## Saved-data findings
+Owner clarification: all agreements currently in the app are demo/fake agreements. They may be removed if needed. They were retained as useful fixtures during this audit; preserving them was not a constraint on the repairs.
+
 Reviewed 3 leads, 2 proposals, 3 agreements, 2 invoices and 4 intakes.
 Two unlinked intakes were explicitly identified in their existing data as TEST ONLY. Both were preserved and marked as test records. One test lead was similarly marked and excluded from the active inquiry queue.
 Both invoices link to existing agreements. One missing invoice-to-proposal ID was backfilled from its agreement's explicit proposal link. The other agreement was created directly and has no proposal to link.
