@@ -115,13 +115,6 @@ export default async function(req) {
         }).catch((e) => console.log('admin sign email failed', e?.message));
       }
 
-      // Fire welcome video generation in the background after signing.
-      waitUntil(
-        base44.asServiceRole.functions.invoke('generateWelcomeVideo', { contract_id: id }).catch((e) =>
-          console.log('welcome video generation failed', e?.message)
-        )
-      );
-
       return Response.json({ contract: publicContract(updated), invoice_id: invoice?.id || '', invoice_token: invoiceToken || '', invoice_warning: invoiceError });
     }
 
