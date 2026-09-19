@@ -4,6 +4,7 @@ import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/
 import { validateSignature } from '../../shared/studioDelivery.ts';
 import { studioUrl, adminLink, clientUrl, clientLink } from '../../shared/studioUrl.ts';
 
+import { ensureContractInvoice } from '../../shared/contractInvoice.ts';
 import {validateSchedule} from '../../shared/paymentSchedule.ts';
 
 // Public, token-verified access for a client to view and e-sign their contract.
@@ -44,6 +45,7 @@ export default async function(req) {
           });
           signatureUrl = uploadRes?.url || uploadRes?.file_url || '';
         } catch (e) { console.log('signature upload failed', e?.message); }
+        if(!signatureUrl) return Response.json({error:'Your signature could not be saved. Please retry; the agreement has not been signed.'},{status:503});
       }
       const updated = await base44.asServiceRole.entities.Contract.update(id, {
         status: 'signed',
@@ -65,39 +67,15 @@ export default async function(req) {
       let invoice: any;
       let invoiceToken = '';
       let invoiceUrl = '';
+      let invoiceError = '';
       try {
-        const existing = await base44.asServiceRole.entities.Invoice.filter({ contract_id: id });
-        invoice = existing && existing[0];
-        if (!invoice) {
-          invoiceToken = Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('');
-          invoice = await base44.asServiceRole.entities.Invoice.create({
-            contract_id: id,
-            client_name: updated.client_name || '',
-            client_email: updated.client_email,
-            project_title: updated.project_title,
-            amount_total: total,
-            payment_installments: installments,
-            square_schedule_enabled: installments.length>0,
-            ...(installments.length?{due_date:installments[0].due_date}:{}),
-            deposit_amount: deposit,
-            deposit_status: deposit > 0 ? 'pending' : 'waived',
-            balance_amount: Math.max(total - deposit, 0),
-            balance_status: total - deposit > 0 ? 'pending' : 'waived',
-            status: 'open',
-            access_token: invoiceToken,
-          }).catch((e) => { console.log('invoice create failed', e?.message); return null; });
-        } else if (!invoice.access_token) {
-          invoiceToken = Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('');
-          await base44.asServiceRole.entities.Invoice.update(invoice.id, { access_token: invoiceToken }).catch(() => {});
-          invoice.access_token = invoiceToken;
-        } else {
-          invoiceToken = invoice.access_token;
-        }
-        if (invoice && invoice.access_token) {
-          const origin = clientUrl();
-          invoiceUrl = `${origin}/invoice/${invoice.id}?t=${invoice.access_token}`;
-        }
-      } catch (e) { console.log('invoice step failed', e?.message); }
+        invoice=await ensureContractInvoice(base44.asServiceRole.entities,updated);
+        invoiceToken=invoice.access_token;
+        invoiceUrl=`${clientUrl()}/invoice/${invoice.id}?t=${invoiceToken}`;
+      } catch(e) {
+        invoiceError='Your agreement is signed. Your invoice needs attention; iRoxanne Studio will provide your payment link.';
+        console.error('invoice step failed',e?.message);
+      }
 
       // Client-facing links must always use the canonical public domain.
       const firstName = (updated.signer_name || updated.client_name || '').split(' ')[0] || 'there';
@@ -128,13 +106,13 @@ export default async function(req) {
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
-              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">An invoice is ready. Open Invoices to review and send the payment request through Square.</p>
+              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">${invoiceUrl ? 'An invoice is ready. Open Invoices to review and send the payment request through Square.' : 'Action required: invoice creation failed. Open Invoices and use Prepare missing invoice for this agreement.'}</p>
               <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));
       }
 
-      return Response.json({ contract: publicContract(updated), invoice_id: invoice?.id || '', invoice_token: invoiceToken || '' });
+      return Response.json({ contract: publicContract(updated), invoice_id: invoice?.id || '', invoice_token: invoiceToken || '', invoice_warning: invoiceError });
     }
 
     return Response.json({ contract: publicContract(contract) });
