@@ -18,6 +18,7 @@ export default function InvoicesAdminPage() {
   const contractFilter=params.get('contract');
   const [invoices,setInvoices] = useState([]);
   const [payments,setPayments] = useState([]);
+  const [agreements,setAgreements] = useState([]);
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState('');
   const [editing,setEditing] = useState(null);
@@ -28,15 +29,28 @@ export default function InvoicesAdminPage() {
   const load = async () => {
     setLoading(true); setError('');
     try {
-      const [i,p] = await Promise.all([
+      const [i,p,c] = await Promise.all([
         base44.entities.Invoice.list('-created_date',100),
         base44.entities.Payment.list('-created_date',1000),
+        base44.entities.Contract.list('-created_date',500),
       ]);
-      setInvoices(i); setPayments(p);
+      setInvoices(i); setPayments(p); setAgreements(c);
     } catch(e) { setError(e.message || 'Could not load invoices.'); }
     finally { setLoading(false); }
   };
   useEffect(()=>{ load(); },[]);
+  const prepareInvoice=async contract=>{
+    if(inFlight.current)return;
+    inFlight.current=true;setBusy(true);
+    try {
+      const res=await base44.functions.invoke('repairContractInvoice',{contract_id:contract.id});
+      if(res.data?.error)throw new Error(res.data.error);
+      toast({title:'Invoice prepared',description:'No email was sent and no payment was charged.'});
+      await load();
+    } catch(e){toast({title:'Invoice needs review',description:e.response?.data?.error||e.message,variant:'destructive'});}
+    finally{inFlight.current=false;setBusy(false);}
+  };
+  const missingInvoices=agreements.filter(c=>['signed','deposit_paid','active','completed'].includes(c.status)&&(!contractFilter||c.id===contractFilter)&&!invoices.some(i=>i.contract_id===c.id));
   const remaining = (i,k) => k==='deposit'
     ? (['paid','waived'].includes(i.deposit_status) ? 0 : Math.max(0,Number(i.deposit_amount||0)-Number(i.deposit_paid_amount||0)))
     : (i.balance_status==='waived' || i.balance_status==='paid' ? 0 : Math.max(0,Number(i.balance_amount||0)-Number(i.balance_paid_amount||0)));
@@ -103,6 +117,7 @@ export default function InvoicesAdminPage() {
     <div><h1 className="font-display text-3xl font-semibold flex items-center gap-2"><Receipt className="h-6 w-6 text-primary"/>Invoices & Payments</h1>
     <p className="text-sm text-muted-foreground mt-2">Track deposits and balances for every signed project. Record payments after you receive them.</p></div>
     {error && <p role="alert" className="text-destructive">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
+    {!loading&&!error&&missingInvoices.map(c=><section key={c.id} className="rounded-xl border border-amber-400 p-4"><p>{c.project_title} — signed agreement has no invoice.</p><Button disabled={busy} className="mt-2" onClick={()=>prepareInvoice(c)}>Prepare missing invoice</Button></section>)}
     {loading && <p role="status">Loading invoices…</p>}
     {!loading && !error && !invoices.length && <div className="rounded-2xl bg-card border p-8">Invoices appear here when a client signs their agreement.</div>}
     {contractFilter&&<p className="text-sm">Showing invoices for this agreement. <Link className="underline" to="/admin/invoices">Show all invoices</Link></p>}
