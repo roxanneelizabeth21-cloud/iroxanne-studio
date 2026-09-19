@@ -11,11 +11,12 @@ export function getHeyGenApiKey() {
 }
 
 // Creates a HeyGen Video Agent session from a prompt, returns { sessionId, watchUrl }.
-export async function createHeyGenSession(apiKey, prompt) {
+// Defaults to portrait (9:16) orientation for mobile-friendly client videos.
+export async function createHeyGenSession(apiKey, prompt, orientation = 'portrait') {
   const createRes = await fetch(`${HEYGEN_BASE}/v3/video-agents`, {
     method: 'POST',
     headers: { 'X-Api-Key': apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, orientation }),
   });
   const createData = await createRes.json();
   if (!createRes.ok) {
