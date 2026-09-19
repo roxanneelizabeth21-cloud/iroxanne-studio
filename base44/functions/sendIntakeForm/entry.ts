@@ -40,6 +40,7 @@ export default async function (req: Request) {
       client_name: contract.client_name || '',
       client_email: contract.client_email,
       project_title: contract.project_title || '',
+      scope_snapshot:{selected_package:contract.selected_package||'',scope_summary:contract.scope_summary||'',line_items:contract.line_items||[]},
     });
 
     const link = `${APP_ORIGIN}/intake/${intake.id}?t=${intake.access_token}`;
