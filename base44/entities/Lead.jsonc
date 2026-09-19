@@ -2,6 +2,11 @@
   "name": "Lead",
   "type": "object",
   "properties": {
+    "is_test_record": {
+      "type": "boolean",
+      "default": false,
+      "description": "Explicitly identified test record; excluded from daily client work."
+    },
     "selected_package": {
       "type": "string",
       "description": "Requested service; not an accepted purchase."
