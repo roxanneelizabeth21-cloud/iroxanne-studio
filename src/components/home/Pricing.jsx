@@ -65,13 +65,13 @@ export default function Pricing() {
    <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">Start with a complete business website. Add tools for managing customers, selling products, organizing your work, or marketing your business when you need them.</p>
    <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-background">
     <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
-     <div className="border-b border-border bg-secondary/40 p-6 md:p-8 lg:border-b-0 lg:border-r">
+     <div className="border-b border-border bg-[#2D2A4A] text-white p-6 md:p-8 lg:border-b-0 lg:border-r [&_.text-muted-foreground]:text-white/80">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Your starting point</p>
       <h3 className="font-display mt-3 text-3xl">Business Website</h3>
       <p className="mt-4 text-5xl font-semibold tracking-tight">$650</p>
       <p className="mt-2 text-sm text-muted-foreground">One-time website build</p>
       <p className="mt-5 leading-relaxed text-muted-foreground">A finished website that introduces your business and gives customers a way to inquire or schedule a call.</p>
-      <a href="/quote" className={buttonClass + ' mt-6'}>Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+      <a href="/quote" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#2D2A4A] hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
       <p className="mt-5 text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
      </div>
      <div className="p-6 md:p-8">
@@ -85,7 +85,7 @@ export default function Pricing() {
    <div id="addons" className="mt-10 scroll-mt-24">
     <h3 className="font-display text-3xl md:text-4xl">What do you want your website to do for you?</h3>
     <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Your website can do more than introduce your business. Choose additional tools that support the way you work.</p>
-    <div className="mt-5 rounded-xl border border-[#876b26]/30 bg-secondary/40 px-5 py-4">
+    <div className="mt-5 rounded-xl border border-[#2D2A4A] bg-[#2D2A4A] text-white px-5 py-4 [&_.text-muted-foreground]:text-white/80">
      <p className="font-semibold">Optional Add-ons — Priced Separately</p>
      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">These services are not included in the $650 package. Each addition is quoted around your requirements. You’ll receive a written scope and price before work begins.</p>
     </div>
