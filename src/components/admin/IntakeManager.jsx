@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -9,6 +10,8 @@ import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 
 export default function IntakeManager() {
+  const [params] = useSearchParams();
+  const contractFilter = params.get('contract');
   const [rows,setRows]=useState([]);
   const [contracts,setContracts]=useState([]);
   const [filter,setFilter]=useState('all');
@@ -51,12 +54,14 @@ export default function IntakeManager() {
     try{const counts=await deleteProjectChain('intake',r.id);toast.success('Intake deleted.'+(chainSummary(counts)?' '+chainSummary(counts):''));await load();}
     catch{toast.error('Could not delete the intake.');}
   };
-  const waiting=contracts.filter(c=>c.status!=='cancelled'&&!rows.some(i=>i.contract_id===c.id));
+  const waiting=contracts.filter(c=>['signed','deposit_paid','active'].includes(c.status)&&(!contractFilter||c.id===contractFilter)&&!rows.some(i=>i.contract_id===c.id));
+  const orphaned=rows.filter(r=>!r.contract_id||!contracts.some(c=>c.id===r.contract_id));
   return <section className="space-y-5">
     <div><h2 className="font-display text-2xl">Project intakes</h2><p className="text-sm text-muted-foreground mt-2">Send a guided intake when you’re ready to explore the details. Responses stay linked to the agreement.</p></div>
+    {orphaned.length>0&&<p role="alert" className="rounded-xl border border-amber-400 p-3 text-sm">{orphaned.length} intake record(s) need an agreement link reviewed. Their responses are preserved; do not resend them until their project is identified.</p>}
     {error&&<p role="alert">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
     <nav aria-label="Filter intakes" className="flex gap-2 flex-wrap">{[['all','All'],['sent','Sent'],['in_progress','In progress'],['submitted','Completed'],['reviewed','Reviewed']].map(([key,label])=><Button key={key} size="sm" variant={filter===key?'default':'outline'} onClick={()=>setFilter(key)} aria-pressed={filter===key}>{label}</Button>)}</nav>
-    {rows.filter(r=>filter==='all'||r.status===filter).map(r=><article key={r.id} className="rounded-2xl bg-card border border-border p-5 flex flex-wrap items-center justify-between gap-4"><div><h3 className="font-semibold">{r.project_title||r.client_name}</h3><p className="text-sm text-muted-foreground">{r.client_name} · {INTAKE_LABELS[r.status]||r.status}</p></div><div className="flex gap-2 flex-wrap"><Button variant="outline" onClick={()=>copy(r)}>Copy private link</Button>{!['submitted','reviewed'].includes(r.status)&&<Button disabled={!!busy} variant="outline" onClick={()=>send({id:r.contract_id})}>Resend email</Button>}<Button onClick={()=>setSelected(r)}>View responses</Button><Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete" onClick={()=>remove(r)}><Trash2 className="h-4 w-4"/></Button></div></article>)}
+    {rows.filter(r=>(!contractFilter||r.contract_id===contractFilter)&&(filter==='all'||r.status===filter)).map(r=><article key={r.id} className="rounded-2xl bg-card border border-border p-5 flex flex-wrap items-center justify-between gap-4"><div><h3 className="font-semibold">{r.project_title||r.client_name}</h3><p className="text-sm text-muted-foreground">{r.client_name} · {INTAKE_LABELS[r.status]||r.status}</p></div><div className="flex gap-2 flex-wrap"><Button variant="outline" onClick={()=>copy(r)}>Copy private link</Button>{r.contract_id&&!orphaned.some(o=>o.id===r.id)&&!['submitted','reviewed'].includes(r.status)&&<Button disabled={!!busy} variant="outline" onClick={()=>send({id:r.contract_id})}>Resend email</Button>}<Button onClick={()=>setSelected(r)}>View responses</Button><Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete" onClick={()=>remove(r)}><Trash2 className="h-4 w-4"/></Button></div></article>)}
     {!rows.length&&!error&&<p className="text-sm text-muted-foreground">No intakes yet. Choose a project below to send the first one.</p>}
     {filter==='all'&&waiting.length>0&&<div className="space-y-3"><h3 className="font-semibold">Ready to send an intake?</h3>{waiting.map(c=><div key={c.id} className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"><div><p>{c.project_title||c.client_name}</p><p className="text-sm text-muted-foreground">{c.client_name}</p></div><Button disabled={!!busy||!c.client_email} onClick={()=>send(c)}>{busy===c.id?'Sending…':'Send intake'}</Button></div>)}</div>}
     {confirmDialog}
