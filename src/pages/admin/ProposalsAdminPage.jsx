@@ -57,7 +57,7 @@ export default function ProposalsAdminPage() {
         base44.entities.Proposal.list('-created_date', 50).catch(() => []),
         base44.entities.PricingSettings.list('-updated_date', 1).catch(() => []),
       ]);
-      setLeads(leadList);
+      setLeads(leadList.filter(l=>!l.is_test_record));
       setProposals(proposalList);
       setSettings(settingsList.find((s) => s.packages?.length) || settingsList[0] || null);
     } finally {
@@ -148,6 +148,7 @@ export default function ProposalsAdminPage() {
         <FileText className="h-6 w-6 text-primary" /> Proposals
       </h1>
 
+      <p className="text-sm text-muted-foreground">Review each inquiry, record your consultation notes, then prepare an itemized proposal. Only approved scope and prices move into the agreement.</p>
       <Dialog open={!!leadReview} onOpenChange={o=>!o&&setLeadReview(null)}><DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Review quote request</DialogTitle></DialogHeader>{leadReview&&<div className="space-y-4"><p>{leadReview.name} · {leadReview.email}</p>{['selected_package','quick_pitch','problem_to_solve','must_have_features','nice_to_have_features','integrations_needed','existing_tools','ideal_launch_date','budget_range'].map(key=><div key={key}><h3 className="font-medium capitalize">{key.replaceAll('_',' ')}</h3><p className="whitespace-pre-wrap text-sm">{Array.isArray(leadReview[key])?leadReview[key].join(', '):leadReview[key]||'Not provided'}</p></div>)}<label className="block text-sm">Internal consultation notes<textarea className="block w-full rounded border bg-background p-2 mt-2" maxLength={1000} value={leadReview.description||''} onChange={e=>setLeadReview({...leadReview,description:e.target.value})}/></label><label className="block text-sm">Request status<select className="ml-2 rounded border bg-background p-2" value={leadReview.status} onChange={e=>setLeadReview({...leadReview,status:e.target.value})}>{['new','contacted','proposal_sent','won','lost','archived'].map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select></label><div className="flex gap-2"><Button disabled={saving} onClick={saveReview}>Save review</Button><Button variant="outline" onClick={()=>{setEditing({lead:leadReview});setLeadReview(null);}}>Build proposal</Button></div></div>}</DialogContent></Dialog>
       {/* New quote requests */}
       <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
