@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { paymentSummary } from '../../shared/paymentSummary.ts';
 import { reminderDecision } from '../../shared/studioDelivery.ts';
@@ -44,7 +45,7 @@ export default async function(req: Request) {
             (link?'<p>'+brandButton('Pay online',link)+'</p>':'')+
             (settings.payment_instructions?'<p>'+esc(settings.payment_instructions).replace(/\n/g,'<br/>')+'</p>':'<p>Please reply to arrange payment.</p>')+
             '<p>If you have just paid, thank you. Please reply with the payment reference so I can update your record.</p>'});
-          await base44.asServiceRole.integrations.Core.SendEmail({to:invoice.client_email,subject:'Payment reminder — '+invoice.project_title,html});
+          await sendStudioEmail(base44,{to:invoice.client_email,subject:'Payment reminder — '+invoice.project_title,html});
           const count=(invoice.reminder_sent_count||0)+1;
           const limit=Math.max(1,Math.min(10,invoice.reminder_max_count||3));
           const interval=Math.max(1,Math.min(30,invoice.reminder_interval_days||7));

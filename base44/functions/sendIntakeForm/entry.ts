@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
@@ -48,7 +49,7 @@ export default async function (req: Request) {
 
     let sent = false;
     try {
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: contract.client_email,
         subject: `Your project intake — ${contract.project_title || 'your project'}`,
         from_name: 'iRoxanne Studio',

@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
@@ -57,10 +58,10 @@ export default async function (req: Request) {
 
     let emailed = false;
     try {
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: proposal.client_email,
         subject: `Your project proposal — ${proposal.project_title || 'iRoxanne Studio'}`,
-        html: brandedEmail({
+        body: brandedEmail({
           title: `Your proposal is ready, ${esc(firstName)}`,
           content: `<p style="margin:0 0 16px;">I've put together a proposal for <strong>${esc(proposal.project_title)}</strong>${proposal.business_name ? ` for ${esc(proposal.business_name)}` : ''} — what I'll build, what it costs, and how we'd work together.</p>
             ${typeof proposal.price_total === 'number' ? `<p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total investment: ${moneyFmt(proposal.price_total)}</p>` : ''}

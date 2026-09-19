@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 import { adminLink } from '../../shared/studioUrl.ts';
@@ -44,9 +45,9 @@ export default async function (req: Request) {
       if (typeof change_request !== 'string' || !change_request.trim()) return Response.json({ error: 'Please describe the changes you need.' }, { status: 400 });
       const updated = await base44.asServiceRole.entities.Proposal.update(id, { status: 'changes_requested', change_request: change_request.trim().slice(0, 2000), changes_requested_at: now });
       const adminEmail = await resolveAdminEmail(base44).catch(() => '');
-      if (adminEmail) await base44.asServiceRole.integrations.Core.SendEmail({
+      if (adminEmail) await sendStudioEmail(base44,{
         to: adminEmail, subject: 'Proposal changes requested — ' + updated.project_title,
-        html: brandedEmail({ title: 'Changes requested', content: '<p>' + esc(updated.client_name || updated.client_email) + ' requested:</p><p>' + esc(updated.change_request) + '</p>' }),
+        body: brandedEmail({ title: 'Changes requested', content: '<p>' + esc(updated.client_name || updated.client_email) + ' requested:</p><p>' + esc(updated.change_request) + '</p>' }),
       }).catch(() => {});
       return Response.json({ proposal: updated });
     }
@@ -65,10 +66,10 @@ export default async function (req: Request) {
       }
       const adminEmail = await resolveAdminEmail(base44).catch(() => '');
       if (adminEmail) {
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await sendStudioEmail(base44,{
           to: adminEmail,
           subject: `Proposal declined — ${updated.project_title}`,
-          html: brandedEmail({
+          body: brandedEmail({
             title: 'Proposal declined',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> declined the proposal for <strong>${esc(updated.project_title)}</strong>.</p>
               ${updated.decline_reason ? `<p style="margin:0 0 16px;color:#8B7B95;">Reason: ${esc(updated.decline_reason)}</p>` : ''}`,
@@ -128,10 +129,10 @@ export default async function (req: Request) {
       const moneyFmt = (n: unknown) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
       if (updated.client_email) {
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await sendStudioEmail(base44,{
           to: updated.client_email,
           subject: `Proposal accepted — ${updated.project_title}`,
-          html: brandedEmail({
+          body: brandedEmail({
             title: `Wonderful, ${esc(firstName)}!`,
             content: `<p style="margin:0 0 16px;">You've accepted the proposal for <strong>${esc(updated.project_title)}</strong>. Next step: I'll prepare your project agreement and send it over for an online signature, followed by the agreed first payment to lock in your build slot.</p>
               <p style="margin:0;color:#8B7B95;font-size:13px;">Keep an eye on your inbox — the agreement is usually with you within one business day.</p>`,
@@ -142,10 +143,10 @@ export default async function (req: Request) {
 
       const adminEmail = await resolveAdminEmail(base44).catch(() => '');
       if (adminEmail) {
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await sendStudioEmail(base44,{
           to: adminEmail,
           subject: `Proposal accepted — ${updated.project_title}`,
-          html: brandedEmail({
+          body: brandedEmail({
             title: 'Proposal accepted 🎉',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> accepted the proposal for <strong>${esc(updated.project_title)}</strong> — ${moneyFmt(total)}.</p>
               <p style="margin:0 0 16px;">A draft contract is ready — review it and send for signature.</p>

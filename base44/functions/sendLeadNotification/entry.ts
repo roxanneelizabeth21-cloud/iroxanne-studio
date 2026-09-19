@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton, detailRows } from '../../shared/emailBrand.ts';
 import { studioUrl, adminLink } from '../../shared/studioUrl.ts';
@@ -31,10 +32,10 @@ export default async function(req) {
         ['Estimated', lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
         ['Pitch', lead.quick_pitch || ''],
       ].filter(([, v]) => v);
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: adminEmail,
         subject: `New quote request: ${lead.name || lead.email}`,
-        html: brandedEmail({
+        body: brandedEmail({
           title: 'New quote request',
           content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', adminLink(req, 'contracts'))}</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
@@ -59,10 +60,10 @@ export default async function(req) {
         ['Needs training', lead.training_needed ? 'Yes' : ''],
         ['Wants ongoing support', lead.ongoing_support_needed ? 'Yes' : ''],
       ].filter(([, v]) => v);
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: lead.email,
         subject: "We've got your project details — iRoxanne Studio",
-        html: brandedEmail({
+        body: brandedEmail({
           title: `Thanks, ${esc(firstName)}!`,
           content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 1 business day with next steps and a rough estimate.</p>
             ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}

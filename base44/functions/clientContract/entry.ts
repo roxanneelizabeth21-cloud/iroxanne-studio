@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, resolveAdminEmail, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
@@ -83,10 +84,10 @@ export default async function(req) {
       const contractLink = clientLink(req, 'contract', id, token);
 
       if (updated.client_email) {
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await sendStudioEmail(base44,{
           to: updated.client_email,
           subject: 'Agreement signed — iRoxanne Studio',
-          html: brandedEmail({
+          body: brandedEmail({
             title: `Your agreement is signed, ${esc(firstName)}.`, 
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
               <p style="margin:0 0 16px;">${brandButton('View your signed agreement', contractLink)}</p>
@@ -100,10 +101,10 @@ export default async function(req) {
 
       const adminEmail = await resolveAdminEmail(base44).catch(() => '');
       if (adminEmail) {
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await sendStudioEmail(base44,{
           to: adminEmail,
           subject: `Contract signed — ${updated.project_title}`,
-          html: brandedEmail({
+          body: brandedEmail({
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>

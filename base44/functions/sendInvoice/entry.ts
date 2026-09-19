@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { paymentSummary } from '../../shared/paymentSummary.ts';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
@@ -82,14 +83,14 @@ export default async function (req: Request) {
       ['Outstanding', money(outstanding)],
     ];
 
-    const emailed = await base44.asServiceRole.integrations.Core.SendEmail({
+    const emailed = await sendStudioEmail(base44,{
       to: invoice.client_email,
       subject: which === 'deposit'
         ? `Deposit due — ${invoice.project_title}`
         : which === 'balance'
           ? `Final balance due — ${invoice.project_title}`
           : `Invoice — ${invoice.project_title}`,
-      html: brandedEmail({
+      body: brandedEmail({
         title,
         content: `${lead}
           ${note ? `<p style="margin:0 0 16px;">${esc(note)}</p>` : ''}

@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
 import { applyInvoicePayment, PaymentError } from '../../shared/invoicePayments.ts';
@@ -40,10 +41,10 @@ export default async function (req: Request) {
     // Receipt — opt-in, and never re-sent on a duplicate submit.
     let receiptSent = false;
     if (!duplicate && b.notify_client === true && invoice.client_email) {
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: invoice.client_email,
         subject: `Payment received — ${invoice.project_title}`,
-        html: brandedEmail({
+        body: brandedEmail({
           title: 'Thank you for your payment',
           content:
             `<p style="margin:0 0 16px;">Payment received for <strong>${esc(invoice.project_title)}</strong>.</p>` +

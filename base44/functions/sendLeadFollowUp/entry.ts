@@ -1,3 +1,4 @@
+import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
@@ -24,10 +25,10 @@ export default async function(req) {
 
     if (lead.email) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await sendStudioEmail(base44,{
         to: lead.email,
         subject: 'Still thinking about your app? — iRoxanne Studio',
-        html: brandedEmail({
+        body: brandedEmail({
           title: `Hi ${esc(firstName)},`,
           content: `<p style="margin:0 0 16px;">Just checking in on your project idea. I know how it goes — you're busy running your business and this probably slipped down the list.</p>
             <p style="margin:0 0 16px;">If you're still interested, the fastest next step is a quick reply with any questions, or I can put together a rough estimate based on what you told me. No pressure either way.</p>
