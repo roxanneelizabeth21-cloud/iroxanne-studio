@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ArrowRight, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import ProposalForm from '@/components/admin/ProposalForm';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
 import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
@@ -31,12 +31,29 @@ export default function ProposalsAdminPage() {
   const [editing, setEditing] = useState(null);
   const [showLeads, setShowLeads] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [params] = useSearchParams();
+  const requestedLead=params.get('lead'),requestedProposal=params.get('proposal');
+  const [leadReview,setLeadReview]=useState(null);
+  useEffect(()=>{
+    if(!requestedLead&&!requestedProposal)return;
+    let cancelled=false;
+    (requestedLead?base44.entities.Lead.get(requestedLead):base44.entities.Proposal.get(requestedProposal))
+      .then(record=>{if(!cancelled){if(requestedLead)setLeadReview(record);else setEditing({proposal:record});}})
+      .catch(()=>toast({title:'Project record could not be loaded',variant:'destructive'}));
+    return()=>{cancelled=true;};
+  },[requestedLead,requestedProposal]);
+  const saveReview=async()=>{
+    setSaving(true);
+    try{await base44.entities.Lead.update(leadReview.id,{description:leadReview.description||'',status:leadReview.status});toast({title:'Request review saved'});await load();}
+    catch(e){toast({title:'Could not save review',description:e.message,variant:'destructive'});}
+    finally{setSaving(false);}
+  };
 
   const load = async () => {
     setLoading(true);
     try {
       const [leadList, proposalList, settingsList] = await Promise.all([
-        base44.entities.Lead.filter({ status: 'new' }).catch(() => []),
+        base44.entities.Lead.filter({ status: {$in:['new','contacted']} }),
         base44.entities.Proposal.list('-created_date', 50).catch(() => []),
         base44.entities.PricingSettings.list('-updated_date', 1).catch(() => []),
       ]);
@@ -55,6 +72,8 @@ export default function ProposalsAdminPage() {
     try {
       if (payload.id) {
         const { id, ...changes } = payload;
+        const current=await base44.entities.Proposal.get(id);
+        if(current.status==='accepted'||current.contract_id)throw new Error('Accepted proposals are preserved. Create a new proposal for changed scope.');
         changes.status = 'draft';
         await base44.entities.Proposal.update(id, changes);
         toast({ title: 'Proposal updated' });
@@ -89,7 +108,7 @@ export default function ProposalsAdminPage() {
   };
 
   const copyLink = (p) => {
-    navigator.clipboard.writeText(`${window.location.origin}/proposal/${p.id}?t=${p.access_token}`);
+    navigator.clipboard.writeText(`https://iroxannestudio.com/proposal/${p.id}?t=${p.access_token}`);
     toast({ title: 'Proposal link copied' });
   };
 
@@ -129,6 +148,7 @@ export default function ProposalsAdminPage() {
         <FileText className="h-6 w-6 text-primary" /> Proposals
       </h1>
 
+      <Dialog open={!!leadReview} onOpenChange={o=>!o&&setLeadReview(null)}><DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Review quote request</DialogTitle></DialogHeader>{leadReview&&<div className="space-y-4"><p>{leadReview.name} · {leadReview.email}</p>{['selected_package','quick_pitch','problem_to_solve','must_have_features','nice_to_have_features','integrations_needed','existing_tools','ideal_launch_date','budget_range'].map(key=><div key={key}><h3 className="font-medium capitalize">{key.replaceAll('_',' ')}</h3><p className="whitespace-pre-wrap text-sm">{Array.isArray(leadReview[key])?leadReview[key].join(', '):leadReview[key]||'Not provided'}</p></div>)}<label className="block text-sm">Internal consultation notes<textarea className="block w-full rounded border bg-background p-2 mt-2" maxLength={1000} value={leadReview.description||''} onChange={e=>setLeadReview({...leadReview,description:e.target.value})}/></label><label className="block text-sm">Request status<select className="ml-2 rounded border bg-background p-2" value={leadReview.status} onChange={e=>setLeadReview({...leadReview,status:e.target.value})}>{['new','contacted','proposal_sent','won','lost','archived'].map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select></label><div className="flex gap-2"><Button disabled={saving} onClick={saveReview}>Save review</Button><Button variant="outline" onClick={()=>{setEditing({lead:leadReview});setLeadReview(null);}}>Build proposal</Button></div></div>}</DialogContent></Dialog>
       {/* New quote requests */}
       <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
         <button onClick={() => setShowLeads((v) => !v)} className="flex items-center gap-2 w-full">
@@ -154,8 +174,8 @@ export default function ProposalsAdminPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <Button size="sm" onClick={() => setEditing({ lead })} className="gap-1">
-                    <Plus className="h-3.5 w-3.5" /> Build Proposal
+                  <Button size="sm" onClick={() => setLeadReview(lead)} className="gap-1">
+                    <Plus className="h-3.5 w-3.5" /> Review Request
                   </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDeleteLead(lead)}>
                     <Trash2 className="h-3.5 w-3.5" />
@@ -198,7 +218,7 @@ export default function ProposalsAdminPage() {
               <div className="flex gap-1 shrink-0 items-center">
                 {p.status === 'accepted' && p.contract_id ? (
                   <Button asChild variant="outline" size="sm" className="gap-1">
-                    <Link to="/admin/contracts">Contract <ArrowRight className="h-3.5 w-3.5" /></Link>
+                    <Link to={`/admin/contracts?contract=${encodeURIComponent(p.contract_id)}`}>Contract <ArrowRight className="h-3.5 w-3.5" /></Link>
                   </Button>
                 ) : (
                   <>
