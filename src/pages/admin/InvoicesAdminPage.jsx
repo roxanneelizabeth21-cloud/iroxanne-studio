@@ -59,7 +59,7 @@ export default function InvoicesAdminPage() {
   const openMilestones = i => (Array.isArray(i?.milestones)?i.milestones:[])
     .map((m,idx)=>({...m,idx})).filter(m=>m.status!=='paid');
   const stageAmount = (i,kind,idx) => {
-    if(kind==='milestone'){ const m=(i?.milestones||[])[idx]; return m?Number(m.amount||0):0; }
+    if(kind==='milestone'){ const m=(i?.milestones||[])[idx]; return m?Math.max(0,Number(m.amount||0)-payments.filter(p=>p.invoice_id===i.id&&p.kind==='milestone'&&p.milestone_index===Number(idx)).reduce((sum,p)=>sum+Number(p.amount||0),0)):0; }
     return remaining(i,kind);
   };
   const openPayment = i => {
