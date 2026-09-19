@@ -18,5 +18,12 @@ assert.ok(emails[0].html.includes('https://iroxannestudio.com/contract/review?t=
 assert.ok(emails[0].html.includes('/invoice/invoice-review?t='));
 assert.equal((await call({action:'sign',signerName:'Review Client',consent:true})).status,409);
 assert.equal(invoices.length,1);
+contract={...contract,status:'sent'};
+assert.equal((await call({action:'sign',signerName:'Test',consent:true,signatureMode:'drawn',signatureImage:'data:image/png;base64,AAAAAAAAAAAAAAAAAAAA'})).status,503);
+assert.equal(contract.status,'sent','failed upload must not sign');
+invoices=[];entities.Invoice.create=async()=>{throw Error('Injected invoice failure');};
+const recovery=await call({action:'sign',signerName:'Test',consent:true});assert.equal(recovery.status,200);
+const recoveryData=await recovery.json();assert.equal(contract.status,'signed');assert.ok(recoveryData.invoice_warning);assert.equal(recoveryData.invoice_id,'');
+console.log('PASS signature upload failure leaves agreement unsigned; invoice failure preserves signature and reports recovery need');
 console.log('PASS unchanged agreement text; token and consent guards; typed signature; one invoice; signed-agreement and invoice email links; repeat signing blocked. Mocked only.');
 })().catch(e=>{console.error(e);process.exit(1)});
