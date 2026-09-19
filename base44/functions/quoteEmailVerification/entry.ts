@@ -74,6 +74,8 @@ export default async function(req:Request){
   const token=hex(crypto.getRandomValues(new Uint8Array(32)));
   const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
   await db.QuoteEmailVerification.update(record.id,{lead_id:lead.id});
+  // Send pre-generated welcome video to the lead (idempotent — skips if already sent).
+  client.asServiceRole.functions.invoke('generateQuoteVideo',{lead_id:lead.id}).catch((e:any)=>console.log('quote video send failed',e?.message));
   return Response.json({id:lead.id,booking_token:token});
  }catch(e){return Response.json({error:e.status?e.message:'Something went wrong. Please try again; your form details have not been cleared.'},{status:e.status||500});}
 }
