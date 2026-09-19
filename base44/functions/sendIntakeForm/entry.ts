@@ -24,7 +24,9 @@ export default async function (req: Request) {
     if (!contract) return Response.json({ error: 'Contract not found' }, { status: 404 });
     if (!contract.client_email) return Response.json({ error: 'Contract has no client email' }, { status: 400 });
 
-    const existing = await base44.entities.ClientIntake.filter({ contract_id }).catch(() => []);
+    if (!['signed','deposit_paid','active'].includes(contract.status)) return Response.json({error:'Intake requires a signed, active agreement.'},{status:409});
+    const existing = await base44.entities.ClientIntake.filter({ contract_id });
+    if(existing.length>1) return Response.json({error:'Multiple intakes are linked to this agreement. Review them before sending.'},{status:409});
     let tier = contract.estimated_tier || 'business';
     if (!['starter', 'business', 'custom'].includes(tier)) tier = 'business';
 
