@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { FolderKanban, AlertCircle } from 'lucide-react';
@@ -37,9 +38,9 @@ const STAGE_TINT = {
  */
 function buildPipeline(leads, proposals, contracts, intakes, invoices) {
   const intakesByContract = new Map();
-  intakes.forEach((i) => { if (i.contract_id) intakesByContract.set(i.contract_id, i); });
+  intakes.forEach((i) => { if (i.contract_id && !intakesByContract.has(i.contract_id)) intakesByContract.set(i.contract_id, i); });
   const invoicesByContract = new Map();
-  invoices.forEach((inv) => { if (inv.contract_id) invoicesByContract.set(inv.contract_id, inv); });
+  invoices.forEach((inv) => { if (inv.contract_id && inv.status !== 'cancelled' && !invoicesByContract.has(inv.contract_id)) invoicesByContract.set(inv.contract_id, inv); });
 
   const usedLeadIds = new Set();
   const usedProposalIds = new Set();
@@ -49,8 +50,13 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
     const intake = intakesByContract.get(c.id);
     const invoice = invoicesByContract.get(c.id);
     let stage = 'contract';
+    if (c.status === 'cancelled') {
+      if(c.lead_id) usedLeadIds.add(c.lead_id);
+      if(c.proposal_id) usedProposalIds.add(c.proposal_id);
+      return;
+    }
     if (c.status === 'completed' && invoice && invoice.status === 'paid') stage = 'paid';
-    else if (c.handoff_status === 'accepted' || c.delivered_at) stage = 'handoff';
+    else if (['ready','accepted','changes_requested'].includes(c.handoff_status) || c.delivered_at) stage = 'handoff';
     else if (['signed', 'deposit_paid', 'active'].includes(c.status)) {
       const depositDone = invoice
         ? ['paid', 'waived'].includes(invoice.deposit_status)
@@ -67,7 +73,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 
   proposals.forEach((p) => {
     if (usedProposalIds.has(p.id)) return;
-    if (p.contract_id) return;
+    if (p.contract_id && contracts.some(c => c.id === p.contract_id)) return;
     if (['declined', 'expired'].includes(p.status)) return;
     const stage = p.status === 'accepted' ? 'contract' : 'proposal';
     if (p.lead_id) usedLeadIds.add(p.lead_id);
@@ -85,12 +91,13 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 }
 
 export default function ProjectsPipeline() {
-  const [view,setView]=useState('pipeline');
-  const { data: leads = [], isLoading: lLoading, error: lErr } = useQuery({ queryKey: ['pipeline-leads'], queryFn: () => base44.entities.Lead.list('-created_date', 100) });
-  const { data: proposals = [], isLoading: pLoading, error: pErr } = useQuery({ queryKey: ['pipeline-proposals'], queryFn: () => base44.entities.Proposal.list('-created_date', 100) });
-  const { data: contracts = [], isLoading: cLoading, error: cErr } = useQuery({ queryKey: ['pipeline-contracts'], queryFn: () => base44.entities.Contract.list('-created_date', 100) });
-  const { data: intakes = [], isLoading: iLoading, error: iErr } = useQuery({ queryKey: ['pipeline-intakes'], queryFn: () => base44.entities.ClientIntake.list('-created_date', 100) });
-  const { data: invoices = [], isLoading: invLoading, error: invErr } = useQuery({ queryKey: ['pipeline-invoices'], queryFn: () => base44.entities.Invoice.list('-created_date', 100) });
+  const [searchParams] = useSearchParams();
+  const [view,setView]=useState(searchParams.get('view') === 'intakes' ? 'intakes' : 'pipeline');
+  const { data: leads = [], isLoading: lLoading, error: lErr } = useQuery({ queryKey: ['pipeline-leads'], queryFn: () => base44.entities.Lead.list('-created_date', 500) });
+  const { data: proposals = [], isLoading: pLoading, error: pErr } = useQuery({ queryKey: ['pipeline-proposals'], queryFn: () => base44.entities.Proposal.list('-created_date', 500) });
+  const { data: contracts = [], isLoading: cLoading, error: cErr } = useQuery({ queryKey: ['pipeline-contracts'], queryFn: () => base44.entities.Contract.list('-created_date', 500) });
+  const { data: intakes = [], isLoading: iLoading, error: iErr } = useQuery({ queryKey: ['pipeline-intakes'], queryFn: () => base44.entities.ClientIntake.list('-created_date', 500) });
+  const { data: invoices = [], isLoading: invLoading, error: invErr } = useQuery({ queryKey: ['pipeline-invoices'], queryFn: () => base44.entities.Invoice.list('-created_date', 500) });
 
   const isLoading = lLoading || pLoading || cLoading || iLoading || invLoading;
   const errors = [lErr, pErr, cErr, iErr, invErr].filter(Boolean);
@@ -124,7 +131,7 @@ export default function ProjectsPipeline() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1 flex items-center gap-2">
             <FolderKanban className="h-6 w-6 text-primary" /> Projects
           </h1>
-          <p className="text-sm text-muted-foreground">Request → optional call → proposal → agreement → deposit → content intake → build → handoff → final payment → complete. Each card shows your next step.</p>
+          <p className="text-sm text-muted-foreground">Request → optional call → proposal → agreement → deposit → content intake → build → final payment → handoff approval → complete. Each card shows your next step.</p>
         </div>
         <div className="flex gap-4 text-sm">
           <div>
@@ -132,7 +139,7 @@ export default function ProjectsPipeline() {
             <div className="text-xs text-muted-foreground">need you today</div>
           </div>
           <div>
-            <div className="text-2xl font-bold font-display">{projects.length}</div>
+            <div className="text-2xl font-bold font-display">{projects.filter(p=>p._stage!=='paid').length}</div>
             <div className="text-xs text-muted-foreground">active projects</div>
           </div>
           <div>
@@ -147,7 +154,7 @@ export default function ProjectsPipeline() {
       {view==='pipeline' && <>
       {errors.length > 0 && (
         <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-          <AlertCircle className="h-4 w-4 shrink-0" /> Some data failed to load. Refresh to retry.
+          <AlertCircle className="h-4 w-4 shrink-0" /> Some data failed to load. The pipeline is hidden to avoid showing incorrect next steps. Refresh to retry.
         </div>
       )}
 
@@ -155,7 +162,7 @@ export default function ProjectsPipeline() {
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
         </div>
-      ) : (
+      ) : errors.length ? null : (
         <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1">
           {STAGES.map((stage) => {
             const items = byStage[stage.key] || [];
