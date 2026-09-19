@@ -16,6 +16,7 @@ const ACTION_HREF = {
   contract: '/admin/contracts',
   invoice: '/admin/invoices',
   handoff: '/admin/contracts',
+  intake: '/admin/projects',
 };
 
 /**
@@ -36,7 +37,11 @@ export default function ProjectCard({ project }) {
   const destination = ACTION_HREF[step.action] ||
     (kind === 'contract' ? '/admin/contracts' : '/admin/proposals');
   const contractId = kind === 'contract' ? project.id : project.contract_id;
-  const href = destination === '/admin/contracts' && contractId && (kind === 'proposal' || ['draft', 'sent'].includes(project.status))
+  const href = step.action === 'intake' && contractId
+    ? `/admin/projects?view=intakes&contract=${encodeURIComponent(contractId)}`
+    : destination === '/admin/contracts' && contractId
+    ? `${destination}?contract=${encodeURIComponent(contractId)}`
+    : destination === '/admin/invoices' && contractId
     ? `${destination}?contract=${encodeURIComponent(contractId)}`
     : destination;
 
