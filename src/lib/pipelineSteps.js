@@ -62,29 +62,31 @@ function contractStep(p) {
       return step('Sent — waiting on their signature', 'waiting');
 
     case 'signed':
+    case 'deposit_paid':
+    case 'active': {
       if (!inv) return step('Signed — create the deposit invoice', 'action', 'invoice');
       if (!depositDone) {
         return inv.last_sent_at
           ? step(`Waiting on the ${money(inv.deposit_amount)} deposit`, 'waiting', 'invoice')
           : step(`Email the ${money(inv.deposit_amount)} deposit request`, 'action', 'invoice');
       }
-      return step('Deposit in — send the content intake form', 'action', 'contract');
+      // All signed states share the same intake and delivery requirements.
+      if (!intake) return step('Deposit received — send the content intake form', 'action', 'intake');
+      if (intake.status === 'submitted') return step('Content is in — review it and build', 'action', 'intake');
+      if (intake.status === 'pending') return step('Send the saved content intake form', 'action', 'intake');
+      if (intake.status === 'sent') return step('Waiting on their content', 'waiting', 'intake');
+      if (intake.status === 'in_progress') return step('They started filling in their content', 'waiting', 'intake');
 
-    case 'deposit_paid':
-    case 'active': {
-      // In build. Content first, then delivery, then the balance.
-      if (!intake) return step('Deposit received — send the content intake form', 'action', 'contract');
-      if (intake.status === 'submitted') return step('Content is in — review it and build', 'action', 'contract');
-      if (['pending', 'sent'].includes(intake.status)) return step('Waiting on their content', 'waiting', 'contract');
-      if (intake.status === 'in_progress') return step('They started filling in their content', 'waiting', 'contract');
-
-      if (p.handoff_status === 'sent') return step('Delivered — waiting on their sign-off', 'waiting');
+      if (p.handoff_status === 'changes_requested') return step('Client requested changes — review their handoff feedback', 'attention', 'handoff');
+      if (p.handoff_status === 'ready') return step('Delivered — waiting on their sign-off', 'waiting');
       if (p.handoff_status === 'accepted' || p.delivered_at) {
         return balanceOpen
           ? step(`Signed off — collect the ${money(inv.balance_amount)} balance`, 'action', 'invoice')
           : step('Signed off and paid — mark complete', 'action', 'contract');
       }
-      return step('In build — send the handoff when it\'s ready', 'action', 'handoff');
+      return balanceOpen
+        ? step('In build — finish the work, then request the remaining balance before handoff', 'action', 'invoice')
+        : step('In build — prepare the delivery checklist and handoff', 'action', 'handoff');
     }
 
     case 'completed':
