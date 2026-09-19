@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
   { label: 'Possibilities', href: '/#services' },
+  { label: 'Pricing', href: '/#pricing' },
   { label: 'App Ideas', href: '/ideas' },
   { label: 'How It Works', href: '/#process' },
   { label: 'About', href: '/about' },
@@ -45,7 +46,7 @@ export default function SiteNav() {
           </a>
           <nav className="hidden items-center gap-1 lg:flex">
             {NAV_LINKS.map((l) => (
-              <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="inline-flex min-h-12 items-center justify-center px-4 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] hover:bg-[#2D2A4A]/5 text-[13px] font-medium text-muted-foreground transition hover:text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>{l.label}</a>
+              <a key={l.label} href={l.href} onClick={(event) => navigateSection(event, l.href)} className="inline-flex min-h-12 items-center justify-center px-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8942E] hover:bg-[#2D2A4A]/5 text-[13px] font-medium text-muted-foreground transition hover:text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>{l.label}</a>
             ))}
           </nav>
           <div className="flex items-center gap-3">
