@@ -43,6 +43,8 @@ export default function ProjectCard({ project }) {
     ? `${destination}?contract=${encodeURIComponent(contractId)}`
     : destination === '/admin/invoices' && contractId
     ? `${destination}?contract=${encodeURIComponent(contractId)}`
+    : destination === '/admin/proposals'
+    ? `${destination}?${kind==='lead'?'lead':'proposal'}=${encodeURIComponent(project.id)}`
     : destination;
 
   const Icon = kind === 'contract' ? FileText : kind === 'proposal' ? FileText : UserCircle;
