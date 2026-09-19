@@ -2,6 +2,24 @@
   "name": "ClientIntake",
   "type": "object",
   "properties": {
+    "scope_snapshot": {
+      "type": "object",
+      "properties": {
+        "selected_package": {
+          "type": "string"
+        },
+        "scope_summary": {
+          "type": "string"
+        },
+        "line_items": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Signed scope copied from the linked agreement; client cannot edit."
+    },
     "description": {
       "type": "string",
       "description": "Optional description for this intake record",
