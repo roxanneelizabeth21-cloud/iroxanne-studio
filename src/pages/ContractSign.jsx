@@ -52,7 +52,7 @@ export default function ContractSign() {
       const res = await base44.functions.invoke('clientContract', { id, token, action: 'sign', signerName, consent: agree, signatureMode, signatureImage });
       const data = res.data || res;
       if (data.error) { setError(data.error); }
-      else { setSigned(true); setContract(data.contract); if(data.invoice_warning)setError(data.invoice_warning); if (data.invoice_id && data.invoice_token) setInvoiceUrl(`/invoice/${data.invoice_id}?t=${data.invoice_token}`); }
+      else { setSigned(true); setContract(data.contract); if (data.invoice_id && data.invoice_token) setInvoiceUrl(`/invoice/${data.invoice_id}?t=${data.invoice_token}`); }
     } catch (e) {
       const backendError = e?.response?.data?.error || e?.data?.error;
       setError(backendError || e?.message || 'Signing failed. Please try again.');
@@ -95,6 +95,7 @@ export default function ContractSign() {
           projectTitle={contract.project_title}
           clientName={contract.client_name || contract.client_email}
         />
+        {signed && error && <p role="status" className="rounded-xl border border-amber-400 p-4 mb-4">{error}</p>}
         <div className="flex justify-end mb-2"><PrintButton /></div>
 
         <div className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6 shadow-sm">
