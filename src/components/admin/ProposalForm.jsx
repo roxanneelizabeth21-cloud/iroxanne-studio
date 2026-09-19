@@ -98,7 +98,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
       return {
         ...p,
         selected_package: name,
-        estimated_tier: name.toLowerCase(),
+        estimated_tier: name==='Business Website'?'starter':name.toLowerCase(),
+        deposit_amount: !p.payment_installments?.length && !p.deposit_amount && pkg ? Math.round((pkg.price+rest.reduce((sum,item)=>sum+num(item.amount),0))*(p.deposit_percent??50))/100 : p.deposit_amount,
         timeline_estimate: p.timeline_estimate || TIER_TIMELINES[name.toLowerCase()] || '',
         line_items: pkg
           ? [{ description: `${pkg.name} package — ${pkg.description || 'custom app build'}`, quantity: 1, amount: pkg.price }, ...rest]
@@ -214,7 +215,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
           <div className="space-y-1.5">
             <Label>Package</Label>
             <Select value={form.selected_package || ''} onValueChange={applyPackage}>
-              <SelectTrigger><SelectValue placeholder="Choose a tier" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Choose a package" /></SelectTrigger>
               <SelectContent>
                 {(settings?.packages || []).map((p) => (
                   <SelectItem key={p.name} value={p.name}>{p.name} — {money(p.price)}</SelectItem>
