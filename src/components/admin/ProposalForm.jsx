@@ -33,6 +33,9 @@ function buildInitial(initial, settings) {
   let lineItems = i.line_items;
   let selectedPackage = i.selected_package || '';
   const tier = i.estimated_tier || i.tier || '';
+  if(!lineItems&&isLead&&i.selected_package==='Business Website') {
+    lineItems=[{description:'Business Website — up to four pages, service-request form, owner dashboard, social links, supported call scheduling, one revision round and launch handoff. Third-party costs and add-ons separate.',quantity:1,amount:650}];
+  }
   if (!lineItems && isLead && tier && settings?.packages?.length) {
     const pkg = settings.packages.find((p) => p.name?.trim().toLowerCase() === String(tier).trim().toLowerCase());
     if (pkg) {
@@ -56,7 +59,7 @@ function buildInitial(initial, settings) {
     line_items: lineItems || [{ description: '', quantity: 1, amount: 0 }],
     payment_installments: i.payment_installments || [],
     deposit_percent: i.deposit_percent ?? settings?.default_deposit_percent ?? 50,
-    deposit_amount: i.deposit_amount ?? (i.id && i.price_total ? Math.round(i.price_total * (i.deposit_percent ?? 50))/100 : 500),
+    deposit_amount: i.deposit_amount ?? Math.round((i.price_total || (lineItems||[]).reduce((sum,item)=>sum+num(item.amount),0)) * (settings?.default_deposit_percent ?? 50))/100,
     timeline_estimate: i.timeline_estimate || TIER_TIMELINES[tier] || '',
     saas_replacement_note: i.saas_replacement_note || '',
     valid_until: i.valid_until || addDays(validDays),
@@ -129,6 +132,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
 
   return (
     <div className="space-y-5">
+      {initial?.must_have_features?.length>0&&<aside className="rounded-xl border p-3 text-sm"><strong>Requested add-ons — review before quoting</strong><p>{initial.must_have_features.join(', ')}</p><p className="text-muted-foreground mt-2">Add approved items to the scope and price below. Inquiry selections are not included automatically.</p></aside>}
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Client name</Label>
