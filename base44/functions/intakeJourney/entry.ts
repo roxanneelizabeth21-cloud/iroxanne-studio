@@ -7,6 +7,8 @@ export default async function(req: Request) {
     const db = createClientFromRequest(req).asServiceRole.entities;
     const record = await db.ClientIntake.get(body.id).catch(()=>null);
     if (!record || record.access_token !== body.token) return Response.json({error:'This link is not available.'},{status:403});
+    const contract=record.contract_id?await db.Contract.get(record.contract_id).catch(()=>null):null;
+    if(!contract||contract.status==='cancelled')return Response.json({error:'This intake needs its project link reviewed. Please contact iRoxanne Studio.'},{status:409});
     let result = record;
     if (body.action !== 'get') {
       if (!['save','submit'].includes(body.action)) return Response.json({error:'Unknown action'},{status:400});
@@ -19,6 +21,7 @@ export default async function(req: Request) {
       result = await db.ClientIntake.update(record.id,updates);
     }
     const publicRecord = Object.fromEntries(['id','client_name','project_title','project_tier','status',...FIELDS].map(k=>[k,result[k]]));
+    publicRecord.scope_snapshot=record.scope_snapshot||{selected_package:contract.selected_package||'',scope_summary:contract.scope_summary||'',line_items:contract.line_items||[]};
     return Response.json({record:publicRecord});
   } catch (_e) { return Response.json({error:'We could not save or load your intake. Please try again.'},{status:500}); }
 }
