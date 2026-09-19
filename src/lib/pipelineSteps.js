@@ -12,7 +12,7 @@ const step = (text, tone, action = null) => ({ text, tone, action });
 
 function leadStep(p) {
   switch (p.status) {
-    case 'new': return step('Build a proposal from this request', 'action', 'proposal');
+    case 'new': return step('Review the request and record consultation notes', 'action', 'proposal');
     case 'contacted': return step('Followed up — no proposal sent yet', 'action', 'proposal');
     case 'proposal_sent': return step('Proposal sent — waiting on them', 'waiting');
     case 'won': return step('Won', 'done');
