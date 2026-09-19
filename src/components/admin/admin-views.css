@@ -4,7 +4,6 @@
   border-right: 1px solid #dddcd1;
   padding: 22px 14px;
   overflow-y: auto;
-  padding-top: 60px; /* room for ViewSwitcher */
 }
 
 .irx-sidebar .brand-header { padding: 12px 12px 26px; }
@@ -85,12 +84,9 @@
   margin: 6px 0 0;
 }
 
-/* View Switcher */
+/* View Switcher — sits in normal flow at the top of the page */
 .view-switcher {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   height: 44px;
   background: #1a1a2e;
   display: flex;

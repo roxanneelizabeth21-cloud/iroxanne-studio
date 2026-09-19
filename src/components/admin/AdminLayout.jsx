@@ -56,71 +56,73 @@ export default function AdminLayout() {
   const mobileTitle = isMarketing ? 'Marketing Studio' : 'Business Manager';
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <ViewSwitcher />
 
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
+      <div className="flex flex-1 min-h-0">
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-[calc(100vh-44px)] z-30">
+          <Sidebar />
+        </aside>
 
-      {/* Mobile slide-out */}
-      {mobileOpen && (
-        <div className="lg:hidden irx-mobile-drawer">
-          <div className="irx-backdrop" onClick={() => setMobileOpen(false)} />
-          <aside className="irx-panel">
-            <Sidebar onNavigate={() => setMobileOpen(false)} />
-          </aside>
-        </div>
-      )}
-
-      <div className="flex-1 lg:ml-64 min-w-0 flex flex-col">
-        {/* Mobile header */}
-        <header
-          className="lg:hidden border-b border-border/40 bg-sidebar sticky top-11 z-20"
-          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-        >
-          <div className="flex items-center justify-between h-14 px-4">
-            <div className="flex items-center gap-1">
-              <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors no-select" aria-label="Open menu">
-                <Menu className="h-5 w-5" />
-              </button>
-              {showAdminBack && (
-                <button
-                  onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(isMarketing ? '/marketing' : '/admin'))}
-                  className="p-2 rounded-lg hover:bg-secondary/50 transition-colors no-select"
-                  aria-label="Back"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-              )}
-            </div>
-            <span className="font-display font-semibold text-sm">{mobileTitle}</span>
-            <div className="flex items-center gap-1">
-              <ThemeToggle /><NotificationBell />
-            </div>
+        {/* Mobile slide-out */}
+        {mobileOpen && (
+          <div className="lg:hidden irx-mobile-drawer">
+            <div className="irx-backdrop" onClick={() => setMobileOpen(false)} />
+            <aside className="irx-panel">
+              <Sidebar onNavigate={() => setMobileOpen(false)} />
+            </aside>
           </div>
-        </header>
+        )}
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl w-full mx-auto">
-          {mktHeader && location.pathname !== '/marketing' && (
-            <div className="relative mb-6 flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2 min-w-0">
-                <MarketingBackButton />
-                <div className="min-w-0">
-                  <h1 className="font-display text-2xl font-bold flex items-center gap-2">
-                    <mktHeader.Icon className="h-5 w-5 text-primary" /> {mktHeader.label}
-                  </h1>
-                  {mktHeader.subtitle && <p className="text-sm text-muted-foreground mt-1">{mktHeader.subtitle}</p>}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Mobile header */}
+          <header
+            className="lg:hidden border-b border-border/40 bg-sidebar sticky top-0 z-20"
+            style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+          >
+            <div className="flex items-center justify-between h-14 px-4">
+              <div className="flex items-center gap-1">
+                <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors no-select" aria-label="Open menu">
+                  <Menu className="h-5 w-5" />
+                </button>
+                {showAdminBack && (
+                  <button
+                    onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(isMarketing ? '/marketing' : '/admin'))}
+                    className="p-2 rounded-lg hover:bg-secondary/50 transition-colors no-select"
+                    aria-label="Back"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+              <span className="font-display font-semibold text-sm">{mobileTitle}</span>
+              <div className="flex items-center gap-1">
+                <ThemeToggle /><NotificationBell />
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl w-full mx-auto">
+            {mktHeader && location.pathname !== '/marketing' && (
+              <div className="relative mb-6 flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2 min-w-0">
+                  <MarketingBackButton />
+                  <div className="min-w-0">
+                    <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+                      <mktHeader.Icon className="h-5 w-5 text-primary" /> {mktHeader.label}
+                    </h1>
+                    {mktHeader.subtitle && <p className="text-sm text-muted-foreground mt-1">{mktHeader.subtitle}</p>}
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <StrategistHeaderButton />
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-2 shrink-0">
-                <StrategistHeaderButton />
-              </div>
-            </div>
-          )}
-          <Outlet />
-        </main>
+            )}
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
