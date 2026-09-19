@@ -81,7 +81,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
   });
 
   leads.forEach((l) => {
-    if (usedLeadIds.has(l.id)) return;
+    if (l.is_test_record || usedLeadIds.has(l.id)) return;
     if (['lost', 'archived'].includes(l.status)) return;
     const stage = l.status === 'proposal_sent' ? 'proposal' : 'inquiry';
     projects.push({ ...l, _kind: 'lead', _stage: stage });
