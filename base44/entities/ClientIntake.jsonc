@@ -2,6 +2,11 @@
   "name": "ClientIntake",
   "type": "object",
   "properties": {
+    "is_test_record": {
+      "type": "boolean",
+      "default": false,
+      "description": "Explicitly identified test record; excluded from daily client work."
+    },
     "scope_snapshot": {
       "type": "object",
       "properties": {
