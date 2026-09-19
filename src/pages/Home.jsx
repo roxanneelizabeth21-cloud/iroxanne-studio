@@ -6,6 +6,7 @@ import Hero from '@/components/home/Hero';
 
 import Process from '@/components/home/Process';
 import Services from '@/components/home/Services';
+import Pricing from '@/components/home/Pricing';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
 import SiteFooter from '@/components/home/SiteFooter';
@@ -71,6 +72,7 @@ export default function Home() {
 
 
         <Services />
+        <Pricing />
         <Process />
         <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-8">
           <div className="max-w-5xl mx-auto md:flex items-center justify-between gap-8">
