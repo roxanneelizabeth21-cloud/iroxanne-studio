@@ -2,6 +2,10 @@
   "name": "Lead",
   "type": "object",
   "properties": {
+    "selected_package": {
+      "type": "string",
+      "description": "Requested service; not an accepted purchase."
+    },
     "description": {
       "type": "string",
       "description": "Optional description for this lead",
