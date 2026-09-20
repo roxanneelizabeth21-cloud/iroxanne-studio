@@ -13,28 +13,31 @@ export default function ViewSwitcher() {
   return (
     <div className="view-switcher">
       <Link to="/" className="vs-brand">
-        <BrandLogo className="h-7 w-7" />
-        <span>iRoxanne</span>
+        <BrandLogo height="h-9" />
       </Link>
-      <button
-        className={isMarketing ? 'active' : ''}
-        onClick={() => navigate('/marketing')}
-      >
-        <Megaphone className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
-        Marketing
-      </button>
-      <button
-        className={!isMarketing ? 'active' : ''}
-        onClick={() => navigate('/admin')}
-      >
-        <Briefcase className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
-        Business
-      </button>
+      <div className="vs-tabs">
+        <button
+          className={isMarketing ? 'active' : ''}
+          onClick={() => navigate('/marketing')}
+          aria-pressed={isMarketing}
+        >
+          <Megaphone className="vs-tab-icon" />
+          Marketing
+        </button>
+        <button
+          className={!isMarketing ? 'active' : ''}
+          onClick={() => navigate('/admin')}
+          aria-pressed={!isMarketing}
+        >
+          <Briefcase className="vs-tab-icon" />
+          Business
+        </button>
+      </div>
       <div className="vs-actions">
         <ThemeToggle />
         <NotificationBell />
+        <Link to="/" className="vs-site-link">Back to site</Link>
       </div>
-      <Link to="/" className="vs-site-link">Back to site</Link>
     </div>
   );
 }
