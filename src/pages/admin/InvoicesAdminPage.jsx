@@ -12,6 +12,16 @@ import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 import PaymentPlanDisplay from '@/components/PaymentPlanDisplay';
 const money = n => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const methods = ['square','zelle','cashapp','venmo','paypal','cash','check','transfer','other'];
+
+const statusBadge = status => {
+  if (!status) return 'irx-badge';
+  const s = status.replace(/_/g, ' ');
+  if (s === 'paid' || s === 'completed') return 'irx-badge irx-accent-green';
+  if (s === 'partial' || s === 'deposit paid') return 'irx-badge irx-accent-gold';
+  if (s === 'overdue' || s === 'cancelled') return 'irx-badge irx-accent-rose';
+  return 'irx-badge';
+};
+
 export default function InvoicesAdminPage() {
   const { toast } = useToast();
   const [params] = useSearchParams();
@@ -54,8 +64,6 @@ export default function InvoicesAdminPage() {
   const remaining = (i,k) => k==='deposit'
     ? (['paid','waived'].includes(i.deposit_status) ? 0 : Math.max(0,Number(i.deposit_amount||0)-Number(i.deposit_paid_amount||0)))
     : (i.balance_status==='waived' || i.balance_status==='paid' ? 0 : Math.max(0,Number(i.balance_amount||0)-Number(i.balance_paid_amount||0)));
-  // Unpaid milestones, kept with their original index so the backend can mark
-  // the right one paid.
   const openMilestones = i => (Array.isArray(i?.milestones)?i.milestones:[])
     .map((m,idx)=>({...m,idx})).filter(m=>m.status!=='paid');
   const stageAmount = (i,kind,idx) => {
@@ -113,53 +121,201 @@ export default function InvoicesAdminPage() {
     try{const counts=await deleteProjectChain('payment',p.id);toast({title:'Payment deleted',description:chainSummary(counts)});await load();}
     catch(e){toast({title:'Delete failed',description:e.message,variant:'destructive'});}
   };
-  return <div className="space-y-6">
-    <div><h1 className="font-display text-3xl font-semibold flex items-center gap-2"><Receipt className="h-6 w-6 text-primary"/>Invoices & Payments</h1>
-    <p className="text-sm text-muted-foreground mt-2">Track deposits and balances for every signed project. Record payments after you receive them.</p></div>
-    {error && <p role="alert" className="text-destructive">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
-    {!loading&&!error&&missingInvoices.map(c=><section key={c.id} className="rounded-xl border border-amber-400 p-4"><p>{c.project_title} — signed agreement has no invoice.</p><Button disabled={busy} className="mt-2" onClick={()=>prepareInvoice(c)}>Prepare missing invoice</Button></section>)}
-    {loading && <p role="status">Loading invoices…</p>}
-    {!loading && !error && !invoices.length && <div className="rounded-2xl bg-card border p-8">Invoices appear here when a client signs their agreement.</div>}
-    {contractFilter&&<p className="text-sm">Showing invoices for this agreement. <Link className="underline" to="/admin/invoices">Show all invoices</Link></p>}
-    {invoices.filter(i=>!contractFilter||i.contract_id===contractFilter).map(i=><section key={i.id} className="rounded-2xl border border-border bg-card p-5 space-y-4">
-      <div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-display text-xl font-semibold">{i.project_title}</h2><p className="text-sm text-muted-foreground">{i.client_name || i.client_email}</p></div><span className="text-sm font-medium text-primary">{i.status?.replaceAll('_',' ')}</span></div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div><p className="text-xs text-muted-foreground">Project total</p><p className="font-semibold">{money(i.amount_total)}</p></div>
-        <div><p className="text-xs text-muted-foreground">Deposit remaining</p><p className="font-semibold">{money(remaining(i,'deposit'))}</p><p className="text-xs">{i.deposit_status}</p></div>
-        <div><p className="text-xs text-muted-foreground">Balance remaining</p><p className="font-semibold">{money(remaining(i,'balance'))}</p><p className="text-xs">{i.balance_status}</p></div>
-        <div><p className="text-xs text-muted-foreground">Due date</p><p>{i.due_date || 'Per agreement'}</p></div>
+
+  const filteredInvoices = invoices.filter(i => !contractFilter || i.contract_id === contractFilter);
+
+  // Stats
+  const totalOwed = filteredInvoices.reduce((s, i) => s + remaining(i, 'deposit') + remaining(i, 'balance'), 0);
+  const totalPaid = filteredInvoices.reduce((s, i) => s + Number(i.deposit_paid_amount || 0) + Number(i.balance_paid_amount || 0), 0);
+  const totalValue = filteredInvoices.reduce((s, i) => s + Number(i.amount_total || 0), 0);
+  const overdueCount = filteredInvoices.filter(i => i.due_date && new Date(i.due_date) < new Date() && remaining(i, 'deposit') + remaining(i, 'balance') > 0).length;
+
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="irx-page-header">
+      <div className="irx-eyebrow">Business Manager</div>
+      <h1>Invoices</h1>
+      <p>Track payments, deposits, and project billing.</p>
+    </div>
+
+    {error && <p role="alert" style={{ color: 'var(--destructive, #e5484d)' }}>{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
+
+    {/* Summary stats */}
+    {!loading && !error && filteredInvoices.length > 0 && (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+        <div className="irx-stat">
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Total value</span>
+          <span className="irx-stat-number">{money(totalValue)}</span>
+        </div>
+        <div className="irx-stat">
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Collected</span>
+          <span className="irx-stat-number">{money(totalPaid)}</span>
+        </div>
+        <div className="irx-stat">
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Outstanding</span>
+          <span className="irx-stat-number">{money(totalOwed)}</span>
+        </div>
+        <div className="irx-stat">
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Overdue</span>
+          <span className="irx-stat-number">{overdueCount}</span>
+        </div>
       </div>
-      {i.payment_installments?.length>0 && <div className="space-y-3"><PaymentPlanDisplay invoice={i}/>
-        {i.square_sync_error && <p role="alert" className="text-destructive text-sm">{i.square_sync_error}</p>}
-        {i.status!=='cancelled' && <Button disabled={busy} onClick={()=>setSending({invoice:i,which:'statement'})}>{i.square_invoice_id?'Refresh Square plan':'Send payment plan'}</Button>}
-        {i.square_public_url && <Button variant="outline" asChild><a href={i.square_public_url} target="_blank" rel="noopener noreferrer">View Square invoice</a></Button>}
-        <p className="text-xs text-muted-foreground">Record offline payments, refunds, and cancellations on this invoice in Square. Payment status syncs here automatically. New schedules are set in the proposal or agreement before signing.</p>
-      </div>}
-      {!i.payment_installments?.length && i.status!=='cancelled' && <div className="flex flex-wrap gap-2">
-        {(remaining(i,'deposit')+remaining(i,'balance'))>0 && <Button onClick={()=>openPayment(i)} className="gap-1"><Plus className="h-4 w-4"/>Record payment</Button>}
-        {remaining(i,'deposit')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'deposit'})} className="gap-1"><Send className="h-4 w-4"/>Request deposit</Button>}
-        {remaining(i,'balance')>0 && <Button variant="outline" onClick={()=>setSending({invoice:i,which:'balance'})}>Request balance</Button>}
-        <Button variant="outline" onClick={()=>setSending({invoice:i,which:'statement'})}>Email statement</Button>
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete invoice" onClick={()=>removeInvoice(i)}><Trash2 className="h-4 w-4"/></Button>
-      </div>}
-      {!i.payment_installments?.length && <details className="text-sm"><summary className="cursor-pointer font-medium">Payment history</summary><div className="space-y-2 mt-3">
-        {payments.filter(p=>p.invoice_id===i.id).map(p=><div key={p.id} className="flex flex-wrap justify-between gap-2 border-t pt-2 items-center"><span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference?' · '+p.reference:''}</span><span className="flex items-center gap-1"><strong>{money(p.amount)}</strong><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Delete payment" onClick={()=>removePayment(p)}><Trash2 className="h-3.5 w-3.5"/></Button></span></div>)}
-        {!payments.some(p=>p.invoice_id===i.id) && <p className="text-muted-foreground">No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
-      </div></details>}
-    </section>)}
-    <p className="text-xs text-muted-foreground">Clients can pay deposits, milestones, and balances online via Square. Use “Request deposit / balance” to email them a pay link, or share the invoice link directly.</p>
+    )}
+
+    {/* Missing invoice warnings */}
+    {!loading && !error && missingInvoices.map(c => (
+      <section key={c.id} className="irx-card" style={{ borderLeft: '3px solid var(--accent-gold, #f5a623)' }}>
+        <p>{c.project_title} — signed agreement has no invoice.</p>
+        <Button disabled={busy} style={{ marginTop: '8px' }} onClick={() => prepareInvoice(c)}>Prepare missing invoice</Button>
+      </section>
+    ))}
+
+    {loading && <p role="status">Loading invoices…</p>}
+
+    {!loading && !error && !invoices.length && (
+      <div className="irx-empty">Invoices appear here when a client signs their agreement.</div>
+    )}
+
+    {contractFilter && (
+      <p style={{ fontSize: '13px' }}>Showing invoices for this agreement. <Link style={{ textDecoration: 'underline' }} to="/admin/invoices">Show all invoices</Link></p>
+    )}
+
+    {/* Invoice list */}
+    <div className="irx-list">
+      {filteredInvoices.map(i => (
+        <section key={i.id} className="irx-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Header row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '12px', alignItems: 'flex-start' }}>
+            <div>
+              <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '18px', fontWeight: 600 }}>{i.project_title}</h2>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>{i.client_name || i.client_email}</p>
+            </div>
+            <span className={statusBadge(i.status)}>{i.status?.replaceAll('_', ' ')}</span>
+          </div>
+
+          {/* Financials grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Project total</p>
+              <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{money(i.amount_total)}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Deposit remaining</p>
+              <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{money(remaining(i, 'deposit'))}</p>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>{i.deposit_status}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Balance remaining</p>
+              <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{money(remaining(i, 'balance'))}</p>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>{i.balance_status}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)', textTransform: 'uppercase', letterSpacing: '.08em' }}>Due date</p>
+              <p>{i.due_date || 'Per agreement'}</p>
+            </div>
+          </div>
+
+          {/* Payment plan (Square integration) */}
+          {i.payment_installments?.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <PaymentPlanDisplay invoice={i} />
+              {i.square_sync_error && <p role="alert" style={{ color: 'var(--destructive, #e5484d)', fontSize: '13px' }}>{i.square_sync_error}</p>}
+              {i.status !== 'cancelled' && <Button disabled={busy} onClick={() => setSending({ invoice: i, which: 'statement' })}>{i.square_invoice_id ? 'Refresh Square plan' : 'Send payment plan'}</Button>}
+              {i.square_public_url && <Button variant="outline" asChild><a href={i.square_public_url} target="_blank" rel="noopener noreferrer">View Square invoice</a></Button>}
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>Record offline payments, refunds, and cancellations on this invoice in Square. Payment status syncs here automatically. New schedules are set in the proposal or agreement before signing.</p>
+            </div>
+          )}
+
+          {/* Action buttons (non-installment invoices) */}
+          {!i.payment_installments?.length && i.status !== 'cancelled' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {(remaining(i, 'deposit') + remaining(i, 'balance')) > 0 && <Button onClick={() => openPayment(i)} className="gap-1"><Plus className="h-4 w-4" />Record payment</Button>}
+              {remaining(i, 'deposit') > 0 && <Button variant="outline" onClick={() => setSending({ invoice: i, which: 'deposit' })} className="gap-1"><Send className="h-4 w-4" />Request deposit</Button>}
+              {remaining(i, 'balance') > 0 && <Button variant="outline" onClick={() => setSending({ invoice: i, which: 'balance' })}>Request balance</Button>}
+              <Button variant="outline" onClick={() => setSending({ invoice: i, which: 'statement' })}>Email statement</Button>
+              <Button variant="ghost" size="icon" style={{ height: '36px', width: '36px', color: 'var(--destructive, #e5484d)' }} title="Delete invoice" onClick={() => removeInvoice(i)}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          )}
+
+          {/* Payment history */}
+          {!i.payment_installments?.length && (
+            <details style={{ fontSize: '13px' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 500 }}>Payment history</summary>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                {payments.filter(p => p.invoice_id === i.id).map(p => (
+                  <div key={p.id} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '8px', borderTop: '1px solid var(--border, #e5e7eb)', paddingTop: '8px', alignItems: 'center' }}>
+                    <span>{new Date(p.paid_at || p.created_date).toLocaleDateString()} · {p.kind} · {p.method}{p.reference ? ' · ' + p.reference : ''}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <strong>{money(p.amount)}</strong>
+                      <Button variant="ghost" size="icon" style={{ height: '28px', width: '28px', color: 'var(--destructive, #e5484d)' }} title="Delete payment" onClick={() => removePayment(p)}><Trash2 style={{ height: '14px', width: '14px' }} /></Button>
+                    </span>
+                  </div>
+                ))}
+                {!payments.some(p => p.invoice_id === i.id) && <p style={{ color: 'var(--text-secondary, #66736e)' }}>No detailed payments recorded. Earlier manual paid statuses are retained.</p>}
+              </div>
+            </details>
+          )}
+        </section>
+      ))}
+    </div>
+
+    <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>Clients can pay deposits, milestones, and balances online via Square. Use "Request deposit / balance" to email them a pay link, or share the invoice link directly.</p>
+
     {confirmDialog}
-    <Dialog open={!!editing} onOpenChange={o=>!busy&&!o&&setEditing(null)}><DialogContent><DialogHeader><DialogTitle>Record received payment</DialogTitle><DialogDescription>{editing?.project_title} — enter money you have already received.</DialogDescription></DialogHeader>
-      <form onSubmit={save} className="space-y-4">
-        <div><Label htmlFor="payment-kind">Payment stage</Label><select id="payment-kind" className="w-full border rounded-md p-2 bg-background" value={form.kind} onChange={e=>{const k=e.target.value;const ms=openMilestones(editing);const idx=k==='milestone'?(ms[0]?.idx ?? ''):'';setForm({...form,kind:k,milestone_index:idx,amount:stageAmount(editing,k,idx)});}}><option value="deposit">Deposit</option><option value="balance">Balance</option>{!!openMilestones(editing).length&&<option value="milestone">Milestone</option>}</select></div>
-        {form.kind==='milestone'&&<div><Label htmlFor="payment-milestone">Which milestone</Label><select id="payment-milestone" className="w-full border rounded-md p-2 bg-background" value={form.milestone_index} onChange={e=>{const idx=e.target.value;setForm({...form,milestone_index:idx,amount:stageAmount(editing,'milestone',idx)});}}>{openMilestones(editing).map(m=><option key={m.idx} value={m.idx}>{m.label} — {money(m.amount)}{m.due_date?' (due '+m.due_date+')':''}</option>)}</select></div>}
-        <div><Label htmlFor="payment-amount">Amount received ($)</Label><Input id="payment-amount" type="number" min="0.01" step="0.01" required max={editing?stageAmount(editing,form.kind,form.milestone_index):undefined} value={form.amount ?? ''} onChange={e=>setForm({...form,amount:e.target.value})}/></div>
-        <div><Label htmlFor="payment-method">Payment method</Label><select id="payment-method" className="w-full border rounded-md p-2 bg-background" value={form.method} onChange={e=>setForm({...form,method:e.target.value})}>{methods.map(m=><option key={m} value={m}>{m}</option>)}</select></div>
-        <div><Label htmlFor="payment-reference">Receipt or reference number</Label><Input id="payment-reference" value={form.reference||''} onChange={e=>setForm({...form,reference:e.target.value})}/></div>
-        <label className="flex gap-2 text-sm"><input type="checkbox" checked={!!form.notify_client} onChange={e=>setForm({...form,notify_client:e.target.checked})}/>Email the client a receipt</label>
-        <Button type="submit" disabled={busy}>{busy?'Saving…':'Save payment'}</Button>
-      </form>
-    </DialogContent></Dialog>
-    <Dialog open={!!sending} onOpenChange={o=>!busy&&!o&&setSending(null)}><DialogContent><DialogHeader><DialogTitle>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id?'Refresh Square plan':'Send payment plan') : 'Send '+(sending?.which==='statement'?'statement':sending?.which+' request')}</DialogTitle><DialogDescription>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id?'Check Square for current payments. This does not send another email.':'Square will email '+sending.invoice.client_email+' the agreed payment schedule and scheduled reminders. It will not automatically charge a card.') : 'This emails '+sending?.invoice.client_email+' the current amount and your saved payment instructions.'}</DialogDescription></DialogHeader><Button onClick={send} disabled={busy}>{busy?'Working…':sending?.invoice.square_invoice_id?'Refresh plan':sending?.invoice.payment_installments?.length?'Send plan through Square':'Send email'}</Button></DialogContent></Dialog>
+
+    {/* Record Payment Dialog */}
+    <Dialog open={!!editing} onOpenChange={o => !busy && !o && setEditing(null)}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Record received payment</DialogTitle>
+          <DialogDescription>{editing?.project_title} — enter money you have already received.</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={save} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <Label htmlFor="payment-kind">Payment stage</Label>
+            <select id="payment-kind" className="w-full border rounded-md p-2 bg-background" value={form.kind} onChange={e => { const k = e.target.value; const ms = openMilestones(editing); const idx = k === 'milestone' ? (ms[0]?.idx ?? '') : ''; setForm({ ...form, kind: k, milestone_index: idx, amount: stageAmount(editing, k, idx) }); }}>
+              <option value="deposit">Deposit</option>
+              <option value="balance">Balance</option>
+              {!!openMilestones(editing).length && <option value="milestone">Milestone</option>}
+            </select>
+          </div>
+          {form.kind === 'milestone' && <div>
+            <Label htmlFor="payment-milestone">Which milestone</Label>
+            <select id="payment-milestone" className="w-full border rounded-md p-2 bg-background" value={form.milestone_index} onChange={e => { const idx = e.target.value; setForm({ ...form, milestone_index: idx, amount: stageAmount(editing, 'milestone', idx) }); }}>
+              {openMilestones(editing).map(m => <option key={m.idx} value={m.idx}>{m.label} — {money(m.amount)}{m.due_date ? ' (due ' + m.due_date + ')' : ''}</option>)}
+            </select>
+          </div>}
+          <div>
+            <Label htmlFor="payment-amount">Amount received ($)</Label>
+            <Input id="payment-amount" type="number" min="0.01" step="0.01" required max={editing ? stageAmount(editing, form.kind, form.milestone_index) : undefined} value={form.amount ?? ''} onChange={e => setForm({ ...form, amount: e.target.value })} />
+          </div>
+          <div>
+            <Label htmlFor="payment-method">Payment method</Label>
+            <select id="payment-method" className="w-full border rounded-md p-2 bg-background" value={form.method} onChange={e => setForm({ ...form, method: e.target.value })}>
+              {methods.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="payment-reference">Receipt or reference number</Label>
+            <Input id="payment-reference" value={form.reference || ''} onChange={e => setForm({ ...form, reference: e.target.value })} />
+          </div>
+          <label style={{ display: 'flex', gap: '8px', fontSize: '13px' }}>
+            <input type="checkbox" checked={!!form.notify_client} onChange={e => setForm({ ...form, notify_client: e.target.checked })} />
+            Email the client a receipt
+          </label>
+          <Button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save payment'}</Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    {/* Send Invoice Dialog */}
+    <Dialog open={!!sending} onOpenChange={o => !busy && !o && setSending(null)}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id ? 'Refresh Square plan' : 'Send payment plan') : 'Send ' + (sending?.which === 'statement' ? 'statement' : sending?.which + ' request')}</DialogTitle>
+          <DialogDescription>{sending?.invoice.payment_installments?.length ? (sending.invoice.square_invoice_id ? 'Check Square for current payments. This does not send another email.' : 'Square will email ' + sending.invoice.client_email + ' the agreed payment schedule and scheduled reminders. It will not automatically charge a card.') : 'This emails ' + sending?.invoice.client_email + ' the current amount and your saved payment instructions.'}</DialogDescription>
+        </DialogHeader>
+        <Button onClick={send} disabled={busy}>{busy ? 'Working…' : sending?.invoice.square_invoice_id ? 'Refresh plan' : sending?.invoice.payment_installments?.length ? 'Send plan through Square' : 'Send email'}</Button>
+      </DialogContent>
+    </Dialog>
   </div>;
 }
