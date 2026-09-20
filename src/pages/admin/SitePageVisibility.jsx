@@ -1,11 +1,16 @@
-import { LayoutDashboard } from 'lucide-react';
 import PagesForm from '@/components/admin/PagesForm';
 
 export default function SitePageVisibility() {
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-2xl font-bold flex items-center gap-2"><LayoutDashboard className="h-6 w-6 text-primary" /> Page Visibility</h1>
-      <div className="glass rounded-2xl p-6 md:p-8"><PagesForm /></div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="irx-page-header">
+        <div className="irx-eyebrow">Business Manager</div>
+        <h1>Pages</h1>
+        <p>Manage page visibility and content across your site.</p>
+      </div>
+      <div className="irx-card">
+        <PagesForm />
+      </div>
     </div>
   );
 }
