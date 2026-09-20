@@ -84,9 +84,12 @@
   margin: 6px 0 0;
 }
 
-/* View Switcher — sits in normal flow at the top of the page */
+/* View Switcher — pinned to the very top of the viewport */
 .view-switcher {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 44px;
   background: #1a1a2e;
   display: flex;

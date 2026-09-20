@@ -59,7 +59,7 @@ export default function AdminLayout() {
     <div className="min-h-screen flex flex-col bg-background">
       <ViewSwitcher />
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0" style={{ marginTop: '44px' }}>
         {/* Desktop sidebar */}
         <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-[calc(100vh-44px)] z-30">
           <Sidebar />
