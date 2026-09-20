@@ -32,7 +32,7 @@
   margin-bottom: 12px;
 }
 
-.irx-sidebar nav { display: flex; flex-direction: column; gap: 5px; }
+.irx-sidebar nav { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; flex: 1; min-height: 0; }
 .irx-sidebar nav a {
   min-height: 46px;
   font-size: 14px;
@@ -158,9 +158,92 @@
 .irx-mobile-drawer .irx-panel {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 44px;
   bottom: 0;
   width: 280px;
   background: #f1eee5;
   overflow-y: auto;
+  animation: irx-slide-in .2s ease-out;
+}
+@keyframes irx-slide-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── Dark mode overrides ────────────────────────────────── */
+
+/* System dark (no explicit stamp) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .irx-sidebar {
+    background: #1e1e2a;
+    border-right-color: #2e2e3e;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar .brand-header h1 { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-sidebar .brand-header p { color: #9aa0a6; }
+  :root:not([data-theme="light"]) .irx-sidebar .brand-mark {
+    background: #364f5c;
+    color: #e8eaed;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar nav a {
+    color: #b0b8b5;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar nav a:hover {
+    background: #2a2a3a;
+    color: #e8eaed;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar nav a.active {
+    background: #364f5c;
+    color: #fffdf8;
+    box-shadow: 0 5px 12px rgba(0,0,0,.15);
+  }
+  :root:not([data-theme="light"]) .irx-sidebar .sidebar-footer-link {
+    color: #8a9a90;
+    border-top-color: #2e2e3e;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar .sidebar-footer-link:hover { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-sidebar .sidebar-motto {
+    background: #252535;
+  }
+  :root:not([data-theme="light"]) .irx-sidebar .sidebar-motto span { color: #7a8a80; }
+  :root:not([data-theme="light"]) .irx-sidebar .sidebar-motto p { color: #b0c0b5; }
+  :root:not([data-theme="light"]) .irx-mobile-drawer .irx-panel {
+    background: #1e1e2a;
+  }
+}
+
+/* Explicit dark stamp */
+:root[data-theme="dark"] .irx-sidebar {
+  background: #1e1e2a;
+  border-right-color: #2e2e3e;
+}
+:root[data-theme="dark"] .irx-sidebar .brand-header h1 { color: #e8eaed; }
+:root[data-theme="dark"] .irx-sidebar .brand-header p { color: #9aa0a6; }
+:root[data-theme="dark"] .irx-sidebar .brand-mark {
+  background: #364f5c;
+  color: #e8eaed;
+}
+:root[data-theme="dark"] .irx-sidebar nav a {
+  color: #b0b8b5;
+}
+:root[data-theme="dark"] .irx-sidebar nav a:hover {
+  background: #2a2a3a;
+  color: #e8eaed;
+}
+:root[data-theme="dark"] .irx-sidebar nav a.active {
+  background: #364f5c;
+  color: #fffdf8;
+  box-shadow: 0 5px 12px rgba(0,0,0,.15);
+}
+:root[data-theme="dark"] .irx-sidebar .sidebar-footer-link {
+  color: #8a9a90;
+  border-top-color: #2e2e3e;
+}
+:root[data-theme="dark"] .irx-sidebar .sidebar-footer-link:hover { color: #e8eaed; }
+:root[data-theme="dark"] .irx-sidebar .sidebar-motto {
+  background: #252535;
+}
+:root[data-theme="dark"] .irx-sidebar .sidebar-motto span { color: #7a8a80; }
+:root[data-theme="dark"] .irx-sidebar .sidebar-motto p { color: #b0c0b5; }
+:root[data-theme="dark"] .irx-mobile-drawer .irx-panel {
+  background: #1e1e2a;
 }
