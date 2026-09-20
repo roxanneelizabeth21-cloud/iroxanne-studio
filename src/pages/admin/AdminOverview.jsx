@@ -1,77 +1,117 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { FolderKanban, Megaphone, Mail, MessageSquare, ArrowRight, Quote } from 'lucide-react';
+import {
+  FolderKanban, FileText, Receipt, Mail, MessageSquare,
+  CalendarDays, LayoutDashboard, Eye, Users, ScrollText
+} from 'lucide-react';
 
 export default function AdminOverview() {
-  const { data: posts = [] } = useQuery({ queryKey: ['marketing-posts-recent'], queryFn: () => base44.entities.MarketingPost.list('-created_date', 50) });
-  const { data: portfolio = [] } = useQuery({ queryKey: ['portfolio-items-admin'], queryFn: () => base44.entities.PortfolioItem.list('-created_date') });
+  const { data: leads = [] } = useQuery({ queryKey: ['leads-admin'], queryFn: () => base44.entities.Lead.list('-created_date', 200) });
+  const { data: contracts = [] } = useQuery({ queryKey: ['contracts-admin'], queryFn: () => base44.entities.Contract.list('-created_date', 200) });
+  const { data: invoices = [] } = useQuery({ queryKey: ['invoices-admin'], queryFn: () => base44.entities.Invoice.list('-created_date', 200) });
   const { data: subs = [] } = useQuery({ queryKey: ['subscribers-recent'], queryFn: () => base44.entities.Subscriber.list('-created_date', 50) });
   const { data: msgs = [] } = useQuery({ queryKey: ['contact-messages-recent'], queryFn: () => base44.entities.ContactMessage.list('-created_date', 50) });
 
-  const cards = [
-    { to: '/marketing/library', label: 'Posts', count: posts.length, Icon: Megaphone },
-    { to: '/marketing', label: 'Projects', count: portfolio.length, Icon: FolderKanban },
-    { to: '/admin/subscribers', label: 'Subscribers', count: subs.length, Icon: Mail },
-    { to: '/admin/messages', label: 'Messages', count: msgs.length, Icon: MessageSquare },
+  const activeLeads = leads.filter(l => !['lost', 'cancelled'].includes(l.status));
+  const activeContracts = contracts.filter(c => !['cancelled', 'completed'].includes(c.status));
+  const unpaidInvoices = invoices.filter(i => i.status === 'sent' || i.status === 'overdue');
+  const unreadMsgs = msgs.filter(m => !m.read);
+
+  const stats = [
+    { to: '/admin/projects', count: activeLeads.length, label: 'Active leads', Icon: FolderKanban, accent: 'irx-accent-teal' },
+    { to: '/admin/contracts', count: activeContracts.length, label: 'Open contracts', Icon: FileText, accent: 'irx-accent-violet' },
+    { to: '/admin/invoices', count: unpaidInvoices.length, label: 'Unpaid invoices', Icon: Receipt, accent: 'irx-accent-gold' },
+    { to: '/admin/messages', count: unreadMsgs.length, label: 'New messages', Icon: MessageSquare, accent: 'irx-accent-rose' },
+  ];
+
+  const quickLinks = [
+    { to: '/admin/projects', label: 'Projects Pipeline', desc: 'Track every lead from inquiry to paid', Icon: FolderKanban },
+    { to: '/admin/proposals', label: 'Quotes & Proposals', desc: 'Create and send client proposals', Icon: FileText },
+    { to: '/admin/contracts', label: 'Contracts', desc: 'Manage agreements and signatures', Icon: ScrollText },
+    { to: '/admin/invoices', label: 'Invoices', desc: 'Send invoices and track payments', Icon: Receipt },
+    { to: '/admin/call-availability', label: 'Call Availability', desc: 'Set your booking calendar', Icon: CalendarDays },
+    { to: '/admin/homepage', label: 'Homepage', desc: 'Edit your public homepage content', Icon: LayoutDashboard },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold mb-1">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Manage your portfolio, marketing content, and inquiries.</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      {/* Page header */}
+      <div className="irx-page-header">
+        <div className="irx-eyebrow">Business Manager</div>
+        <h1>Overview</h1>
+        <p>Your client pipeline, invoices, and site management at a glance.</p>
       </div>
 
-      <Link to="/marketing" className="block glass rounded-2xl p-5 hover:border-primary/40 transition-colors group">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><Megaphone className="h-6 w-6 text-primary" /></div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-display text-lg font-semibold">Marketing Content Suite</h2>
-            <p className="text-sm text-muted-foreground">Plan campaigns, generate posts with AI, and schedule content.</p>
-          </div>
-          <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-0.5 transition-transform shrink-0" />
-        </div>
-      </Link>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {cards.map((c) => (
-          <Link key={c.to} to={c.to} className="glass rounded-xl px-3 py-2 flex items-center gap-2 hover:border-primary/40 transition-colors">
-            <c.Icon className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-base font-semibold font-display">{c.count}</span>
-            <span className="text-xs text-muted-foreground truncate">{c.label}</span>
+      {/* Stats row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
+        {stats.map(s => (
+          <Link key={s.to} to={s.to} className="irx-stat">
+            <div className={`irx-stat-icon ${s.accent}`}>
+              <s.Icon style={{ width: 18, height: 18 }} />
+            </div>
+            <div className="irx-stat-number">{s.count}</div>
+            <div className="irx-stat-label">{s.label}</div>
           </Link>
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="glass rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-semibold flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> Recent Subscribers</h3>
-            <Link to="/admin/subscribers" className="text-xs text-primary">View all</Link>
+      {/* Quick actions */}
+      <div>
+        <div className="irx-section-head">
+          <h2>Quick Actions</h2>
+        </div>
+        <div className="irx-actions-grid">
+          {quickLinks.map(q => (
+            <Link key={q.to} to={q.to} className="irx-action-tile">
+              <q.Icon />
+              <strong>{q.label}</strong>
+              <small>{q.desc}</small>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent activity — two columns */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+        {/* Recent subscribers */}
+        <div className="irx-card">
+          <div className="irx-section-head" style={{ marginBottom: '8px' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <Mail style={{ width: 16, height: 16, color: '#3b7a6a' }} /> Recent Subscribers
+            </h3>
+            <Link to="/admin/subscribers">View all</Link>
           </div>
-          {subs.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">No subscribers yet.</p> : (
-            <ul className="space-y-2">
-              {subs.slice(0, 5).map((s) => (
-                <li key={s.id} className="flex items-center justify-between text-sm gap-2">
-                  <span className="truncate">{s.email}</span>
-                  <span className="text-xs text-muted-foreground shrink-0">{s.source_slug || '—'}</span>
+          {subs.length === 0 ? (
+            <div className="irx-empty"><Users style={{ width: 32, height: 32 }} /><p>No subscribers yet.</p></div>
+          ) : (
+            <ul className="irx-list">
+              {subs.slice(0, 5).map(s => (
+                <li key={s.id}>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.email}</span>
+                  <span className="irx-list-meta">{s.source_slug || '—'}</span>
                 </li>
               ))}
             </ul>
           )}
         </div>
-        <div className="glass rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Recent Messages</h3>
-            <Link to="/admin/messages" className="text-xs text-primary">View all</Link>
+
+        {/* Recent messages */}
+        <div className="irx-card">
+          <div className="irx-section-head" style={{ marginBottom: '8px' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <MessageSquare style={{ width: 16, height: 16, color: '#a77769' }} /> Recent Messages
+            </h3>
+            <Link to="/admin/messages">View all</Link>
           </div>
-          {msgs.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">No messages yet.</p> : (
-            <ul className="space-y-2">
-              {msgs.slice(0, 5).map((m) => (
-                <li key={m.id} className="flex items-center justify-between text-sm gap-2">
-                  <span className="truncate">{m.subject || m.name || 'Message'}</span>
-                  <span className="text-xs text-muted-foreground shrink-0">{m.name}</span>
+          {msgs.length === 0 ? (
+            <div className="irx-empty"><MessageSquare style={{ width: 32, height: 32 }} /><p>No messages yet.</p></div>
+          ) : (
+            <ul className="irx-list">
+              {msgs.slice(0, 5).map(m => (
+                <li key={m.id}>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.subject || m.name || 'Message'}</span>
+                  <span className="irx-list-meta">{m.name}</span>
                 </li>
               ))}
             </ul>
