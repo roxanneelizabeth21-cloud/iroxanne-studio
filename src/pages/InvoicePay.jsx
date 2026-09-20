@@ -165,18 +165,18 @@ export default function InvoicePay() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div className="rounded-xl bg-secondary/40 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl bg-secondary/40 p-4 text-center">
               <p className="text-muted-foreground text-xs uppercase tracking-wide">Project total</p>
-              <p className="text-xl font-bold text-foreground mt-1">{money(invoice.amount_total)}</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{money(invoice.amount_total)}</p>
             </div>
-            <div className="rounded-xl bg-secondary/40 p-4">
+            <div className="rounded-xl bg-secondary/40 p-4 text-center">
               <p className="text-muted-foreground text-xs uppercase tracking-wide">Paid to date</p>
-              <p className="text-xl font-bold text-foreground mt-1">{money(summary?.paid)}</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{money(summary?.paid)}</p>
             </div>
-            <div className="rounded-xl bg-secondary/40 p-4">
+            <div className="rounded-xl bg-primary/10 border border-primary/20 p-4 text-center">
               <p className="text-muted-foreground text-xs uppercase tracking-wide">Outstanding</p>
-              <p className="text-xl font-bold text-primary mt-1">{money(summary?.outstanding)}</p>
+              <p className="text-2xl font-bold text-primary mt-1">{money(summary?.outstanding)}</p>
             </div>
           </div>
 
@@ -191,53 +191,68 @@ export default function InvoicePay() {
               <p className="text-sm text-muted-foreground mt-1">Thank you! Your project is all squared away.</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h2 className="text-sm font-semibold text-foreground">Pay online</h2>
-              <div className="rounded-xl border border-border p-4 space-y-3">
-                <p className="text-sm text-muted-foreground">Pay your agreed amount, pay the full outstanding balance, or make extra payments toward your balance at any time, with no prepayment fee. Payments are made through Square. Each payment reduces your balance; agreed payment deadlines still apply.</p>
-                <Button disabled={!!redirecting || invoice.status === 'cancelled'} onClick={() => pay('project', null)}>Pay full outstanding balance — {money(summary?.outstanding)}</Button>
-                <label className="block text-sm font-medium" htmlFor="extra-payment">Or enter a payment amount ($)</label>
-                <input id="extra-payment" type="number" inputMode="decimal" min="1" max={summary?.outstanding} step="0.01" value={customAmount} onChange={e => setCustomAmount(e.target.value)} className="w-full rounded-md border border-input bg-background text-foreground p-3"/>
-                <Button variant="outline" disabled={!!redirecting || invoice.status === 'cancelled' || !customAmount || Number(customAmount)<1 || Number(customAmount)>summary?.outstanding} onClick={() => pay('project', null, Number(customAmount))}>Pay this amount with Square</Button>
-                <p className="text-xs text-muted-foreground">The required deposit must be paid before work begins. Full payment does not move the agreed completion date.</p>
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+                <div className="flex items-baseline justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-foreground">Full outstanding balance</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Pay everything you owe in one payment.</p>
+                  </div>
+                  <p className="text-2xl font-bold text-primary whitespace-nowrap">{money(summary?.outstanding)}</p>
+                </div>
+                <Button disabled={!!redirecting || invoice.status === 'cancelled'} onClick={() => pay('project', null)} className="w-full">
+                  Pay full balance
+                </Button>
               </div>
-              {depositRemaining > 0 && (
-                <PayRow
-                  label="Deposit"
-                  amount={depositRemaining}
-                  status={invoice.deposit_status}
-                  loading={redirecting === 'square_deposit'}
-                  onPay={() => pay('deposit', null)}
-                />
-              )}
-              {(invoice.milestones || []).map((m, i) => (
-                <PayRow
-                  key={i}
-                  label={m.label}
-                  amount={m.amount}
-                  status={m.status}
-                  dueDate={m.due_date}
-                  loading={redirecting === `square_milestone_${i}`}
-                  onPay={() => pay('milestone', i)}
-                />
-              ))}
-              {balanceRemaining > 0 && (invoice.milestones || []).length === 0 && (
-                <PayRow
-                  label="Balance"
-                  amount={balanceRemaining}
-                  status={invoice.balance_status}
-                  loading={redirecting === 'square_balance'}
-                  onPay={() => pay('balance', null)}
-                />
-              )}
-              {balanceRemaining > 0 && (invoice.milestones || []).length > 0 && (
-                <PayRow
-                  label="Remaining balance"
-                  amount={balanceRemaining}
-                  status={invoice.balance_status}
-                  loading={redirecting === 'square_balance'}
-                  onPay={() => pay('balance', null)}
-                />
+              <div className="rounded-xl border border-border p-5 space-y-3">
+                <div>
+                  <p className="font-medium text-foreground text-sm">Custom payment amount</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Make a partial payment toward your balance at any time.</p>
+                </div>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                    <input id="extra-payment" type="number" inputMode="decimal" min="1" max={summary?.outstanding} step="0.01" value={customAmount} onChange={e => setCustomAmount(e.target.value)} placeholder="0.00" className="w-full rounded-md border border-input bg-background text-foreground pl-7 pr-3 py-2.5"/>
+                  </div>
+                  <Button variant="outline" disabled={!!redirecting || invoice.status === 'cancelled' || !customAmount || Number(customAmount)<1 || Number(customAmount)>summary?.outstanding} onClick={() => pay('project', null, Number(customAmount))} className="shrink-0">
+                    Pay this amount
+                  </Button>
+                </div>
+              </div>
+              {(depositRemaining > 0 || (invoice.milestones || []).length > 0 || balanceRemaining > 0) && (
+                <div className="space-y-3">
+                  <h2 className="text-sm font-semibold text-foreground">Scheduled payments</h2>
+                  {depositRemaining > 0 && (
+                    <PayRow
+                      label="Deposit"
+                      amount={depositRemaining}
+                      status={invoice.deposit_status}
+                      loading={redirecting === 'square_deposit'}
+                      onPay={() => pay('deposit', null)}
+                    />
+                  )}
+                  {(invoice.milestones || []).map((m, i) => (
+                    <PayRow
+                      key={i}
+                      label={m.label}
+                      amount={m.amount}
+                      status={m.status}
+                      dueDate={m.due_date}
+                      loading={redirecting === `square_milestone_${i}`}
+                      onPay={() => pay('milestone', i)}
+                    />
+                  ))}
+                  {balanceRemaining > 0 && (
+                    <PayRow
+                      label={(invoice.milestones || []).length > 0 ? 'Remaining balance' : 'Balance'}
+                      amount={balanceRemaining}
+                      status={invoice.balance_status}
+                      loading={redirecting === 'square_balance'}
+                      onPay={() => pay('balance', null)}
+                    />
+                  )}
+                </div>
               )}
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
                 <Lock className="h-3 w-3" />
@@ -273,24 +288,22 @@ function PayRow({ label, amount, status, dueDate, loading, onPay }) {
   const busy = loading;
   return (
     <div className="rounded-xl border border-border p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="font-medium text-foreground">{label}</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-medium text-foreground text-sm">{label}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Deadline per your agreement; early payment welcome'}
+            {paid ? `${status}` : dueDate ? `Due ${dueDate}` : 'Per your agreement'}
           </p>
         </div>
-        <span className="font-bold text-foreground">{money(amount)}</span>
+        <span className="text-lg font-bold text-foreground whitespace-nowrap">{money(amount)}</span>
       </div>
       {paid ? (
         <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-green-600"><CheckCircle2 className="h-4 w-4" /> Paid</span>
       ) : (
-        <div className="mt-3 grid gap-2">
-          <Button onClick={onPay} disabled={busy} className="gap-1.5 w-full">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-            Pay with Square
-          </Button>
-        </div>
+        <Button onClick={onPay} disabled={busy} className="gap-1.5 w-full mt-3">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+          Pay with Square
+        </Button>
       )}
     </div>
   );

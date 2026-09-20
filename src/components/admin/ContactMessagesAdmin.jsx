@@ -57,40 +57,30 @@ export default function ContactMessagesAdmin() {
         />
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden">
+      <div className="space-y-2">
         {isLoading ? (
           <div className="py-10 text-center text-sm text-muted-foreground">Loading…</div>
         ) : filtered.length === 0 ? (
           <div className="py-10 text-center text-sm text-muted-foreground">No messages yet.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/50 text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Subject</th>
-                  <th className="px-4 py-3 font-medium">Received</th>
-                  <th className="px-4 py-3 font-medium w-20"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((m) => (
-                  <tr key={m.id} className="border-b border-border/30 hover:bg-secondary/30 cursor-pointer" onClick={() => setSelected(m)}>
-                    <td className="px-4 py-3">{m.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{m.email}</td>
-                    <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">{m.subject || '—'}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{formatDate(m.created_date)}</td>
-                    <td className="px-4 py-3">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          filtered.map((m) => (
+            <div key={m.id} className="glass rounded-xl p-4 hover:bg-secondary/30 cursor-pointer transition-colors" onClick={() => setSelected(m)}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm text-foreground truncate">{m.name || '—'}</p>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{m.email}</p>
+                  {m.subject && <p className="text-sm text-foreground mt-1 truncate">{m.subject}</p>}
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <p className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(m.created_date)}</p>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+              {m.message && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{m.message}</p>}
+            </div>
+          ))
         )}
       </div>
 

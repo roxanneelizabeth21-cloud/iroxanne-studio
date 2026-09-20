@@ -229,28 +229,35 @@ export default function ContractsAdminPage() {
           {!loading && contracts.length === 0 && <p className="irx-empty">No contracts yet.</p>}
           {contracts.map((c) => {
             const statusInfo = STATUS_MAP[c.status] || { accent: 'irx-accent-gray', label: c.status };
+            const isSigned = !['draft','sent'].includes(c.status);
             return (
-              <div key={c.id} className="irx-list-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.project_title}</p>
-                    <span className={`irx-badge ${statusInfo.accent}`}>{statusInfo.label}</span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {c.client_name || c.client_email} · {money(c.price_total)} · dep {money(c.deposit_amount)}
-                  </p>
-                  {c.status !== 'draft' && c.status !== 'sent' && c.signer_name && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                      {c.signature_mode === 'drawn' && c.signature_image && (
-                        <img src={c.signature_image} alt="Signature" style={{ height: '40px', background: '#FAF7F0', borderRadius: '4px', padding: '4px 8px', border: '1px solid var(--border-color, #e5e5e5)' }} />
-                      )}
-                      <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>
-                        Signed by {c.signer_name}{c.signed_at ? ` on ${new Date(c.signed_at).toLocaleDateString()}` : ''}
-                      </p>
+              <div key={c.id} className="irx-list-row" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <p style={{ fontWeight: 600, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.project_title}</p>
+                      <span className={`irx-badge ${statusInfo.accent}`}>{statusInfo.label}</span>
                     </div>
-                  )}
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', marginTop: '2px' }}>
+                      {c.client_name || c.client_email}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #1a1a1a)' }}>{money(c.price_total)}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>Deposit {money(c.deposit_amount)}</p>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'flex-end' }}>
+                {isSigned && c.signer_name && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '2px' }}>
+                    {c.signature_mode === 'drawn' && c.signature_image && (
+                      <img src={c.signature_image} alt="Signature" style={{ height: '36px', background: '#FAF7F0', borderRadius: '4px', padding: '2px 8px', border: '1px solid var(--border-color, #e5e5e5)' }} />
+                    )}
+                    <p style={{ fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>
+                      Signed by {c.signer_name}{c.signed_at ? ` on ${new Date(c.signed_at).toLocaleDateString()}` : ''}
+                    </p>
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
                   <Button disabled={!['draft','sent'].includes(c.status)} title="Edit unsigned agreement" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ contract: c })}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
