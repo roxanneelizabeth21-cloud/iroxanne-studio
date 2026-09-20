@@ -65,14 +65,20 @@ export default function PromoBannersAdminPage() {
 
   if (editing) {
     return (
-      <div className="space-y-5">
-        <button onClick={() => setEditing(null)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to banners
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <button
+          onClick={() => setEditing(null)}
+          style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--text-secondary, #66736e)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          <ArrowLeft style={{ width: 16, height: 16 }} /> Back to banners
         </button>
-        <h1 className="font-display text-2xl font-bold">
-          {editing === 'new' ? 'New' : 'Edit'} Promo Banner
-        </h1>
-        <div className="glass rounded-2xl p-5 md:p-7">
+
+        <div className="irx-page-header">
+          <div className="irx-eyebrow">Business Manager</div>
+          <h1>{editing === 'new' ? 'New' : 'Edit'} Promo Banner</h1>
+        </div>
+
+        <div className="irx-card" style={{ padding: '20px' }}>
           <PromoBannerForm
             initial={editing === 'new' ? null : editing}
             onSave={save}
@@ -84,68 +90,79 @@ export default function PromoBannersAdminPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold flex items-center gap-2">
-          <Megaphone className="h-6 w-6 text-primary" /> Promo Banners
-        </h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="irx-page-header">
+        <div className="irx-eyebrow">Business Manager</div>
+        <h1>Promo Banners</h1>
+        <p>Create and manage promotional banners for your website.</p>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
         <Button onClick={() => setEditing('new')} className="gap-2">
-          <Plus className="h-4 w-4" /> New Banner
+          <Plus style={{ width: 16, height: 16 }} /> New Banner
         </Button>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Site-wide promotional banners shown at the top of selected pages, above the page content.
-      </p>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 text-primary animate-spin" />
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+          <Loader2 className="animate-spin" style={{ width: 24, height: 24, color: 'var(--text-secondary, #66736e)' }} />
         </div>
       ) : banners.length === 0 ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted-foreground">
+        <div className="irx-card" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary, #66736e)' }}>
           No promo banners yet. Click "New Banner" to create one.
         </div>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="irx-section-head">All Banners</div>
           {banners.map((b) => {
             const pages = pagesList(b.target_pages);
             return (
-              <div key={b.id} className="glass rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-medium truncate">{b.title || 'Untitled'}</h3>
-                    {b.is_active ? (
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-600 font-medium">Active</span>
-                    ) : (
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground font-medium">Inactive</span>
-                    )}
+              <div key={b.id} className="irx-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Row: title + badges + controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', minWidth: 0 }}>
+                      <h3 style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+                        {b.title || 'Untitled'}
+                      </h3>
+                      {b.is_active ? (
+                        <span className="irx-badge irx-accent-green">Active</span>
+                      ) : (
+                        <span className="irx-badge irx-accent-rose">Inactive</span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>Active</span>
+                        <Switch checked={!!b.is_active} onCheckedChange={() => toggleActive(b)} />
+                      </div>
+                      <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditing(b)}>
+                        <Pencil style={{ width: 14, height: 14 }} /> Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => remove(b)}>
+                        <Trash2 style={{ width: 16, height: 16 }} />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 truncate">
+
+                  {/* Subtitle: headline + date range */}
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {b.headline || 'No headline'} — {dateRange(b)}
                   </p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
+
+                  {/* Page tags */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {pages.length === 0 ? (
-                      <span className="text-xs text-muted-foreground italic">No pages selected</span>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)', fontStyle: 'italic' }}>No pages selected</span>
                     ) : (
                       pages.map((p) => (
-                        <span key={p} className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                        <span key={p} className="irx-badge">
                           {PAGE_LABELS[p] || p}
                         </span>
                       ))
                     )}
                   </div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Active</span>
-                    <Switch checked={!!b.is_active} onCheckedChange={() => toggleActive(b)} />
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditing(b)}>
-                    <Pencil className="h-3.5 w-3.5" /> Edit
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => remove(b)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
             );
