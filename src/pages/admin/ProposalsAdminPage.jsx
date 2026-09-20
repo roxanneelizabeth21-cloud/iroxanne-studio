@@ -11,14 +11,14 @@ import { deleteProjectChain, chainSummary } from '@/lib/projectChain';
 
 const money = (n) => (typeof n === 'number' ? `$${n.toLocaleString()}` : '—');
 
-const STATUS_STYLES = {
-  changes_requested: 'bg-amber-500/10 text-amber-700',
-  draft: 'bg-secondary text-muted-foreground',
-  sent: 'bg-blue-500/10 text-blue-600',
-  viewed: 'bg-amber-500/10 text-amber-700',
-  accepted: 'bg-green-500/10 text-green-600',
-  declined: 'bg-destructive/10 text-destructive',
-  expired: 'bg-secondary text-muted-foreground',
+const STATUS_BADGE = {
+  changes_requested: 'irx-badge irx-accent-gold',
+  draft: 'irx-badge',
+  sent: 'irx-badge irx-accent-blue',
+  viewed: 'irx-badge irx-accent-gold',
+  accepted: 'irx-badge irx-accent-green',
+  declined: 'irx-badge irx-accent-rose',
+  expired: 'irx-badge irx-accent-rose',
 };
 
 export default function ProposalsAdminPage() {
@@ -143,38 +143,93 @@ export default function ProposalsAdminPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold flex items-center gap-2">
-        <FileText className="h-6 w-6 text-primary" /> Proposals
-      </h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="irx-page-header">
+        <div className="irx-eyebrow">Business Manager</div>
+        <h1>Quotes &amp; Proposals</h1>
+        <p>Create, send, and track client proposals.</p>
+      </div>
 
-      <p className="text-sm text-muted-foreground">Review each inquiry, record your consultation notes, then prepare an itemized proposal. Only approved scope and prices move into the agreement.</p>
-      <Dialog open={!!leadReview} onOpenChange={o=>!o&&setLeadReview(null)}><DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Review quote request</DialogTitle></DialogHeader>{leadReview&&<div className="space-y-4"><p>{leadReview.name} · {leadReview.email}</p>{['selected_package','quick_pitch','problem_to_solve','must_have_features','nice_to_have_features','integrations_needed','existing_tools','ideal_launch_date','budget_range'].map(key=><div key={key}><h3 className="font-medium capitalize">{key.replaceAll('_',' ')}</h3><p className="whitespace-pre-wrap text-sm">{Array.isArray(leadReview[key])?leadReview[key].join(', '):leadReview[key]||'Not provided'}</p></div>)}<label className="block text-sm">Internal consultation notes<textarea className="block w-full rounded border bg-background p-2 mt-2" maxLength={1000} value={leadReview.description||''} onChange={e=>setLeadReview({...leadReview,description:e.target.value})}/></label><label className="block text-sm">Request status<select className="ml-2 rounded border bg-background p-2" value={leadReview.status} onChange={e=>setLeadReview({...leadReview,status:e.target.value})}>{['new','contacted','proposal_sent','won','lost','archived'].map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select></label><div className="flex gap-2"><Button disabled={saving} onClick={saveReview}>Save review</Button><Button variant="outline" onClick={()=>{setEditing({lead:leadReview});setLeadReview(null);}}>Build proposal</Button></div></div>}</DialogContent></Dialog>
+      <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>
+        Review each inquiry, record your consultation notes, then prepare an itemized proposal. Only approved scope and prices move into the agreement.
+      </p>
+
+      {/* Lead review dialog */}
+      <Dialog open={!!leadReview} onOpenChange={o=>!o&&setLeadReview(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Review quote request</DialogTitle></DialogHeader>
+          {leadReview && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <p>{leadReview.name} · {leadReview.email}</p>
+              {['selected_package','quick_pitch','problem_to_solve','must_have_features','nice_to_have_features','integrations_needed','existing_tools','ideal_launch_date','budget_range'].map(key => (
+                <div key={key}>
+                  <h3 style={{ fontWeight: 500, textTransform: 'capitalize' }}>{key.replaceAll('_',' ')}</h3>
+                  <p style={{ whiteSpace: 'pre-wrap', fontSize: '13px' }}>
+                    {Array.isArray(leadReview[key]) ? leadReview[key].join(', ') : leadReview[key] || 'Not provided'}
+                  </p>
+                </div>
+              ))}
+              <label style={{ display: 'block', fontSize: '13px' }}>
+                Internal consultation notes
+                <textarea
+                  style={{ display: 'block', width: '100%', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--background)', padding: '8px', marginTop: '8px' }}
+                  maxLength={1000}
+                  value={leadReview.description || ''}
+                  onChange={e => setLeadReview({ ...leadReview, description: e.target.value })}
+                />
+              </label>
+              <label style={{ display: 'block', fontSize: '13px' }}>
+                Request status
+                <select
+                  style={{ marginLeft: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--background)', padding: '8px' }}
+                  value={leadReview.status}
+                  onChange={e => setLeadReview({ ...leadReview, status: e.target.value })}
+                >
+                  {['new','contacted','proposal_sent','won','lost','archived'].map(s => (
+                    <option key={s} value={s}>{s.replaceAll('_',' ')}</option>
+                  ))}
+                </select>
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Button disabled={saving} onClick={saveReview}>Save review</Button>
+                <Button variant="outline" onClick={() => { setEditing({ lead: leadReview }); setLeadReview(null); }}>Build proposal</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* New quote requests */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-        <button onClick={() => setShowLeads((v) => !v)} className="flex items-center gap-2 w-full">
+      <div className="irx-card" style={{ padding: '20px' }}>
+        <button onClick={() => setShowLeads((v) => !v)} className="irx-section-head" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           {showLeads ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          <h2 className="font-semibold">New Quote Requests ({leads.length})</h2>
+          <h2 style={{ fontWeight: 600, margin: 0 }}>New Quote Requests ({leads.length})</h2>
         </button>
         {showLeads && (
-          <div className="space-y-2">
-            {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
-            {!loading && leads.length === 0 && <p className="text-sm text-muted-foreground">No new quote requests.</p>}
+          <div className="irx-list" style={{ marginTop: '12px' }}>
+            {loading && <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>Loading…</p>}
+            {!loading && leads.length === 0 && (
+              <div className="irx-empty">
+                <p>No new quote requests.</p>
+              </div>
+            )}
             {leads.map((lead) => (
-              <div key={lead.id} className="flex items-center justify-between gap-3 rounded-xl bg-secondary/40 p-3">
-                <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{lead.name || lead.email}</p>
-                  <p className="text-xs text-muted-foreground truncate">
+              <div key={lead.id} className="irx-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {lead.name || lead.email}
+                  </p>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {lead.business_name ? `${lead.business_name} · ` : ''}{lead.quick_pitch?.slice(0, 80) || 'No pitch'}
                   </p>
                   {lead.estimated_price_low != null && (
-                    <p className="text-xs text-primary mt-0.5">
+                    <p style={{ fontSize: '12px', color: 'var(--primary)', marginTop: '2px' }}>
                       Est. {money(lead.estimated_price_low)}–{money(lead.estimated_price_high)}
                       {lead.estimated_tier ? ` · ${lead.estimated_tier}` : ''}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                   <Button size="sm" onClick={() => setLeadReview(lead)} className="gap-1">
                     <Plus className="h-3.5 w-3.5" /> Review Request
                   </Button>
@@ -189,34 +244,40 @@ export default function ProposalsAdminPage() {
       </div>
 
       {/* Proposals */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Proposals ({proposals.length})</h2>
+      <div className="irx-card" style={{ padding: '20px' }}>
+        <div className="irx-section-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontWeight: 600, margin: 0 }}>Proposals ({proposals.length})</h2>
           <Button size="sm" onClick={() => setEditing({ lead: null })} className="gap-1">
             <Plus className="h-4 w-4" /> New Proposal
           </Button>
         </div>
-        <div className="space-y-2">
-          {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        <div className="irx-list" style={{ marginTop: '12px' }}>
+          {loading && <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>Loading…</p>}
           {!loading && proposals.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No proposals yet. Build one from a quote request above — the client accepts online and a draft contract is created for you.
-            </p>
+            <div className="irx-empty">
+              <p>No proposals yet. Build one from a quote request above — the client accepts online and a draft contract is created for you.</p>
+            </div>
           )}
           {proposals.map((p) => (
-            <div key={p.id} className="flex items-center justify-between gap-3 rounded-xl bg-secondary/40 p-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium text-sm truncate">{p.project_title}</p>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[p.status] || ''}`}>{p.status}</span>
+            <div key={p.id} className="irx-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.project_title}
+                  </p>
+                  <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.status}</span>
                 </div>
-                <p className="text-xs text-muted-foreground truncate">
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {money(p.price_total)}
                   {p.valid_until ? ` · valid to ${p.valid_until}` : ''}
                 </p>
               </div>
-              {p.change_request && <p className="text-sm whitespace-pre-wrap max-w-sm">Requested changes: {p.change_request}</p>}
-              <div className="flex gap-1 shrink-0 items-center">
+              {p.change_request && (
+                <p style={{ fontSize: '13px', whiteSpace: 'pre-wrap', maxWidth: '24rem' }}>
+                  Requested changes: {p.change_request}
+                </p>
+              )}
+              <div style={{ display: 'flex', gap: '4px', flexShrink: 0, alignItems: 'center' }}>
                 {p.status === 'accepted' && p.contract_id ? (
                   <Button asChild variant="outline" size="sm" className="gap-1">
                     <Link to={`/admin/contracts?contract=${encodeURIComponent(p.contract_id)}`}>Contract <ArrowRight className="h-3.5 w-3.5" /></Link>
@@ -247,10 +308,11 @@ export default function ProposalsAdminPage() {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
+      <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)' }}>
         Flow: quote request → proposal → client accepts online → draft contract created → send for signature → deposit invoice.
       </p>
 
+      {/* Proposal edit/create dialog */}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
