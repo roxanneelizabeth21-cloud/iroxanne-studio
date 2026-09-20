@@ -247,3 +247,339 @@
 :root[data-theme="dark"] .irx-mobile-drawer .irx-panel {
   background: #1e1e2a;
 }
+
+/* ── Content-area design layer ─────────────────────────── */
+/* Matches QTDaily quiet-studio patterns for page content */
+
+/* Page header */
+.irx-page-header { padding-bottom: 4px; }
+.irx-page-header h1 {
+  font: 500 clamp(28px, 3.5vw, 40px)/1.1 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.025em;
+  color: var(--text-primary, #213b45);
+  margin: 0;
+}
+.irx-page-header p {
+  color: var(--text-secondary, #63716c);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 8px 0 0;
+}
+.irx-page-header .irx-eyebrow {
+  color: #8e663f;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* Section heading */
+.irx-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.irx-section-head h2 {
+  font: 500 26px/1.15 'Cormorant Garamond', Georgia, serif;
+  color: var(--text-primary, #213b45);
+  margin: 0;
+}
+.irx-section-head a {
+  font-size: 13px;
+  color: #536d5b;
+  text-decoration: none;
+}
+.irx-section-head a:hover { text-decoration: underline; }
+
+/* Card — the main content container */
+.irx-card {
+  background: var(--bg-card, #fffdf8);
+  border: 1px solid var(--border-default, #e1e2d7);
+  border-radius: 16px;
+  box-shadow: 0 7px 24px rgba(33,59,69,.04);
+  padding: 24px;
+}
+.irx-card h3 {
+  font: 600 18px/1.3 'DM Sans', sans-serif;
+  color: var(--text-primary, #213b45);
+  margin: 0 0 12px;
+}
+
+/* Stat card — compact number + label */
+.irx-stat {
+  background: var(--bg-card, #fffdf8);
+  border: 1px solid var(--border-default, #e1e2d7);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  transition: border-color .15s, box-shadow .15s;
+}
+.irx-stat:hover {
+  border-color: var(--border-strong, rgba(33,59,69,.28));
+  box-shadow: 0 4px 16px rgba(33,59,69,.06);
+}
+.irx-stat .irx-stat-number {
+  font: 600 28px/1 'DM Sans', sans-serif;
+  color: var(--accent-violet, #213b45);
+}
+.irx-stat .irx-stat-label {
+  font-size: 12px;
+  color: var(--text-tertiary, #697773);
+  margin-top: 4px;
+}
+.irx-stat .irx-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+/* Quick action tiles — like QTDaily home-actions */
+.irx-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.irx-action-tile {
+  background: var(--bg-secondary, #eeeade);
+  border: 1px solid var(--border-default, #dce2d3);
+  padding: 22px 18px;
+  border-radius: 14px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.irx-action-tile:hover {
+  border-color: var(--border-strong, rgba(33,59,69,.28));
+  box-shadow: 0 4px 14px rgba(33,59,69,.06);
+}
+.irx-action-tile strong {
+  font: 600 20px/1.15 'Cormorant Garamond', Georgia, serif;
+  color: var(--text-primary, #213b45);
+}
+.irx-action-tile small {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary, #5c6c65);
+}
+.irx-action-tile svg {
+  color: #526d5f;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* List rows inside cards */
+.irx-list { list-style: none; margin: 0; padding: 0; }
+.irx-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-default, #e8e8dd);
+  font-size: 14px;
+  color: var(--text-primary, #213b45);
+  gap: 8px;
+}
+.irx-list li:last-child { border-bottom: 0; }
+.irx-list .irx-list-meta {
+  font-size: 12px;
+  color: var(--text-tertiary, #697773);
+  flex-shrink: 0;
+}
+
+/* Filter pill bar */
+.irx-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.irx-pill {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border-default, #dce2d3);
+  background: transparent;
+  color: var(--text-secondary, #596a68);
+  cursor: pointer;
+  transition: all .15s;
+  min-height: 36px;
+}
+.irx-pill:hover { background: var(--bg-secondary, #eeeade); color: var(--text-primary, #213b45); }
+.irx-pill.active {
+  background: #213b45;
+  color: #fffdf8;
+  border-color: #213b45;
+}
+
+/* Empty state */
+.irx-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-tertiary, #697773);
+  font-size: 14px;
+}
+.irx-empty svg {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 12px;
+  color: var(--text-tertiary, #697773);
+  opacity: .5;
+}
+
+/* Badge */
+.irx-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+/* Color accents for stat icons */
+.irx-accent-teal { background: #e5eced; color: #3b7a6a; }
+.irx-accent-gold { background: #f0eadb; color: #8e663f; }
+.irx-accent-rose { background: #f0e4de; color: #a77769; }
+.irx-accent-green { background: #e3eddf; color: #3f7a4a; }
+.irx-accent-violet { background: #e5e5f0; color: #4a4a7a; }
+.irx-accent-blue { background: #dfe8f0; color: #2d5f8a; }
+
+/* Post / article card — for MarketingHub */
+.irx-post-card {
+  background: var(--bg-card, #fffdf8);
+  border: 1px solid var(--border-default, #e1e2d7);
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color .15s;
+}
+.irx-post-card:hover {
+  border-color: var(--border-strong, rgba(33,59,69,.28));
+}
+.irx-post-card h3 {
+  font: 600 15px/1.4 'DM Sans', sans-serif;
+  color: var(--text-primary, #213b45);
+  margin: 0 0 8px;
+}
+.irx-post-card .irx-post-meta {
+  font-size: 12px;
+  color: var(--text-tertiary, #697773);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .irx-card { padding: 18px; border-radius: 14px; }
+  .irx-stat { padding: 14px 12px; }
+  .irx-stat .irx-stat-number { font-size: 22px; }
+  .irx-actions-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .irx-action-tile { padding: 16px; }
+  .irx-action-tile strong { font-size: 18px; }
+  .irx-page-header h1 { font-size: 28px; }
+  .irx-section-head h2 { font-size: 22px; }
+}
+
+/* ── Content-area dark mode ────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .irx-card,
+  :root:not([data-theme="light"]) .irx-stat,
+  :root:not([data-theme="light"]) .irx-post-card {
+    background: #1e1e2a;
+    border-color: #2e2e3e;
+  }
+  :root:not([data-theme="light"]) .irx-action-tile {
+    background: #252535;
+    border-color: #2e2e3e;
+  }
+  :root:not([data-theme="light"]) .irx-list li {
+    border-bottom-color: #2e2e3e;
+    color: #e8eaed;
+  }
+  :root:not([data-theme="light"]) .irx-pill {
+    border-color: #3e3e4e;
+    color: #b0b8b5;
+  }
+  :root:not([data-theme="light"]) .irx-pill:hover {
+    background: #2a2a3a;
+    color: #e8eaed;
+  }
+  :root:not([data-theme="light"]) .irx-pill.active {
+    background: #364f5c;
+    color: #fffdf8;
+    border-color: #364f5c;
+  }
+  :root:not([data-theme="light"]) .irx-page-header h1 { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-page-header p { color: #9aa0a6; }
+  :root:not([data-theme="light"]) .irx-section-head h2 { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-card h3,
+  :root:not([data-theme="light"]) .irx-post-card h3,
+  :root:not([data-theme="light"]) .irx-stat .irx-stat-number { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-stat .irx-stat-label,
+  :root:not([data-theme="light"]) .irx-list .irx-list-meta,
+  :root:not([data-theme="light"]) .irx-post-card .irx-post-meta { color: #8a9a90; }
+  :root:not([data-theme="light"]) .irx-action-tile strong { color: #e8eaed; }
+  :root:not([data-theme="light"]) .irx-action-tile small { color: #9aa0a6; }
+  :root:not([data-theme="light"]) .irx-action-tile svg { color: #8a9a90; }
+  :root:not([data-theme="light"]) .irx-accent-teal { background: #1a2e2e; }
+  :root:not([data-theme="light"]) .irx-accent-gold { background: #2e2518; }
+  :root:not([data-theme="light"]) .irx-accent-rose { background: #2e2020; }
+  :root:not([data-theme="light"]) .irx-accent-green { background: #1a2e1a; }
+  :root:not([data-theme="light"]) .irx-accent-violet { background: #20202e; }
+  :root:not([data-theme="light"]) .irx-accent-blue { background: #1a202e; }
+}
+:root[data-theme="dark"] .irx-card,
+:root[data-theme="dark"] .irx-stat,
+:root[data-theme="dark"] .irx-post-card {
+  background: #1e1e2a;
+  border-color: #2e2e3e;
+}
+:root[data-theme="dark"] .irx-action-tile {
+  background: #252535;
+  border-color: #2e2e3e;
+}
+:root[data-theme="dark"] .irx-list li {
+  border-bottom-color: #2e2e3e;
+  color: #e8eaed;
+}
+:root[data-theme="dark"] .irx-pill {
+  border-color: #3e3e4e;
+  color: #b0b8b5;
+}
+:root[data-theme="dark"] .irx-pill:hover {
+  background: #2a2a3a;
+  color: #e8eaed;
+}
+:root[data-theme="dark"] .irx-pill.active {
+  background: #364f5c;
+  color: #fffdf8;
+  border-color: #364f5c;
+}
+:root[data-theme="dark"] .irx-page-header h1 { color: #e8eaed; }
+:root[data-theme="dark"] .irx-page-header p { color: #9aa0a6; }
+:root[data-theme="dark"] .irx-section-head h2 { color: #e8eaed; }
+:root[data-theme="dark"] .irx-card h3,
+:root[data-theme="dark"] .irx-post-card h3,
+:root[data-theme="dark"] .irx-stat .irx-stat-number { color: #e8eaed; }
+:root[data-theme="dark"] .irx-stat .irx-stat-label,
+:root[data-theme="dark"] .irx-list .irx-list-meta,
+:root[data-theme="dark"] .irx-post-card .irx-post-meta { color: #8a9a90; }
+:root[data-theme="dark"] .irx-action-tile strong { color: #e8eaed; }
+:root[data-theme="dark"] .irx-action-tile small { color: #9aa0a6; }
+:root[data-theme="dark"] .irx-action-tile svg { color: #8a9a90; }
+:root[data-theme="dark"] .irx-accent-teal { background: #1a2e2e; }
+:root[data-theme="dark"] .irx-accent-gold { background: #2e2518; }
+:root[data-theme="dark"] .irx-accent-rose { background: #2e2020; }
+:root[data-theme="dark"] .irx-accent-green { background: #1a2e1a; }
+:root[data-theme="dark"] .irx-accent-violet { background: #20202e; }
+:root[data-theme="dark"] .irx-accent-blue { background: #1a202e; }
