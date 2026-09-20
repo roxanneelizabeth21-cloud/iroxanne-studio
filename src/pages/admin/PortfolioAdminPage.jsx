@@ -65,48 +65,56 @@ export default function PortfolioAdminPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="irx-page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 className="font-display text-2xl font-bold">Portfolio</h1>
-          <p className="text-sm text-muted-foreground mt-1">Edit an app and check “Show on homepage” to choose its preview. Up to three checked apps appear, with lower display orders first.</p>
+          <div className="irx-eyebrow">Business Manager</div>
+          <h1>Portfolio</h1>
+          <p>Edit an app and check "Show on homepage" to choose its preview. Up to three checked apps appear, with lower display orders first.</p>
         </div>
         <Button onClick={() => setEditing('new')}><Plus className="h-4 w-4" /> Add project</Button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-      ) : !items?.length ? (
-        <div className="glass rounded-2xl p-12 text-center text-muted-foreground">No portfolio projects yet. Click "Add project".</div>
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {items.map((item) => (
-            <div key={item.id} className="glass rounded-2xl p-3 flex gap-3">
-              <div className="h-16 w-20 shrink-0 rounded-lg overflow-hidden bg-secondary">
-                {item.cover_image_url ? (
-                  <img src={item.cover_image_url} alt="" className="h-full w-full object-cover" />
-                ) : null}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold truncate">{item.title}</h3>
-                  {item.featured && <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />}
-                </div>
-                {item.tagline && <p className="text-xs text-muted-foreground truncate">{item.tagline}</p>}
-                <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-                  <span>{item.category}</span>
-                  <span>•</span>
-                  <span>Order {item.sort_order ?? 0}</span>
-                  <span>{item.featured ? 'Homepage selected' : 'Not on homepage'}</span>
-                </div>
-                <div className="mt-2 flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setEditing(item)}><Pencil className="h-3.5 w-3.5" /> Edit</Button>
-                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDeletingId(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '64px 0' }}>
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'var(--text-secondary, #66736e)' }} />
         </div>
+      ) : !items?.length ? (
+        <div className="irx-empty" style={{ textAlign: 'center' }}>No portfolio projects yet. Click "Add project".</div>
+      ) : (
+        <>
+          <div className="irx-section-head">Projects</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+            {items.map((item) => (
+              <div key={item.id} className="irx-card" style={{ display: 'flex', gap: '12px', padding: '12px' }}>
+                <div style={{ height: '64px', width: '80px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-secondary, #f0f0f0)' }}>
+                  {item.cover_image_url ? (
+                    <img src={item.cover_image_url} alt="" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
+                  ) : null}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h3>
+                    {item.featured && <Star className="h-3.5 w-3.5" style={{ color: '#f59e0b', fill: '#f59e0b', flexShrink: 0 }} />}
+                  </div>
+                  {item.tagline && (
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.tagline}</p>
+                  )}
+                  <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'var(--text-secondary, #66736e)' }}>
+                    <span>{item.category}</span>
+                    <span>•</span>
+                    <span>Order {item.sort_order ?? 0}</span>
+                    <span>{item.featured ? 'Homepage selected' : 'Not on homepage'}</span>
+                  </div>
+                  <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+                    <Button size="sm" variant="outline" onClick={() => setEditing(item)}><Pencil className="h-3.5 w-3.5" /> Edit</Button>
+                    <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDeletingId(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
