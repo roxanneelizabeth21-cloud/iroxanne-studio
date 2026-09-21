@@ -3,7 +3,7 @@ import { ShoppingBag, Calendar, HeartHandshake, Lightbulb, ListChecks, Sparkles 
 const POSSIBILITIES = [
   {icon:ShoppingBag,title:'I want to sell something.',description:'A shop for products, custom orders, digital downloads, or pre-orders.'},
   {icon:Calendar,title:'I want people to book my services.',description:'A place to explore your offerings, request a quote, choose a time, and pay.'},
-  {icon:HeartHandshake,title:'I want to organize my nonprofit or community.',description:'Bring volunteer sign-ups, events, member information, and requests together.'},
+  {icon:HeartHandshake,title:'I want to organize my charity or community events.',description:'Bring volunteer sign-ups, events, member information, and requests together.'},
   {icon:Lightbulb,title:'I want to help people with something.',description:'Turn your knowledge or idea into a planning tool, resource library, or guided experience.'},
   {icon:ListChecks,title:'I need an easier way to run things.',description:'Keep projects, customer updates, forms, and everyday tasks in one place.'},
   {icon:Sparkles,title:'My idea doesn’t fit any of these.',description:'That’s welcome too. Tell me who you want to help and what you imagine.'},
