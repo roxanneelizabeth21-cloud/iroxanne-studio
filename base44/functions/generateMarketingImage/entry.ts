@@ -226,7 +226,7 @@ export default async function (req) {
       title: `${context.project_title || 'iRoxanne Studio'} — ${visual_direction.visual_type || 'marketing image'}${aspect ? ` (${aspect})` : ''}`,
       image_url,
       category: 'promo',
-      source: 'ai_generated',
+      source: 'upload',
       generation_prompt: renderPrompt,
       original_request: original_request || '',
       visual_direction: { ...visual_direction, aspect_ratio: aspect, platform: effPlatform, format: effFormat },
