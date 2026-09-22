@@ -38,7 +38,7 @@ export default function MediaLibrary() {
       kind: 'image',
       url: g.image_url,
       title: g.title || 'Untitled image',
-      source: g.source === 'ai_generated' ? 'Generated image' : 'Uploaded image',
+      source: 'Uploaded image',
       campaign_id: g.campaign_id || '',
       project_id: g.portfolio_item_id || '',
       format: g.format || '',

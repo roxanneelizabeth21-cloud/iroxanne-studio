@@ -47,13 +47,13 @@ export default function StepMedia({ draft, patch, post, patchPost, clips, campai
     setBusy(true);
     try {
       await base44.entities.ClipAsset.create({
-        title: `${projectContext?.title || 'Generated image'} — AI image`.slice(0, 60),
+        title: `${projectContext?.title || 'Marketing image'}`.slice(0, 60),
         file: url,
         source_type: 'Stock',
         media_category: 'Promo',
         orientation: draft.aspect === '9:16' ? 'Vertical 9:16' : draft.aspect === '1:1' ? 'Square' : 'Horizontal',
         portfolio_item_id: draft.portfolioItemId || '',
-        notes: 'AI generated in Create a Post',
+        notes: 'Created in Create a Post',
       });
       await patchPost({ ...urlAttachPatch(url), requested_aspect_ratio: draft.aspect });
       qc.invalidateQueries({ queryKey: ['clip-assets'] });

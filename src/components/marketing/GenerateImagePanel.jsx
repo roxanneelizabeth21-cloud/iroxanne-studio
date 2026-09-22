@@ -44,7 +44,7 @@ export default function GenerateImagePanel({ prompt, attachedUrl, onUseForPost }
         file: preview,
         source_type: 'Stock',
         orientation: 'Square',
-        notes: `AI generated from prompt: ${prompt.trim()}`,
+        notes: `Generated from prompt: ${prompt.trim()}`,
       });
       toast({ title: 'Saved to your Clips library' });
     } catch (e) {
@@ -65,7 +65,7 @@ export default function GenerateImagePanel({ prompt, attachedUrl, onUseForPost }
   return (
     <div className="rounded-xl border border-border/60 p-3 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">AI image</span>
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Image</span>
         <Button type="button" size="sm" variant="secondary" onClick={generate} disabled={busy} className="gap-1.5">
           {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
           {busy ? 'Generating…' : preview ? 'Regenerate' : 'Generate image'}
