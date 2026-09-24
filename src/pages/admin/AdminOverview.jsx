@@ -26,7 +26,7 @@ export default function AdminOverview() {
   ];
 
   const quickLinks = [
-    { to: '/admin/projects', label: 'Projects Pipeline', desc: 'Track every lead from inquiry to paid', Icon: FolderKanban },
+    { to: '/admin/projects', label: 'Client Journey', desc: 'See each client’s stage and what happens next', Icon: FolderKanban },
     { to: '/admin/proposals', label: 'Quotes & Proposals', desc: 'Create and send client proposals', Icon: FileText },
     { to: '/admin/contracts', label: 'Contracts', desc: 'Manage agreements and signatures', Icon: ScrollText },
     { to: '/admin/invoices', label: 'Invoices', desc: 'Send invoices and track payments', Icon: Receipt },
@@ -39,9 +39,16 @@ export default function AdminOverview() {
       {/* Page header */}
       <div className="irx-page-header">
         <div className="irx-eyebrow">Business Manager</div>
-        <h1>Overview</h1>
-        <p>Your client pipeline, invoices, and site management at a glance.</p>
+        <h1>Business Home</h1>
+        <p>Start with your client journey. Open a client to see their current stage and next action.</p>
       </div>
+
+      <section className="irx-card">
+        <h2 className="font-display text-2xl mb-2">What needs to move forward?</h2>
+        <p className="text-sm text-muted-foreground mb-4">Follow each client from their first inquiry through payment and delivery. The journey shows what needs your attention and what is waiting on the client.</p>
+        <Link to="/admin/projects" className="irx-pill active inline-flex items-center">Open Client Journey →</Link>
+        <p className="text-sm text-muted-foreground mt-4">Inquiry → Proposal → Contract → Deposit → Intake → Build → Handoff → Paid</p>
+      </section>
 
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
@@ -59,7 +66,7 @@ export default function AdminOverview() {
       {/* Quick actions */}
       <div>
         <div className="irx-section-head">
-          <h2>Quick Actions</h2>
+          <h2>Documents & tools</h2>
         </div>
         <div className="irx-actions-grid">
           {quickLinks.map(q => (

@@ -6,8 +6,8 @@ import {
 import './admin-views.css';
 
 const NAV = [
-  { to: '/admin', label: 'Overview', Icon: Home, end: true },
-  { to: '/admin/projects', label: 'Projects Pipeline', Icon: FolderKanban },
+  { to: '/admin', label: 'Business Home', Icon: Home, end: true },
+  { to: '/admin/projects', label: 'Client Journey', Icon: FolderKanban },
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
   { to: '/admin/contracts', label: 'Contracts', Icon: FileText },
   { to: '/admin/invoices', label: 'Invoices', Icon: Receipt },
@@ -25,6 +25,13 @@ const NAV = [
   { to: '/admin/legal', label: 'Legal', Icon: ScrollText },
 ];
 
+const GROUPS = [
+  { title: 'Daily work', routes: ['/admin', '/admin/projects', '/admin/messages'] },
+  { title: 'Client documents', routes: ['/admin/proposals', '/admin/contracts', '/admin/invoices'] },
+  { title: 'Website & audience', routes: ['/admin/homepage', '/admin/portfolio', '/admin/testimonials', '/admin/pages', '/admin/banners', '/admin/promo-banners', '/admin/visitors', '/admin/subscribers'] },
+  { title: 'Business setup', routes: ['/admin/call-availability', '/admin/email-templates', '/admin/legal'] },
+];
+
 export default function BusinessSidebar({ onNavigate }) {
   return (
     <div className="irx-sidebar h-full flex flex-col">
@@ -35,8 +42,10 @@ export default function BusinessSidebar({ onNavigate }) {
         <h1>iRoxanne</h1>
         <p>Business Manager</p>
       </div>
-      <nav className="flex-1">
-        {NAV.map(({ to, label, Icon, end }) => (
+      <nav aria-label="Business navigation">
+        {GROUPS.map(group => <section key={group.title} className="irx-business-nav-group">
+          <h2>{group.title}</h2>
+          {group.routes.map(route => NAV.find(item => item.to === route)).map(({ to, label, Icon, end }) => (
           <NavLink
             key={to}
             to={to}
@@ -46,7 +55,8 @@ export default function BusinessSidebar({ onNavigate }) {
           >
             <Icon className="h-4 w-4 shrink-0" /> {label}
           </NavLink>
-        ))}
+          ))}
+        </section>)}
       </nav>
       <Link to="/" onClick={onNavigate} className="sidebar-footer-link">
         <span>Back to site</span>

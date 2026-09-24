@@ -616,3 +616,8 @@
 :root[data-theme="dark"] .irx-accent-green { background: #1a2e1a; }
 :root[data-theme="dark"] .irx-accent-violet { background: #20202e; }
 :root[data-theme="dark"] .irx-accent-blue { background: #1a202e; }
+/* Business navigation separates daily client work from site maintenance. */
+.irx-business-nav-group { display: flex; flex-direction: column; gap: 5px; }
+.irx-business-nav-group + .irx-business-nav-group { margin-top: 18px; }
+.irx-business-nav-group h2 { margin: 0; padding: 6px 12px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: inherit; opacity: .7; }
+.irx-journey-stages { display: flex; flex-wrap: wrap; gap: 8px; }

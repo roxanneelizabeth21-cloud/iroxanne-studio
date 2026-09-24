@@ -90,7 +90,9 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
 }
 
 export default function ProjectsPipeline() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedStage = searchParams.get("stage");
+  const selectedStage = STAGES.some(s => s.key === requestedStage) ? requestedStage : "all";
   const requestedView=searchParams.get('view');
   const [view,setView]=useState(requestedView === 'intakes' ? 'intakes' : 'pipeline');
   useEffect(()=>{setView(requestedView === 'intakes' ? 'intakes' : 'pipeline');},[requestedView]);
@@ -131,9 +133,14 @@ export default function ProjectsPipeline() {
       {/* ── Page header ── */}
       <div className="irx-page-header">
         <div className="irx-eyebrow">Business Manager</div>
-        <h1>Projects Pipeline</h1>
-        <p>Track projects from inquiry through completion.</p>
+        <h1>Client Journey</h1>
+        <p>Choose a stage, then open a client card for the next action. Documents and payments stay linked to that client.</p>
       </div>
+
+      {view === 'pipeline' && <nav aria-label="Client journey stages" className="irx-journey-stages">
+        <button className={`irx-pill${selectedStage === 'all' ? ' active' : ''}`} aria-pressed={selectedStage === 'all'} onClick={() => setSearchParams(prev => { const next = new URLSearchParams(prev); next.delete('stage'); return next; })}>All stages</button>
+        {STAGES.map((stage, index) => <button key={stage.key} className={`irx-pill${selectedStage === stage.key ? ' active' : ''}`} aria-pressed={selectedStage === stage.key} onClick={() => setSearchParams(prev => { const next = new URLSearchParams(prev); next.set('stage', stage.key); return next; })}>{index + 1}. {stage.label}</button>)}
+      </nav>}
 
       {/* ── Stats row ── */}
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -215,14 +222,14 @@ export default function ProjectsPipeline() {
           </div>
         ) : errors.length ? null : (
           <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px', marginLeft: '-4px', paddingLeft: '4px' }}>
-            {STAGES.map((stage) => {
+            {STAGES.filter(stage => selectedStage === 'all' || stage.key === selectedStage).map((stage) => {
               const items = byStage[stage.key] || [];
               const stageValue = items.reduce((sum, p) => {
                 const v = p.price_total ?? p.amount_total;
                 return v != null ? sum + Number(v) : sum;
               }, 0);
               return (
-                <div key={stage.key} style={{ flexShrink: 0, width: '288px', display: 'flex', flexDirection: 'column' }}>
+                <div key={stage.key} style={{ flexShrink: 0, width: selectedStage === 'all' ? '288px' : '100%', display: 'flex', flexDirection: 'column' }}>
                   {/* Column header */}
                   <div className="irx-card" style={{ padding: '10px 12px', marginBottom: '8px', borderLeft: `3px solid ${STAGE_TINT[stage.key]}` }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
