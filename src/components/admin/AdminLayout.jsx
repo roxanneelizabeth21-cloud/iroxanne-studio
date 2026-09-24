@@ -61,7 +61,7 @@ export default function AdminLayout() {
 
       <div className="flex flex-1 min-h-0" style={{ marginTop: '56px' }}>
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-0 h-[calc(100vh-56px)] z-30">
+        <aside className="hidden lg:flex w-64 shrink-0 flex-col sticky top-14 h-[calc(100dvh-56px)] z-30">
           <Sidebar />
         </aside>
 
@@ -78,7 +78,7 @@ export default function AdminLayout() {
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Mobile header */}
           <header
-            className="lg:hidden border-b border-border/40 bg-sidebar sticky top-0 z-20"
+            className="lg:hidden border-b border-border/40 bg-sidebar sticky top-14 z-20"
             style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
           >
             <div className="flex items-center justify-between h-14 px-4">
