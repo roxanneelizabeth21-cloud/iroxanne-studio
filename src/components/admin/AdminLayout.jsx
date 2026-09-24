@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, ChevronLeft } from 'lucide-react';
 import ViewSwitcher from './ViewSwitcher';
 import MarketingSidebar from './MarketingSidebar';
@@ -10,6 +10,13 @@ import StrategistHeaderButton from './StrategistHeaderButton';
 import MarketingBackButton from '@/components/marketing/MarketingBackButton';
 import { LayoutDashboard, PenLine, Palette, Clapperboard, Megaphone, CalendarDays, Library, Image, BarChart3, LayoutTemplate, ToggleLeft, UserCircle, Bot } from 'lucide-react';
 import './admin-views.css';
+
+const BUSINESS_PAGES = {
+  projects: ['Daily work', 'Client Journey'], messages: ['Daily work', 'Messages'],
+  proposals: ['Client documents', 'Quotes & Proposals'], contracts: ['Client documents', 'Contracts'], invoices: ['Client documents', 'Invoices'],
+  homepage: ['Website & audience', 'Homepage'], portfolio: ['Website & audience', 'Portfolio'], testimonials: ['Website & audience', 'Testimonials'], pages: ['Website & audience', 'Pages'], banners: ['Website & audience', 'Banners'], 'promo-banners': ['Website & audience', 'Promo Banners'], visitors: ['Website & audience', 'Visitors'], subscribers: ['Website & audience', 'Subscribers'],
+  'call-availability': ['Business setup', 'Call Availability'], 'email-templates': ['Business setup', 'Email Templates'], legal: ['Business setup', 'Legal'],
+};
 
 const MARKETING_HEADERS = [
   { to: '/marketing', label: 'Marketing', Icon: LayoutDashboard, end: true, subtitle: undefined },
@@ -45,6 +52,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const isMarketing = location.pathname.startsWith('/marketing');
   const mktHeader = useMarketingHeader(location.pathname);
+  const businessPage = BUSINESS_PAGES[location.pathname.split('/')[2]];
   const showAdminBack = location.pathname !== '/admin' && location.pathname !== '/marketing';
 
   useEffect(() => {
@@ -104,6 +112,12 @@ export default function AdminLayout() {
           </header>
 
           <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl w-full mx-auto">
+            {!isMarketing && businessPage && <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm">
+              <nav aria-label="Business location" className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                <Link to="/admin" className="hover:underline">Business Home</Link><span aria-hidden="true">/</span><span>{businessPage[0]}</span><span aria-hidden="true">/</span><span aria-current="page" className="font-semibold text-foreground">{businessPage[1]}</span>
+              </nav>
+              {location.pathname !== '/admin/projects' && <Link to="/admin/projects" className="text-primary hover:underline">Open Client Journey →</Link>}
+            </div>}
             {mktHeader && location.pathname !== '/marketing' && (
               <div className="relative mb-6 flex items-start justify-between gap-3">
                 <div className="flex items-start gap-2 min-w-0">
