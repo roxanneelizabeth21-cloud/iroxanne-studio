@@ -627,6 +627,6 @@
 .irx-workflow-section > summary, .irx-more-actions > summary { cursor:pointer; font-size:14px; font-weight:600; line-height:1.5; }
 .irx-workflow-section > summary:focus-visible, .irx-more-actions > summary:focus-visible { outline:2px solid currentColor; outline-offset:5px; }
 .irx-more-actions { padding:8px; max-width:100%; }
-.irx-form-footer { position:sticky; bottom:0; background:hsl(var(--background)); padding:16px 0 4px; z-index:2; }
+.irx-form-footer { border-top:1px solid var(--border-color, #d9dfdc); padding:16px 0 4px; }
 .irx-stat-value, .irx-stat-label { display:block; }
 .irx-list-row { flex-wrap:wrap; }
