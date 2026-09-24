@@ -192,6 +192,9 @@ export default function InvoicesAdminPage() {
             <span className={statusBadge(i.status)}>{i.status?.replaceAll('_', ' ')}</span>
           </div>
 
+          <p className="text-sm">{i.status === 'cancelled' ? 'This invoice is cancelled.' : 'Open this invoice to review amounts and choose a payment action.'}</p>
+          {i.square_sync_error && <p role="alert" className="text-sm text-destructive">Payment sync needs attention. Open the invoice for details.</p>}
+          <details className="irx-workflow-section" open={!!contractFilter}><summary>Review invoice & payment options</summary><div className="space-y-4 pt-4">
           {/* Financials grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
             <div>
@@ -254,6 +257,7 @@ export default function InvoicesAdminPage() {
               </div>
             </details>
           )}
+          </div></details>
         </section>
       ))}
     </div>

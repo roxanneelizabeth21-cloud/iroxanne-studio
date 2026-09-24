@@ -1,3 +1,4 @@
+import { MoreActions } from '@/components/admin/WorkflowSection';
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -214,7 +215,7 @@ export default function ProposalsAdminPage() {
               </div>
             )}
             {leads.map((lead) => (
-              <div key={lead.id} className="irx-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
+              <div key={lead.id} className="irx-card" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '16px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
                 <div style={{ minWidth: 0 }}>
                   <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {lead.name || lead.email}
@@ -259,13 +260,13 @@ export default function ProposalsAdminPage() {
             </div>
           )}
           {proposals.map((p) => (
-            <div key={p.id} className="irx-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
+            <div key={p.id} className="irx-card" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '16px', background: 'var(--secondary-subtle, var(--secondary, rgba(0,0,0,0.03)))' }}>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.project_title}
                   </p>
-                  <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.status}</span>
+                  <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.status?.replaceAll('_', ' ')}</span>
                 </div>
                 <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {money(p.price_total)}
@@ -284,9 +285,10 @@ export default function ProposalsAdminPage() {
                   </Button>
                 ) : (
                   <>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ proposal: p })}>
-                      <Pencil className="h-3.5 w-3.5" />
+                    <Button size="sm" onClick={() => setEditing({ proposal: p })}>
+                      Review proposal
                     </Button>
+                    <MoreActions>
                     {!['declined', 'expired'].includes(p.status) && (
                       <Button variant="outline" size="sm" onClick={() => handleSend(p)} className="gap-1">
                         <Send className="h-3.5 w-3.5" /> {p.access_token ? 'Resend' : 'Send'}
@@ -300,6 +302,7 @@ export default function ProposalsAdminPage() {
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDelete(p)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
+                    </MoreActions>
                   </>
                 )}
               </div>

@@ -621,3 +621,12 @@
 .irx-business-nav-group + .irx-business-nav-group { margin-top: 18px; }
 .irx-business-nav-group h2 { margin: 0; padding: 6px 12px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: inherit; opacity: .7; }
 .irx-journey-stages { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Calm, consistent child-page controls. */
+.irx-workflow-section { border:1px solid var(--border-color, #d9dfdc); border-radius:12px; padding:16px; }
+.irx-workflow-section > summary, .irx-more-actions > summary { cursor:pointer; font-size:14px; font-weight:600; line-height:1.5; }
+.irx-workflow-section > summary:focus-visible, .irx-more-actions > summary:focus-visible { outline:2px solid currentColor; outline-offset:5px; }
+.irx-more-actions { padding:8px; max-width:100%; }
+.irx-form-footer { position:sticky; bottom:0; background:hsl(var(--background)); padding:16px 0 4px; z-index:2; }
+.irx-stat-value, .irx-stat-label { display:block; }
+.irx-list-row { flex-wrap:wrap; }

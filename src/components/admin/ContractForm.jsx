@@ -1,3 +1,4 @@
+import WorkflowSection from '@/components/admin/WorkflowSection';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,8 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
   return (
     <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">Work through these three sections. Saving does not email the client.</p>
+      <WorkflowSection title="1. Client & project" open>
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Client name</Label>
@@ -72,6 +75,8 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         <Input value={form.project_title || ''} onChange={(e) => update('project_title', e.target.value)} placeholder="Booking & scheduling app" />
       </div>
 
+      </WorkflowSection>
+      <WorkflowSection title="2. Scope & delivery schedule">
       <div className="grid sm:grid-cols-2 gap-4">
         <label className="space-y-1.5 text-sm">Target launch date<Input type="date" value={form.target_launch_date || ''} onChange={e=>setForm(p=>({...p,target_launch_date:e.target.value,contract_variant:isRushDate(e.target.value)?'rush':'standard',rush_terms:p.rush_terms || settings?.rush_terms || RUSH_TERMS}))}/></label>
         <label className="space-y-1.5 text-sm">Contract schedule<select className="w-full rounded-md border bg-background p-2" value={form.contract_variant || 'standard'} onChange={e=>update('contract_variant',e.target.value)}><option value="standard">Standard</option><option value="rush">Rush / expedited</option></select></label>
@@ -88,6 +93,8 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         />
       </div>
 
+      </WorkflowSection>
+      <WorkflowSection title="3. Price, payments & agreement terms">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Pricing mode</Label>
@@ -100,10 +107,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5">
-          <Label>Payment schedule</Label>
-          <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
-        </div>
+
       </div>
 
       {settings?.packages?.length > 0 && form.pricing_mode !== 'custom_quote' && (
@@ -178,8 +182,10 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
         />
       </div>
 
-      <div className="flex justify-end pt-2 border-t border-border">
-        <Button onClick={submit} disabled={saving || !!scheduleError(form.payment_installments,total) || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
+      </WorkflowSection>
+      <p className="text-sm text-muted-foreground">Before saving: add the client email and project title, a positive deposit and a valid payment schedule. Rush agreements also need rush terms.</p>
+      <div className="irx-form-footer flex justify-end pt-2 border-t border-border">
+        <Button onClick={submit} disabled={saving || !Number.isFinite(computeDeposit(total)) || computeDeposit(total)<=0 || !!scheduleError(form.payment_installments,total) || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
           {saving ? 'Saving...' : 'Save Contract'}
         </Button>
       </div>

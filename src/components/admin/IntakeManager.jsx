@@ -1,3 +1,4 @@
+import { MoreActions } from '@/components/admin/WorkflowSection';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -18,11 +19,13 @@ export default function IntakeManager() {
   const [selected,setSelected]=useState(null);
   const [busy,setBusy]=useState('');
   const [error,setError]=useState('');
+  const [loading,setLoading]=useState(true);
   const load=async()=>{
+    setLoading(true);
     try {
       const [items,agreements]=await Promise.all([base44.entities.ClientIntake.list('-created_date',500),base44.entities.Contract.list('-created_date',500)]);
       setRows(items);setContracts(agreements);setError('');
-    } catch {setError('Could not load intakes. Please retry.');}
+    } catch {setError('Could not load intakes. Please retry.');} finally {setLoading(false);}
   };
   useEffect(()=>{load();},[]);
   const send=async c=>{
@@ -60,11 +63,13 @@ export default function IntakeManager() {
     <div><h2 className="font-display text-2xl">Project intakes</h2><p className="text-sm text-muted-foreground mt-2">Send a guided intake when you’re ready to explore the details. Responses stay linked to the agreement.</p></div>
     {orphaned.length>0&&<p role="alert" className="rounded-xl border border-amber-400 p-3 text-sm">{orphaned.length} intake record(s) need an agreement link reviewed. Their responses are preserved; do not resend them until their project is identified.</p>}
     {error&&<p role="alert">{error} <Button variant="outline" onClick={load}>Retry</Button></p>}
-    <nav aria-label="Filter intakes" className="flex gap-2 flex-wrap">{[['all','All'],['sent','Sent'],['in_progress','In progress'],['submitted','Completed'],['reviewed','Reviewed']].map(([key,label])=><Button key={key} size="sm" variant={filter===key?'default':'outline'} onClick={()=>setFilter(key)} aria-pressed={filter===key}>{label}</Button>)}</nav>
-    {rows.filter(r=>(!contractFilter||r.contract_id===contractFilter)&&(filter==='all'||r.status===filter)).map(r=><article key={r.id} className="rounded-2xl bg-card border border-border p-5 flex flex-wrap items-center justify-between gap-4"><div><h3 className="font-semibold">{r.project_title||r.client_name}</h3><p className="text-sm text-muted-foreground">{r.client_name} · {INTAKE_LABELS[r.status]||r.status}{r.is_test_record?' · Test record':''}</p></div><div className="flex gap-2 flex-wrap"><Button variant="outline" onClick={()=>copy(r)}>Copy private link</Button>{!r.is_test_record&&r.contract_id&&!orphaned.some(o=>o.id===r.id)&&!['submitted','reviewed'].includes(r.status)&&<Button disabled={!!busy} variant="outline" onClick={()=>send({id:r.contract_id})}>Resend email</Button>}<Button onClick={()=>setSelected(r)}>View responses</Button><Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete" onClick={()=>remove(r)}><Trash2 className="h-4 w-4"/></Button></div></article>)}
-    {!rows.length&&!error&&<p className="text-sm text-muted-foreground">No intakes yet. Choose a project below to send the first one.</p>}
+    <nav aria-label="Filter intakes" className="flex gap-2 flex-wrap">{[['all','All'],['sent','Sent'],['in_progress','In progress'],['submitted','Ready to review'],['reviewed','Reviewed']].map(([key,label])=><Button key={key} size="sm" variant={filter===key?'default':'outline'} onClick={()=>setFilter(key)} aria-pressed={filter===key}>{label}</Button>)}</nav>
+    {rows.filter(r=>(!contractFilter||r.contract_id===contractFilter)&&(filter==='all'||r.status===filter)).map(r=><article key={r.id} className="rounded-2xl bg-card border border-border p-5 flex flex-wrap items-center justify-between gap-4"><div><h3 className="font-semibold">{r.project_title||r.client_name}</h3><p className="text-sm text-muted-foreground">{r.client_name} · {INTAKE_LABELS[r.status]||r.status}{r.is_test_record?' · Test record':''}</p></div><div className="flex gap-2 flex-wrap"><Button onClick={()=>setSelected(r)}>{r.status==='submitted'?'Review responses':'View responses'}</Button><MoreActions><Button variant="outline" onClick={()=>copy(r)}>Copy private link</Button>{!r.is_test_record&&r.contract_id&&!orphaned.some(o=>o.id===r.id)&&!['submitted','reviewed'].includes(r.status)&&<Button disabled={!!busy} variant="outline" onClick={()=>send({id:r.contract_id})}>Resend email</Button>}<Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive" title="Delete" onClick={()=>remove(r)}><Trash2 className="h-4 w-4"/></Button></MoreActions></div></article>)}
+    {loading && <p role="status">Loading intakes…</p>}
+    {!loading&&!error&&rows.length>0&&!rows.some(r=>(!contractFilter||r.contract_id===contractFilter)&&(filter==='all'||r.status===filter))&&<p>No intakes in this view. Choose another filter to continue.</p>}
+    {!loading&&!rows.length&&!error&&<p className="text-sm text-muted-foreground">No intakes yet. Choose a project below to send the first one.</p>}
     {filter==='all'&&waiting.length>0&&<div className="space-y-3"><h3 className="font-semibold">Ready to send an intake?</h3>{waiting.map(c=><div key={c.id} className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"><div><p>{c.project_title||c.client_name}</p><p className="text-sm text-muted-foreground">{c.client_name}</p></div><Button disabled={!!busy||!c.client_email} onClick={()=>send(c)}>{busy===c.id?'Sending…':'Send intake'}</Button></div>)}</div>}
     {confirmDialog}
-    <Dialog open={!!selected} onOpenChange={o=>!o&&setSelected(null)}><DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{selected?.project_title||'Project intake'}</DialogTitle></DialogHeader>{selected&&<><p className="text-sm text-muted-foreground">{selected.client_name} · {INTAKE_LABELS[selected.status]}</p>{Object.entries(selected).filter(([k,v])=>!['id','access_token','created_by','created_by_id','contract_id','lead_id','admin_notes'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border py-3"><h3 className="font-medium capitalize">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words mt-1">{readableIntake(v)}</p></div>)}{selected.status==='submitted'&&<Button disabled={!!busy} onClick={review}>Mark reviewed</Button>}</>}</DialogContent></Dialog>
+    <Dialog open={!!selected} onOpenChange={o=>!o&&setSelected(null)}><DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{selected?.project_title||'Project intake'}</DialogTitle></DialogHeader>{selected&&<><p className="text-sm text-muted-foreground">{selected.client_name} · {INTAKE_LABELS[selected.status]}</p>{Object.entries(selected).filter(([k,v])=>!['id','access_token','created_by','created_by_id','contract_id','lead_id','admin_notes','client_name','project_title','status','created_date','updated_date','is_test_record'].includes(k)&&readableIntake(v)).map(([k,v])=><div key={k} className="border-b border-border py-3"><h3 className="font-medium capitalize">{k.replaceAll('_',' ')}</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap break-words mt-1">{readableIntake(v)}</p></div>)}{selected.status==='submitted'&&<Button disabled={!!busy} onClick={review}>Mark reviewed</Button>}</>}</DialogContent></Dialog>
   </section>;
 }

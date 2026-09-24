@@ -1,3 +1,4 @@
+import WorkflowSection from '@/components/admin/WorkflowSection';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -134,6 +135,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
   return (
     <div className="space-y-5">
       {initial?.must_have_features?.length>0&&<aside className="rounded-xl border p-3 text-sm"><strong>Requested add-ons — review before quoting</strong><p>{initial.must_have_features.join(', ')}</p><p className="text-muted-foreground mt-2">Add approved items to the scope and price below. Inquiry selections are not included automatically.</p></aside>}
+      <p className="text-sm text-muted-foreground">Work through these three sections. Saving does not email the client.</p>
+      <WorkflowSection title="1. Client & project" open>
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>Client name</Label>
@@ -156,6 +159,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
         </div>
       </div>
 
+      </WorkflowSection>
+      <WorkflowSection title="2. Scope & deliverables">
       <div className="space-y-1.5">
         <Label>Personal intro note</Label>
         <Textarea
@@ -209,6 +214,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
         )}
       </div>
 
+      </WorkflowSection>
+      <WorkflowSection title="3. Price, timeline & payment terms">
       {/* Pricing */}
       <div className="space-y-3 rounded-xl border border-border p-4">
         <div className="grid sm:grid-cols-2 gap-4">
@@ -297,7 +304,9 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
         <p className="text-xs text-muted-foreground">Pulls the same lever as your marketing posts — show the SaaS you're replacing.</p>
       </div>
 
-      <div className="flex justify-end gap-2 pt-2">
+      </WorkflowSection>
+      {!valid && <p className="text-sm text-muted-foreground">Before saving: check the client email and project title in section 1, then the line descriptions, positive total, deposit and payment schedule in section 3.</p>}
+      <div className="irx-form-footer flex justify-end gap-2 pt-2">
         <Button onClick={submit} disabled={!valid || saving}>
           {saving ? 'Saving…' : form.id ? 'Save Proposal' : 'Create Proposal'}
         </Button>

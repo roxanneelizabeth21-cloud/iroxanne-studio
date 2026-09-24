@@ -24,16 +24,18 @@ export default function HandoffPanel({contractId,onSaved}){
  <p className="text-sm text-muted-foreground">Status: {(c.handoff_status||'draft').replaceAll('_',' ')}. Complete the required items, then share the checklist for client acceptance. Full app handoff is released only after all project payments have been received.</p>
  <p role="status" className="text-sm">{payment?.message || 'Checking payment…'}</p>
  <Button variant="outline" disabled={busy} onClick={()=>run('load')}>Refresh payment status</Button>
+ <p className="font-medium">{c.handoff_items.filter(x=>x.required&&x.completed).length} of {c.handoff_items.filter(x=>x.required).length} required items complete</p>
  <fieldset disabled={busy||locked} className="space-y-3">
  {c.handoff_items.map(x=><div key={x.id} className="rounded-xl border p-3 space-y-2">
  <p className="text-xs text-muted-foreground">{x.category}</p>
  <label className="flex gap-2 items-start"><input type="checkbox" className="mt-1" checked={!!x.completed} onChange={e=>item(x.id,{completed:e.target.checked})}/><span>{x.label}</span></label>
+ <details className="irx-workflow-section"><summary>Notes & requirements</summary>
  <label className="flex gap-2 text-xs"><input type="checkbox" checked={!!x.required} onChange={e=>item(x.id,{required:e.target.checked})}/>Required for handoff</label>
- <Textarea aria-label={'Client-visible notes for '+x.label} placeholder="Client-visible notes, instructions or document links. Do not include passwords." value={x.notes||''} onChange={e=>item(x.id,{notes:e.target.value})} maxLength={2000}/>
+ <Textarea aria-label={'Client-visible notes for '+x.label} placeholder="Client-visible notes, instructions or document links. Do not include passwords." value={x.notes||''} onChange={e=>item(x.id,{notes:e.target.value})} maxLength={2000}/></details>
  </div>)}
  <Button variant="outline" type="button" disabled={c.handoff_items.length>=50} onClick={()=>setC(p=>({...p,handoff_items:[...p.handoff_items,{id:crypto.randomUUID(),category:'Additional',label:'Additional handoff item',required:true,completed:false,notes:''}]}))}>Add checklist item</Button>
  {c.handoff_items.filter(x=>x.category==='Additional').map(x=><label key={x.id} className="block text-sm">Additional item title<Input value={x.label} onChange={e=>item(x.id,{label:e.target.value})}/></label>)}
- <label className="block text-sm space-y-2">Internal notes — only visible to you<Textarea value={c.handoff_internal_notes||''} onChange={e=>setC({...c,handoff_internal_notes:e.target.value})} maxLength={5000}/></label>
+ <details className="irx-workflow-section"><summary>Private project notes</summary><label className="block text-sm space-y-2">Internal notes — only visible to you<Textarea value={c.handoff_internal_notes||''} onChange={e=>setC({...c,handoff_internal_notes:e.target.value})} maxLength={5000}/></label></details>
  </fieldset>
  {c.handoff_client_notes&&<div className="rounded-xl bg-secondary p-3"><p className="font-medium">Client follow-up request</p><p className="whitespace-pre-wrap">{c.handoff_client_notes}</p></div>}
  {c.handoff_status==='accepted'&&<p className="text-sm">Accepted by {c.handoff_ack_name} on {new Date(c.handoff_ack_at).toLocaleString()}.</p>}

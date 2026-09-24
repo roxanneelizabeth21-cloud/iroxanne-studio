@@ -1,3 +1,4 @@
+import { MoreActions } from '@/components/admin/WorkflowSection';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -166,10 +167,11 @@ export default function ContractsAdminPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div className="irx-page-header">
         <div className="irx-eyebrow">Business Manager</div>
-        <h1>Contracts &amp; Quotes</h1>
-        <p>Manage client contracts, packages, and project handoffs.</p>
+        <h1>Contracts</h1>
+        <p>Review the agreement, send it for signature, then continue the project in Client Journey.</p>
       </div>
 
+      <details className="irx-workflow-section"><summary>Other tools: pricing settings & direct contracts</summary>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="outline" size="sm" onClick={() => setSettingsOpen((v) => !v)} className="gap-1.5">
           {settingsOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -216,6 +218,7 @@ export default function ContractsAdminPage() {
         )}
       </div>
 
+      </details>
       {/* Contracts */}
       <div className="irx-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -258,6 +261,9 @@ export default function ContractsAdminPage() {
                   </div>
                 )}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                  {!isSigned && <Button size="sm" onClick={()=>setEditing({contract:c})}>Review agreement</Button>}
+                  {['signed','deposit_paid','active','completed'].includes(c.status) && <Button size="sm" onClick={()=>setHandoff(c)}>Open handoff checklist</Button>}
+                  <MoreActions>
                   <Button disabled={!['draft','sent'].includes(c.status)} title="Edit unsigned agreement" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing({ contract: c })}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
@@ -272,7 +278,7 @@ export default function ContractsAdminPage() {
                       <Copy className="h-3.5 w-3.5" />
                     </Button>
                   )}
-                  {['signed','deposit_paid','active','completed'].includes(c.status) && <Button variant="outline" size="sm" onClick={()=>setHandoff(c)}>Handoff checklist</Button>}
+
                   {['signed', 'deposit_paid', 'active'].includes(c.status) && (
                     <Button variant="outline" size="sm" className="gap-1" onClick={async () => {
                       try {
@@ -287,6 +293,7 @@ export default function ContractsAdminPage() {
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDeleteContract(c)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
+                  </MoreActions>
                 </div>
               </div>
             );
