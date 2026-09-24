@@ -32,7 +32,11 @@
   margin-bottom: 12px;
 }
 
-.irx-sidebar nav { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; flex: 1; min-height: 0; }
+/* Scroll the complete sidebar so the branding and footer cannot crush the menu. */
+.irx-sidebar { min-height: 0; overflow-x: hidden; overscroll-behavior-y: contain; }
+.irx-sidebar > * { flex-shrink: 0; }
+.irx-sidebar nav { display: flex; flex-direction: column; gap: 5px; overflow: visible; flex: 0 0 auto; }
+.irx-sidebar nav a { flex-shrink: 0; }
 .irx-sidebar nav a {
   min-height: 46px;
   font-size: 14px;
