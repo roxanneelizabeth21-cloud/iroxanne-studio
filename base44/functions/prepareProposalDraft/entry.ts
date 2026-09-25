@@ -55,7 +55,7 @@ export default async function(req: Request) {
       : await base44.entities.Proposal.create(data);
     return Response.json({
       ok: true, proposal_id: proposal.id, status: proposal.status,
-      review_path: '/business/proposals', price_needs_review: !Number.isFinite(proposal.price_total),
+      review_path: '/admin/proposals', price_needs_review: !Number.isFinite(proposal.price_total),
       sent: false,
     });
   } catch (error) {
