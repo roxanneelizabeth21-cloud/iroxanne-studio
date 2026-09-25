@@ -9,6 +9,11 @@ import useSpokenReplies from '@/hooks/useSpokenReplies';
 
 const AGENT = 'social_media_marketer';
 const STARTERS = [
+  // Business operating cycle
+  'Give me a business status digest: new quote requests, proposals awaiting my review, contracts and invoices overdue for action, and the next thing I should do.',
+  'Read the marked test quote request and prepare a proposal draft in test mode. Leave the price for me to set. Show me the review link and the next action.',
+  'Which client records are overdue for an owner action right now? Prepare a follow-up draft for the most urgent one — do not send it.',
+  // Marketing operating cycle
   'Draft my first Facebook post as a warm welcome: tell the story of my passion for helping people bring their dreams to life through iRoxanne Studio. Gently invite friends to like the page and follow along, without sales pressure. Save for review.',
   'What’s been performing best this month based on the metrics we have?',
   'Create two complete Facebook drafts with finished, distinct plum/cream/gold graphics: one helps someone imagine their idea becoming useful, and one gently welcomes referrals from friends. Speak to nontechnical people in my personal voice. Save for review.',
@@ -90,9 +95,9 @@ export default function SocialMarketer() {
       <div className="flex items-center justify-between pb-3">
         <div>
           <h2 className="font-display text-xl flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Social Strategist
+            <Sparkles className="h-5 w-5 text-primary" /> Sam
           </h2>
-          <p className="text-xs text-muted-foreground">Personal stories, possibilities and thoughtful referrals — with finished graphics.</p>
+          <p className="text-xs text-muted-foreground">Business & marketing operator — quotes, proposals, follow-ups, and content for your review.</p>
         </div>
         <div className="flex items-center gap-1">
           <Button
