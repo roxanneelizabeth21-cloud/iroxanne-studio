@@ -13,7 +13,11 @@ export default async function(req: Request) {
     const leadId = String(body.lead_id || '').trim();
     if (!leadId) return Response.json({ error: 'lead_id is required' }, { status: 400 });
     const lead = await base44.entities.Lead.get(leadId).catch(() => null);
-    if (!lead || lead.is_test_record) return Response.json({ error: 'Eligible quote request not found' }, { status: 404 });
+    if (!lead) return Response.json({ error: 'Eligible quote request not found' }, { status: 404 });
+    // Explicit owner-only test mode permits drafts without triggering client messaging.
+    if (lead.is_test_record && !(body.test_mode === true && String(lead.email || '').toLowerCase() === 'roxanneelizabeth21@gmail.com')) {
+      return Response.json({ error: 'Test records require owner test mode' }, { status: 403 });
+    }
     if (!lead.email) return Response.json({ error: 'The quote request has no email address' }, { status: 400 });
 
     const projectTitle = String(body.project_title || lead.business_name || 'Custom app or website').trim().slice(0, 160);
