@@ -1,20 +1,15 @@
 // The single writer for money against an invoice.
 //
-// Both payment paths go through here — the Stripe webhook and the admin's
-// manual "record payment" — so the ledger entry, the overpayment guard, the
-// milestone marking, the deposit/balance recompute and the contract roll-forward
-// exist in exactly one place. This logic used to be duplicated in
-// recordPayment/entry.ts and had already drifted: the manual path couldn't mark
-// a milestone paid or backfill contract.deposit_paid_at, and the Stripe path
-// had no overpayment guard.
+// The admin's manual "record payment" goes through here, so the ledger entry,
+// the overpayment guard, the milestone marking, the deposit/balance recompute
+// and the contract roll-forward exist in exactly one place.
 //
-// Idempotent by request_id. Callers supply it: `stripe_<payment_intent>` for
-// webhooks, a client-generated UUID for admin entry.
+// Idempotent by request_id. Callers supply a client-generated UUID.
 import { paymentSummary } from './paymentSummary.ts';
 
 export const PAYMENT_KINDS = ['deposit', 'balance', 'milestone', 'other', 'project'] as const;
 export const PAYMENT_METHODS = [
-  'stripe', 'square', 'zelle', 'cashapp', 'venmo', 'paypal', 'cash', 'check', 'transfer', 'other',
+  'square', 'zelle', 'cashapp', 'venmo', 'paypal', 'cash', 'check', 'transfer', 'other',
 ] as const;
 
 /** Error carrying the HTTP status a caller should return. */
@@ -127,7 +122,7 @@ export async function applyInvoicePayment(base44: any, opts: ApplyPaymentOpts) {
     method,
     request_id,
     reference: String(reference).slice(0, 300),
-    notes: String(opts.notes || (source ? `Stripe checkout (${source})` : '')).slice(0, 1000),
+    notes: String(opts.notes || '').slice(0, 1000),
     paid_at: paidAt,
     ...(kind === 'milestone' ? {milestone_index:milestoneIndex} : {}),
   });
@@ -172,7 +167,7 @@ async function reconcilePayment(db, invoice, payments, payment, duplicate) {
   });
 
   // --- Roll the contract forward --------------------------------------------
-  // Applies to every method, not just Stripe — an offline deposit has to
+  // Applies to every method — an offline deposit has to
   // activate the project and stamp deposit_paid_at the same way.
   if (invoice.contract_id && ['paid', 'waived'].includes(depositStatus)) {
     try {
@@ -181,9 +176,6 @@ async function reconcilePayment(db, invoice, payments, payment, duplicate) {
         const changes: Record<string, unknown> = {};
         if (['signed', 'deposit_paid'].includes(contract.status)) changes.status = 'active';
         if (!contract.deposit_paid_at && depositStatus === 'paid') changes.deposit_paid_at = paidAt;
-        if (method === 'stripe' && reference && !contract.stripe_payment_intent) {
-          changes.stripe_payment_intent = reference;
-        }
         if (Object.keys(changes).length > 0) await db.Contract.update(contract.id, changes);
       }
     } catch (e) {

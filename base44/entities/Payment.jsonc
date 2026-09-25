@@ -38,7 +38,6 @@
     "method": {
       "type": "string",
       "enum": [
-        "stripe",
         "square",
         "zelle",
         "cashapp",
@@ -54,7 +53,7 @@
     },
     "reference": {
       "type": "string",
-      "description": "External reference \u2014 Stripe payment intent, Square receipt #, check #, etc."
+      "description": "External reference \u2014 Square receipt #, check #, etc."
     },
     "paid_at": {
       "type": "string",

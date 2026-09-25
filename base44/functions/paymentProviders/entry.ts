@@ -23,7 +23,7 @@ export default async function (req: Request) {
       square = false;
     }
 
-    return Response.json({ square, stripe: false, financing: false, stripe_mode: 'disabled' });
+    return Response.json({ square, financing: false });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

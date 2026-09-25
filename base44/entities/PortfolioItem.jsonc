@@ -42,7 +42,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Tools/platforms used (e.g. Base44, Stripe, Resend)"
+      "description": "Tools/platforms used (e.g. Base44, Square, Resend)"
     },
     "cover_image_url": {
       "type": "string",

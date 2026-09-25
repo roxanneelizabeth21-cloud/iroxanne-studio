@@ -8,7 +8,7 @@ const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', curr
 
 // Admin-only: record money already received offline — Zelle, CashApp, Square,
 // cash, transfer. The ledger write, guards, milestone marking and recompute all
-// live in applyInvoicePayment, shared with the Stripe webhook, so both paths
+// live in applyInvoicePayment, so both paths
 // can't drift apart.
 export default async function (req: Request) {
   try {

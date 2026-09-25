@@ -4,7 +4,7 @@ import CanvasPreview from './CanvasPreview';
 import ColorSwatchPicker from './ColorSwatchPicker';
 
 const CTA_PRESETS = ['Book a consult', 'See the work', 'Start your project', 'Link in bio', 'Custom'];
-const SERVICES = ['Base44', 'Stripe', 'Resend', 'Airtable', 'Notion', 'Slack', 'Google'];
+const SERVICES = ['Base44', 'Square', 'Resend', 'Airtable', 'Notion', 'Slack', 'Google'];
 
 const FL = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
 

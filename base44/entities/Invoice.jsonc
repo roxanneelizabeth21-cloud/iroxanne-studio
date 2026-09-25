@@ -43,7 +43,7 @@
     },
     "deposit_method": {
       "type": "string",
-      "description": "How the deposit was collected: stripe, offline, etc."
+      "description": "How the deposit was collected: square, offline, etc."
     },
     "balance_amount": {
       "type": "number",

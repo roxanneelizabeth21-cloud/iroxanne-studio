@@ -84,14 +84,9 @@
       "description": "Default terms & conditions text pre-filled on new contracts",
       "maxLength": 40000
     },
-    "stripe_enabled": {
-      "type": "boolean",
-      "default": false,
-      "description": "Whether Stripe checkout is wired up for deposit collection. Until true, deposits are marked pay-offline."
-    },
     "payment_link": {
       "type": "string",
-      "description": "A hosted pay-online link (Stripe Payment Link, Square checkout, PayPal.me). Added as a 'Pay online' button on invoice emails when set."
+      "description": "A hosted pay-online link (Square checkout, PayPal.me). Added as a 'Pay online' button on invoice emails when set."
     },
     "payment_instructions": {
       "type": "string",

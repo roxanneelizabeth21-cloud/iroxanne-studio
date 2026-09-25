@@ -101,7 +101,7 @@ export default function PortfolioItemForm({ initial, onSave, onCancel, saving })
 
       <div className="space-y-1.5">
         <Label>Tech used (comma separated)</Label>
-        <Input value={techText} onChange={(e) => setTechText(e.target.value)} placeholder="Base44, Stripe, Resend" />
+        <Input value={techText} onChange={(e) => setTechText(e.target.value)} placeholder="Base44, Square, Resend" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

@@ -125,14 +125,6 @@
       "type": "string",
       "description": "Project tier carried over from the Lead estimate (starter/business/custom)"
     },
-    "stripe_checkout_url": {
-      "type": "string",
-      "description": "Stripe Checkout session URL for the deposit (set when Stripe is wired)"
-    },
-    "stripe_payment_intent": {
-      "type": "string",
-      "description": "Stripe Payment Intent id for the deposit"
-    },
     "deposit_paid_at": {
       "type": "string",
       "format": "date-time"
