@@ -38,8 +38,10 @@ export default async function (req: Request) {
     const refresh = ['draft', 'changes_requested', 'expired'].includes(proposal.status) || !proposal.expires_at;
     const expiresAt = refresh ? new Date(Date.now() + validDays * 86400000).toISOString() : proposal.expires_at;
     if (new Date(expiresAt).getTime() <= Date.now()) return Response.json({ error: 'Edit this expired proposal before resending.' }, { status: 409 });
-    if (!Number.isFinite(proposal.price_total) || proposal.price_total <= 0 || !Number.isFinite(proposal.deposit_percent) || proposal.deposit_percent < 0 || proposal.deposit_percent > 100) return Response.json({error:'Review proposal pricing and deposit before sending.'},{status:400});
-    if (proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
+    const comp = proposal.complimentary === true;
+    if (comp && (proposal.price_total !== 0 || !(Number(proposal.value_total) > 0))) return Response.json({error:'Review the complimentary pricing before sending.'},{status:400});
+    if (!comp && (!Number.isFinite(proposal.price_total) || proposal.price_total <= 0) || !comp && (!Number.isFinite(proposal.deposit_percent) || proposal.deposit_percent < 0 || proposal.deposit_percent > 100)) return Response.json({error:'Review proposal pricing and deposit before sending.'},{status:400});
+    if (!comp && proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
     if(proposal.payment_installments?.length) validateSchedule(proposal.payment_installments,proposal.price_total);
     // Reuse the existing token on resend so old links keep working.
     const token = proposal.access_token || generateToken();
@@ -64,7 +66,9 @@ export default async function (req: Request) {
         body: brandedEmail({
           title: `Your proposal is ready, ${esc(firstName)}`,
           content: `<p style="margin:0 0 16px;">I've put together a proposal for <strong>${esc(proposal.project_title)}</strong>${proposal.business_name ? ` for ${esc(proposal.business_name)}` : ''} — what I'll build, what it costs, and how we'd work together.</p>
-            ${typeof proposal.price_total === 'number' ? `<p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total investment: ${moneyFmt(proposal.price_total)}</p>` : ''}
+            ${comp
+              ? `<p style="margin:0 0 4px;">Project cost: ${moneyFmt(proposal.value_total)}</p><p style="margin:0 0 4px;color:#2f7d4f;">${esc(proposal.discount_label || 'Complimentary discount (100%)')}: &minus;${moneyFmt(proposal.value_total)}</p><p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total due: $0</p>`
+              : typeof proposal.price_total === 'number' ? `<p style="font-size:20px;font-weight:600;margin:0 0 16px;">Total investment: ${moneyFmt(proposal.price_total)}</p>` : ''}
             ${expiresAt ? `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">This proposal is valid through ${esc(new Date(expiresAt).toUTCString())}.</p>` : ''}
             <p style="margin:0 0 20px;">Open it below to review the full scope. If it looks right, you can accept online and I'll send your agreement to sign.</p>
             <p>${brandButton('Review your proposal', link)}</p>
