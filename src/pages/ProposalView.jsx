@@ -85,6 +85,7 @@ export default function ProposalView() {
   const expiry = proposal.expires_at || proposal.valid_until;
   const expired = expiry && new Date(expiry) <= new Date();
   const settled = accepted || declined || changesRequested || expired;
+  const comp = proposal.complimentary === true;
   const depositPct = typeof proposal.deposit_percent === 'number' ? proposal.deposit_percent : 50;
   const depositAmt = proposal.payment_installments?.[0]?.amount ?? proposal.deposit_amount ?? (typeof proposal.price_total === 'number'
     ? Math.round(proposal.price_total * depositPct) / 100
@@ -166,15 +167,39 @@ export default function ProposalView() {
                   <span className="text-foreground font-medium shrink-0">{money(li.amount)}</span>
                 </div>
               ))}
+              {comp ? (
+                <>
+                  <div className="flex justify-between px-4 py-3 text-sm border-t border-border">
+                    <span className="font-semibold text-foreground">Project cost</span>
+                    <span className="font-semibold text-foreground">{money(proposal.value_total)}</span>
+                  </div>
+                  <div className="flex justify-between px-4 py-3 text-sm border-t border-border/60 text-green-700">
+                    <span className="font-medium">{proposal.discount_label || 'Complimentary discount (100%)'}</span>
+                    <span className="font-semibold">−{money(proposal.value_total)}</span>
+                  </div>
+                  <div className="flex justify-between px-4 py-3.5 border-t border-border bg-secondary/40">
+                    <span className="font-semibold text-foreground">Total due</span>
+                    <span className="font-bold text-primary text-lg">$0</span>
+                  </div>
+                </>
+              ) : (
               <div className="flex justify-between px-4 py-3.5 border-t border-border bg-secondary/40">
                 <span className="font-semibold text-foreground">Total</span>
                 <span className="font-bold text-primary text-lg">{money(proposal.price_total)}</span>
               </div>
+              )}
             </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            {depositAmt != null && (
+            {comp && (
+              <div className="rounded-xl bg-secondary/40 p-4">
+                <p className="text-muted-foreground text-xs uppercase tracking-wide">To get started</p>
+                <p className="text-xl font-bold text-foreground mt-1">No payment due</p>
+                <p className="text-xs text-muted-foreground mt-0.5">This project is complimentary.</p>
+              </div>
+            )}
+            {!comp && depositAmt != null && (
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">To get started</p>
                 <p className="text-xl font-bold text-foreground mt-1">{money(depositAmt)}</p>
@@ -194,7 +219,7 @@ export default function ProposalView() {
 
           {proposal.payment_installments?.length>0 && <section><h2 className="font-serif text-xl mb-3">Payment schedule</h2>{proposal.payment_installments.map((r,i)=><div className="flex flex-wrap justify-between gap-2 border-b py-3 text-sm" key={i}><span>{r.label} · due {r.due_date}</span><strong>{money(r.amount)}</strong></div>)}</section>}
 
-          {!settled && !proposal.payment_installments?.length && <section className="rounded-xl border border-border p-5 space-y-2">
+          {!comp && !settled && !proposal.payment_installments?.length && <section className="rounded-xl border border-border p-5 space-y-2">
             <h2 className="font-serif text-xl">Payment options</h2>
             <p className="text-sm leading-6">Pay in full or pay the deposit shown above and the final balance. You may make voluntary partial payments toward your deposit or balance, with no prepayment fee. Work begins after the full deposit clears.</p>
             <p className="text-sm text-muted-foreground">Partial payments reduce what you owe; agreed payment deadlines still apply. Payments are made through Square.</p>
@@ -262,7 +287,7 @@ export default function ProposalView() {
                     Accept this proposal
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">
-                    Accepting doesn't charge you anything. I'll send your agreement to sign, then the deposit.
+                    {comp ? "No payment is required. After you accept, I'll send a short agreement to sign." : "Accepting doesn't charge you anything. I'll send your agreement to sign, then the deposit."}
                   </p>
                   <div className="space-y-2 pt-4">
                     <label htmlFor="proposal-changes" className="text-sm font-medium">Need something adjusted?</label>
