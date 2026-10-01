@@ -2,6 +2,19 @@
   "name": "Proposal",
   "type": "object",
   "properties": {
+    "complimentary": {
+      "type": "boolean",
+      "default": false,
+      "description": "No-charge project: the full cost is shown with a 100% discount and $0 due"
+    },
+    "value_total": {
+      "type": "number",
+      "description": "Full cost before the complimentary discount"
+    },
+    "discount_label": {
+      "type": "string",
+      "description": "Label shown for the discount line, e.g. Family discount"
+    },
     "description": {
       "type": "string",
       "description": "Optional description for this proposal",
