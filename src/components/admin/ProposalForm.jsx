@@ -65,6 +65,8 @@ function buildInitial(initial, settings) {
     saas_replacement_note: i.saas_replacement_note || '',
     valid_until: i.valid_until || addDays(validDays),
     status: i.status || 'draft',
+    complimentary: !!i.complimentary,
+    discount_label: i.discount_label || 'Complimentary discount (100%)',
   };
 }
 
@@ -126,11 +128,17 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
   };
 
   const submit = () => {
+    if (form.complimentary) {
+      // Full cost is kept as value_total; the client owes nothing.
+      onSave({ ...form, value_total: total, price_total: 0, deposit_amount: 0, deposit_percent: 0, payment_installments: [] });
+      return;
+    }
     if (scheduleError(form.payment_installments,total)) return;
-    onSave({ ...form, price_total: total, deposit_amount: depositAmt, deposit_percent: depositAmt/total*100 });
+    onSave({ ...form, complimentary: false, value_total: total, price_total: total, deposit_amount: depositAmt, deposit_percent: depositAmt/total*100 });
   };
 
-  const valid = !scheduleError(form.payment_installments,total) && form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && Number.isFinite(form.deposit_amount) && form.deposit_amount > 0 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
+  const compValid = form.complimentary && form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
+  const valid = compValid || !scheduleError(form.payment_installments,total) && form.client_email?.includes('@') && form.project_title?.trim() && total > 0 && Number.isFinite(form.deposit_amount) && form.deposit_amount > 0 && form.line_items.every(li => li.description?.trim() && Number.isFinite(li.amount) && li.amount >= 0);
 
   return (
     <div className="space-y-5">
@@ -265,6 +273,23 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
           ))}
         </div>
 
+        <label className="flex items-start gap-2 rounded-lg border border-border p-3 text-sm cursor-pointer">
+          <input type="checkbox" className="mt-0.5 h-4 w-4" checked={!!form.complimentary} onChange={(e) => update('complimentary', e.target.checked)} />
+          <span><strong>Complimentary (no charge)</strong><br /><span className="text-muted-foreground">The client sees the full cost above, a 100% discount, and $0 due. No deposit or payment steps.</span></span>
+        </label>
+        {form.complimentary && (
+          <div className="space-y-1.5">
+            <Label>Discount label shown to the client</Label>
+            <Input value={form.discount_label || ''} onChange={(e) => update('discount_label', e.target.value)} placeholder="Family discount (100%)" />
+          </div>
+        )}
+        {form.complimentary ? (
+        <div className="pt-2 border-t border-border space-y-1 text-sm">
+          <div className="flex justify-between"><span className="text-muted-foreground">Project cost</span><span className="font-semibold">{money(total)}</span></div>
+          <div className="flex justify-between text-green-700"><span>{form.discount_label || 'Complimentary discount (100%)'}</span><span className="font-semibold">−{money(total)}</span></div>
+          <div className="flex justify-between text-lg font-bold text-primary"><span>Total due</span><span>$0</span></div>
+        </div>
+        ) : (
         <div className="grid sm:grid-cols-3 gap-4 pt-2 border-t border-border">
           <div>
             <p className="text-xs text-muted-foreground">Total</p>
@@ -279,6 +304,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
             <p className="text-lg font-semibold">{money(depositAmt)}</p>
           </div>
         </div>
+        )}
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
@@ -293,7 +319,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
       </div>
 
       <div className="space-y-1.5">
-        <PaymentScheduleEditor value={form.payment_installments} total={total} onChange={v=>update('payment_installments',v)}/>
+        {!form.complimentary && <PaymentScheduleEditor value={form.payment_installments} total={total} onChange={v=>update('payment_installments',v)}/>}
         <Label>What this replaces (value framing)</Label>
         <Textarea
           rows={3}
