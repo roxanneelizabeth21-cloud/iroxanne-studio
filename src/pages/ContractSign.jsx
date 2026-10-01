@@ -160,14 +160,37 @@ export default function ContractSign() {
                     <span className="text-foreground font-medium">{money(li.amount)}</span>
                   </div>
                 ))}
+                {contract.complimentary ? (
+                  <>
+                    <div className="flex justify-between px-4 py-3 text-sm border-t border-border">
+                      <span className="font-semibold text-foreground">Project cost</span>
+                      <span className="font-semibold text-foreground">{money(contract.value_total)}</span>
+                    </div>
+                    <div className="flex justify-between px-4 py-3 text-sm border-t border-border/60 text-green-700">
+                      <span className="font-medium">{contract.discount_label || 'Complimentary discount (100%)'}</span>
+                      <span className="font-semibold">−{money(contract.value_total)}</span>
+                    </div>
+                    <div className="flex justify-between px-4 py-3 border-t border-border bg-secondary/40">
+                      <span className="font-semibold text-foreground">Total due</span>
+                      <span className="font-bold text-primary">$0</span>
+                    </div>
+                  </>
+                ) : (
                 <div className="flex justify-between px-4 py-3 border-t border-border bg-secondary/40">
                   <span className="font-semibold text-foreground">Total</span>
                   <span className="font-bold text-primary">{money(contract.price_total)}</span>
                 </div>
+                )}
               </div>
             </div>
           )}
 
+          {contract.complimentary ? (
+            <div className="rounded-xl bg-secondary/40 p-4 text-sm">
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Payment</p>
+              <p className="text-xl font-bold text-foreground mt-1">No payment due</p>
+            </div>
+          ) : (
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div className="rounded-xl bg-secondary/40 p-4">
               <p className="text-muted-foreground text-xs uppercase tracking-wide">{contract.payment_installments?.length ? 'First payment due '+contract.payment_installments[0].due_date : 'Deposit due at signing'}</p>
@@ -180,8 +203,9 @@ export default function ContractSign() {
               </div>
             )}
           </div>
+          )}
 
-          {!signed && !contract.payment_installments?.length && <aside className="rounded-xl border border-border p-4 space-y-2 print:hidden">
+          {!contract.complimentary && !signed && !contract.payment_installments?.length && <aside className="rounded-xl border border-border p-4 space-y-2 print:hidden">
             <h2 className="text-sm font-semibold">Before you sign</h2>
             <p className="text-sm leading-6">You may pay in full or make voluntary partial payments toward your deposit or balance with no prepayment fee. Work begins after the full deposit clears. The remaining balance is due under the schedule above.</p>
             <p className="text-xs text-muted-foreground">The schedule shown above applies unless we agree to change it. Extra payments reduce your balance; agreed deadlines still apply. Payments are made through Square.</p>
@@ -238,7 +262,7 @@ export default function ContractSign() {
               {!invoiceUrl && (
                 <>
                   <p className="text-xs text-muted-foreground mt-3">
-                    We'll be in touch shortly about your deposit and next steps. You can return to this link to view your agreement.
+                    {contract.complimentary ? "There is no payment due. I'll be in touch shortly with next steps." : "We'll be in touch shortly about your deposit and next steps."} You can return to this link to view your agreement.
                   </p>
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
                     <Button asChild><Link to="/" replace>Done — return to iRoxanne Studio</Link></Button>
