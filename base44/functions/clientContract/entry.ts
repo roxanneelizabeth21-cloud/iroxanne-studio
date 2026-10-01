@@ -92,9 +92,9 @@ export default async function(req) {
             title: `Your agreement is signed, ${esc(firstName)}.`, 
             content: `<p style="margin:0 0 16px;">Your project agreement for <strong>${esc(updated.project_title)}</strong> is signed and on file. I'm excited to get started.</p>
               <p style="margin:0 0 16px;">${brandButton('View your signed agreement', contractLink)}</p>
-              <p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
+              ${updated.complimentary ? `<p style="margin:0 0 16px;">This project is complimentary, so there is no payment due. I'll be in touch with next steps.</p>` : `<p style="margin:0 0 8px;">Next step is your deposit to lock in your build slot:</p>
               <p style="font-size:20px;font-weight:600;margin:0 0 16px;">Deposit due: ${moneyFmt(deposit)}</p>
-              ${invoiceUrl ? `<p style="margin:0 0 16px;">${brandButton('Pay deposit online', invoiceUrl)}</p><p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">Pay securely by card, or use the payment instructions I'll send separately. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>` : `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`}`,
+              ${invoiceUrl ? `<p style="margin:0 0 16px;">${brandButton('Pay deposit online', invoiceUrl)}</p><p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">Pay securely by card, or use the payment instructions I'll send separately. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>` : `<p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">I'll send your payment link shortly. Remaining balance of ${moneyFmt(Math.max(total - deposit, 0))} is due per your agreed schedule.</p>`}`}`,
             footerNote: 'iRoxanne Studio — one builder, not an agency.',
           }),
         }).catch((e) => console.log('client sign email failed', e?.message));
@@ -108,13 +108,14 @@ export default async function(req) {
           body: brandedEmail({
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
-              <p style="margin:0 0 8px;">Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.</p>
+              <p style="margin:0 0 8px;">${updated.complimentary ? 'Complimentary project. No payment due.' : `Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.`}</p>
               <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">${invoiceUrl ? 'An invoice is ready. Open Invoices to review and send the payment request through Square.' : 'Action required: invoice creation failed. Open Invoices and use Prepare missing invoice for this agreement.'}</p>
               <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));
       }
 
+      if (updated.complimentary) return Response.json({ contract: publicContract(updated), invoice_id: '', invoice_token: '', invoice_warning: '' });
       return Response.json({ contract: publicContract(updated), invoice_id: invoice?.id || '', invoice_token: invoiceToken || '', invoice_warning: invoiceError });
     }
 
