@@ -109,7 +109,7 @@ export default async function(req) {
             title: 'Contract signed',
             content: `<p style="margin:0 0 16px;"><strong>${esc(updated.signer_name)}</strong> just signed the agreement for <strong>${esc(updated.project_title)}</strong>.</p>
               <p style="margin:0 0 8px;">${updated.complimentary ? 'Complimentary project. No payment due.' : `Deposit due: <strong>${moneyFmt(deposit)}</strong> of ${moneyFmt(total)}.`}</p>
-              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">${invoiceUrl ? 'An invoice is ready. Open Invoices to review and send the payment request through Square.' : 'Action required: invoice creation failed. Open Invoices and use Prepare missing invoice for this agreement.'}</p>
+              <p style="margin:0 0 16px;color:#8B7B95;font-size:13px;">${updated.complimentary ? 'A $0 invoice was recorded as paid. Nothing to send.' : invoiceUrl ? 'An invoice is ready. Open Invoices to review and send the payment request through Square.' : 'Action required: invoice creation failed. Open Invoices and use Prepare missing invoice for this agreement.'}</p>
               <p>${brandButton('Open contracts', adminLink(req, 'contracts'))}</p>`,
           }),
         }).catch((e) => console.log('admin sign email failed', e?.message));
