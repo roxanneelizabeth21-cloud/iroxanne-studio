@@ -87,7 +87,8 @@ export default async function (req: Request) {
         return Response.json({ error: 'This proposal was declined — reach out if you changed your mind.' }, { status: 409 });
       }
 
-      if (proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
+      const comp = proposal.complimentary === true;
+      if (!comp && proposal.deposit_amount != null && (!Number.isFinite(proposal.deposit_amount) || proposal.deposit_amount <= 0 || proposal.deposit_amount > proposal.price_total)) return Response.json({error:'Review the deposit amount before proceeding.'},{status:400});
     // Create the draft contract prefilled from the proposal.
       const total = typeof proposal.price_total === 'number' ? proposal.price_total : 0;
       const installments=proposal.payment_installments?.length ? validateSchedule(proposal.payment_installments,total) : [];
@@ -107,11 +108,14 @@ export default async function (req: Request) {
           pricing_mode: 'packages_addons',
           selected_package: proposal.selected_package || '',
           line_items: proposal.line_items || [],
-          price_total: total,
-          deposit_percent: depositPct,
-          deposit_amount: installments[0]?.amount ?? proposal.deposit_amount ?? Math.round(total * depositPct) / 100,
-          payment_installments: installments,
-          payment_schedule: installments.length ? scheduleText(installments) : `Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.`,
+          price_total: comp ? 0 : total,
+          deposit_percent: comp ? 0 : depositPct,
+          deposit_amount: comp ? 0 : installments[0]?.amount ?? proposal.deposit_amount ?? Math.round(total * depositPct) / 100,
+          payment_installments: comp ? [] : installments,
+          payment_schedule: comp ? 'Complimentary project. No payment is due.' : installments.length ? scheduleText(installments) : `Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.`,
+          complimentary: comp,
+          value_total: comp ? proposal.value_total : total,
+          discount_label: comp ? proposal.discount_label || 'Complimentary discount (100%)' : '',
           terms: withHandoffTerms(settings?.standard_terms),
           status: 'draft',
           estimated_tier: proposal.estimated_tier || '',
@@ -134,7 +138,7 @@ export default async function (req: Request) {
           subject: `Proposal accepted — ${updated.project_title}`,
           body: brandedEmail({
             title: `Wonderful, ${esc(firstName)}!`,
-            content: `<p style="margin:0 0 16px;">You've accepted the proposal for <strong>${esc(updated.project_title)}</strong>. Next step: I'll prepare your project agreement and send it over for an online signature, followed by the agreed first payment to lock in your build slot.</p>
+            content: `<p style="margin:0 0 16px;">You've accepted the proposal for <strong>${esc(updated.project_title)}</strong>. Next step: I'll prepare your project agreement and send it over for an online signature${comp ? '. There is no payment due for this project.' : ', followed by the agreed first payment to lock in your build slot.'}</p>
               <p style="margin:0;color:#8B7B95;font-size:13px;">Keep an eye on your inbox — the agreement is usually with you within one business day.</p>`,
             footerNote: 'iRoxanne Studio — one builder, not an agency.',
           }),
@@ -148,7 +152,7 @@ export default async function (req: Request) {
           subject: `Proposal accepted — ${updated.project_title}`,
           body: brandedEmail({
             title: 'Proposal accepted 🎉',
-            content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> accepted the proposal for <strong>${esc(updated.project_title)}</strong> — ${moneyFmt(total)}.</p>
+            content: `<p style="margin:0 0 16px;"><strong>${esc(updated.client_name || updated.client_email)}</strong> accepted the proposal for <strong>${esc(updated.project_title)}</strong> — ${comp ? 'complimentary (value ' + moneyFmt(proposal.value_total) + ')' : moneyFmt(total)}.</p>
               <p style="margin:0 0 16px;">A draft contract is ready — review it and send for signature.</p>
               <p>${brandButton('Review draft agreement', adminLink(req, `contracts?contract=${encodeURIComponent(contractId)}`))}</p>`,
           }),
