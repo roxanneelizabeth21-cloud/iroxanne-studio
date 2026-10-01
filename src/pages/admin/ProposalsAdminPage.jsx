@@ -269,7 +269,7 @@ export default function ProposalsAdminPage() {
                   <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.status?.replaceAll('_', ' ')}</span>
                 </div>
                 <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {money(p.price_total)}
+                  {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {p.complimentary ? `Complimentary (value ${money(p.value_total)})` : money(p.price_total)}
                   {p.valid_until ? ` · valid to ${p.valid_until}` : ''}
                 </p>
               </div>
