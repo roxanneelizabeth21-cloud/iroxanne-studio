@@ -42,7 +42,12 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
     return Math.min(p, form.deposit_amount ?? Math.round(p * pct) / 100);
   };
 
+  const comp = form.complimentary === true;
   const submit = () => {
+    if (comp) {
+      onSave({ ...form, value_total: total, price_total: 0, deposit_amount: 0, deposit_percent: 0, payment_installments: [], payment_schedule: 'Complimentary project. No payment is due.', terms: withHandoffTerms(form.terms) });
+      return;
+    }
     if(scheduleError(form.payment_installments,total) || !Number.isFinite(computeDeposit(total)) || computeDeposit(total)<=0) return;
     const payload = {
       ...form,
@@ -155,12 +160,23 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
           <p className="text-xs text-muted-foreground">No line items — total will be $0 unless you add some.</p>
         )}
         <div className="flex justify-between rounded-lg bg-secondary/40 px-4 py-2.5 text-sm">
-          <span className="font-semibold">Total</span>
+          <span className="font-semibold">{comp ? 'Project cost' : 'Total'}</span>
           <span className="font-bold text-primary">${total.toLocaleString()}</span>
         </div>
+        <label className="flex items-start gap-2 rounded-lg border border-border p-3 text-sm cursor-pointer">
+          <input type="checkbox" className="mt-0.5 h-4 w-4" checked={comp} onChange={(e) => update('complimentary', e.target.checked)} />
+          <span><strong>Complimentary (no charge)</strong><br /><span className="text-muted-foreground">Shows the cost with a 100% discount and $0 due. No deposit or invoice payment.</span></span>
+        </label>
+        {comp && (
+          <div className="space-y-1 text-sm">
+            <Input value={form.discount_label || 'Complimentary discount (100%)'} onChange={(e) => update('discount_label', e.target.value)} />
+            <div className="flex justify-between text-green-700"><span>{form.discount_label || 'Complimentary discount (100%)'}</span><span>−${total.toLocaleString()}</span></div>
+            <div className="flex justify-between font-bold"><span>Total due</span><span>$0</span></div>
+          </div>
+        )}
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      {!comp && <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label>{form.payment_installments?.length ? 'First payment' : 'Deposit ($)'}</Label>
           <Input type="number" min="0.01" step="0.01" disabled={!!form.payment_installments?.length} value={form.deposit_amount ?? computeDeposit(total)} onChange={e=>update('deposit_amount',Number(e.target.value))} />
@@ -169,10 +185,10 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
           <Label>Payment schedule</Label>
           <Input disabled={!!form.payment_installments?.length} value={form.payment_installments?.length ? 'See dated payment plan below' : form.payment_schedule || ''} onChange={(e) => update('payment_schedule', e.target.value)} placeholder="Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome." />
         </div>
-      </div>
+      </div>}
 
       <div className="space-y-1.5">
-        <PaymentScheduleEditor value={form.payment_installments || []} total={total} onChange={v=>update('payment_installments',v)}/>
+        {!comp && <PaymentScheduleEditor value={form.payment_installments || []} total={total} onChange={v=>update('payment_installments',v)}/>}
         <Label>Terms &amp; conditions</Label>
         <Textarea
           rows={5}
@@ -185,7 +201,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       </WorkflowSection>
       <p className="text-sm text-muted-foreground">Before saving: add the client email and project title, a positive deposit and a valid payment schedule. Rush agreements also need rush terms.</p>
       <div className="irx-form-footer flex justify-end pt-2 border-t border-border">
-        <Button onClick={submit} disabled={saving || !Number.isFinite(computeDeposit(total)) || computeDeposit(total)<=0 || !!scheduleError(form.payment_installments,total) || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
+        <Button onClick={submit} disabled={saving || (!comp && (!Number.isFinite(computeDeposit(total)) || computeDeposit(total)<=0 || !!scheduleError(form.payment_installments,total))) || !form.client_email || !form.project_title || (form.contract_variant==='rush' && !form.rush_terms?.trim())}>
           {saving ? 'Saving...' : 'Save Contract'}
         </Button>
       </div>
@@ -195,6 +211,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
 
 function buildInitial(initial, settings) {
   if (initial && initial.id && initial.quick_pitch === undefined && initial.client_email) {
+    // Complimentary agreements keep the full cost in line items; price_total is $0.
     return { contract_variant:'standard',rush_terms:settings?.rush_terms || RUSH_TERMS,...initial };
   }
   return {
