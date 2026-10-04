@@ -58,7 +58,8 @@
         "in_progress",
         "submitted",
         "reviewed",
-        "sent"
+        "sent",
+        "skipped"
       ],
       "default": "pending",
       "description": "Intake lifecycle"
@@ -314,6 +315,17 @@
     },
     "journey_step": {
       "type": "string"
+    },
+    "requests": {
+      "type": "array",
+      "description": "Per-client checklist of what we need from the client. Items: {id,label,help,kind(text|file),required,answer,file_urls}. Edited by admin; client fills answer/file_urls only.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "request_note": {
+      "type": "string",
+      "description": "Personal note shown to the client above the checklist"
     },
     "sent_at": {
       "type": "string",
