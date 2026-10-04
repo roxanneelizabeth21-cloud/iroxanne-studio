@@ -132,6 +132,43 @@ export default function ClientIntakeForm() {
   if (error) return <div className="min-h-screen flex items-center justify-center ir-app-bg px-4"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{error}</p></div></div>;
   if (submitted) return <div className="min-h-screen flex items-center justify-center ir-app-bg px-4"><div className="max-w-md text-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[22px] p-10 border border-black/5 dark:border-white/10 shadow-lg"><CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-500" /><h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">All set, {intake.client_name?.split(' ')[0] || 'there'}!</h1><p className="text-gray-600 dark:text-gray-400">We've received your content. We'll review everything and reach out if we have any questions before we start building.</p></div></div>;
 
+  if (Array.isArray(intake.requests)) {
+    const setReq = (rid, key, value) => { setDirty(true); setIntake(prev => ({ ...prev, requests: prev.requests.map(r => r.id === rid ? { ...r, [key]: value } : r) })); };
+    return (
+      <div className="min-h-screen bg-background text-foreground py-10 px-4">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="text-center mb-2">
+            <BrandedPageHeader title="What I need from you" subtitle="Confirm what is filled in, add what you have, skip the rest." projectTitle={intake.project_title} clientName={intake.client_name} />
+            {intake.request_note && <p className="text-sm mt-4 whitespace-pre-wrap">{intake.request_note}</p>}
+          </div>
+          <fieldset disabled={saving} className="space-y-5 min-w-0">
+            {intake.requests.map(r => (
+              <section key={r.id} className="rounded-2xl border border-border bg-card p-5 space-y-2">
+                <h2 className="font-medium">{r.label}{r.required ? ' *' : ''}</h2>
+                {r.help && <p className="text-sm text-muted-foreground">{r.help}</p>}
+                {r.kind === 'file' ? (
+                  <>
+                    <FileUploadField label="" multiple onUpload={(urls) => setReq(r.id, 'file_urls', [...(r.file_urls || []), ...urls])} />
+                    {(r.file_urls || []).length > 0 && <p className="text-xs text-green-600">{r.file_urls.length} file(s) uploaded</p>}
+                    <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} placeholder="Optional note, or a link" />
+                  </>
+                ) : (
+                  <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} placeholder="Type here, or leave blank" />
+                )}
+              </section>
+            ))}
+          </fieldset>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Button variant="outline" disabled={saving} onClick={() => handleSave(false)}>Save & return later</Button>
+            <Button disabled={saving} className="rounded-full px-6" onClick={() => handleSave(true)}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send to Roxanne'}</Button>
+          </div>
+          <p role="status" className="text-xs text-center text-muted-foreground">{dirty ? 'You have unsaved answers.' : 'Your answers are saved with this private link.'}</p>
+          <BrandedFooter />
+        </div>
+      </div>
+    );
+  }
+
   const profile = intake.journey_profile || {};
   const steps = intakeSteps(profile, intake?.scope_snapshot);
   const position = Math.max(0, steps.indexOf(step));
