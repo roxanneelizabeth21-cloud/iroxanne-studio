@@ -280,15 +280,7 @@ export default function ContractsAdminPage() {
                   )}
 
                   {['signed', 'deposit_paid', 'active'].includes(c.status) && (
-                    <Button variant="outline" size="sm" className="gap-1" onClick={async () => {
-                      try {
-                        const res = await base44.functions.invoke('sendIntakeForm', { contract_id: c.id });
-                        const data = res.data || res;
-                        if (data.error) { toast({ title: data.error, variant: 'destructive' }); return; }
-                        toast({ title: data.sent ? 'Intake email sent' : 'Email failed; private link is available', description: data.sent ? c.client_email : data.link, variant: data.sent ? 'default' : 'destructive' });
-                        navigator.clipboard.writeText(data.link);
-                      } catch (e) { toast({ title: 'Failed to send intake form', variant: 'destructive' }); }
-                    }}><ClipboardList className="h-3.5 w-3.5" /> Send Intake</Button>
+                    <Button variant="outline" size="sm" className="gap-1" onClick={() => { window.location.href = `/admin/projects?view=intakes&contract=${encodeURIComponent(c.id)}`; }}><ClipboardList className="h-3.5 w-3.5" /> Intake checklist</Button>
                   )}
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" title="Delete" onClick={() => handleDeleteContract(c)}>
                     <Trash2 className="h-3.5 w-3.5" />
