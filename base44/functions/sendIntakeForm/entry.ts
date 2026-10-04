@@ -1,6 +1,7 @@
 import { sendStudioEmail } from '../../shared/studioEmail.ts';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { requireAdmin } from '../../shared/marketingAdmin.ts';
+import { defaultRequests } from '../../shared/intakeRequests.ts';
 import { esc, brandedEmail, brandButton } from '../../shared/emailBrand.ts';
 
 function generateToken() {
@@ -18,7 +19,7 @@ export default async function (req: Request) {
     const guard = await requireAdmin(base44);
     if (!guard.ok) return guard.response;
 
-    const { contract_id } = await req.json();
+    const { contract_id, mode } = await req.json(); // mode 'prepare' = create/seed checklist only, no email
     if (!contract_id) return Response.json({ error: 'contract_id is required' }, { status: 400 });
 
     const contract = await base44.entities.Contract.get(contract_id);
@@ -32,7 +33,9 @@ export default async function (req: Request) {
     if (!['starter', 'business', 'custom'].includes(tier)) tier = 'business';
 
     const token = generateToken();
-    const intake = existing[0] || await base44.entities.ClientIntake.create({
+    const lead = contract.lead_id ? await base44.entities.Lead.get(contract.lead_id).catch(() => null) : null;
+    let intake = existing[0] || await base44.entities.ClientIntake.create({
+      requests: defaultRequests(lead || {}, contract),
       contract_id,
       lead_id: contract.lead_id || '',
       access_token: token,
@@ -44,6 +47,10 @@ export default async function (req: Request) {
       scope_snapshot:{selected_package:contract.selected_package||'',scope_summary:contract.scope_summary||'',line_items:contract.line_items||[]},
     });
 
+    if (!Array.isArray(intake.requests) && ['pending','sent'].includes(intake.status)) {
+      intake = await base44.entities.ClientIntake.update(intake.id, { requests: defaultRequests(lead || {}, contract) });
+    }
+    if (mode === 'prepare') return Response.json({ intake, sent: false, prepared: true });
     const link = `${APP_ORIGIN}/intake/${intake.id}?t=${intake.access_token}`;
     const firstName = (contract.client_name || '').split(' ')[0] || 'there';
 
@@ -51,15 +58,15 @@ export default async function (req: Request) {
     try {
       await sendStudioEmail(base44,{
         to: contract.client_email,
-        subject: `Your project intake — ${contract.project_title || 'your project'}`,
+        subject: `A few things I need from you — ${contract.project_title || 'your project'}`,
         from_name: 'iRoxanne Studio',
         body: brandedEmail({
-          title: `Let's get started, ${esc(firstName)}!`,
-          content: `<p style="margin:0 0 16px;">Your project <strong>${esc(contract.project_title || 'your app')}</strong> is ready to begin. I’d love to learn a little more about your idea and what matters to you.</p>
-            <p style="margin:0 0 16px;">The guided intake takes you through one topic at a time. Share what you know, skip what you’re unsure of, and save your progress whenever you need a break. You don’t need finished content or a technical plan.</p>
-            <p>${brandButton('Fill out your intake form', link)}</p>
-            <p style="margin:16px 0 0;font-size:13px;color:#8B7B95;">You can save and return to this form anytime using the same link.</p>`,
-          footerNote: 'iRoxanne Studio — Let’s work through your idea together.',
+          title: `Hi ${esc(firstName)}, a few things I need`,
+          content: `<p style="margin:0 0 16px;">To get <strong>${esc(contract.project_title || 'your project')}</strong> started, I've put together a short checklist of what I need from you.</p>
+            ${intake.request_note ? `<p style="margin:0 0 16px;">${esc(intake.request_note)}</p>` : ''}
+            <p style="margin:0 0 16px;">Some answers are already filled in from our earlier conversation. Just confirm them, add what you have, and skip anything you don't. You can save and come back anytime.</p>
+            <p>${brandButton('Open your checklist', link)}</p>`,
+          footerNote: 'iRoxanne Studio',
         }),
       });
       sent = true;
