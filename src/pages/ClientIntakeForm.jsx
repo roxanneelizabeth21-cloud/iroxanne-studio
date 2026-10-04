@@ -61,7 +61,7 @@ function FileUploadField({ label, hint, multiple, onUpload }) {
     finally { setUploading(false); e.target.value = ''; }
   };
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label || null} hint={hint}>
       <div className="flex items-center gap-2">
         <label className="flex items-center gap-2 cursor-pointer rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:border-purple-400 transition-colors w-full justify-center">
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
