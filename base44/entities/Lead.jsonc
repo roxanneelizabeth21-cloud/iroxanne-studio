@@ -109,6 +109,18 @@
       "type": "string",
       "description": "Links to sites/apps the lead likes"
     },
+    "approver_name": {
+      "type": "string",
+      "description": "Who approves work on the client's side"
+    },
+    "compliance_requirements": {
+      "type": "string",
+      "description": "Regulatory or compliance needs (e.g. HIPAA), or none"
+    },
+    "platform_account_email": {
+      "type": "string",
+      "description": "Email used for the client's Base44 account, if they have one"
+    },
     "ideal_launch_date": {
       "type": "string",
       "description": "Ideal launch date or timeframe"

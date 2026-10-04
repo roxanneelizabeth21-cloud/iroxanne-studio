@@ -62,6 +62,9 @@ export default async function(req) {
         ['Budget', budgetLabel(lead.budget_range)],
         ['Pricing preference', PRICING_LABELS[lead.pricing_model_preference] || lead.pricing_model_preference || ''],
         ['Ideal launch', lead.ideal_launch_date || ''],
+        ['Approves work', lead.approver_name || ''],
+        ['Compliance needs', lead.compliance_requirements || ''],
+        ['Base44 account email', lead.platform_account_email || ''],
         ['Needs training', lead.training_needed ? 'Yes' : ''],
         ['Wants ongoing support', lead.ongoing_support_needed ? 'Yes' : ''],
       ].filter(([, v]) => v);

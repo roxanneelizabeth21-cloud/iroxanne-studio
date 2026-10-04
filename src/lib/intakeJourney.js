@@ -1,5 +1,5 @@
 export const INTAKE_LABELS = {
-  pending: 'Link ready', sent: 'Sent', in_progress: 'In progress', submitted: 'Completed', reviewed: 'Reviewed',
+  pending: 'Link ready', sent: 'Sent', in_progress: 'In progress', submitted: 'Completed', reviewed: 'Reviewed', skipped: 'Skipped',
 };
 export function intakeSteps(profile = {}, scope = {}) {
   profile = profile ?? {};

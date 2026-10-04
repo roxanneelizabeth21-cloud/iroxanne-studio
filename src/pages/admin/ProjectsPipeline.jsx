@@ -61,7 +61,7 @@ function buildPipeline(leads, proposals, contracts, intakes, invoices) {
         ? ['paid', 'waived'].includes(invoice.deposit_status)
         : !!c.deposit_paid_at || c.status === 'deposit_paid';
       if (!depositDone) stage = 'deposit';
-      else if (!intake || intake.status !== 'reviewed') stage = 'intake';
+      else if (!intake || !['reviewed','skipped'].includes(intake.status)) stage = 'intake';
       else stage = 'build';
     }
     else if (c.status === 'sent') stage = 'contract';
