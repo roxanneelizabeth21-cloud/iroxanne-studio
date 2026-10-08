@@ -9,6 +9,7 @@ function generateToken() {
 }
 
 const APP_ORIGIN = 'https://iroxannestudio.com';
+const BASE44_SIGNUP_URL = 'https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp';
 
 // Admin-only: create a token-protected intake form for a contract and email the
 // client a branded link. Reuses an existing intake for the same contract so a
@@ -65,7 +66,11 @@ export default async function (req: Request) {
           content: `<p style="margin:0 0 16px;">To get <strong>${esc(contract.project_title || 'your project')}</strong> started, I've put together a short checklist of what I need from you.</p>
             ${intake.request_note ? `<p style="margin:0 0 16px;">${esc(intake.request_note)}</p>` : ''}
             <p style="margin:0 0 16px;">Some answers are already filled in from our earlier conversation. Just confirm them, add what you have, and skip anything you don't. You can save and come back anytime.</p>
-            <p>${brandButton('Open your checklist', link)}</p>`,
+            <p>${brandButton('Open your checklist', link)}</p>
+            <p style="margin:24px 0 8px;font-weight:600;">One more thing: your Base44 account</p>
+            <p style="margin:0 0 16px;">Your app will live in your own Base44 account, and a free account is all you need to get started. It is required at handoff, so you can create it now, whenever you like. Depending on what your app needs, you may later move up to the $20 or $50 per month plan. I will confirm the right fit with you before handoff, so there is nothing to decide today.</p>
+            <p>${brandButton('Create your free Base44 account', BASE44_SIGNUP_URL)}</p>
+            <p style="margin:0 0 16px;font-size:12px;">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without it.</p>`,
           footerNote: 'iRoxanne Studio',
         }),
       });
