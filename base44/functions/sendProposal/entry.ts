@@ -32,6 +32,10 @@ export default async function (req: Request) {
     if (!proposal.client_email) return Response.json({ error: 'Proposal has no client email' }, { status: 400 });
 
     if (['accepted', 'declined'].includes(proposal.status)) return Response.json({ error: 'Create a new proposal for a completed response.' }, { status: 409 });
+    // A second click right after the first must not email the client twice.
+    if (proposal.status === 'sent' && proposal.sent_at && proposal.access_token && Date.now() - new Date(proposal.sent_at).getTime() < 60000) {
+      return Response.json({ proposal, link: `${getBaseUrl(req)}/proposal/${proposal_id}?t=${proposal.access_token}`, sent: false, duplicate: true });
+    }
     const settingsList = await base44.entities.PricingSettings.list('-updated_date');
     const settings = settingsList.find((s: any) => s.packages?.length) || settingsList[0];
     const validDays = Math.max(1, Number(settings?.proposal_valid_days) || 3);
