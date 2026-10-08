@@ -35,7 +35,7 @@ export default async function(req) {
    image_url=image?.url||image?.data?.url;
    if(!image_url || !/^https:\/\//.test(image_url)) throw new Error('Image service did not return a usable asset');
    await e.MarketingProduction.update(job.id,{image_url,phase:'quality'});
-   await e.GalleryImage.create({title:content.hook,image_url,category:'promo',source:'ai_generated',generation_prompt:content.image_prompt,aspect_ratio:'4:5'});
+   await e.GalleryImage.create({title:content.hook,image_url,category:'promo',aspect_ratio:'4:5'});
   }
   const quality=await b.asServiceRole.integrations.Core.InvokeLLM({
    prompt:'Review this marketing draft and image for iRoxanne Studio. Pass only if warm, nontechnical, truthful hypothetical copy, no invented client stories or outcomes, no pricing or guarantees, no gibberish or malformed imagery. Reject repetitive generic sales copy. Assess the actual attached image; if unavailable set pass=false. Return pass boolean and reason. Copy: '+JSON.stringify(content),
