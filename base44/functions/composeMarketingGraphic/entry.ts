@@ -438,10 +438,8 @@ export default async function (req: Request) {
       post_id: post?.id || '',
       campaign_id: effCampaignId,
       portfolio_item_id: effPortfolioItemId,
-      generation_status: 'approved',
-      generated_at: new Date().toISOString(),
       previous_version_id,
-      description: `Composed non-generative graphic. Headline: ${headline || '(none)'}. Signature: ${signature || 'iRoxanne Studio'}.`,
+      description: `iRoxanne Studio graphic. Headline: ${headline || '(none)'}. Signature: ${signature || 'iRoxanne Studio'}.`,
     });
 
     // --- Attach to the draft post without touching approval/publish state ---
