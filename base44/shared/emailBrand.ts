@@ -6,8 +6,9 @@ export const BRAND_CREAM = '#FAF7F0';
 export const BRAND_PLUM_DARK = '#2D2A4A';
 export const BRAND_GOLD = '#C9A84C';
 
+// The visible backup link under the button means a button that fails in one mail app is never a dead end.
 export function brandButton(label: string, url: string): string {
-  return `<a href="${esc(url)}" style="display:inline-block;background:${BRAND_PLUM};color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 32px;border-radius:50px;">${label}</a>`;
+  return `<a href="${esc(url)}" style="display:inline-block;background-color:${BRAND_PLUM};color:#FFFFFF;text-decoration:none;font-weight:600;font-size:14px;padding:14px 32px;border-radius:50px;border:2px solid ${BRAND_GOLD};">${label}</a><br><span style="display:inline-block;margin-top:12px;font-size:12px;line-height:1.5;color:#6B6485;">Button not working? Copy and paste this link into your browser:<br><a href="${esc(url)}" style="color:#4A3F6B;word-break:break-all;">${esc(url)}</a></span>`;
 }
 
 // Label/value table used by the admin alert emails (new subscriber, new inquiry).
@@ -33,11 +34,11 @@ export function brandedEmail({
   footerNote?: string;
 }): string {
   return `<!DOCTYPE html>
-<html><body style="margin:0;padding:0;background:${BRAND_CREAM};">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};padding:28px 12px;">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head><body bgcolor="${BRAND_CREAM}" style="margin:0;padding:0;background:${BRAND_CREAM};color-scheme:light;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${BRAND_CREAM}" style="background:${BRAND_CREAM};padding:28px 12px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(77,43,100,0.08);">
-        <tr><td style="background:linear-gradient(135deg,${BRAND_PLUM} 0%,${BRAND_PLUM_LIGHT} 100%);padding:28px 32px 24px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" style="max-width:560px;background:#FFFFFF;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(77,43,100,0.08);">
+        <tr><td bgcolor="${BRAND_PLUM}" style="background-color:${BRAND_PLUM};background-image:linear-gradient(135deg,${BRAND_PLUM} 0%,${BRAND_PLUM_LIGHT} 100%);padding:28px 32px 24px;">
           <div style="font-size:11px;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:4px;">iRoxanne Studio</div>
           ${title ? `<div style="font-family:Georgia,'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;">${title}</div>` : `<div style="font-family:Georgia,'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;">iRoxanne Studio</div>`}
         </td></tr>
