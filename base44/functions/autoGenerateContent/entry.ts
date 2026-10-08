@@ -124,7 +124,6 @@ Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
           auto_generated: true,
           campaign_id: campaignId || '',
           portfolio_item_id: portfolioItemId || '',
-          original_ai_caption: p.caption || '',
         };
       });
       if (!records.length) return [];
