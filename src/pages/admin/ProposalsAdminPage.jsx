@@ -32,6 +32,7 @@ export default function ProposalsAdminPage() {
   const [editing, setEditing] = useState(null);
   const [showLeads, setShowLeads] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [sendingId, setSendingId] = useState('');
   const [params] = useSearchParams();
   const requestedLead=params.get('lead'),requestedProposal=params.get('proposal');
   const [leadReview,setLeadReview]=useState(null);
@@ -93,10 +94,15 @@ export default function ProposalsAdminPage() {
   };
 
   const handleSend = async (proposal) => {
+    if (SENDING_PROPOSALS.has(proposal.id)) return; // a second click while the first is still sending does nothing
+    SENDING_PROPOSALS.add(proposal.id);
+    setSendingId(proposal.id);
+    toast({ title: 'Sending proposal...', description: 'This can take a few seconds. Please do not click again.' });
     try {
       const res = await base44.functions.invoke('sendProposal', { proposal_id: proposal.id });
       const data = res.data || res;
       if (data.error) { toast({ title: data.error, variant: 'destructive' }); return; }
+      if (data.duplicate) { toast({ title: 'Already sent a moment ago', description: 'No second email was sent.' }); await load(); return; }
       await navigator.clipboard.writeText(data.link).catch(() => {});
       toast({
         title: data.sent ? `Proposal emailed to ${proposal.client_email}` : 'Link copied — email failed',
@@ -105,6 +111,9 @@ export default function ProposalsAdminPage() {
       await load();
     } catch (e) {
       toast({ title: 'Failed to send proposal', description: e.message, variant: 'destructive' });
+    } finally {
+      SENDING_PROPOSALS.delete(proposal.id);
+      setSendingId('');
     }
   };
 
@@ -290,8 +299,8 @@ export default function ProposalsAdminPage() {
                     </Button>
                     <MoreActions>
                     {!['declined', 'expired'].includes(p.status) && (
-                      <Button variant="outline" size="sm" onClick={() => handleSend(p)} className="gap-1">
-                        <Send className="h-3.5 w-3.5" /> {p.access_token ? 'Resend' : 'Send'}
+                      <Button variant="outline" size="sm" disabled={sendingId === p.id} onClick={() => handleSend(p)} className="gap-1">
+                        <Send className="h-3.5 w-3.5" /> {sendingId === p.id ? 'Sending...' : p.access_token ? 'Resend' : 'Send'}
                       </Button>
                     )}
                     {p.access_token && (
