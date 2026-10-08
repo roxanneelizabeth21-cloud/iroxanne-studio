@@ -39,6 +39,7 @@ export default function HandoffPanel({contractId,onSaved}){
  </fieldset>
  {c.handoff_client_notes&&<div className="rounded-xl bg-secondary p-3"><p className="font-medium">Client follow-up request</p><p className="whitespace-pre-wrap">{c.handoff_client_notes}</p></div>}
  {c.handoff_status==='accepted'&&<p className="text-sm">Accepted by {c.handoff_ack_name} on {new Date(c.handoff_ack_at).toLocaleString()}.</p>}
+ {c.client_platform_email&&<p className="text-sm">Transfer the app to this Base44 account: <strong>{c.client_platform_email}</strong></p>}
  <div className="flex flex-wrap gap-2">
  {!locked&&<><Button disabled={busy} onClick={()=>run('save')}>Save checklist</Button><Button variant="outline" disabled={busy||!complete||!payment?.paid_in_full} onClick={()=>run('publish')}>Save & create client link</Button></>}
  {c.handoff_status==='accepted'&&c.status!=='completed'&&<Button disabled={busy||!payment?.paid_in_full} onClick={()=>run('complete')}>Mark project delivered</Button>}
