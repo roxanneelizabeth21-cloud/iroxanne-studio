@@ -84,6 +84,13 @@ function contractStep(p) {
           ? step(`Signed off — collect the ${money(inv.balance_amount)} balance`, 'action', 'invoice')
           : step('Signed off and paid — mark complete', 'action', 'contract');
       }
+      const items = Array.isArray(p.handoff_items) ? p.handoff_items : [];
+      const checklistDone = items.length > 0 && items.every((x) => !x.required || x.completed);
+      if (checklistDone && p.handoff_status !== 'ready') {
+        return balanceOpen
+          ? step(`Delivery checklist complete — collect the ${money(inv.balance_amount)} balance, then create the client handoff link`, 'action', 'invoice')
+          : step('Delivery checklist complete and paid — create the client handoff link and send it', 'action', 'handoff');
+      }
       return balanceOpen
         ? step('In build — finish the work, then request the remaining balance before handoff', 'action', 'invoice')
         : step('In build — prepare the delivery checklist and handoff', 'action', 'handoff');
