@@ -7,7 +7,6 @@ export function defaultRequests(lead: any = {}, contract: any = {}) {
     item('business_name', 'Business or project name', 'Confirm the name you want shown.', 'text', lead.business_name || contract.client_business || ''),
     item('approver', 'Who approves the work on your side?', 'The person who signs off on designs and changes.', 'text', lead.approver_name || contract.client_name || ''),
     item('compliance', 'Rules or regulations your business must follow', 'For example HIPAA. Write "none" or "not sure" if that applies.', 'text', lead.compliance_requirements || ''),
-    item('platform_account_email', 'Base44 account email', 'Your finished app is transferred to this account. A free account is enough for now.', 'text', lead.platform_account_email || ''),
     item('logo', 'Logo', 'Skip if you do not have one yet.', 'file'),
     item('brand', 'Colors, fonts or style you like', 'A few words or links are fine.', 'text', ''),
     item('photos', 'Photos or other files to use', 'Optional.', 'file'),
