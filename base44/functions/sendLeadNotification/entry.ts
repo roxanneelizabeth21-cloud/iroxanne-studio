@@ -55,7 +55,7 @@ export default async function(req) {
       const firstName = (lead.name || '').split(' ')[0] || 'there';
       const summary: [string, string][] = [
         ['Business', lead.business_name || ''],
-        ['What it does', lead.quick_pitch || ''],
+        ['The idea', lead.quick_pitch || ''],
         ['What the app should do', lead.problem_to_solve || ''],
         ['Requested add-ons (not yet quoted)', arr(lead.must_have_features)],
         ['Integrations needed', arr(lead.integrations_needed)],
