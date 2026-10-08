@@ -158,6 +158,14 @@ export default function ClientIntakeForm() {
               </section>
             ))}
           </fieldset>
+          <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
+            <h2 className="font-medium">Your Base44 account</h2>
+            <p className="text-sm text-muted-foreground">Your app will live in your own Base44 account, and a free account is all you need to get started. It is required at handoff, so you can create it now, whenever you like. Depending on what your app needs, you may later move up to the $20 or $50 per month plan. I will confirm the right fit with you before handoff, so there is nothing to decide today.</p>
+            <Button asChild className="min-h-11 whitespace-normal">
+              <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
+            </Button>
+            <p className="text-xs text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without it.</p>
+          </section>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Button variant="outline" disabled={saving} onClick={() => handleSave(false)}>Save & return later</Button>
             <Button disabled={saving} className="rounded-full px-6" onClick={() => handleSave(true)}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send to Roxanne'}</Button>
