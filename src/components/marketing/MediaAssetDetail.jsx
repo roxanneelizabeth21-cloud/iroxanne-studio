@@ -171,7 +171,6 @@ export default function MediaAssetDetail({ asset, open, onOpenChange, posts = []
           <Row label="Project" value={projectTitle} />
           <Row label="Format" value={asset.format} />
           <Row label="Composed for" value={asset.aspect_ratio} />
-          <Row label="Generated from" value={asset.generation_prompt} />
           <Row label="Used by" value={usedBy.length ? `${usedBy.length} post${usedBy.length === 1 ? '' : 's'}` : 'Not used yet'} />
         </div>
 
