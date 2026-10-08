@@ -56,7 +56,7 @@ export default async function(req) {
       const summary: [string, string][] = [
         ['Business', lead.business_name || ''],
         ['What it does', lead.quick_pitch || ''],
-        ['The problem', lead.problem_to_solve || ''],
+        ['What the app should do', lead.problem_to_solve || ''],
         ['Requested add-ons (not yet quoted)', arr(lead.must_have_features)],
         ['Integrations needed', arr(lead.integrations_needed)],
         ['Budget', budgetLabel(lead.budget_range)],
