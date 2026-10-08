@@ -70,7 +70,7 @@ export default async function (req: Request) {
             <p style="margin:24px 0 8px;font-weight:600;">One more thing: your Base44 account</p>
             <p style="margin:0 0 16px;">Your app will live in your own Base44 account, and a free account is all you need to get started. It is required at handoff, so you can create it now, whenever you like. Depending on what your app needs, you may later move up to the $20 or $50 per month plan. I will confirm the right fit with you before handoff, so there is nothing to decide today.</p>
             <p>${brandButton('Create your free Base44 account', BASE44_SIGNUP_URL)}</p>
-            <p style="margin:0 0 16px;font-size:12px;">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without it.</p>`,
+            <p style="margin:0 0 16px;font-size:12px;">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p>`,
           footerNote: 'iRoxanne Studio',
         }),
       });
