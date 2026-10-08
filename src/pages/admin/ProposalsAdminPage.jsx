@@ -22,6 +22,8 @@ const STATUS_BADGE = {
   expired: 'irx-badge irx-accent-rose',
 };
 
+const SENDING_PROPOSALS = new Set(); // proposal ids with a send in progress
+
 export default function ProposalsAdminPage() {
   const { toast } = useToast();
   const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
