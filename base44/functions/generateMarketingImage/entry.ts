@@ -223,12 +223,10 @@ export default async function (req) {
 
     // --- Save into the existing Gallery library ---
     const media = await base44.entities.GalleryImage.create({
-      title: `${context.project_title || 'iRoxanne Studio'} — ${visual_direction.visual_type || 'marketing image'}${aspect ? ` (${aspect})` : ''}`,
+      title: `${context.project_title || 'iRoxanne Studio'} — marketing image${aspect ? ` (${aspect})` : ''}`,
       image_url,
       category: 'promo',
       source: 'upload',
-      generation_prompt: renderPrompt,
-      original_request: original_request || '',
       visual_direction: { ...visual_direction, aspect_ratio: aspect, platform: effPlatform, format: effFormat },
       platform: effPlatform,
       format: effFormat,
@@ -236,11 +234,7 @@ export default async function (req) {
       post_id: post?.id || '',
       campaign_id: effCampaignId,
       portfolio_item_id: effPortfolioItemId,
-      generation_status: 'generated',
-      generated_at: new Date().toISOString(),
-      variation_instruction: regenerate ? (variation_instruction || '') : '',
       previous_version_id,
-      description: visual_direction.reason_for_match || '',
     });
 
     // --- Attach to the draft post without touching its approval/publish state ---
