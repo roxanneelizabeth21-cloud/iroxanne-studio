@@ -12,6 +12,8 @@ export default async function(req: Request) {
     if(!contract_id) return Response.json({error:'Contract ID required'},{status:400});
     const contract=await base44.entities.Contract.get(contract_id);
     if(!['draft','sent'].includes(contract.status)) return Response.json({error:'Only draft or sent contracts may be sent for signature.'},{status:409});
+    // A second click right after the first must not email the client twice.
+    if(contract.status==='sent' && contract.sent_at && contract.access_token && Date.now()-new Date(contract.sent_at).getTime()<60000) return Response.json({link:clientLink(req,'contract',contract_id,contract.access_token),sent:false,duplicate:true});
     if(!contract.client_email || !contract.terms?.trim()) return Response.json({error:'Add the client email and agreement terms before sending.'},{status:400});
     if(contract.contract_variant==='rush' && !contract.rush_terms?.trim()) return Response.json({error:'Add the rush schedule addendum before sending.'},{status:400});
     if(contract.payment_installments?.length) {
