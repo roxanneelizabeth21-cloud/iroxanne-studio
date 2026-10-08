@@ -71,6 +71,14 @@ export default function IntakeManager() {
     try{await base44.entities.ClientIntake.update(r.id,{status:'skipped'});await load();toast.success('Intake skipped. The project moves on.');}
     catch{toast.error('Could not skip the intake.');}finally{setBusy('');}
   };
+  const noIntake=async c=>{
+    setBusy(c.id);
+    try{
+      const token=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
+      await base44.entities.ClientIntake.create({contract_id:c.id,lead_id:c.lead_id||'',access_token:token,status:'skipped',client_name:c.client_name||'',client_email:c.client_email||'',project_title:c.project_title||'',admin_notes:'No intake needed. Scope already gathered.'});
+      await load();toast.success('Marked as no intake needed. Nothing was sent.');
+    }catch{toast.error('Could not update this project.');}finally{setBusy('');}
+  };
   const copy=async row=>{
     try{await navigator.clipboard.writeText('https://iroxannestudio.com/intake/'+row.id+'?t='+row.access_token);toast.success('Private link copied.');}
     catch{toast.error('Could not copy the link. Please try again.');}
@@ -101,7 +109,7 @@ export default function IntakeManager() {
     {loading && <p role="status">Loading intakes…</p>}
     {!loading&&!error&&rows.length>0&&!rows.some(r=>(!contractFilter||r.contract_id===contractFilter)&&(filter==='all'||r.status===filter))&&<p>No intakes in this view. Choose another filter to continue.</p>}
     {!loading&&!rows.length&&!error&&<p className="text-sm text-muted-foreground">No intakes yet. Choose a project below to send the first one.</p>}
-    {filter==='all'&&waiting.length>0&&<div className="space-y-3"><h3 className="font-semibold">Ready to send an intake?</h3>{waiting.map(c=><div key={c.id} className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"><div><p>{c.project_title||c.client_name}</p><p className="text-sm text-muted-foreground">{c.client_name}</p></div><Button disabled={!!busy||!c.client_email} onClick={()=>prepare(c)}>{busy===c.id?'Setting up…':'Set up intake'}</Button></div>)}</div>}
+    {filter==='all'&&waiting.length>0&&<div className="space-y-3"><h3 className="font-semibold">Ready to send an intake?</h3>{waiting.map(c=><div key={c.id} className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"><div><p>{c.project_title||c.client_name}</p><p className="text-sm text-muted-foreground">{c.client_name}</p></div><div className="flex gap-2 flex-wrap justify-end"><Button variant="outline" disabled={!!busy} onClick={()=>noIntake(c)}>No intake needed</Button><Button disabled={!!busy||!c.client_email} onClick={()=>prepare(c)}>{busy===c.id?'Setting up…':'Set up intake'}</Button></div></div>)}</div>}
     {confirmDialog}
     <Dialog open={!!pendingSend} onOpenChange={o=>!o&&setPendingSend(null)}><DialogContent><DialogHeader><DialogTitle>Send this to the client?</DialogTitle></DialogHeader><p className="text-sm">This emails the checklist to <strong>{pendingSend?.name||'the client'}</strong>{pendingSend?.email?' ('+pendingSend.email+')':''}. Make sure the list is what you want to ask for.</p><div className="flex gap-2 justify-end"><Button variant="outline" onClick={()=>setPendingSend(null)}>Not yet</Button><Button onClick={confirmSend}>Yes, send it</Button></div></DialogContent></Dialog>
     <Dialog open={!!editing} onOpenChange={o=>!o&&setEditing(null)}><DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>What I'm asking {editing?.row.client_name||'the client'} for</DialogTitle></DialogHeader>{editing&&<div className="space-y-4">
