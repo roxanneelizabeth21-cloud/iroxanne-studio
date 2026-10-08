@@ -237,6 +237,10 @@
     "handoff_ack_user_agent": {
       "type": "string"
     },
+    "client_platform_email": {
+      "type": "string",
+      "description": "Client's Base44 account email, entered when accepting the handoff. The app is transferred to this account."
+    },
     "handoff_items": {
       "type": "array",
       "items": {
