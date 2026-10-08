@@ -55,6 +55,7 @@ export default function ContractsAdminPage() {
   const [showLead, setShowLead] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sendingId, setSendingId] = useState('');
   const [handoff,setHandoff] = useState(null);
 
   useEffect(() => {
@@ -138,14 +139,20 @@ export default function ContractsAdminPage() {
 
   const handleSend = async (contract) => {
     if (!['draft', 'sent'].includes(contract.status)) return;
+    if (SENDING_CONTRACTS.has(contract.id)) return; // a second click while the first is still sending does nothing
+    SENDING_CONTRACTS.add(contract.id);
+    setSendingId(contract.id);
+    toast({ title: 'Sending agreement...', description: 'This can take a few seconds. Please do not click again.' });
     try {
       const result = await base44.functions.invoke('sendContract', { contract_id: contract.id });
       const data = result.data || result;
       if (data.error) throw new Error(data.error);
+      if (data.duplicate) { toast({ title: 'Already sent a moment ago', description: 'No second email was sent.' }); await load(); return; }
       await navigator.clipboard.writeText(data.link).catch(() => {});
       toast({ title: data.sent ? 'Agreement sent' : 'Email failed; link copied', description: data.sent ? contract.client_email : 'You can retry sending.' });
       await load();
     } catch (e) { toast({ title: 'Could not send agreement', description: e.message, variant: 'destructive' }); }
+    finally { SENDING_CONTRACTS.delete(contract.id); setSendingId(''); }
   };
 
   const saveSettings = async (s) => {
@@ -268,8 +275,8 @@ export default function ContractsAdminPage() {
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   {(c.status === 'draft' || c.status === 'sent') && (
-                    <Button variant="outline" size="sm" onClick={() => handleSend(c)} className="gap-1">
-                      <Send className="h-3.5 w-3.5" /> {c.status === 'sent' ? 'Resend' : 'Send'}
+                    <Button variant="outline" size="sm" disabled={sendingId === c.id} onClick={() => handleSend(c)} className="gap-1">
+                      <Send className="h-3.5 w-3.5" /> {sendingId === c.id ? 'Sending...' : c.status === 'sent' ? 'Resend' : 'Send'}
                     </Button>
                   )}
                   {c.status === 'sent' && c.access_token && (
