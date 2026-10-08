@@ -3,6 +3,7 @@
 
 export function withHandoffTerms(terms) {
   const text = String(terms || '').trim();
+  if (text.startsWith('APP MAINTENANCE AND HOSTING AGREEMENT')) return text; // maintenance agreements have their own hosting and access terms
   const clause = 'Full app handoff, including transfer of the completed app and administrative access, takes place only after all agreed project payments have been received in full.';
   const currentAgreement = text.includes('Full ownership and administrative handoff occur only after completion and payment in full under Sections 9 and 10.');
   return text.includes(clause) || currentAgreement ? text : [text, clause].filter(Boolean).join('\n\n');
