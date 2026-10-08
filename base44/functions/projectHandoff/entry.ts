@@ -19,8 +19,10 @@ export default async function(req: Request) {
       let changes;
       if(action==='accept') {
         if(b.consent!==true||typeof b.name!=='string'||!b.name.trim())return Response.json({error:'Enter your name and confirm acceptance.'},{status:400});
+        const acct=String(b.platform_email||'').trim().toLowerCase();
+        if(acct.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(acct))return Response.json({error:'Enter the email you use for your Base44 account.'},{status:400});
         if(!canCompleteHandoff({...c,handoff_status:'accepted'}))return Response.json({error:'Required checklist items are incomplete.'},{status:409});
-        changes={handoff_status:'accepted',handoff_ack_name:b.name.trim().slice(0,200),handoff_ack_at:new Date().toISOString(),handoff_ack_ip:(req.headers.get('cf-connecting-ip')||req.headers.get('x-forwarded-for')||'unknown').slice(0,200),handoff_ack_user_agent:(req.headers.get('user-agent')||'').slice(0,1000)};
+        changes={client_platform_email:acct,handoff_status:'accepted',handoff_ack_name:b.name.trim().slice(0,200),handoff_ack_at:new Date().toISOString(),handoff_ack_ip:(req.headers.get('cf-connecting-ip')||req.headers.get('x-forwarded-for')||'unknown').slice(0,200),handoff_ack_user_agent:(req.headers.get('user-agent')||'').slice(0,1000)};
       }else{
         if(typeof b.notes!=='string'||!b.notes.trim())return Response.json({error:'Describe what needs attention.'},{status:400});
         changes={handoff_status:'changes_requested',handoff_client_notes:b.notes.trim().slice(0,3000)};
