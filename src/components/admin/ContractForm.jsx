@@ -11,6 +11,7 @@ import { isRushDate, RUSH_TERMS } from '@/lib/studioDelivery';
 
 import PaymentScheduleEditor, {scheduleError} from '@/components/admin/PaymentScheduleEditor';
 import {scheduleText,withHandoffTerms} from '@/lib/paymentSchedule';
+import { buildMaintenanceAgreement, MAINTENANCE_DEFAULTS } from '@/lib/maintenanceTemplate';
 
 const money = (n) => (typeof n === 'number' && !isNaN(n) ? n : 0);
 
@@ -22,6 +23,25 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
   }, [initial]);
 
   const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
+
+  const [maint, setMaint] = useState({ fee: MAINTENANCE_DEFAULTS.fee, minutes: MAINTENANCE_DEFAULTS.minutes, hosted: false, appName: '' });
+  const applyMaintenance = () => {
+    const m = buildMaintenanceAgreement({ ...maint, clientName: form.client_name });
+    setForm((p) => ({
+      ...p,
+      pricing_mode: 'custom_quote',
+      selected_package: '',
+      complimentary: false,
+      project_title: p.project_title || ((maint.appName || 'App') + ': Monthly App Maintenance'),
+      scope_summary: m.scope_summary,
+      line_items: m.line_items,
+      terms: m.terms,
+      payment_schedule: m.payment_schedule,
+      payment_installments: [],
+      deposit_amount: m.deposit_amount,
+      deposit_percent: m.deposit_percent,
+    }));
+  };
 
   const total = (form.line_items || []).reduce((sum, li) => sum + money(li.amount), 0);
 
@@ -63,6 +83,31 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-muted-foreground">Work through these three sections. Saving does not email the client.</p>
+      <div className="rounded-lg border border-border p-4 space-y-3">
+        <div>
+          <p className="text-sm font-semibold">Monthly maintenance agreement (optional)</p>
+          <p className="text-xs text-muted-foreground">Fills the scope, price, payment schedule, and terms for a month-to-month maintenance agreement. Review and edit everything below before saving. Saving does not email the client.</p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <div className="space-y-1.5">
+            <Label>Monthly fee ($)</Label>
+            <Input type="number" min="1" value={maint.fee} onChange={(e) => setMaint((m) => ({ ...m, fee: Number(e.target.value) }))} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Minor edits (minutes per month)</Label>
+            <Input type="number" min="15" step="15" value={maint.minutes} onChange={(e) => setMaint((m) => ({ ...m, minutes: Number(e.target.value) }))} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>App or site name</Label>
+            <Input value={maint.appName} onChange={(e) => setMaint((m) => ({ ...m, appName: e.target.value }))} placeholder="Jane's booking app" />
+          </div>
+        </div>
+        <label className="flex items-start gap-2 text-sm cursor-pointer">
+          <input type="checkbox" className="mt-0.5 h-4 w-4" checked={maint.hosted} onChange={(e) => setMaint((m) => ({ ...m, hosted: e.target.checked }))} />
+          <span><strong>Hosted in the Studio's Base44 workspace</strong> <span className="text-muted-foreground">(special arrangement, no handoff). Leave unchecked when the client owns their Base44 account.</span></span>
+        </label>
+        <Button type="button" variant="outline" size="sm" onClick={applyMaintenance}>Fill from maintenance template</Button>
+      </div>
       <WorkflowSection title="1. Client & project" open>
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
