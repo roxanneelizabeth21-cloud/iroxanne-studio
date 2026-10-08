@@ -86,6 +86,6 @@ Return ONLY a JSON object with those fields. No commentary, no markdown fences.`
       if (tpl) generated.video_brief = assembleVideoBrief(tpl, generated.slot_values);
     }
 
-    return Response.json({ post: { ...generated, platform, portfolio_item_id: isServicePost ? '' : pid, link_target: generated.link_target || (isServicePost ? 'Get a Quote' : 'Portfolio page'), original_ai_caption: generated.caption || '' } });
+    return Response.json({ post: { ...generated, platform, portfolio_item_id: isServicePost ? '' : pid, link_target: generated.link_target || (isServicePost ? 'Get a Quote' : 'Portfolio page') } });
   } catch (error) { return Response.json({ error: error.message }, { status: 500 }); }
 }
