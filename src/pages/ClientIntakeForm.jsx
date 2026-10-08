@@ -164,7 +164,7 @@ export default function ClientIntakeForm() {
             <Button asChild className="min-h-11 whitespace-normal">
               <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
             </Button>
-            <p className="text-xs text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without it.</p>
+            <p className="text-xs text-muted-foreground">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p>
           </section>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Button variant="outline" disabled={saving} onClick={() => handleSave(false)}>Save & return later</Button>
@@ -216,7 +216,7 @@ export default function ClientIntakeForm() {
             <div className="space-y-3">
               <Field label="Base44 account email" hint="Already have an account? Enter its email below. Your completed app transfers to your account after payment in full. Before handoff, I'll confirm the lowest suitable subscription for your app. Your Base44 subscription is separate from your project price."><Input type="email" value={intake.platform_account_email || ''} onChange={(e) => patch('platform_account_email', e.target.value)} placeholder="you@yourbusiness.com" /></Field>
               <p className="text-sm text-foreground">Need an account? Start with a free Base44 account, then return here and enter its email. You do not need to choose a paid plan now.</p>
-              <p className="text-sm text-muted-foreground">I may receive a referral commission from Base44 if you sign up through this link, at no additional cost to you. You are free to create an account without using my referral link.</p>
+              <p className="text-sm text-muted-foreground">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p>
               <Button asChild className="min-h-11 whitespace-normal">
                 <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
               </Button>
