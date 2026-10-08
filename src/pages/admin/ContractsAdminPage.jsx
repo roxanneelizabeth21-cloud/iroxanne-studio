@@ -29,6 +29,8 @@ const STATUS_MAP = {
   cancelled: { accent: 'irx-accent-red', label: 'cancelled' },
 };
 
+const SENDING_CONTRACTS = new Set(); // contract ids with a send in progress
+
 export default function ContractsAdminPage() {
   const { toast } = useToast();
   const { confirm: confirmDelete, dialog: confirmDialog } = useConfirmDelete();
