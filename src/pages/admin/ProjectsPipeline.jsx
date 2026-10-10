@@ -163,7 +163,7 @@ export default function ProjectsPipeline() {
         <summary style={{ fontWeight: 600, cursor: 'pointer' }}>How to move a client through the studio</summary>
         <ol style={{ listStyleType: 'decimal', paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
           <li>Open the inquiry, review their goal and requested add-ons, and record consultation notes.</li>
-          <li>Prepare the proposal with the $650 website where appropriate, individually priced additions, deliverables, and payment terms. Send after reviewing.</li>
+          <li>Prepare the proposal with the Quick Win or Starter website package where appropriate, individually priced additions, deliverables, and payment terms. Send after reviewing.</li>
           <li>After acceptance, open the linked agreement, check its scope, and send it for signature.</li>
           <li>Review the generated invoice. Request the agreed deposit. If invoice creation failed, use Prepare missing invoice.</li>
           <li>Send the linked content intake; review the submitted answers and mark them reviewed.</li>
