@@ -34,7 +34,10 @@ function buildInitial(initial, settings) {
   let lineItems = i.line_items;
   let selectedPackage = i.selected_package || '';
   const tier = i.estimated_tier || i.tier || '';
-  if(!lineItems&&isLead&&i.selected_package==='Business Website') {
+  const namedPackage = settings?.packages?.find((p) => p.name === i.selected_package);
+  if(!lineItems&&isLead&&namedPackage) {
+    lineItems=[{description:`${namedPackage.name} package — ${namedPackage.description || ''}`,quantity:1,amount:namedPackage.price}];
+  } else if(!lineItems&&isLead&&i.selected_package==='Business Website') {
     lineItems=[{description:'Business Website — up to four pages, service-request form, owner dashboard, social links, supported call scheduling, one revision round and launch handoff. Third-party costs and add-ons separate.',quantity:1,amount:650}];
   }
   if (!lineItems && isLead && tier && settings?.packages?.length) {
@@ -101,7 +104,7 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
       return {
         ...p,
         selected_package: name,
-        estimated_tier: name==='Business Website'?'starter':name.toLowerCase(),
+        estimated_tier: ['Business Website','Quick Win'].includes(name)?'starter':name.toLowerCase(),
         deposit_amount: !p.payment_installments?.length && !p.deposit_amount && pkg ? Math.round((pkg.price+rest.reduce((sum,item)=>sum+num(item.amount),0))*(p.deposit_percent??50))/100 : p.deposit_amount,
         timeline_estimate: p.timeline_estimate || TIER_TIMELINES[name.toLowerCase()] || '',
         line_items: pkg
