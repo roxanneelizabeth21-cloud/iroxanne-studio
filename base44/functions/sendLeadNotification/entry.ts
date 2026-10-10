@@ -34,7 +34,7 @@ export default async function(req) {
         ['Email', lead.email || ''],
         ['Business', lead.business_name || ''],
         ['Budget', budgetLabel(lead.budget_range)],
-        ['Estimated', lead.selected_package==='Business Website' ? '$650 base website; requested add-ons require a quote' : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
+        ['Estimated', ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? `${lead.selected_package} website ($${lead.estimated_price_low ?? ''}); requested add-ons require a quote` : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
         ['Pitch', lead.quick_pitch || ''],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
