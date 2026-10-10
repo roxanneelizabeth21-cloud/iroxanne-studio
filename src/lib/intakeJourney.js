@@ -11,8 +11,9 @@ export function intakeSteps(profile = {}, scope = {}) {
   if (profile.features?.includes('contact')) steps.push('contact');
   if (profile.connections === 'yes' || profile.start === 'existing') steps.push('data');
   if (profile.content === 'ready') steps.push('documents', 'legal');
-  if(scope?.selected_package==='Business Website') {
-    for(const section of ['home','about','services','contact']) if(!steps.includes(section))steps.push(section);
+  const packagePages = {'Business Website':['home','about','services','contact'],'Starter':['home','about','services','contact'],'Quick Win':['home','contact']}[scope?.selected_package];
+  if(packagePages) {
+    for(const section of packagePages) if(!steps.includes(section))steps.push(section);
   }
   steps.push('notes', 'review');
   return steps;
