@@ -11,6 +11,13 @@ assert.equal(projectNextStep({...base,_intake:{status:'reviewed'},handoff_status
 assert.equal(projectNextStep({...base,_invoice:undefined}).action,'invoice');
 const {intakeSteps}=load('src/lib/intakeJourney.js');
 for(const page of ['home','about','services','contact'])assert.ok(intakeSteps({}, {selected_package:'Business Website'}).includes(page));
+for(const page of ['home','about','services','contact'])assert.ok(intakeSteps({}, {selected_package:'Starter'}).includes(page));
+for(const page of ['home','contact'])assert.ok(intakeSteps({}, {selected_package:'Quick Win'}).includes(page));
+assert.ok(!intakeSteps({}, {selected_package:'Quick Win'}).includes('about'));
+const {estimateProject}=load('base44/shared/quoteEstimate.ts');
+assert.equal(estimateProject({}).priceLow,2950);
+assert.equal(estimateProject({mustHave:['a','b','c','d']}).priceHigh,4950);
+assert.ok(estimateProject({mustHave:Array(8).fill('x')}).priceHigh>4950);
 const {ensureContractInvoice}=load('base44/shared/contractInvoice.ts');
 let invoices=[];
 const invoiceDb={Invoice:{filter:async()=>invoices,create:async data=>{const i={id:'test-invoice',...data};invoices.push(i);return i;},update:async(id,data)=>Object.assign(invoices[0],data)}};
