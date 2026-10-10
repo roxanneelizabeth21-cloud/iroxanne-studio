@@ -15,7 +15,7 @@ export default function Hero({ projects, loading }) {
       <div className="relative mx-auto flex min-h-[300px] max-w-6xl items-center justify-center px-5 py-6 text-center md:min-h-[360px] md:px-8 md:py-8">
         <div className="w-full max-w-[800px]">
           <p className="text-[13px] font-medium text-[#D5BB82] tracking-[0.16em] mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Websites and custom apps for small businesses
+            Custom apps for new ideas and small businesses
           </p>
 
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}

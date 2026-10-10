@@ -70,38 +70,26 @@ export default function Pricing() {
  return <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
   <div className="mx-auto max-w-6xl">
    <p className="text-sm font-medium text-[#876b26] dark:text-[#D5BB82]">Services & Pricing</p>
-   <h2 id="pricing-heading" className="font-display mt-2 max-w-3xl text-3xl md:text-5xl">Websites and custom apps.<br className="hidden sm:block" /> Built to grow with you.</h2>
-   <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">Start with a website, or build a custom app around the way your business runs. Every package has a fixed price and a clear timeline, and you can add tools when you need them.</p>
-   <h3 className="font-display mt-8 text-2xl md:text-3xl">Websites</h3>
-   <div className="mt-4 grid gap-5 lg:grid-cols-2">
-    <div className="rounded-2xl border border-border bg-background p-6 md:p-8">
-     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Your starting point</p>
-     <h4 className="font-display mt-3 text-3xl">Quick Win</h4>
-     <p className="mt-4 text-5xl font-semibold tracking-tight">$500</p>
-     <p className="mt-2 text-sm text-muted-foreground">One-page website · 3–5 business days</p>
-     <ul className="mt-5 space-y-4">
-      {quickWinIncluded.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#876b26] dark:text-[#D5BB82]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
-     </ul>
-     <a href="/quote" className={buttonClass + ' mt-6'}>Start My Quick Win <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+   <h2 id="pricing-heading" className="font-display mt-2 max-w-3xl text-3xl md:text-5xl">A website for your business.<br className="hidden sm:block" /> Room to grow.</h2>
+   <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">Start with a complete business website. Add tools for managing customers, selling products, organizing your work, or marketing your business when you need them.</p>
+   <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-background">
+    <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
+     <div className="border-b border-border bg-[#302634] text-[#FAF3E5] p-6 md:p-8 lg:border-b-0 lg:border-r [&_.text-muted-foreground]:text-[#E4DCE2]">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Your starting point</p>
+      <h3 className="font-display mt-3 text-3xl">Quick Win</h3>
+      <p className="mt-4 text-5xl font-semibold tracking-tight">$500</p>
+      <p className="mt-2 text-sm text-muted-foreground">One-time website build</p>
+      <p className="mt-5 leading-relaxed text-muted-foreground">A finished one-page website that introduces your business and gives customers a way to reach you.</p>
+      <a href="/quote" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E9D5A5] px-6 py-3 text-sm font-semibold text-[#302634] hover:bg-[#F5E5BE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]">Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+      <p className="mt-5 text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
+     </div>
+     <div className="p-6 md:p-8">
+      <h4 className="text-lg font-semibold">Your package includes</h4>
+      <ul className="mt-5 space-y-4">
+       {quickWinIncluded.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#876b26] dark:text-[#D5BB82]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
+      </ul>
+     </div>
     </div>
-    <div className="rounded-2xl border border-border bg-[#302634] text-[#FAF3E5] p-6 md:p-8 [&_.text-muted-foreground]:text-[#E4DCE2]">
-     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Most complete website</p>
-     <h4 className="font-display mt-3 text-3xl">Starter</h4>
-     <p className="mt-4 text-5xl font-semibold tracking-tight">$1,250</p>
-     <p className="mt-2 text-sm text-muted-foreground">Up to four pages · about 1 week</p>
-     <ul className="mt-5 space-y-4">
-      {included.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#E9D5A5]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
-     </ul>
-     <a href="/quote" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E9D5A5] px-6 py-3 text-sm font-semibold text-[#302634] hover:bg-[#F5E5BE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]">Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
-    </div>
-   </div>
-   <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Timelines begin once your content is received. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
-   <div className="mt-10 rounded-2xl border border-border bg-background p-6 md:flex md:items-center md:justify-between md:gap-8">
-    <div>
-     <h3 className="font-display text-2xl md:text-3xl">Need more than a website?</h3>
-     <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">See what I build, from booking and ordering to client portals and AI tools.</p>
-    </div>
-    <a href="/solutions" className={buttonClass + ' mt-5 shrink-0 md:mt-0'}>See Solutions <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
    </div>
    <div className="mt-8 grid gap-5">
     <div className="rounded-xl border border-border p-6">
