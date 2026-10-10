@@ -25,7 +25,7 @@ export default function Hero({ projects, loading }) {
           </h1>
 
           <p className="mx-auto mt-5 max-w-[560px] text-[15.5px] leading-[1.7] text-[#E4DCE2]" style={{ fontFamily: "'Inter', sans-serif" }}>
-            I’m Roxanne. I build websites and custom apps for landscapers, hair stylists, house cleaners, pet sitters, event planners, product brands, creators and other small businesses. Websites start at $500.
+            I’m Roxanne. I help turn early ideas and business needs into custom apps. We can start with a conversation.
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3.5">
