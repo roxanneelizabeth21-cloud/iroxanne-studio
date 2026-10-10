@@ -65,12 +65,13 @@ export default async function(req:Request){
   for(const key of fields)data[key]=String(input[key]||'').slice(0,key==='quick_pitch'||key==='problem_to_solve'?5000:1000);
   if(!data.name.trim()||data.quick_pitch.trim().length<5||!['under_1500','1500_3000','3000_5000','5000_8000','8000_plus','not_sure'].includes(data.budget_range))fail('Please complete your name, idea and budget.');
   for(const key of ['must_have_features','nice_to_have_features','integrations_needed'])data[key]=Array.isArray(input[key])?input[key].slice(0,30).map((v:any)=>String(v).slice(0,150)):[];
-  data.selected_package=['Business Website','Custom Application','Mobile App','Not sure'].includes(input.selected_package)?input.selected_package:'Not sure';
+  data.selected_package=['Quick Win','Starter','Business Website','Custom Application','Mobile App','Not sure'].includes(input.selected_package)?input.selected_package:'Not sure';
   data.ongoing_support_needed=input.ongoing_support_needed===true;
   const pricing=(await db.PricingSettings.list('-updated_date',1).catch(()=>[]))[0];
-  const estimate=estimateProject({mustHave:data.must_have_features,niceToHave:data.nice_to_have_features,integrations:data.integrations_needed,rate:pricing?.rate_per_hour});
+  const estimate=estimateProject({mustHave:data.must_have_features,niceToHave:data.nice_to_have_features,integrations:data.integrations_needed,rate:pricing?.rate_per_hour,packages:pricing?.packages});
   Object.assign(data,{estimated_tier:estimate.tier,estimated_hours_low:estimate.hoursLow,estimated_hours_high:estimate.hoursHigh,estimated_price_low:estimate.priceLow,estimated_price_high:estimate.priceHigh});
-  if(data.selected_package==='Business Website')Object.assign(data,{estimated_tier:'starter',estimated_price_low:650,estimated_price_high:null,estimated_hours_low:null,estimated_hours_high:null});
+  const websitePrices:any={'Quick Win':500,'Starter':1250,'Business Website':650};
+  if(websitePrices[data.selected_package]!=null){const pkg=(pricing?.packages||[]).find((p:any)=>p?.name===data.selected_package);Object.assign(data,{estimated_tier:'starter',estimated_price_low:Number(pkg?.price)||websitePrices[data.selected_package],estimated_price_high:null,estimated_hours_low:null,estimated_hours_high:null});}
   const token=hex(crypto.getRandomValues(new Uint8Array(32)));
   const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
   await db.QuoteEmailVerification.update(record.id,{lead_id:lead.id});
