@@ -127,6 +127,7 @@ export function AppSolutions() {
    <div className="rounded-xl border border-border p-6">
     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Have an application idea?</p>
     <h2 id="app-pricing-heading" className="font-display mt-3 text-2xl">Custom Web & Mobile Applications</h2>
+    <p className="mt-3 text-3xl font-semibold tracking-tight">Custom apps start at $2,950</p>
     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Need something beyond a business website? We can discuss a customer platform, event system, specialized business application, or mobile product.</p>
     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Your proposal will define the features, user roles, integrations, testing, and launch requirements. Mobile development and app-store delivery receive their own scope and quote.</p>
     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My Application →</a>
