@@ -21,11 +21,6 @@ const quickWinIncluded = [
  ['Launch and handoff', 'Domain connection and testing of included features.'],
 ];
 
-const appPackages = [
- {name:'Business', price:'$2,950', time:'About 2 weeks', text:'A custom app built around one core workflow, such as booking, ordering, client intake, or job tracking, with an admin dashboard to run it.'},
- {name:'Custom', price:'$4,950+', time:'3+ weeks', text:'A business system with multiple workflows, such as booking with payments, inventory, client portals, or AI features. Larger scopes are quoted individually.'},
-];
-
 const groups = [
  {title:'Customers & Services', intro:'Organize inquiries, appointments, and customer relationships.', items:[
  ['Customer records','Keep contact details, notes, and inquiry history organized.'],
@@ -104,7 +99,7 @@ export default function Pricing() {
    <div className="mt-10 rounded-2xl border border-border bg-background p-6 md:flex md:items-center md:justify-between md:gap-8">
     <div>
      <h3 className="font-display text-2xl md:text-3xl">Need more than a website?</h3>
-     <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">Custom apps start at $2,950. See what I build, from booking and ordering to client portals and AI tools.</p>
+     <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">See what I build, from booking and ordering to client portals and AI tools.</p>
     </div>
     <a href="/solutions" className={buttonClass + ' mt-5 shrink-0 md:mt-0'}>See Solutions <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
    </div>
@@ -129,20 +124,15 @@ export default function Pricing() {
 export function AppSolutions() {
  return <section id="app-pricing" aria-labelledby="app-pricing-heading" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
   <div className="mx-auto max-w-6xl">
-   <h2 id="app-pricing-heading" className="font-display text-3xl md:text-4xl">Custom Apps</h2>
-   <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">Replace spreadsheets, paper forms, and back-and-forth messages with an app built around how your business works.</p>
-   <div className="mt-4 grid gap-5 md:grid-cols-2">
-    {appPackages.map(pkg=><div key={pkg.name} className="rounded-2xl border border-border bg-background p-6 md:p-8">
-     <h4 className="font-display text-3xl">{pkg.name}</h4>
-     <p className="mt-3 text-4xl font-semibold tracking-tight">{pkg.price}</p>
-     <p className="mt-2 text-sm text-muted-foreground">{pkg.time}</p>
-     <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{pkg.text}</p>
-     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My App →</a>
-    </div>)}
+   <div className="rounded-xl border border-border p-6">
+    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Have an application idea?</p>
+    <h2 id="app-pricing-heading" className="font-display mt-3 text-2xl">Custom Web & Mobile Applications</h2>
+    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Need something beyond a business website? We can discuss a customer platform, event system, specialized business application, or mobile product.</p>
+    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Your proposal will define the features, user roles, integrations, testing, and launch requirements. Mobile development and app-store delivery receive their own scope and quote.</p>
+    <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My Application →</a>
    </div>
-   <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">Your proposal defines the features, user roles, integrations, testing, and launch plan before work begins. Mobile development and app-store delivery receive their own scope and quote.</p>
    <div id="addons" className="mt-10 scroll-mt-24">
-    <h3 className="font-display text-3xl md:text-4xl">What do you want your website or app to do for you?</h3>
+    <h3 className="font-display text-3xl md:text-4xl">What do you want your website to do for you?</h3>
     <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Your website can do more than introduce your business. Choose additional tools that support the way you work.</p>
     <div className="mt-5 rounded-xl border border-[#302634] bg-[#302634] text-[#FAF3E5] px-5 py-4 [&_.text-muted-foreground]:text-[#E4DCE2]">
      <p className="font-semibold">Optional Add-ons — Priced Separately</p>

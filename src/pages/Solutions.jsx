@@ -13,7 +13,7 @@ export default function Solutions() {
           <div className="mx-auto max-w-5xl px-5 md:px-8 py-10 text-center">
             <p className="text-sm tracking-widest text-[#D5BB82]">SOLUTIONS</p>
             <h1 className="font-display text-4xl md:text-5xl mt-4">Apps built around how your business works.</h1>
-            <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-[#E4DCE2]">Booking, ordering, client portals, payments, and everyday operations, brought together in one custom app. Custom apps start at $2,950.</p>
+            <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-[#E4DCE2]">Booking, ordering, client portals, payments, and everyday operations, brought together in one custom app.</p>
           </div>
         </section>
         <Services />
