@@ -15,7 +15,7 @@ export default function Hero({ projects, loading }) {
       <div className="relative mx-auto flex min-h-[300px] max-w-6xl items-center justify-center px-5 py-6 text-center md:min-h-[360px] md:px-8 md:py-8">
         <div className="w-full max-w-[800px]">
           <p className="text-[13px] font-medium text-[#D5BB82] tracking-[0.16em] mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Websites and custom apps for service businesses
+            Websites and custom apps for small businesses
           </p>
 
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: '1.05', letterSpacing: '-0.02em' }}
@@ -25,7 +25,7 @@ export default function Hero({ projects, loading }) {
           </h1>
 
           <p className="mx-auto mt-5 max-w-[560px] text-[15.5px] leading-[1.7] text-[#E4DCE2]" style={{ fontFamily: "'Inter', sans-serif" }}>
-            I’m Roxanne. I build websites and custom apps for landscapers, hair stylists, house cleaners, pet sitters, event planners and other service businesses. Websites start at $500.
+            I’m Roxanne. I build websites and custom apps for landscapers, hair stylists, house cleaners, pet sitters, event planners, product brands, creators and other small businesses. Websites start at $500.
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3.5">
