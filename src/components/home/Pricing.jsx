@@ -110,22 +110,14 @@ export default function Pricing() {
 }
 
 export function AppSolutions() {
- return <section id="app-pricing" aria-labelledby="app-pricing-heading" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
+ return <section id="app-solutions" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
   <div className="mx-auto max-w-6xl">
-   <div className="rounded-xl border border-border p-6">
-    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Have an application idea?</p>
-    <h2 id="app-pricing-heading" className="font-display mt-3 text-2xl">Custom Web & Mobile Applications</h2>
-    <p className="mt-3 text-3xl font-semibold tracking-tight">Custom apps start at $2,950</p>
-    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Need something beyond a business website? We can discuss a customer platform, event system, specialized business application, or mobile product.</p>
-    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Your proposal will define the features, user roles, integrations, testing, and launch requirements. Mobile development and app-store delivery receive their own scope and quote.</p>
-    <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My Application →</a>
-   </div>
-   <div id="addons" className="mt-10 scroll-mt-24">
+   <div id="addons" className="scroll-mt-24">
     <h3 className="font-display text-3xl md:text-4xl">What do you want your website to do for you?</h3>
     <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Your website can do more than introduce your business. Choose additional tools that support the way you work.</p>
     <div className="mt-5 rounded-xl border border-[#302634] bg-[#302634] text-[#FAF3E5] px-5 py-4 [&_.text-muted-foreground]:text-[#E4DCE2]">
      <p className="font-semibold">Optional Add-ons — Priced Separately</p>
-     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">These services are not included in the website packages. Each addition is quoted around your requirements. You’ll receive a written scope and price before work begins.</p>
+     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">These services are not included in the $500 package. Each addition is quoted around your requirements. You’ll receive a written scope and price before work begins.</p>
     </div>
     <div className="mt-5 grid items-start gap-3 md:grid-cols-2">
      {groups.map(group=><details key={group.title} className="group rounded-xl border border-border bg-background">
@@ -139,10 +131,14 @@ export function AppSolutions() {
     </div>
     <a href="/quote" className={buttonClass + ' mt-5'}>Explore My Add-ons <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
    </div>
-   <div className="mt-8 border-t border-border pt-6">
-    <h3 className="font-display text-3xl">Let’s start with what you need.</h3>
-    <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Tell me about your business, what you want customers to be able to do, and the tasks you’d like help managing. We’ll decide what belongs in your first build and what can come later.</p>
-    <a href="/quote" className={buttonClass + ' mt-5'}>Request a Quote <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+   <div className="mt-8 grid gap-5 md:grid-cols-2">
+    <div className="rounded-xl border border-border p-6">
+     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Have an application idea?</p>
+     <h3 className="font-display mt-3 text-2xl">Custom Web & Mobile Applications</h3>
+     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Need something beyond a business website? We can discuss a customer platform, event system, specialized business application, or mobile product.</p>
+     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Your proposal will define the features, user roles, integrations, testing, and launch requirements. Mobile development and app-store delivery receive their own scope and quote.</p>
+     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My Application →</a>
+    </div>
    </div>
   </div>
  </section>;
