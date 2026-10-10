@@ -1,9 +1,11 @@
 // Lightweight project estimator for the Get-a-Quote intake.
-// Produces a tier label and an hour / price range from the selected
-// features and integrations. Gives the studio a ballpark to frame
-// the follow-up proposal, not a binding quote.
+// Estimates hours from the selected features and integrations, then
+// prices the request at the matching app package so the estimate agrees
+// with published pricing. Gives the studio a ballpark for the follow-up
+// proposal, not a binding quote.
 
-const DEFAULT_RATE = 65; // blended $/hr — overridden by PricingSettings when available
+const DEFAULT_RATE = 90; // $/hr — overridden by PricingSettings when available
+const DEFAULT_PRICES = { business: 2950, custom: 4950 }; // overridden by PricingSettings packages
 
 const INTEGRATION_HOURS = {
   'Payments (Square/Wix)': 5,
@@ -16,17 +18,36 @@ const INTEGRATION_HOURS = {
   'None yet': 0,
 };
 
+function packagePrices(packages) {
+  const find = (name) => (packages || []).find((p) => String(p?.name || '').trim().toLowerCase() === name)?.price;
+  return {
+    business: Number(find('business')) || DEFAULT_PRICES.business,
+    custom: Number(find('custom')) || DEFAULT_PRICES.custom,
+  };
+}
+
+// Business covers up to (Business price / rate) hours and Custom up to
+// (Custom price / rate) hours. Larger scopes are priced at the hourly
+// rate, rounded up to the nearest $50.
+function priceForHours(hours, rate, prices) {
+  if (hours <= prices.business / rate) return { tier: 'business', price: prices.business };
+  if (hours <= prices.custom / rate) return { tier: 'custom', price: prices.custom };
+  return { tier: 'custom', price: Math.ceil((hours * rate) / 50) * 50 };
+}
+
 /**
  * @param {Object}  opts
  * @param {Array}   opts.mustHave     - must-have feature labels
  * @param {Array}   opts.niceToHave   - nice-to-have feature labels
  * @param {Array}   opts.integrations - integration labels
  * @param {number}  [opts.rate]       - $/hr from PricingSettings (falls back to DEFAULT_RATE)
+ * @param {Array}   [opts.packages]   - PricingSettings packages (Business / Custom prices)
  */
-export function estimateProject({ mustHave = [], niceToHave = [], integrations = [], rate } = {}) {
+export function estimateProject({ mustHave = [], niceToHave = [], integrations = [], rate, packages } = {}) {
   const hourlyRate = rate && rate > 0 ? rate : DEFAULT_RATE;
+  const prices = packagePrices(packages);
 
-  // Base: a simple site with landing + contact + gallery
+  // Base: a simple business app built around one core workflow
   let hoursLow = 15;
   let hoursHigh = 25;
 
@@ -46,12 +67,8 @@ export function estimateProject({ mustHave = [], niceToHave = [], integrations =
   hoursLow = Math.round(hoursLow);
   hoursHigh = Math.round(hoursHigh);
 
-  const priceLow = Math.round((hoursLow * hourlyRate) / 100) * 100;
-  const priceHigh = Math.round((hoursHigh * hourlyRate) / 100) * 100;
+  const low = priceForHours(hoursLow, hourlyRate, prices);
+  const high = priceForHours(hoursHigh, hourlyRate, prices);
 
-  let tier = 'starter';
-  if (hoursHigh > 80) tier = 'custom';
-  else if (hoursHigh > 40) tier = 'business';
-
-  return { tier, hoursLow, hoursHigh, priceLow, priceHigh };
+  return { tier: high.tier, hoursLow, hoursHigh, priceLow: low.price, priceHigh: high.price };
 }
