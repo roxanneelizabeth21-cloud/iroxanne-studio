@@ -6,6 +6,7 @@ import Hero from '@/components/home/Hero';
 
 import Process from '@/components/home/Process';
 import Services from '@/components/home/Services';
+import WhoIBuildFor from '@/components/home/WhoIBuildFor';
 import Pricing from '@/components/home/Pricing';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
@@ -71,6 +72,7 @@ export default function Home() {
         <Hero projects={projects} loading={loading} heroBackgroundImage={heroBackgroundImage} />
 
 
+        <WhoIBuildFor />
         <Services />
         <Pricing />
         <Process />
