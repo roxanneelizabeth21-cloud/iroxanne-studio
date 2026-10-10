@@ -33,6 +33,7 @@ export default function About() {
               <p className="text-sm tracking-widest text-[#D5BB82]">ABOUT IROXANNE STUDIO</p>
               <h1 className="font-display text-4xl md:text-5xl mt-4">Hi, I’m Roxanne.</h1>
               <p className="mt-4 max-w-xl leading-relaxed text-[#E4DCE2]">I help people turn an idea into something they can use and share. You do not need to have it all figured out before we begin.</p>
+              <p className="mt-4 max-w-xl leading-relaxed text-[#E4DCE2]">I build websites and custom apps that make running your business easier, from your first website to the tools that run your day. Tell me how your business works, and I’ll build the website or app to match. Starting with an early idea? We can start with a conversation.</p>
               <a href="/quote" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#E9D5A5] text-[#302634] px-7 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Request a quote <ArrowRight className="h-4 w-4"/></a>
             </div>
           </div>
