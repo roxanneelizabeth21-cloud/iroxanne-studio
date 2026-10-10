@@ -12,6 +12,20 @@ const included = [
  ['Launch and handoff', 'Domain connection, testing of included features, and a walkthrough of how to manage your website.'],
 ];
 
+const quickWinIncluded = [
+ ['One mobile-friendly page', 'Your services, a short about section, and contact details in one place.'],
+ ['Your branding and content', 'Your logo, colors, photos, and business information arranged into a clean design.'],
+ ['Service-request form', 'Inquiries are emailed to you as they come in.'],
+ ['Social profile links', 'Help visitors find your existing social accounts.'],
+ ['One revision round', 'One consolidated set of changes within the agreed scope.'],
+ ['Launch and handoff', 'Domain connection and testing of included features.'],
+];
+
+const appPackages = [
+ {name:'Business', price:'$2,950', time:'About 2 weeks', text:'A custom app built around one core workflow, such as booking, ordering, client intake, or job tracking, with an admin dashboard to run it.'},
+ {name:'Custom', price:'$4,950+', time:'3+ weeks', text:'A business system with multiple workflows, such as booking with payments, inventory, client portals, or AI features. Larger scopes are quoted individually.'},
+];
+
 const groups = [
  {title:'Customers & Services', intro:'Organize inquiries, appointments, and customer relationships.', items:[
  ['Customer records','Keep contact details, notes, and inquiry history organized.'],
@@ -61,33 +75,50 @@ export default function Pricing() {
  return <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
   <div className="mx-auto max-w-6xl">
    <p className="text-sm font-medium text-[#876b26] dark:text-[#D5BB82]">Services & Pricing</p>
-   <h2 id="pricing-heading" className="font-display mt-2 max-w-3xl text-3xl md:text-5xl">A website for your business.<br className="hidden sm:block" /> Room to grow.</h2>
-   <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">Start with a complete business website. Add tools for managing customers, selling products, organizing your work, or marketing your business when you need them.</p>
-   <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-background">
-    <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
-     <div className="border-b border-border bg-[#302634] text-[#FAF3E5] p-6 md:p-8 lg:border-b-0 lg:border-r [&_.text-muted-foreground]:text-[#E4DCE2]">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Your starting point</p>
-      <h3 className="font-display mt-3 text-3xl">Business Website</h3>
-      <p className="mt-4 text-5xl font-semibold tracking-tight">$650</p>
-      <p className="mt-2 text-sm text-muted-foreground">One-time website build</p>
-      <p className="mt-5 leading-relaxed text-muted-foreground">A finished website that introduces your business and gives customers a way to inquire or schedule a call.</p>
-      <a href="/quote" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E9D5A5] px-6 py-3 text-sm font-semibold text-[#302634] hover:bg-[#F5E5BE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]">Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
-      <p className="mt-5 text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
-     </div>
-     <div className="p-6 md:p-8">
-      <h4 className="text-lg font-semibold">Your package includes</h4>
-      <ul className="mt-5 space-y-4">
-       {included.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#876b26] dark:text-[#D5BB82]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
-      </ul>
-     </div>
+   <h2 id="pricing-heading" className="font-display mt-2 max-w-3xl text-3xl md:text-5xl">Websites and custom apps.<br className="hidden sm:block" /> Built to grow with you.</h2>
+   <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">Start with a website, or build a custom app around the way your business runs. Every package has a fixed price and a clear timeline, and you can add tools when you need them.</p>
+   <h3 className="font-display mt-8 text-2xl md:text-3xl">Websites</h3>
+   <div className="mt-4 grid gap-5 lg:grid-cols-2">
+    <div className="rounded-2xl border border-border bg-background p-6 md:p-8">
+     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Your starting point</p>
+     <h4 className="font-display mt-3 text-3xl">Quick Win</h4>
+     <p className="mt-4 text-5xl font-semibold tracking-tight">$500</p>
+     <p className="mt-2 text-sm text-muted-foreground">One-page website · 3–5 business days</p>
+     <ul className="mt-5 space-y-4">
+      {quickWinIncluded.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#876b26] dark:text-[#D5BB82]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
+     </ul>
+     <a href="/quote" className={buttonClass + ' mt-6'}>Start My Quick Win <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+    </div>
+    <div className="rounded-2xl border border-border bg-[#302634] text-[#FAF3E5] p-6 md:p-8 [&_.text-muted-foreground]:text-[#E4DCE2]">
+     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Most complete website</p>
+     <h4 className="font-display mt-3 text-3xl">Starter</h4>
+     <p className="mt-4 text-5xl font-semibold tracking-tight">$1,250</p>
+     <p className="mt-2 text-sm text-muted-foreground">Up to four pages · about 1 week</p>
+     <ul className="mt-5 space-y-4">
+      {included.map(([title,description])=><li key={title} className="flex gap-3"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[#E9D5A5]" /><div><span className="font-semibold">{title}</span><p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{description}</p></div></li>)}
+     </ul>
+     <a href="/quote" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#E9D5A5] px-6 py-3 text-sm font-semibold text-[#302634] hover:bg-[#F5E5BE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E9D5A5]">Start My Website <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
     </div>
    </div>
+   <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Timelines begin once your content is received. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
+   <h3 className="font-display mt-10 text-2xl md:text-3xl">Custom Apps</h3>
+   <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">Replace spreadsheets, paper forms, and back-and-forth messages with an app built around how your business works.</p>
+   <div className="mt-4 grid gap-5 md:grid-cols-2">
+    {appPackages.map(pkg=><div key={pkg.name} className="rounded-2xl border border-border bg-background p-6 md:p-8">
+     <h4 className="font-display text-3xl">{pkg.name}</h4>
+     <p className="mt-3 text-4xl font-semibold tracking-tight">{pkg.price}</p>
+     <p className="mt-2 text-sm text-muted-foreground">{pkg.time}</p>
+     <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{pkg.text}</p>
+     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My App →</a>
+    </div>)}
+   </div>
+   <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">Your proposal defines the features, user roles, integrations, testing, and launch plan before work begins. Mobile development and app-store delivery receive their own scope and quote.</p>
    <div id="addons" className="mt-10 scroll-mt-24">
-    <h3 className="font-display text-3xl md:text-4xl">What do you want your website to do for you?</h3>
+    <h3 className="font-display text-3xl md:text-4xl">What do you want your website or app to do for you?</h3>
     <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Your website can do more than introduce your business. Choose additional tools that support the way you work.</p>
     <div className="mt-5 rounded-xl border border-[#302634] bg-[#302634] text-[#FAF3E5] px-5 py-4 [&_.text-muted-foreground]:text-[#E4DCE2]">
      <p className="font-semibold">Optional Add-ons — Priced Separately</p>
-     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">These services are not included in the $650 package. Each addition is quoted around your requirements. You’ll receive a written scope and price before work begins.</p>
+     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">These services are not included in the website packages. Each addition is quoted around your requirements. You’ll receive a written scope and price before work begins.</p>
     </div>
     <div className="mt-5 grid items-start gap-3 md:grid-cols-2">
      {groups.map(group=><details key={group.title} className="group rounded-xl border border-border bg-background">
@@ -101,14 +132,7 @@ export default function Pricing() {
     </div>
     <a href="/quote" className={buttonClass + ' mt-5'}>Explore My Add-ons <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
    </div>
-   <div className="mt-8 grid gap-5 md:grid-cols-2">
-    <div className="rounded-xl border border-border p-6">
-     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Have an application idea?</p>
-     <h3 className="font-display mt-3 text-2xl">Custom Web & Mobile Applications</h3>
-     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Need something beyond a business website? We can discuss a customer platform, event system, specialized business application, or mobile product.</p>
-     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Your proposal will define the features, user roles, integrations, testing, and launch requirements. Mobile development and app-store delivery receive their own scope and quote.</p>
-     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Discuss My Application →</a>
-    </div>
+   <div className="mt-8 grid gap-5">
     <div className="rounded-xl border border-border p-6">
      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Support as you grow</p>
      <h3 className="font-display mt-3 text-2xl">Ongoing Support</h3>
