@@ -5,7 +5,7 @@ import BrandLogo from '@/components/BrandLogo';
 import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
-  { label: 'Possibilities', href: '/#services' },
+  { label: 'Solutions', href: '/solutions' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'App Ideas', href: '/ideas' },
   { label: 'How It Works', href: '/#process' },

@@ -101,7 +101,35 @@ export default function Pricing() {
     </div>
    </div>
    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">You provide your logo, photos, and business content. Timelines begin once your content is received. Domain registration, platform subscriptions, business email, and other third-party charges are separate and discussed before work begins.</p>
-   <h3 className="font-display mt-10 text-2xl md:text-3xl">Custom Apps</h3>
+   <div className="mt-10 rounded-2xl border border-border bg-background p-6 md:flex md:items-center md:justify-between md:gap-8">
+    <div>
+     <h3 className="font-display text-2xl md:text-3xl">Need more than a website?</h3>
+     <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">Custom apps start at $2,950. See what I build, from booking and ordering to client portals and AI tools.</p>
+    </div>
+    <a href="/solutions" className={buttonClass + ' mt-5 shrink-0 md:mt-0'}>See Solutions <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+   </div>
+   <div className="mt-8 grid gap-5">
+    <div className="rounded-xl border border-border p-6">
+     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Support as you grow</p>
+     <h3 className="font-display mt-3 text-2xl">Ongoing Support</h3>
+     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Optional ongoing support is available for updates and agreed improvements. Your proposal will explain what’s included, the support allowance, and any recurring charges.</p>
+     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Ask About Support →</a>
+    </div>
+   </div>
+   <div className="mt-8 border-t border-border pt-6">
+    <h3 className="font-display text-3xl">Let’s start with what you need.</h3>
+    <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Tell me about your business, what you want customers to be able to do, and the tasks you’d like help managing. We’ll decide what belongs in your first build and what can come later.</p>
+    <a href="/quote" className={buttonClass + ' mt-5'}>Request a Quote <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+    <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted-foreground">Additional features are optional and priced separately. Shared setup is counted once in combined quotes. Platform subscriptions, domains, processing fees, and other third-party costs are disclosed before work begins.</p>
+   </div>
+  </div>
+ </section>;
+}
+
+export function AppSolutions() {
+ return <section id="app-pricing" aria-labelledby="app-pricing-heading" className="scroll-mt-24 border-y border-border bg-card px-5 py-10 md:px-8">
+  <div className="mx-auto max-w-6xl">
+   <h2 id="app-pricing-heading" className="font-display text-3xl md:text-4xl">Custom Apps</h2>
    <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">Replace spreadsheets, paper forms, and back-and-forth messages with an app built around how your business works.</p>
    <div className="mt-4 grid gap-5 md:grid-cols-2">
     {appPackages.map(pkg=><div key={pkg.name} className="rounded-2xl border border-border bg-background p-6 md:p-8">
@@ -132,19 +160,10 @@ export default function Pricing() {
     </div>
     <a href="/quote" className={buttonClass + ' mt-5'}>Explore My Add-ons <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
    </div>
-   <div className="mt-8 grid gap-5">
-    <div className="rounded-xl border border-border p-6">
-     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Support as you grow</p>
-     <h3 className="font-display mt-3 text-2xl">Ongoing Support</h3>
-     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Optional ongoing support is available for updates and agreed improvements. Your proposal will explain what’s included, the support allowance, and any recurring charges.</p>
-     <a href="/quote" className="mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-4">Ask About Support →</a>
-    </div>
-   </div>
    <div className="mt-8 border-t border-border pt-6">
     <h3 className="font-display text-3xl">Let’s start with what you need.</h3>
     <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">Tell me about your business, what you want customers to be able to do, and the tasks you’d like help managing. We’ll decide what belongs in your first build and what can come later.</p>
     <a href="/quote" className={buttonClass + ' mt-5'}>Request a Quote <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
-    <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted-foreground">Additional features are optional and priced separately. Shared setup is counted once in combined quotes. Platform subscriptions, domains, processing fees, and other third-party costs are disclosed before work begins.</p>
    </div>
   </div>
  </section>;

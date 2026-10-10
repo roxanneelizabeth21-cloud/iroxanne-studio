@@ -5,7 +5,6 @@ import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 
 import Process from '@/components/home/Process';
-import Services from '@/components/home/Services';
 import WhoIBuildFor from '@/components/home/WhoIBuildFor';
 import Pricing from '@/components/home/Pricing';
 import Testimonials from '@/components/home/Testimonials';
@@ -73,7 +72,6 @@ export default function Home() {
 
 
         <WhoIBuildFor />
-        <Services />
         <Pricing />
         <Process />
         <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-8">
