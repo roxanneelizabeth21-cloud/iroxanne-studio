@@ -326,7 +326,7 @@ export default function ContractsAdminPage() {
 
 function PricingSettingsCard({ settings, onSave }) {
   const [s, setS] = useState(settings || {
-    rate_per_hour: 65,
+    rate_per_hour: 90,
     pricing_mode: 'packages_addons',
     default_deposit_percent: 50,
     standard_terms: '',
