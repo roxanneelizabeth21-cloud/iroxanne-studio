@@ -163,7 +163,7 @@ export default function ContractForm({ initial, settings, onSave, saving }) {
       {settings?.packages?.length > 0 && form.pricing_mode !== 'custom_quote' && (
         <div className="space-y-1.5">
           <Label>Selected package</Label>
-          <Select value={form.selected_package || ''} onValueChange={v=>{const pkg=settings.packages.find(p=>p.name===v);if(!pkg)return;setForm(p=>({...p,selected_package:v,estimated_tier:v==='Business Website'?'starter':(['starter','business','custom'].includes(v.toLowerCase())?v.toLowerCase():'custom'),line_items:[{description:pkg.name+' — '+(pkg.description||''),quantity:1,amount:pkg.price},...(p.line_items||[]).slice(1)],deposit_amount:p.payment_installments?.[0]?.amount||Math.round((pkg.price+(p.line_items||[]).slice(1).reduce((s,i)=>s+money(i.amount),0))*(p.deposit_percent??settings?.default_deposit_percent??50))/100}));}}>
+          <Select value={form.selected_package || ''} onValueChange={v=>{const pkg=settings.packages.find(p=>p.name===v);if(!pkg)return;setForm(p=>({...p,selected_package:v,estimated_tier:['Business Website','Quick Win'].includes(v)?'starter':(['starter','business','custom'].includes(v.toLowerCase())?v.toLowerCase():'custom'),line_items:[{description:pkg.name+' — '+(pkg.description||''),quantity:1,amount:pkg.price},...(p.line_items||[]).slice(1)],deposit_amount:p.payment_installments?.[0]?.amount||Math.round((pkg.price+(p.line_items||[]).slice(1).reduce((s,i)=>s+money(i.amount),0))*(p.deposit_percent??settings?.default_deposit_percent??50))/100}));}}>
             <SelectTrigger><SelectValue placeholder="Choose a package" /></SelectTrigger>
             <SelectContent>
               {settings.packages.map((pkg) => (
@@ -267,10 +267,10 @@ function buildInitial(initial, settings) {
     scope_summary: initial?.scope_summary || buildScopeFromLead(initial),
     pricing_mode: settings?.pricing_mode || 'packages_addons',
     selected_package: initial?.selected_package || '',
-    line_items: initial?.selected_package==='Business Website' ? [{description:'Business Website — up to four pages, service-request form, owner dashboard, social links, supported call scheduling, one revision round and launch handoff. Third-party costs and add-ons separate.',quantity:1,amount:650}] : initial?.estimated_price_low
+    line_items: settings?.packages?.some(p=>p.name===initial?.selected_package) ? (()=>{const pkg=settings.packages.find(p=>p.name===initial?.selected_package);return [{description:pkg.name+' — '+(pkg.description||''),quantity:1,amount:pkg.price}];})() : initial?.selected_package==='Business Website' ? [{description:'Business Website — up to four pages, service-request form, owner dashboard, social links, supported call scheduling, one revision round and launch handoff. Third-party costs and add-ons separate.',quantity:1,amount:650}] : initial?.estimated_price_low
       ? [{ description: 'Project build (estimated)', quantity: 1, amount: initial.estimated_price_low }]
       : [],
-    deposit_amount: Math.round((initial?.selected_package==='Business Website'?650:Number(initial?.estimated_price_low||0))*(settings?.default_deposit_percent??50))/100,
+    deposit_amount: Math.round((settings?.packages?.find(p=>p.name===initial?.selected_package)?.price ?? (initial?.selected_package==='Business Website'?650:Number(initial?.estimated_price_low||0)))*(settings?.default_deposit_percent??50))/100,
     payment_schedule: 'Deposit shown above due at signing; remaining balance within 7 days after completed deliverables are presented for final review under Section 6. Voluntary early payments are welcome.',
     terms: settings?.standard_terms || '',
     contract_variant: 'standard',
