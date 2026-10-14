@@ -29,13 +29,16 @@ export function buildNotesEstimate(lead:any, raw:any, settings:any) {
  const features=extract(raw.features,FEATURES).filter((x,i,a)=>a.findIndex(y=>y.label===x.label)===i);
  const integrations=extract(raw.integrations,INTEGRATIONS).filter((x,i,a)=>a.findIndex(y=>y.label===x.label)===i);
  const explicit=strings(lead.must_have_features,30).filter(x=>FEATURES.includes(x));
- const mustHave=[...new Set([...explicit,...features.map(x=>x.label)])];
+ const mustHave=[...new Set([...explicit,...features.map(x=>x.label).filter(x=>!strings(lead.nice_to_have_features,30).includes(x))])];
  const niceToHave=strings(lead.nice_to_have_features,30).filter(x=>FEATURES.includes(x)&&!mustHave.includes(x));
  const connects=[...new Set([...strings(lead.integrations_needed,30).filter(x=>INTEGRATIONS.includes(x)),...integrations.map(x=>x.label)])];
  if(features.length<raw.features.length||integrations.length<raw.integrations.length) questions.push('Some suggested features could not be traced to the notes; confirm the missing scope.');
  const unsupported=strings(raw.unsupported);
+ if(lead.selected_package==='Mobile App')unsupported.push('Native mobile app requirements and distribution');
+ if(clean(lead.compliance_requirements)&&!['none','not sure','n/a'].includes(clean(lead.compliance_requirements).toLowerCase()))unsupported.push('Compliance requirements: '+clean(lead.compliance_requirements));
  const type=['app','website','guidance','unclear'].includes(raw.project_type)?raw.project_type:'unclear';
- const appReady=type==='app'&&mustHave.length>0&&raw.scope_clear===true&&unsupported.length===0;
+ const evidenceComplete=features.length===raw.features.length&&integrations.length===raw.integrations.length;
+ const appReady=type==='app'&&mustHave.length>0&&raw.scope_clear===true&&unsupported.length===0&&evidenceComplete;
  let estimate:any=null;
  let basis='';
  const rate=Number(settings?.rate_per_hour);
@@ -90,7 +93,7 @@ export async function prepareNotesQuote(client:any,lead:any) {
  const proposal=await db.Proposal.create({
  lead_id:lead.id,client_name:lead.name||'',client_email:lead.email,business_name:lead.business_name||'',
  project_title:(lead.business_name||'Your website or app')+' — proposed first version',
- scope_summary:analysis.summary,deliverables:analysis.mustHave,
+ scope_summary:analysis.summary,deliverables:[...analysis.mustHave,...analysis.niceToHave.map(x=>x+' (optional — confirm inclusion)')],
  selected_package:'',estimated_tier:analysis.estimate?.tier||'',status:'draft',
  requires_scope_review:true,
  line_items:price?[{description:'Custom build — scope listed above',quantity:1,amount:price}]:[],
