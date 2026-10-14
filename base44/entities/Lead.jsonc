@@ -2,6 +2,21 @@
   "name": "Lead",
   "type": "object",
   "properties": {
+    "draft_estimate_status": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "needs_clarification",
+        "failed"
+      ]
+    },
+    "draft_estimate_json": {
+      "type": "string",
+      "description": "Admin-only notes analysis, pricing rationale and questions"
+    },
+    "draft_proposal_id": {
+      "type": "string"
+    },
     "is_test_record": {
       "type": "boolean",
       "default": false,
