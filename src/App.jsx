@@ -14,7 +14,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AdminGuard from '@/components/AdminGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminOverview from '@/pages/admin/AdminOverview';
-import StudioAssistant from '@/pages/admin/StudioAssistant';
+import NovaWorkspace from '@/pages/admin/NovaWorkspace';
 import HomepageAdminPage from '@/pages/admin/HomepageAdminPage';
 import PortfolioAdminPage from '@/pages/admin/PortfolioAdminPage';
 import ContractsAdminPage from '@/pages/admin/ContractsAdminPage';
@@ -67,7 +67,7 @@ import CreatePost from '@/pages/marketing/CreatePost';
 import CreateReel from '@/pages/marketing/CreateReel';
 
 import AutomationControls from '@/pages/marketing/AutomationControls';
-import SocialMarketer from '@/pages/marketing/SocialMarketer';
+
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -130,7 +130,7 @@ const AuthenticatedApp = () => {
       <Route path="/work/:slug" element={<CaseStudy />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
-        <Route path="/admin/assistant" element={<StudioAssistant />} />
+        <Route path="/admin/assistant" element={<NovaWorkspace />} />
         <Route path="/admin/projects" element={<ProjectsPipeline />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />
@@ -170,7 +170,7 @@ const AuthenticatedApp = () => {
         <Route path="/marketing/brand" element={<BrandProfile />} />
         <Route path="/marketing/templates" element={<Templates />} />
         <Route path="/marketing/clips" element={<ClipLibrary />} />
-        <Route path="/marketing/strategist" element={<SocialMarketer />} />
+        <Route path="/marketing/strategist" element={<Navigate to="/admin/assistant" replace />} />
         <Route path="/marketing/SocialMarketer" element={<Navigate to="/marketing/strategist" replace />} />
         <Route path="/marketing/Today" element={<Navigate to="/marketing/today" replace />} />
         <Route path="/marketing/MarketingHub" element={<Navigate to="/marketing" replace />} />

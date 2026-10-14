@@ -15,12 +15,13 @@ const STARTERS = [
   { label: 'Plan my week', prompt: 'Help me plan my marketing for this week.' },
 ];
 
-export default function SocialMarketer() {
+export default function SocialMarketer({request}) {
   const [conversation, setConversation] = useState(null);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const boot = useRef(null);
+  const handledRequest = useRef(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -87,6 +88,12 @@ export default function SocialMarketer() {
     }
   };
 
+  useEffect(() => {
+    if (!request || handledRequest.current === request.id || !conversation || loading || sending) return;
+    handledRequest.current = request.id;
+    send(request.text);
+  }, [request, conversation, loading, sending]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-13rem)] min-h-[26rem]">
       <div className="flex items-center justify-between pb-3">
@@ -94,7 +101,7 @@ export default function SocialMarketer() {
           <h2 className="font-display text-xl flex items-center gap-2">
             <JadeAvatar size={40} /> Nova
           </h2>
-          <p className="text-xs text-muted-foreground">Business & marketing operator — quotes, proposals, follow-ups, and content for your review.</p>
+          <p className="text-xs text-muted-foreground">Your studio partner for marketing, clients, email, and calendar.</p>
         </div>
         <div className="flex items-center gap-1">
           <Button

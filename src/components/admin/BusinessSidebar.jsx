@@ -7,7 +7,7 @@ import './admin-views.css';
 
 const NAV = [
   { to: '/admin', label: 'Business Home', Icon: Home, end: true },
-  { to: '/admin/assistant', label: 'Studio Assistant', Icon: Bot },
+  { to: '/admin/assistant', label: 'Nova', Icon: Bot },
   { to: '/admin/projects', label: 'Client Journey', Icon: FolderKanban },
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
   { to: '/admin/contracts', label: 'Contracts', Icon: FileText },

@@ -10,7 +10,7 @@ export default function StrategistHeaderButton() {
   return (
     <Button asChild variant="secondary" size="sm" className="gap-1.5 shrink-0">
       <Link to="/marketing/strategist">
-        <Bot className="h-4 w-4" /> Strategist
+        <Bot className="h-4 w-4" /> Nova
       </Link>
     </Button>
   );

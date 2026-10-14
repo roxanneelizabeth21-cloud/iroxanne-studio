@@ -12,7 +12,7 @@ import { LayoutDashboard, PenLine, Palette, Clapperboard, Megaphone, CalendarDay
 import './admin-views.css';
 
 const BUSINESS_PAGES = {
-  assistant: ['Daily work', 'Studio Assistant'],
+  assistant: ['Daily work', 'Nova'],
   projects: ['Daily work', 'Client Journey'], messages: ['Daily work', 'Messages'],
   proposals: ['Client documents', 'Quotes & Proposals'], contracts: ['Client documents', 'Contracts'], invoices: ['Client documents', 'Invoices'],
   homepage: ['Website & audience', 'Homepage'], portfolio: ['Website & audience', 'Portfolio'], testimonials: ['Website & audience', 'Testimonials'], pages: ['Website & audience', 'Pages'], banners: ['Website & audience', 'Banners'], 'promo-banners': ['Website & audience', 'Promo Banners'], visitors: ['Website & audience', 'Visitors'], subscribers: ['Website & audience', 'Subscribers'],
@@ -35,7 +35,7 @@ const MARKETING_HEADERS = [
   { to: '/marketing/clips', label: 'Clips', Icon: Clapperboard, subtitle: 'Short videos ready to use in posts' },
   { to: '/marketing/controls', label: 'Automation Controls', Icon: ToggleLeft, subtitle: 'Switch campaigns and project rotation on or off in one place' },
   { to: '/marketing/brand', label: 'Brand', Icon: UserCircle, subtitle: 'Brand profile, voice and connections' },
-  { to: '/marketing/strategist', label: 'Strategist', Icon: Bot, subtitle: 'Chat with your marketing agent' },
+  { to: '/marketing/strategist', label: 'Nova', Icon: Bot, subtitle: 'Chat with your marketing agent' },
   { to: '/marketing/performance', label: 'Performance', Icon: BarChart3, subtitle: 'Post and campaign analytics' },
 ];
 

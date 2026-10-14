@@ -23,7 +23,7 @@ const NAV = [
   { to: '/marketing/controls', label: 'Automation Controls', Icon: ToggleLeft },
   { to: '/marketing/performance', label: 'Performance', Icon: BarChart3 },
   { to: '/marketing/brand', label: 'Brand Profile', Icon: UserCircle },
-  { to: '/marketing/strategist', label: 'Strategist', Icon: Bot },
+  { to: '/marketing/strategist', label: 'Nova', Icon: Bot },
 ];
 
 export default function MarketingSidebar({ onNavigate }) {
