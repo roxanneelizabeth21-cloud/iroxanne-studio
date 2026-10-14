@@ -36,6 +36,14 @@ export default function ProposalsAdminPage() {
   const [showLeads, setShowLeads] = useState(true);
   const [saving, setSaving] = useState(false);
   const [preparing,setPreparing]=useState(false);
+  const [sample,setSample]=useState(null);
+  const [sampleBusy,setSampleBusy]=useState(false);
+  const previewSample=async(kind)=>{
+    setSampleBusy(true);
+    try{const r=await base44.functions.invoke('estimateQuoteNotes',{action:'sample',sample:kind});const d=r.data||r;if(d.error)throw new Error(d.error);setSample(d);}
+    catch(e){toast({title:'Sample could not be prepared',description:e?.response?.data?.error||e.message,variant:'destructive'});}
+    finally{setSampleBusy(false);}
+  };
   const prepareDraft=async()=>{
     setPreparing(true);
     try{const r=await base44.functions.invoke('estimateQuoteNotes',{lead_id:leadReview.id});const d=r.data||r;if(d.error)throw new Error(d.error);const p=await base44.entities.Proposal.get(d.proposal_id);setLeadReview(null);setEditing({proposal:p});await load();toast({title:d.existing?'Existing proposal opened':'Draft prepared for your review',description:'Nothing has been sent to the customer.'});}
@@ -173,6 +181,9 @@ export default function ProposalsAdminPage() {
       <p style={{ fontSize: '13px', color: 'var(--text-secondary, #66736e)' }}>
         Review each inquiry, record your consultation notes, then prepare an itemized proposal. Only approved scope and prices move into the agreement.
       </p>
+
+      <details className="text-sm"><summary className="cursor-pointer">Try the notes-to-quote assistant</summary><p className="my-2">Preview fictional requests using your current pricing. No client records or emails are created.</p><div className="flex gap-2"><Button variant="outline" disabled={sampleBusy} onClick={()=>previewSample('salon')}>{sampleBusy?'Preparing sample…':'Preview salon request'}</Button><Button variant="outline" disabled={sampleBusy} onClick={()=>previewSample('unsure')}>Preview an undecided visitor</Button></div></details>
+      <Dialog open={!!sample} onOpenChange={o=>!o&&setSample(null)}><DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Sample only — nothing saved or sent</DialogTitle></DialogHeader>{sample&&<QuoteEstimateReview analysis={sample.analysis} source={sample.source}/>}</DialogContent></Dialog>
 
       {/* Lead review dialog */}
       <Dialog open={!!leadReview} onOpenChange={o=>!o&&setLeadReview(null)}>
