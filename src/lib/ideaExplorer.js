@@ -1,6 +1,12 @@
 export const DRAFT_KEY='iroxanne-idea-draft-v1';
 export const BRIEF_KEY='iroxanne-idea-brief-v1';
 export const seedIdeas={
+ 'real-estate':'A property website with listings, showing requests, client inquiries, and built-in marketing.',
+ hair:'A salon website with appointments, client care, retail products, and promotions.',
+ landscaping:'A landscaping website with project requests, estimates, crew schedules, and customer updates.',
+ services:'A service business website with booking requests, customer records, and job updates.',
+ products:'A product storefront connected to orders, inventory, and launch marketing.',
+ marketing:'A custom marketing app with a social content calendar, draft creation, review, and campaigns.',
  'quiet-time-daily':'A welcoming space for daily reflection, readings, and a community.',
  'booked-now-what':'A travel planning tool that helps people make more of their trips.',
  nestflow:'A shared home base for family schedules, meals, and everyday tasks.'
@@ -8,7 +14,7 @@ export const seedIdeas={
 export const defaultDraft={step:0,mode:'',kind:'anything',idea:'',goal:'',audience:'',features:null,customFeature:'',ai:null};
 const validConcept=c=>c&&['title','summary','question'].every(k=>typeof c[k]==='string')&&['features','choices'].every(k=>Array.isArray(c[k])&&c[k].length<=5&&c[k].every(v=>typeof v==='string'&&v.length<=80));
 export function readDraft(seed){
- if(seedIdeas[seed])return {...defaultDraft,step:1,mode:'rough',idea:seedIdeas[seed]};
+ if(seedIdeas[seed])return {...defaultDraft,step:1,mode:'rough',kind:['real-estate','hair','landscaping','services','products','marketing'].includes(seed)?seed:'anything',idea:seedIdeas[seed]};
  try{const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');return d&&Number.isInteger(d.step)&&d.step>=0&&d.step<=4&&['idea','goal','audience','kind','customFeature','mode'].every(k=>typeof d[k]==='string')&&(d.features===null||Array.isArray(d.features)&&d.features.every(v=>typeof v==='string'))?{...defaultDraft,...d,ai:validConcept(d.ai)?d.ai:null}:defaultDraft;}catch{return defaultDraft;}
 }
 export function saveDraft(d){try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify(d));}catch{/* in-memory explorer remains usable */}}
