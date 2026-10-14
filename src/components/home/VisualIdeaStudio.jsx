@@ -15,6 +15,7 @@ const types={
  community:{label:'Community or creative idea',name:'Your gathering place',headline:'Good ideas are better together.',sub:'Read, learn, and share a little inspiration.',screen:'community',icon:Users,services:['A fresh perspective','A moment to reflect','Something to try'],goals:['Share useful resources','Bring people together','Organize events']},
  personal:{label:'Life & personal tools',name:'Your everyday space',headline:'A little less to keep in your head.',sub:'Make room for plans, routines, and the things that matter.',screen:'jobs',icon:LayoutDashboard,services:['Plan the week','Family activities','Meal ideas'],goals:['Organize plans and tasks','Keep everyone connected','Build a helpful routine']}
 };
+types.exploring={...types.services,label:'Still exploring',name:'Let’s find a starting point',goals:['My business','A personal tool','A community or creative idea']};
 const screens={booking:'Booking experience',property:'Property website',shop:'Online shop',jobs:'Behind-the-scenes workspace',marketing:'Marketing calendar',community:'Community & resources'};
 function identify(text,fallback='services'){
  const t=text.toLowerCase();
@@ -72,7 +73,7 @@ export default function VisualIdeaStudio(){
  const c=types[kind];
  function choose(k){setIdea('');setReply('');request.current++;setBusy(false);setNotice('');setKind(k);setScreen(types[k].screen);setStarted(true);setAI(null);setAnswers([]);}
  async function explore(text=idea){
-  if(!text.trim()){choose('services');setNotice('No idea needed. Try booking a service in the preview, or choose another starting point.');return;}
+  if(!text.trim()){choose('exploring');setNotice('You don’t need a finished idea. Start with the area you’d like help with.');return;}
   const k=identify(text,kind);choose(k);setIdea(text);const id=++request.current;setBusy(true);let timer;
   try{
    const r=await Promise.race([base44.functions.invoke('exploreStudioIdea',{idea:text.slice(0,1200),kind:types[k].label}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('timeout')),15000);})]);
@@ -85,7 +86,7 @@ export default function VisualIdeaStudio(){
   finally{clearTimeout(timer);if(id===request.current)setBusy(false);}
  }
  const questions=[
-  {label:ai?.question||'What would you like to make easier first?',choices:ai?.choices||c.goals,placeholder:'For example: I lose track of booking requests in messages.'},
+  {label:kind==='exploring'?'Where would you like a little help?':ai?.question||'What would you like to make easier first?',choices:ai?.choices||c.goals,placeholder:'For example: I lose track of booking requests in messages.'},
   {label:'How are you handling that today?',choices:['Texts, calls, or messages','Paper or spreadsheets','An existing website or app','I haven’t started yet'],placeholder:'Tell me which tools you use and what isn’t working.'},
   {label:'Who needs to use what we build?',choices:['My customers and me','My team and me','A community or members','Just me or my household'],placeholder:'For example: clients book, and two stylists manage appointments.'},
   {label:'What would make this a success for you?',choices:['Spend less time on admin','Get more inquiries or bookings','Make buying easier','Keep everything in one place'],placeholder:'For example: stop chasing messages and see all bookings in one place.'}
@@ -93,6 +94,7 @@ export default function VisualIdeaStudio(){
  const question=questions[Math.min(answers.length,questions.length-1)];
  function answer(text){
   if(!text.trim()||answers.length>=questions.length)return;
+  if(kind==='exploring'&&answers.length===0&&text!=='I’m not sure yet'){choose(text==='A personal tool'?'personal':text==='A community or creative idea'?'community':'services');setIdea(text);return;}
   request.current++;setBusy(false);
   if(answers.length===0)setScreen(screenFor(text,screen));
   setAnswers([...answers,{question:question.label,answer:text.trim()}]);setReply('');
@@ -105,7 +107,7 @@ export default function VisualIdeaStudio(){
  return <div id="possibilities" className="vi-studio studio-wrap">
  <header className="vi-intro"><p className="studio-eyebrow">Let’s imagine it together</p><h1>Your business. Your idea.<br/><em>Let’s see what’s possible.</em></h1><p>Tell me what you do and what you’d like to make easier. A few useful questions will help us find a starting point.</p></header>
  <form className="vi-prompt" onSubmit={e=>{e.preventDefault();explore();}}><label htmlFor="visual-idea">What’s your business or idea?</label><div><input id="visual-idea" value={idea} maxLength={1200} onChange={e=>setIdea(e.target.value)} placeholder="I’m a hairdresser and want to run my business in one place…"/><button className="studio-button" type="submit">Show me possibilities <ArrowRight size={17}/></button></div></form>
- <div className="vi-starts" aria-label="Choose an example">{Object.entries(types).map(([k,v])=>{const Icon=v.icon;return <button key={k} type="button" aria-pressed={started&&kind===k} onClick={()=>choose(k)}><Icon size={16}/>{v.label}</button>;})}<button type="button" onClick={()=>{setIdea('');choose('services');setNotice('Start by trying a sample booking. Switch examples whenever something catches your interest.');}}>I don’t know yet</button></div>
+ <div className="vi-starts" aria-label="Choose an example">{Object.entries(types).filter(([k])=>k!=='exploring').map(([k,v])=>{const Icon=v.icon;return <button key={k} type="button" aria-pressed={started&&kind===k} onClick={()=>choose(k)}><Icon size={16}/>{v.label}</button>;})}<button type="button" onClick={()=>{setIdea('');choose('exploring');setNotice('You don’t need a finished idea. Start with the area you’d like help with.');}}>I don’t know yet</button></div>
  {!started?<div className="vi-welcome"><div><p className="studio-eyebrow">No finished plan required</p><h2>Start with something<br/>you wish were easier.</h2><p>Booking customers. Selling your products. Keeping work organized. Bringing people together.</p><button className="studio-button" onClick={()=>choose('services')}>Show me an example <ArrowRight size={16}/></button></div><Preview kind="services" screen="booking"/></div>:
  <div className="vi-experience"><aside className="vi-conversation"><p className="studio-eyebrow">Understanding what you need</p><h2>{ai?.title||c.name}</h2><p>{ai?.summary||'Let’s understand what you need. Your answers will come with you when you contact Roxanne. The example beside you shows one possibility.'}</p>{busy&&<p role="status" className="vi-feedback">Finding a direction for your idea… You can explore while it loads.</p>}{notice&&<p role="status" className="vi-feedback">{notice}</p>}{answers.length>0&&<div className="vi-answers">{answers.map((a,i)=><p key={i}><Check size={14}/><span><strong>{a.question}</strong><br/>{a.answer}</span></p>)}</div>}
  {answers.length<questions.length?<><h3>{question.label}</h3><div className="vi-answer-options">{question.choices.map(a=><button key={a} onClick={()=>answer(a)}>{a}<ArrowRight size={14}/></button>)}<button onClick={()=>answer('I’m not sure yet')}>I’m not sure yet<ArrowRight size={14}/></button></div>
