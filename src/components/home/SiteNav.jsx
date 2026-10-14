@@ -1,13 +1,13 @@
 import { Menu, X, ArrowRight, Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import ThemeToggle from '@/components/ThemeToggle';
+import './studio.css';
 import BrandLogo from '@/components/BrandLogo';
 import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
-  { label: 'Solutions', href: '/solutions' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'App Ideas', href: '/ideas' },
+  { label: 'What We Can Create', href: '/solutions' },
+  { label: 'Selected Work', href: '/#work' },
+  { label: 'Explore', href: '/ideas' },
   { label: 'How It Works', href: '/#process' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -55,9 +55,9 @@ export default function SiteNav() {
                 <Lock className="h-3.5 w-3.5" /> Admin
               </a>
             )}
-            <ThemeToggle />
+
             <a href="/quote" className="hidden sm:inline-flex items-center gap-2 h-10 px-5 rounded-full bg-[#2D2A4A] text-white text-[13px] font-semibold transition hover:bg-[#3D3A5A] shadow-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
-              Get a Quote <ArrowRight className="h-3.5 w-3.5" />
+              Let’s Talk <ArrowRight className="h-3.5 w-3.5" />
             </a>
             <button type="button" onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="homepage-mobile-menu" className="flex h-10 w-10 items-center justify-center rounded-full border border-border lg:hidden">
               {open ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
@@ -89,7 +89,7 @@ export default function SiteNav() {
               )}
             </div>
             <div className="mt-auto p-5 border-t border-border">
-              <a href="/quote" className="block text-center py-3 rounded-full bg-[#2D2A4A] text-white text-sm font-semibold">Get a Quote</a>
+              <a href="/quote" className="block text-center py-3 rounded-full bg-[#2D2A4A] text-white text-sm font-semibold">Let’s Talk</a>
             </div>
           </div>
         </>

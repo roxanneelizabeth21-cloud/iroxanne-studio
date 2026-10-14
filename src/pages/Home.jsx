@@ -5,7 +5,10 @@ import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 
 import Process from '@/components/home/Process';
-import Pricing from '@/components/home/Pricing';
+import Services from '@/components/home/Services';
+import FeaturedWork from '@/components/home/FeaturedWork';
+import About from '@/components/home/About';
+import '@/components/home/studio.css';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
 import SiteFooter from '@/components/home/SiteFooter';
@@ -13,7 +16,7 @@ import SiteFooter from '@/components/home/SiteFooter';
 export default function Home() {
   const [projects, setProjects] = useState(null);
   const [testimonials, setTestimonials] = useState(null);
-  const [heroBackgroundImage, setHeroBackgroundImage] = useState(null);
+  const [headshotUrl, setHeadshotUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +26,7 @@ export default function Home() {
       if (target) {
         setTimeout(() => {
           target.style.scrollMarginTop = '96px';
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         }, 200);
       }
     }
@@ -36,7 +39,7 @@ export default function Home() {
       try {
         const [proj, test, settings] = await Promise.all([
           base44.entities.PortfolioItem
-            .filter({ featured: true }, 'sort_order', 3)
+            .list('sort_order', 100)
             .catch(() => []),
 
           base44.functions.invoke('testimonialFeedback', { action: 'public' })
@@ -49,9 +52,10 @@ export default function Home() {
 
         if (!active) return;
 
-        setProjects(proj || []);
+        const slugs = ['bonded', 'tyla-aadam-shoe-co', 'nhd-customs', 'creatively-his-event-staging'];
+        setProjects(slugs.map(slug => (proj || []).find(p => p.slug === slug)).filter(Boolean));
         setTestimonials(test);
-        setHeroBackgroundImage(settings?.[0]?.hero_background_image || null);
+        setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
       } finally {
         if (active) setLoading(false);
       }
@@ -63,22 +67,17 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="studio-public min-h-screen bg-background text-foreground">
       <SiteNav />
 
       <main>
-        <Hero projects={projects} loading={loading} heroBackgroundImage={heroBackgroundImage} />
+        <Hero projects={projects} loading={loading}  />
 
 
-        <Pricing />
+        <Services />
+        <FeaturedWork items={projects} loading={loading} />
         <Process />
-        <section id="work" className="scroll-mt-24 border-y border-border bg-card px-5 py-8">
-          <div className="max-w-5xl mx-auto md:flex items-center justify-between gap-8">
-            <div><h2 className="font-display text-3xl">Different ideas. Real possibilities.</h2>
-            <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">From family life and travel to relationships and small businesses, explore a few ideas I’ve helped bring to life.</p></div>
-            <a href="/ideas" className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-border px-6 mt-5 md:mt-0 font-semibold">Explore the possibilities →</a>
-          </div>
-        </section>
+        <About headshotUrl={headshotUrl} />
 
         <Testimonials
           items={testimonials}

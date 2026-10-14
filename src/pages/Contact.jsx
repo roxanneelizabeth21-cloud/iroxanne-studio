@@ -40,7 +40,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="studio-public min-h-screen bg-background text-foreground">
       <SiteNav />
       <main className="mx-auto max-w-2xl px-5 md:px-8 pt-[100px] pb-12">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Contact</p>

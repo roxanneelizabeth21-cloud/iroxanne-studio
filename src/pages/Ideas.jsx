@@ -23,14 +23,14 @@ export default function Ideas() {
     }).catch(()=>{if(active)setError(true);});
     return ()=>{active=false;};
   },[]);
-  return <div className="min-h-screen bg-background text-foreground">
+  return <div className="studio-public min-h-screen bg-background text-foreground">
     <SiteNav/>
     <main className="pt-[72px]">
-      <header className="bg-[#302634] text-[#FAF3E5] px-5 py-8 md:py-10">
+      <header className="bg-[#e6eee5] text-[#203d39] px-5 py-8 md:py-10">
         <div className="mx-auto max-w-5xl">
-          <p className="text-[#D5BB82] text-sm tracking-wide">Different ideas. Real possibilities.</p>
+          <p className="text-[#756130] text-sm tracking-wide">Different ideas. Real possibilities.</p>
           <h1 className="font-display text-4xl md:text-5xl mt-4">Ideas brought to life</h1>
-          <p className="mt-5 max-w-2xl leading-relaxed text-[#E4DCE2]">An app can begin with a business, a shared challenge, or a simple “wouldn’t it be helpful if…” These projects show a few different starting points. Your idea does not need to look like any of them.</p>
+          <p className="mt-5 max-w-2xl leading-relaxed text-[#4f665f]">An app can begin with a business, a shared challenge, or a simple “wouldn’t it be helpful if…” These projects show a few different starting points. Your idea does not need to look like any of them.</p>
         </div>
       </header>
       <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-8">
@@ -39,8 +39,8 @@ export default function Ideas() {
             const app=items.find(item=>item.slug===slug);
             if(!app)return null;
             return <article key={slug} className="rounded-2xl border border-border bg-card p-5">
-              <div className="flex gap-4 items-start">
-                {app.cover_image_url&&<img src={app.cover_image_url} alt={app.title+' app preview'} loading="lazy" className="w-24 h-20 sm:w-32 sm:h-24 object-cover rounded-lg shrink-0 border border-border"/>}
+              <div className="flex flex-col gap-4 items-start">
+                {app.cover_image_url&&<img src={app.cover_image_url} alt={app.title+' app preview'} loading="lazy" className="w-full aspect-[4/3] object-contain rounded-lg border border-border bg-[#edf0e8]"/>}
                 <div className="min-w-0"><p className="text-sm text-muted-foreground">{app.title}</p><h2 className="font-display text-2xl mt-1">{idea}</h2></div>
               </div>
               <p className="mt-4 text-muted-foreground leading-relaxed">{description}</p>

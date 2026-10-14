@@ -46,10 +46,10 @@ export default function CaseStudy() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="studio-public min-h-screen bg-background text-foreground">
       <SiteNav />
       <main className="mx-auto max-w-4xl px-5 md:px-8 pt-[100px] pb-12">
-        <Link to="/#work" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <Link to="/#work" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-[#876b26] dark:text-[#756130] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
           <ArrowLeft className="h-4 w-4" /> Back to work
         </Link>
 
@@ -59,7 +59,7 @@ export default function CaseStudy() {
           <div className="py-32 text-center">
             <h1 className="text-[28px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Project not found</h1>
             <p className="mt-2 text-[15px] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>This case study isn't available yet.</p>
-            <Link to="/#work" className="mt-6 inline-block text-[14px] font-medium text-[#876b26] dark:text-[#D5BB82] hover:underline" style={{ fontFamily: "'Inter', sans-serif" }}>View all work</Link>
+            <Link to="/#work" className="mt-6 inline-block text-[14px] font-medium text-[#876b26] dark:text-[#756130] hover:underline" style={{ fontFamily: "'Inter', sans-serif" }}>View all work</Link>
           </div>
         ) : (
           <article className="mt-8">
@@ -71,7 +71,7 @@ export default function CaseStudy() {
                 <span className="inline-flex items-center gap-1 text-muted-foreground"><Calendar className="h-3.5 w-3.5" />{new Date(item.date_built).getFullYear()}</span>
               )}
               {item.project_tier && (
-                <span className="rounded-full bg-[#B8942E]/10 px-3 py-1 font-medium text-[#876b26] dark:text-[#D5BB82]">{item.project_tier} tier</span>
+                <span className="rounded-full bg-[#B8942E]/10 px-3 py-1 font-medium text-[#876b26] dark:text-[#756130]">{item.project_tier} tier</span>
               )}
             </div>
 
@@ -114,7 +114,7 @@ export default function CaseStudy() {
 
             {item.tech_used?.length > 0 && (
               <div className="mt-10">
-                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Built with</h2>
+                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#756130] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Built with</h2>
                 <div className="flex flex-wrap gap-2">
                   {item.tech_used.map((tech) => (
                     <span key={tech} className="rounded-full border border-border bg-card px-3.5 py-1.5 text-[12px] font-medium text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>{tech}</span>
@@ -125,7 +125,7 @@ export default function CaseStudy() {
 
             {item.screenshots?.length > 0 && (
               <div className="mt-10">
-                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>Screenshots</h2>
+                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#756130] tracking-wide mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>Screenshots</h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {item.screenshots.map((src, i) => (
                     <div key={i} className="overflow-hidden rounded-xl border border-border shadow-sm">
@@ -138,7 +138,7 @@ export default function CaseStudy() {
 
             {item.video_url && (
               <div className="mt-10">
-                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>Demo</h2>
+                <h2 className="text-[13px] font-medium text-[#876b26] dark:text-[#756130] tracking-wide mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>Demo</h2>
                 <div className="aspect-video overflow-hidden rounded-xl border border-border shadow-sm">
                   {item.video_url.includes('youtube') || item.video_url.includes('youtu.be') ? (
                     <iframe src={item.video_url.replace('watch?v=', 'embed/')} className="h-full w-full" title={`${item.title} demo`} allowFullScreen />
@@ -159,7 +159,7 @@ export default function CaseStudy() {
             <button
               onClick={generateVideo}
               disabled={generating}
-              className="mt-4 inline-flex items-center gap-2 h-12 px-7 rounded-full border border-[#2D2A4A]/20 bg-card text-[#2D2A4A] dark:text-[#D5BB82] text-[14px] font-semibold transition hover:bg-[#2D2A4A]/5 disabled:opacity-60 shadow-sm"
+              className="mt-4 inline-flex items-center gap-2 h-12 px-7 rounded-full border border-[#2D2A4A]/20 bg-card text-[#2D2A4A] dark:text-[#756130] text-[14px] font-semibold transition hover:bg-[#2D2A4A]/5 disabled:opacity-60 shadow-sm"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
