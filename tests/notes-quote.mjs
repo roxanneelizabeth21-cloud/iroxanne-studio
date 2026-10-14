@@ -69,3 +69,43 @@ const response=await send.default(new Request('https://example.invalid',{method:
 assert.equal(response.status,409);
 assert.equal(globalThis.quoteTestSent,0);
 console.log('PASS: supported scope, configured prices, missing details, unsupported requirements, evidence rejection, no model pricing, private drafts, retry protection, failure handling and send-review gate.');
+
+// Exercise verified submission through the actual handler with an in-memory database.
+const secret='a'.repeat(64);
+const digest=async s=>Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))).toString('hex');
+let savedLeads=[],savedDrafts=[],videoCalls=[];
+const verification={id:'verified-test',email:lead.email,sent:true,secret_hash:await digest(secret),verified_until:new Date(Date.now()+3600000).toISOString()};
+const submitDb={
+ QuoteEmailVerification:{get:async()=>verification,update:async()=>({})},
+ Lead:{filter:async()=>savedLeads,create:async data=>{const l={id:'verified-lead',...data};savedLeads.push(l);return l;},update:async(id,data)=>{Object.assign(savedLeads.find(l=>l.id===id),data);}},
+ Proposal:{filter:async()=>savedDrafts,create:async data=>{const p={id:'verified-draft',...data};savedDrafts.push(p);return p;}},
+ PricingSettings:{list:async()=>[settings]}
+};
+globalThis.submitTestClient={asServiceRole:{entities:submitDb,functions:{invoke:async(name)=>{videoCalls.push(name);}},integrations:{Core:{InvokeLLM:async()=>raw}}}};
+globalThis.prepareTestQuote=q.prepareNotesQuote;
+const submitHandler=await load('base44/functions/quoteEmailVerification/entry.ts',{
+"import { prepareNotesQuote } from '../../shared/notesQuote.ts';":"const prepareNotesQuote=globalThis.prepareTestQuote;",
+"import { estimateProject } from '../../shared/quoteEstimate.ts';":'import { estimateProject } from '+JSON.stringify(estimatorURL)+';',
+"import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';":"const createClientFromRequest=()=>globalThis.submitTestClient;"
+});
+const submitBody={action:'submit',email:lead.email,id:verification.id,secret,lead:{...lead,budget_range:'not_sure',estimated_price_high:1}};
+const request=()=>new Request('https://example.invalid',{method:'POST',body:JSON.stringify(submitBody)});
+let submitted=await submitHandler.default(request());
+assert.equal(submitted.status,200);
+let publicResult=await submitted.json();
+assert.deepEqual(Object.keys(publicResult).sort(),['booking_token','id']);
+assert.equal(savedDrafts.length,1);
+assert.equal(savedDrafts[0].price_total,5000);
+assert.equal(savedDrafts[0].requires_scope_review,true);
+assert.equal(savedLeads[0].draft_estimate_status,'ready');
+await submitHandler.default(request());
+assert.equal(savedDrafts.length,1);
+assert.equal(savedLeads.length,1);
+savedLeads=[];savedDrafts=[];
+globalThis.submitTestClient.asServiceRole.integrations.Core.InvokeLLM=async()=>{throw new Error('Unavailable');};
+submitted=await submitHandler.default(request());
+assert.equal(submitted.status,200,'AI failure still confirms saved request');
+assert.equal(savedLeads.length,1);
+assert.equal(savedLeads[0].draft_estimate_status,'failed');
+assert.equal(savedDrafts.length,0);
+console.log('PASS: verified intake creates private draft, public response contains no price, repeat submissions are safe, and AI failure preserves inquiry.');
