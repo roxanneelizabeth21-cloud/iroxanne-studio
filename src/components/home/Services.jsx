@@ -1,27 +1,17 @@
-import { ShoppingBag, Calendar, HeartHandshake, Lightbulb, ListChecks, Sparkles } from 'lucide-react';
-
-const POSSIBILITIES = [
-  {icon:ShoppingBag,title:'I want to sell something.',description:'A shop for products, custom orders, digital downloads, or pre-orders.'},
-  {icon:Calendar,title:'I want people to book my services.',description:'A place to explore your offerings, request a quote, choose a time, and pay.'},
-  {icon:HeartHandshake,title:'I want to organize my charity or community events.',description:'Bring volunteer sign-ups, events, member information, and requests together.'},
-  {icon:Lightbulb,title:'I want to help people with something.',description:'Turn your knowledge or idea into a planning tool, resource library, or guided experience.'},
-  {icon:ListChecks,title:'I need an easier way to run things.',description:'Keep projects, customer updates, forms, and everyday tasks in one place.'},
-  {icon:Sparkles,title:'My idea doesn’t fit any of these.',description:'That’s welcome too. Tell me who you want to help and what you imagine.'},
+import { useState } from 'react';
+import { Globe2, Layers, Sparkles, Lightbulb, ArrowRight } from 'lucide-react';
+const choices=[
+ {icon:Globe2,label:'A beautiful website',title:'Make your corner of the internet feel like you.',copy:'A welcoming home for your business, your work, and the people you want to reach.',examples:'Think: a creative portfolio, a boutique storefront, or a fresh start for your business.',link:'/work/tyla-aadam-shoe-co',project:'Explore Tyla Aadam Shoe Co.'},
+ {icon:Layers,label:'My own app',title:'That “what if” could become something useful.',copy:'A custom web app built around your idea and the people who will use it.',examples:'Think: a space to connect, a client portal, or one place to organize everyday work.',link:'/work/bonded',project:'Explore Bonded'},
+ {icon:Sparkles,label:'AI & automation',title:'Make a little room in your day.',copy:'Let’s explore how smart tools could help with the repetitive parts of your work.',examples:'Think: a helpful planning tool, a first draft to review, or a smoother follow-up process.',link:'/work/booked-now-what',project:'Explore Booked! Now What?'},
+ {icon:Lightbulb,label:'I’m still exploring',title:'You don’t need a finished plan.',copy:'Bring the idea, the question, or the task you wish were easier. We’ll find a starting point together.',examples:'A conversation is a perfectly good place to begin.',link:'/ideas',project:'Browse the possibilities'}
 ];
-
 export default function Services(){
-  return <section id="services" className="scroll-mt-24 max-w-6xl mx-auto px-5 md:px-8 py-8">
-    <p className="text-sm text-[#876b26] dark:text-[#D5BB82]">Let’s start with you</p>
-    <h2 className="font-display text-3xl md:text-4xl mt-3 max-w-3xl">What’s your “I wish there were an app for…”?</h2>
-    <p className="mt-5 max-w-3xl text-muted-foreground leading-relaxed">Maybe you’re starting a business, bringing people together, supporting a cause, or trying to make everyday tasks easier. You don’t need to know what to call it—or exactly how it should work. That’s something we can figure out together.</p>
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5 mt-6">
-      {POSSIBILITIES.map(({icon:Icon,title,description})=><div key={title} className="border-t border-border pt-5">
-        <Icon aria-hidden="true" className="h-5 w-5 text-[#876b26] dark:text-[#D5BB82]"/>
-        <h3 className="font-display text-2xl mt-3">{title}</h3>
-        <p className="mt-2 text-muted-foreground leading-relaxed text-sm">{description}</p>
-      </div>)}
-    </div>
-    <a href="/quote" className="inline-flex min-h-12 items-center rounded-full bg-[#2D2A4A] text-white px-7 mt-6 font-semibold">Tell me what you’re imagining →</a>
-    <p className="mt-3 text-sm text-muted-foreground">Already building it yourself? <a href="/quote?support=guidance" className="underline underline-offset-4">Ask about guidance.</a></p>
-  </section>;
+ const [selected,setSelected]=useState(0); const choice=choices[selected];
+ return <section id="services" className="studio-section studio-discovery"><div className="studio-wrap">
+  <p className="studio-eyebrow">Start with a possibility</p><h2>What would you love to create?</h2>
+  <p className="studio-subtitle">Pick what’s on your mind. There’s no wrong place to start.</p>
+  <div className="studio-choice-grid" aria-label="Explore services">{choices.map(({icon:Icon,label},i)=><button type="button" key={label} aria-pressed={selected===i} aria-controls="service-detail" onClick={()=>setSelected(i)} className={'studio-choice '+(selected===i?'is-selected':'')}><Icon size={23} aria-hidden="true"/><span>{label}</span><ArrowRight size={17} aria-hidden="true"/></button>)}</div>
+  <div id="service-detail" className="studio-service-detail" aria-live="polite" aria-atomic="true"><div><h3>{choice.title}</h3><p>{choice.copy}</p><p className="studio-service-example">{choice.examples}</p></div><div className="studio-service-actions"><a className="studio-button" href="/quote">Let’s explore it <ArrowRight size={16}/></a><a className="studio-text-link" href={choice.link}>{choice.project} ↗</a></div></div>
+ </div></section>;
 }
