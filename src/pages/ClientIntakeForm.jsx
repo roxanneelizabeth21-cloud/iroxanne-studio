@@ -116,6 +116,10 @@ export default function ClientIntakeForm() {
   }, []);
 
   const handleSave = async (final = false, nextStep = step) => {
+    if (final && Array.isArray(intake.requests)) {
+      const missing = intake.requests.filter(r=>r.required && (r.kind==='file' ? !(r.file_urls||[]).some(u=>typeof u==='string'&&u.trim()) && !/^https?:\/\/\S+$/i.test(String(r.answer||'').trim()) : !String(r.answer||'').trim()));
+      if(missing.length){toast.error('Please complete: '+missing.map(r=>r.label).join(', '));document.getElementById('request-'+missing[0].id)?.scrollIntoView({block:'center'});return false;}
+    }
     setSaving(true);
     try {
       const res = await base44.functions.invoke('intakeJourney', { action: final ? 'submit' : 'save', id, token, answers: { ...intake, journey_step: nextStep } });
@@ -124,7 +128,7 @@ export default function ClientIntakeForm() {
       if (final) { setSubmitted(true); toast.success('Submitted! We\'ll review and get started.'); }
       else { toast.success('Progress saved'); }
       return true;
-    } catch { toast.error('Save failed. Your answers are still here; please try again.'); return false; }
+    } catch (e) { toast.error(e?.response?.data?.error || e.message || 'Save failed. Your answers are still here; please try again.'); return false; }
     finally { setSaving(false); }
   };
 
@@ -138,29 +142,30 @@ export default function ClientIntakeForm() {
       <div className="min-h-screen bg-background text-foreground py-10 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="text-center mb-2">
-            <BrandedPageHeader title="What I need from you" subtitle="Confirm what is filled in, add what you have, skip the rest." projectTitle={intake.project_title} clientName={intake.client_name} />
+            <BrandedPageHeader title="What I need from you" subtitle="Your earlier answers are saved. Complete starred items; everything else is optional." projectTitle={intake.project_title} clientName={intake.client_name} />
             {intake.request_note && <p className="text-sm mt-4 whitespace-pre-wrap">{intake.request_note}</p>}
           </div>
+          {(intake.design_notes || intake.scope_snapshot?.scope_summary) && <details className="rounded-xl border p-4"><summary className="cursor-pointer font-medium">Already saved with your project</summary>{intake.scope_snapshot?.scope_summary && <p className="mt-3 text-sm whitespace-pre-wrap">{intake.scope_snapshot.scope_summary}</p>}{intake.design_notes && <p className="mt-3 text-sm">Style: {intake.design_notes}</p>}</details>}
           <fieldset disabled={saving} className="space-y-5 min-w-0">
             {intake.requests.map(r => (
-              <section key={r.id} className="rounded-2xl border border-border bg-card p-5 space-y-2">
+              <section key={r.id} id={"request-"+r.id} className="rounded-2xl border border-border bg-card p-5 space-y-2">
                 <h2 className="font-medium">{r.label}{r.required ? ' *' : ''}</h2>
                 {r.help && <p className="text-sm text-muted-foreground">{r.help}</p>}
                 {r.kind === 'file' ? (
                   <>
                     <FileUploadField label="" multiple onUpload={(urls) => setReq(r.id, 'file_urls', [...(r.file_urls || []), ...urls])} />
                     {(r.file_urls || []).length > 0 && <p className="text-xs text-green-600">{r.file_urls.length} file(s) uploaded</p>}
-                    <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} placeholder="Optional note, or a link" />
+                    <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} aria-label={r.label + " note or link"} placeholder={r.required ? "Upload a file above, or paste a complete https:// link" : "Optional note, or a link"} />
                   </>
                 ) : (
-                  <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} placeholder="Type here, or leave blank" />
+                  <Textarea rows={2} value={r.answer || ''} onChange={e => setReq(r.id, 'answer', e.target.value)} aria-label={r.label} aria-required={r.required || undefined} placeholder={r.required ? "Your answer is required" : "Type here, or leave blank"} />
                 )}
               </section>
             ))}
           </fieldset>
           <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
             <h2 className="font-medium">Your Base44 account</h2>
-            <p className="text-sm text-muted-foreground">Your app will live in your own Base44 account, and a free account is all you need to get started. It is required at handoff, so you can create it now, whenever you like. Depending on what your app needs, you may later move up to the $20 or $50 per month plan. I will confirm the right fit with you before handoff, so there is nothing to decide today.</p>
+            <p className="text-sm text-muted-foreground">Your finished app will transfer to your own account. If you already have one, confirm its email below. Otherwise, you can set it up before handoff. Roxanne will confirm the appropriate subscription and any separate platform costs before you choose a plan.</p>
             <Button asChild className="min-h-11 whitespace-normal">
               <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
             </Button>

@@ -18,7 +18,7 @@ export function defaultRequests(lead: any = {}, contract: any = {}) {
   }
   list.push(
     item('logo', 'Logo', 'Skip if you do not have one yet.', 'file'),
-    item('brand', 'Colors, fonts or style you like', 'A few words or links are fine.', 'text', ''),
+    ...(!known(lead.design_style) && !known(lead.design_inspiration) ? [item('brand', 'Colors, fonts or style you like', 'A few words or links are fine.', 'text', '')] : []),
     item('photos', 'Photos or other files to use', 'Optional.', 'file'),
     item('documents', 'Policies, terms or other documents', 'Only if you already have them.', 'file'),
     item('other', 'Anything else I should know', '', 'text'),

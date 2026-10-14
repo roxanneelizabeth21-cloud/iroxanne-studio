@@ -40,6 +40,7 @@ export function canCompleteHandoff(contract: any) {
     contract.handoff_items.every((x:any)=>!x.required || x.completed);
 }
 export function reminderDecision(invoice: any, outstanding: number, now = new Date()) {
+  if (invoice.square_schedule_enabled || invoice.square_invoice_id) return 'square';
   if (!invoice.reminder_enabled || ['paid','cancelled','draft'].includes(invoice.status) || outstanding <= 0) return 'skip';
   if ((invoice.reminder_sent_count || 0) >= (invoice.reminder_max_count || 3)) return 'limit';
   const next = Date.parse(invoice.reminder_next_at || '');

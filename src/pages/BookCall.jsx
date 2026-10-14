@@ -11,7 +11,7 @@ export default function BookCall(){
  const dateKey=x=>new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(x));
  const format=x=>new Date(x).toLocaleString(undefined,{timeZone:zone,dateStyle:'full',timeStyle:'short'});
  const call=async action=>{const r=await base44.functions.invoke('quoteCallBooking',{action,lead_id,token,start:selected,phone});const d=r.data||r;if(d.error)throw Error(d.error);return d;};
- const load=async()=>{setBusy(true);setError('');try{setData(await call('slots'));}catch(e){setError(e.message);}finally{setBusy(false);}};
+ const load=async()=>{setBusy(true);setError('');try{const result=await call('slots');setData(result);setPhone(current=>current||result.phone||'');}catch(e){setError(e.message);}finally{setBusy(false);}};
  useEffect(()=>{load();},[lead_id,token]);
  const book=async()=>{if(busy)return;setBusy(true);setError('');try{const d=await call('book');if(d.booked){base44.analytics.track({eventName:'call_booked'});}setData(d);}catch(e){setError(e.message);setSelected('');}finally{setBusy(false);}};
  const days=[...new Set((data?.slots||[]).map(dateKey))];
@@ -25,7 +25,7 @@ export default function BookCall(){
  {!days.length?<p>No times are currently available. Roxanne will follow up with you by email.</p>:<>
  <fieldset><legend className="font-medium mb-3">Choose a day</legend><div className="grid grid-cols-3 sm:grid-cols-5 gap-2">{days.map(d=>{const sample=data.slots.find(x=>dateKey(x)===d);return <Button key={d} variant={chosenDay===d?'default':'outline'} className="h-auto py-3 whitespace-normal" onClick={()=>{setDay(d);setSelected('');}}>{new Date(sample).toLocaleDateString(undefined,{timeZone:zone,weekday:'short',month:'short',day:'numeric'})}</Button>;})}</div></fieldset>
  <fieldset><legend className="font-medium mb-3">Choose a time</legend><div className="grid grid-cols-3 gap-2">{data.slots.filter(x=>dateKey(x)===chosenDay).map(x=><Button key={x} variant={selected===x?'default':'outline'} onClick={()=>setSelected(x)}>{new Date(x).toLocaleTimeString(undefined,{timeZone:zone,hour:'numeric',minute:'2-digit'})}</Button>)}</div></fieldset>
- {selected&&<div className="space-y-3 border-t pt-4"><p>Selected: <strong>{format(selected)}</strong></p><label className="block text-sm">Best phone number<Input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} maxLength={80} placeholder="Include your country code"/></label><Button disabled={busy||phone.trim().length<5} onClick={book}>{busy?'Booking…':'Confirm my call'}</Button><p className="text-xs text-muted-foreground">Confirming adds the appointment to Roxanne’s Google Calendar and sends an invitation to the email on your quote.</p></div>}
+ {selected&&<div className="space-y-3 border-t pt-4"><p>Selected: <strong>{format(selected)}</strong></p><label className="block text-sm">Best phone number *<Input type="tel" required autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} maxLength={80} placeholder="Include your country code"/></label><Button disabled={busy||phone.replace(/\D/g,'').length<7} onClick={book}>{busy?'Booking…':'Confirm my call'}</Button><p className="text-xs text-muted-foreground">Confirming adds the appointment to Roxanne’s Google Calendar and sends an invitation to the email on your quote.</p></div>}
  </>}
  </>}
  </div><BrandedFooter/></div></div>;

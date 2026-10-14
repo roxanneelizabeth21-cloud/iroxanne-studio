@@ -10,7 +10,8 @@ export default function InvoiceReminderSettings({invoice,onSaved}){
  const [days,setDays]=useState(invoice.reminder_interval_days||7);
  const [max,setMax]=useState(invoice.reminder_max_count||3);
  const [busy,setBusy]=useState(false),[message,setMessage]=useState('');
- const blocked=['paid','cancelled','draft'].includes(invoice.status);
+ const squareManaged=!!(invoice.square_schedule_enabled||invoice.square_invoice_id);
+ const blocked=squareManaged||['paid','cancelled','draft'].includes(invoice.status);
  const save=async(pause=false)=>{setBusy(true);setMessage('');try{
   if(!pause&&enabled&&(!next||new Date(next).getTime()<=Date.now()))throw new Error('Choose a future time for the first reminder.');
   if(!pause&&(!Number.isInteger(Number(days))||days<1||days>30||!Number.isInteger(Number(max))||max<1||max>10))throw new Error('Choose 1–30 days and 1–10 reminders.');
@@ -18,6 +19,7 @@ export default function InvoiceReminderSettings({invoice,onSaved}){
   await base44.entities.Invoice.update(invoice.id,pause?{reminder_enabled:false}:{reminder_enabled:enabled&&!blocked,reminder_stage:stage,reminder_next_at:new Date(next).toISOString(),reminder_interval_days:Number(days),reminder_max_count:Number(max),reminder_sent_count:0,reminder_state:'idle',reminder_error:''});
   if(pause)setEnabled(false);setMessage(pause?'Reminders paused.':'Reminder schedule saved.');await onSaved();
  }catch(e){setMessage(e.message);}finally{setBusy(false);}};
+ if(squareManaged)return <p className="border-t pt-3 text-sm text-muted-foreground">Square manages this payment plan and its reminders. Manage reminders in Square to keep one schedule.</p>;
  return <details className="border-t pt-3 text-sm"><summary className="cursor-pointer font-medium">Payment reminders · {invoice.reminder_enabled?'Enabled':'Off'}</summary><div className="space-y-3 pt-3">
  <p className="rounded-lg border border-amber-300 bg-amber-50 text-amber-950 p-3">Setup check: confirm the hourly payment-reminder Workflow is active in Base44 before relying on these schedules.</p>
  <p className="text-muted-foreground">Email {invoice.client_email} about the selected unpaid stage. Checked hourly; delivery can be up to an hour after the chosen time. Stops when that stage is paid or the limit is reached.</p>

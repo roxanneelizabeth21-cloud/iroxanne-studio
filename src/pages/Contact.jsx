@@ -22,7 +22,7 @@ export default function Contact() {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     const phoneDigits = (form.phone || '').replace(/\D/g, '');
-    if (phoneDigits.length < 7) { setPhoneError('Please enter a valid phone number (at least 7 digits).'); return; }
+    if (form.phone.trim() && phoneDigits.length < 7) { setPhoneError('Please enter a valid phone number (at least 7 digits).'); return; }
     setPhoneError('');
     setSubmitError('');
     setSubmitting(true);
@@ -52,10 +52,10 @@ export default function Contact() {
         <div className="mt-4 flex items-start gap-4 rounded-2xl border border-[#2D2A4A]/10 bg-[#2D2A4A]/[0.03] p-5">
           <PhoneCall className="h-5 w-5 shrink-0 text-[#B8942E] mt-0.5" />
           <div>
-            <p className="text-[14px] font-semibold text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>Prefer to talk it through?</p>
-            <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>Share a few details about your project, then pick a time for an optional call.</p>
+            <p className="text-[14px] font-semibold text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>Looking for a project quote?</p>
+            <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>Request a quote for Roxanne to review. If you would also like a phone call, you can book an available time after submitting and provide your phone number then.</p>
             <a href="/quote" className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2D2A4A] hover:text-[#3D3A5A] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
-              Schedule a call <ArrowRight className="h-3.5 w-3.5" />
+              Request a quote <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>
         </div>
@@ -75,8 +75,8 @@ export default function Contact() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[13px] text-muted-foreground" htmlFor="c-phone">Phone *</Label>
-                  <Input id="c-phone" type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => { update('phone', e.target.value); setPhoneError(''); }} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" />
+                  <Label className="text-[13px] text-muted-foreground" htmlFor="c-phone">Phone (optional)</Label>
+                  <Input id="c-phone" type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => { update('phone', e.target.value); setPhoneError(''); }} className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" />
                   {phoneError ? <p className="text-[12px] text-red-600">{phoneError}</p> : null}
                 </div>
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-best-time">Best time to contact</Label><Input id="c-best-time" value={form.best_time_to_contact} onChange={(e) => update('best_time_to_contact', e.target.value)} placeholder="e.g. Weekday mornings, after 5 PM" className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>

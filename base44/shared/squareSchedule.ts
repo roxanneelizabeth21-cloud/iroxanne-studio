@@ -59,7 +59,7 @@ export async function publishSquareSchedule(base44:any,invoice:any) {
     const location=locations?.find((l:any)=>l.id===invoice.square_location_id) || locations?.find((l:any)=>l.status==='ACTIVE' && l.currency==='USD');
     if (!location || location.status!=='ACTIVE' || location.currency!=='USD') throw new Error('An active USD Square location is required.');
     // Persist location before external writes, so retries use the same payload.
-    await db.Invoice.update(invoice.id,{square_location_id:location.id,square_schedule_enabled:true});
+    await db.Invoice.update(invoice.id,{square_location_id:location.id,square_schedule_enabled:true,reminder_enabled:false});
     const {customer}=await api('customers',{idempotency_key:'studio-customer-'+invoice.id,email_address:invoice.client_email,company_name:invoice.client_name || invoice.project_title,reference_id:invoice.id});
     const {order}=await api('orders',{idempotency_key:'studio-order-'+invoice.id,order:{location_id:location.id,reference_id:invoice.id,customer_id:customer.id,
       line_items:[{name:invoice.project_title.slice(0,200),quantity:'1',base_price_money:{amount:Math.round(invoice.amount_total*100),currency:'USD'}}]}});

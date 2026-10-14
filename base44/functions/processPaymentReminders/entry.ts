@@ -29,7 +29,7 @@ export default async function(req: Request) {
         const due=stage==='deposit'?summary.depositOutstanding:summary.balanceOutstanding;
         const decision=reminderDecision(invoice,due);
         if(decision!=='send') {
-          if(due<=0 || decision==='limit' || ['paid','cancelled'].includes(invoice.status)) await db.Invoice.update(invoice.id,{reminder_enabled:false});
+          if(decision==='square' || due<=0 || decision==='limit' || ['paid','cancelled'].includes(invoice.status)) await db.Invoice.update(invoice.id,{reminder_enabled:false});
           skipped++;continue;
         }
         if(!invoice.client_email){await db.Invoice.update(invoice.id,{reminder_enabled:false,reminder_state:'error',reminder_error:'Client email is missing.'});failed++;continue;}

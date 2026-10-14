@@ -53,10 +53,10 @@ export default async function(req:Request){
  const free=await google(accessToken,'freeBusy',{method:'POST',body:JSON.stringify({timeMin:new Date(now).toISOString(),timeMax:new Date(now+s.horizon_days*86400000).toISOString(),items:[{id:'primary'}]})});
  const calendar=free.calendars?.primary;if(!calendar||calendar.errors?.length||!Array.isArray(calendar.busy))throw Error('Could not check calendar availability. Please try again later.');
  const slots=callSlots(s,calendar.busy,now);
- if(b.action==='slots')return Response.json({enabled:true,slots,timezone:s.timezone,duration:s.duration_minutes});
+ if(b.action==='slots')return Response.json({enabled:true,slots,timezone:s.timezone,duration:s.duration_minutes,phone:lead.phone||''});
  if(typeof b.start!=='string'||!slots.includes(b.start))return Response.json({error:'That time is no longer available. Please choose another.'},{status:409});
  const phone=String(b.phone||lead.phone||'').trim().slice(0,80);
- if(phone.length<5)return Response.json({error:'Enter the phone number you would like Roxanne to call.'},{status:400});
+ if(phone.replace(/\D/g,'').length<7)return Response.json({error:'Enter the phone number you would like Roxanne to call.'},{status:400});
  const end=new Date(Date.parse(b.start)+s.duration_minutes*60000).toISOString(),id=await eventId(b.start);
  await db.Lead.update(lead.id,{call_pending_start:b.start});
  const validEmail=typeof lead.email==='string'&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(lead.email);

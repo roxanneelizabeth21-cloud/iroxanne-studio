@@ -79,8 +79,7 @@ export default async function(req:Request){
   // Persist the inquiry first. AI failure must never lose a verified request.
   try { await prepareNotesQuote(client,lead); }
   catch { await db.Lead.update(lead.id,{draft_estimate_status:'failed',estimated_price_low:null,estimated_price_high:null,estimated_hours_low:null,estimated_hours_high:null}).catch(()=>{}); }
-  // Send pre-generated welcome video to the lead (idempotent — skips if already sent).
-  client.asServiceRole.functions.invoke('generateQuoteVideo',{lead_id:lead.id}).catch((e:any)=>console.log('quote video send failed',e?.message));
+  // The Lead workflow sends one confirmation, including the welcome video.
   return Response.json({id:lead.id,booking_token:token});
  }catch(e){return Response.json({error:e.status?e.message:'Something went wrong. Please try again; your form details have not been cleared.'},{status:e.status||500});}
 }

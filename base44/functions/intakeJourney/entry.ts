@@ -29,6 +29,10 @@ export default async function(req: Request) {
         const bn = (updates.requests as any[]).find(r=>r.id==='business_name');
         if (bn?.answer) updates.business_name = String(bn.answer).trim();
       }
+      if (body.action === 'submit' && Array.isArray(record.requests)) {
+        const missing = ((updates.requests || record.requests) as any[]).filter(r=>r.required && (r.kind==='file' ? !(r.file_urls||[]).some((u:any)=>typeof u==='string' && u.trim()) && !/^https?:\/\/\S+$/i.test(String(r.answer||'').trim()) : !String(r.answer||'').trim()));
+        if(missing.length)return Response.json({error:'Please complete: '+missing.map(r=>r.label).join(', '),missing_ids:missing.map(r=>r.id)},{status:400});
+      }
       if (JSON.stringify(updates).length > 250000) return Response.json({error:'Please shorten your answers or share a document link.'},{status:400});
       updates.status = body.action === 'submit' ? 'submitted' : 'in_progress';
       if (body.action === 'submit') updates.submitted_at = new Date().toISOString();

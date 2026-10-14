@@ -9,7 +9,6 @@ function generateToken() {
 }
 
 const APP_ORIGIN = 'https://iroxannestudio.com';
-const BASE44_SIGNUP_URL = 'https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp';
 
 // Admin-only: create a token-protected intake form for a contract and email the
 // client a branded link. Reuses an existing intake for the same contract so a
@@ -37,6 +36,10 @@ export default async function (req: Request) {
     const lead = contract.lead_id ? await base44.entities.Lead.get(contract.lead_id).catch(() => null) : null;
     let intake = existing[0] || await base44.entities.ClientIntake.create({
       requests: defaultRequests(lead || {}, contract),
+      business_name: lead?.business_name || contract.client_business || '',
+      platform_account_email: lead?.platform_account_email || '',
+      design_notes: [lead?.design_style?.replaceAll('_',' '),lead?.design_inspiration].filter(Boolean).join(' — '),
+      existing_tools: lead?.existing_tools || '',
       contract_id,
       lead_id: contract.lead_id || '',
       access_token: token,
@@ -51,6 +54,8 @@ export default async function (req: Request) {
     if (!Array.isArray(intake.requests) && ['pending','sent'].includes(intake.status)) {
       intake = await base44.entities.ClientIntake.update(intake.id, { requests: defaultRequests(lead || {}, contract) });
     }
+    if (mode !== 'prepare' && ['submitted','reviewed','skipped'].includes(intake.status)) return Response.json({error:'This checklist is already complete or skipped. Review it before requesting more information.'},{status:409});
+    if (mode !== 'prepare' && intake.sent_at && Date.now()-Date.parse(intake.sent_at)<60000) return Response.json({error:'This checklist was just sent. Please wait before sending it again.'},{status:429});
     if (mode === 'prepare') return Response.json({ intake, sent: false, prepared: true });
     const link = `${APP_ORIGIN}/intake/${intake.id}?t=${intake.access_token}`;
     const firstName = (contract.client_name || '').split(' ')[0] || 'there';
@@ -65,12 +70,9 @@ export default async function (req: Request) {
           title: `Hi ${esc(firstName)}, a few things I need`,
           content: `<p style="margin:0 0 16px;">To get <strong>${esc(contract.project_title || 'your project')}</strong> started, I've put together a short checklist of what I need from you.</p>
             ${intake.request_note ? `<p style="margin:0 0 16px;">${esc(intake.request_note)}</p>` : ''}
-            <p style="margin:0 0 16px;">Some answers are already filled in from our earlier conversation. Just confirm them, add what you have, and skip anything you don't. You can save and come back anytime.</p>
+            <p style="margin:0 0 16px;">Your earlier answers stay with your project. This checklist covers what is still needed. Complete any starred items, skip optional items, or save and return later.</p>
             <p>${brandButton('Open your checklist', link)}</p>
-            <p style="margin:24px 0 8px;font-weight:600;">One more thing: your Base44 account</p>
-            <p style="margin:0 0 16px;">Your app will live in your own Base44 account, and a free account is all you need to get started. It is required at handoff, so you can create it now, whenever you like. Depending on what your app needs, you may later move up to the $20 or $50 per month plan. I will confirm the right fit with you before handoff, so there is nothing to decide today.</p>
-            <p>${brandButton('Create your free Base44 account', BASE44_SIGNUP_URL)}</p>
-            <p style="margin:0 0 16px;font-size:12px;">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p>`,
+`,
           footerNote: 'iRoxanne Studio',
         }),
       });

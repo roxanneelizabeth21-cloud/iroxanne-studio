@@ -22,13 +22,12 @@ export default async function(req) {
     if(lead.is_test_record)return Response.json({skipped:true,reason:'test record'});
     const deliveryErrors=[];
     const adminEmail = await resolveAdminEmail(base44).catch(() => '');
-    const arr = (a) => Array.isArray(a) ? a.join(', ') : (a || '');
     const BUDGET_LABELS = { under_1500:'Under $1,500','1500_3000':'$1,500–$3,000','3000_5000':'$3,000–$5,000','5000_8000':'$5,000–$8,000','8000_plus':'$8,000+',not_sure:'Not sure yet' };
-    const PRICING_LABELS = { fixed:'Fixed project price', hourly:'Hourly', not_sure:'Not sure' };
     const budgetLabel = (v) => BUDGET_LABELS[v] || v || '';
 
     // 1) Admin notification
-    if (adminEmail) {
+    if (adminEmail && !lead.quote_admin_email_state) {
+      await base44.asServiceRole.entities.Lead.update(lead.id,{quote_admin_email_state:'sending'});
       const rows: [string, string][] = [
         ['Name', lead.name || ''],
         ['Email', lead.email || ''],
@@ -45,42 +44,33 @@ export default async function(req) {
           content: `<p style="margin:0 0 16px;">A new project inquiry just came in.</p>${detailRows(rows)}<p style="margin:18px 0 0;">${brandButton('Review in dashboard', adminLink(req, 'proposals')+'?lead='+encodeURIComponent(lead.id))}</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
-      }).catch((e) => deliveryErrors.push('Admin notification: '+e.message));
+      }).then(()=>base44.asServiceRole.entities.Lead.update(lead.id,{quote_admin_email_state:'sent'})).catch(async(e) => { deliveryErrors.push('Admin notification: '+e.message); await base44.asServiceRole.entities.Lead.update(lead.id,{quote_admin_email_state:'error'}); });
     }
 
     const callSettings=await base44.asServiceRole.entities.CallSettings.list('-updated_date',1).catch(()=>[]);
     const bookingLink=callSettings[0]?.enabled && lead.booking_token ? studioUrl(req)+'/book-call?lead='+encodeURIComponent(lead.id)+'&t='+encodeURIComponent(lead.booking_token) : '';
     // 2) Client welcome: single rich confirmation reflecting what they submitted.
-    if (lead.email) {
+    if (lead.email && !lead.quote_confirmation_email_state) {
+      await base44.asServiceRole.entities.Lead.update(lead.id,{quote_confirmation_email_state:'sending'});
       const firstName = (lead.name || '').split(' ')[0] || 'there';
       const summary: [string, string][] = [
         ['Business', lead.business_name || ''],
-        ['The idea', lead.quick_pitch || ''],
-        ['What the app should do', lead.problem_to_solve || ''],
-        ['Requested add-ons (not yet quoted)', arr(lead.must_have_features)],
-        ['Integrations needed', arr(lead.integrations_needed)],
-        ['Budget', budgetLabel(lead.budget_range)],
-        ['Pricing preference', PRICING_LABELS[lead.pricing_model_preference] || lead.pricing_model_preference || ''],
+        ['Requested help', lead.selected_package === 'Not sure' ? 'Help shaping your idea' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? 'Website' : lead.selected_package || ''],
         ['Ideal launch', lead.ideal_launch_date || ''],
-        ['Approves work', lead.approver_name || ''],
-        ['Compliance needs', lead.compliance_requirements || ''],
-        ['Base44 account email', lead.platform_account_email || ''],
-        ['Needs training', lead.training_needed ? 'Yes' : ''],
-        ['Wants ongoing support', lead.ongoing_support_needed ? 'Yes' : ''],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
         to: lead.email,
         subject: "We've got your project details — iRoxanne Studio",
         body: brandedEmail({
           title: `Thanks, ${esc(firstName)}!`,
-          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your quote request and I'll review your details personally. Expect a reply within 2 business days with a proposal or any questions needed to prepare it.</p>
-            ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}
+          content: `<p style="margin:0 0 16px;">I've received your quote request and I'll review your details personally. Expect a reply within 2 business days with a proposal or any questions needed to prepare it.</p>
+            ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">Your request:</p>${detailRows(summary)}` : ''}
             ${bookingLink ? '<p style="margin:20px 0 8px;">If a conversation would help, choose an available time for an optional call.</p><p>'+brandButton('Schedule an optional call',bookingLink)+'</p>' : ''}
-            <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>
+            <p style="margin:20px 0 0;"><a href="https://media.base44.com/videos/public/6a94dbc673f0d144b6ed36bb/24c961373_QuoteReceivedWelcome_720p.mp4">Watch a short welcome from Roxanne</a></p><p>You do not need to fill in another form. Reply to this email if you want to add anything.</p>
             <p style="margin:24px 0 0;font-size:13px;">— Roxanne, iRoxanne Studio</p>`,
           footerNote: 'iRoxanne Studio, one builder, not an agency.',
         }),
-      }).catch((e) => deliveryErrors.push('Client confirmation: '+e.message));
+      }).then(()=>base44.asServiceRole.entities.Lead.update(lead.id,{quote_confirmation_email_state:'sent'})).catch(async(e) => { deliveryErrors.push('Client confirmation: '+e.message); await base44.asServiceRole.entities.Lead.update(lead.id,{quote_confirmation_email_state:'error'}); });
     }
 
     return Response.json({success:deliveryErrors.length===0,errors:deliveryErrors});

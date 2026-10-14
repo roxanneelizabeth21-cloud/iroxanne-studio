@@ -198,6 +198,33 @@
     },
     "email_verification_id": {
       "type": "string"
+    },
+    "quote_admin_email_state": {
+      "type": "string",
+      "enum": [
+        "sending",
+        "sent",
+        "error"
+      ],
+      "description": "Delivery guard: inspect delivery before clearing an uncertain sending/error state."
+    },
+    "quote_confirmation_email_state": {
+      "type": "string",
+      "enum": [
+        "sending",
+        "sent",
+        "error"
+      ],
+      "description": "Delivery guard: inspect delivery before clearing an uncertain sending/error state."
+    },
+    "quote_review_reminder_state": {
+      "type": "string",
+      "enum": [
+        "sending",
+        "sent",
+        "error"
+      ],
+      "description": "Delivery guard: inspect delivery before clearing an uncertain sending/error state."
     }
   },
   "required": [
