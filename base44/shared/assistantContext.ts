@@ -57,5 +57,5 @@ export async function assistantContext(client:any,focus='') {
 }
 export function modelContext(context:any) {
  // Explicitly projected records exclude signatures, tokens and account credentials.
- return {now:context.refreshed_at,time_zone:'America/New_York',focus:context.focus,metrics:context.metrics,attention:context.attention,coverage:[context.inbox.coverage,context.calendar.coverage,...context.warnings],sources:context.sources.slice(0,180),brand:context.brand,call_hours:context.call_settings.weekly_hours};
+ return {now:context.refreshed_at,local_date:new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(context.refreshed_at)),weekday:new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'long'}).format(new Date(context.refreshed_at)),time_zone:'America/New_York',focus:context.focus,metrics:context.metrics,attention:context.attention,coverage:[context.inbox.coverage,context.calendar.coverage,...context.warnings],sources:context.sources.slice(0,180),brand:context.brand,call_hours:context.call_settings.weekly_hours};
 }

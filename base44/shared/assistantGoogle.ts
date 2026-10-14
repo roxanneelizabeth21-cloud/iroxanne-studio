@@ -28,9 +28,9 @@ export function decodeBody(payload:any):string {
 export function summarizeThread(thread:any) {
  const messages=(thread.messages||[]).slice(-8).map((m:any)=>{
   const h=Object.fromEntries((m.payload?.headers||[]).map((x:any)=>[String(x.name).toLowerCase(),String(x.value)]));
-  return {id:m.id,from:clean(h.from,300),from_email:emailAddress(h.from),to:clean(h.to,400),subject:clean(h.subject,300),date:new Date(Number(m.internalDate)||0).toISOString(),body:decodeBody(m.payload)||clean(m.snippet,1000),message_id:clean(h['message-id'],500),references:clean(h.references,2000),unread:(m.labelIds||[]).includes('UNREAD')};
+  return {id:m.id,bulk:!!(h['list-unsubscribe']||h['list-id']||/bulk|list/i.test(h.precedence||'')),from:clean(h.from,300),from_email:emailAddress(h.from),to:clean(h.to,400),subject:clean(h.subject,300),date:new Date(Number(m.internalDate)||0).toISOString(),body:decodeBody(m.payload)||clean(m.snippet,1000),message_id:clean(h['message-id'],500),references:clean(h.references,2000),unread:(m.labelIds||[]).includes('UNREAD')};
  });
- const latest=messages.at(-1)||{};return {id:thread.id,subject:latest.subject||'(No subject)',snippet:clean(latest.body,240),latest_from:latest.from,latest_from_email:latest.from_email,date:latest.date,unread:messages.some((m:any)=>m.unread),awaiting_reply:latest.from_email!==STUDIO_EMAIL,messages,url:'https://mail.google.com/mail/u/'+encodeURIComponent(STUDIO_EMAIL)+'/#all/'+encodeURIComponent(thread.id)};
+ const latest=messages.at(-1)||{};return {id:thread.id,subject:latest.subject||'(No subject)',bulk:!!latest.bulk,snippet:clean(latest.body,240),latest_from:latest.from,latest_from_email:latest.from_email,date:latest.date,unread:messages.some((m:any)=>m.unread),awaiting_reply:latest.from_email!==STUDIO_EMAIL,messages,url:'https://mail.google.com/mail/u/'+encodeURIComponent(STUDIO_EMAIL)+'/#all/'+encodeURIComponent(thread.id)};
 }
 export async function readInbox(client:any,email='') {
  const call=await googleConnection(client,'gmail');
