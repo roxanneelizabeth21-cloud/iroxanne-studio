@@ -1,3 +1,4 @@
+import QuoteEstimateReview from '@/components/admin/QuoteEstimateReview';
 import WorkflowSection from '@/components/admin/WorkflowSection';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -64,10 +65,11 @@ function buildInitial(initial, settings) {
     payment_installments: i.payment_installments || [],
     deposit_percent: i.deposit_percent ?? settings?.default_deposit_percent ?? 50,
     deposit_amount: i.deposit_amount ?? Math.round((i.price_total || (lineItems||[]).reduce((sum,item)=>sum+num(item.amount),0)) * (settings?.default_deposit_percent ?? 50))/100,
-    timeline_estimate: i.timeline_estimate || TIER_TIMELINES[tier] || '',
+    timeline_estimate: i.timeline_estimate || (i.requires_scope_review ? '' : TIER_TIMELINES[tier]) || '',
     saas_replacement_note: i.saas_replacement_note || '',
     valid_until: i.valid_until || addDays(validDays),
-    status: i.status || 'draft',
+    status: isLead ? 'draft' : i.status || 'draft',
+    requires_scope_review: !!i.requires_scope_review,
     complimentary: !!i.complimentary,
     discount_label: i.discount_label || 'Complimentary discount (100%)',
   };
@@ -145,6 +147,8 @@ export default function ProposalForm({ initial, settings, onSave, saving }) {
 
   return (
     <div className="space-y-5">
+      <QuoteEstimateReview leadId={form.lead_id}/>
+      {initial?.requires_scope_review && <label className="flex gap-2 rounded-xl border p-3 text-sm"><input type="checkbox" checked={!form.requires_scope_review} onChange={e=>update("requires_scope_review",!e.target.checked)}/><span>I have reviewed the scope, resolved the questions, and approved the price and payment terms. Save before sending.</span></label>}
       {initial?.must_have_features?.length>0&&<aside className="rounded-xl border p-3 text-sm"><strong>Requested add-ons — review before quoting</strong><p>{initial.must_have_features.join(', ')}</p><p className="text-muted-foreground mt-2">Add approved items to the scope and price below. Inquiry selections are not included automatically.</p></aside>}
       <p className="text-sm text-muted-foreground">Work through these three sections. Saving does not email the client.</p>
       <WorkflowSection title="1. Client & project" open>

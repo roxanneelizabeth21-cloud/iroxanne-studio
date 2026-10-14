@@ -1,3 +1,4 @@
+import QuoteEstimateReview from '@/components/admin/QuoteEstimateReview';
 import { MoreActions } from '@/components/admin/WorkflowSection';
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
@@ -34,6 +35,13 @@ export default function ProposalsAdminPage() {
   const [editing, setEditing] = useState(null);
   const [showLeads, setShowLeads] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [preparing,setPreparing]=useState(false);
+  const prepareDraft=async()=>{
+    setPreparing(true);
+    try{const r=await base44.functions.invoke('estimateQuoteNotes',{lead_id:leadReview.id});const d=r.data||r;if(d.error)throw new Error(d.error);const p=await base44.entities.Proposal.get(d.proposal_id);setLeadReview(null);setEditing({proposal:p});await load();toast({title:d.existing?'Existing proposal opened':'Draft prepared for your review',description:'Nothing has been sent to the customer.'});}
+    catch(e){toast({title:'Could not prepare draft',description:e?.response?.data?.error||e.message,variant:'destructive'});}
+    finally{setPreparing(false);}
+  };
   const [sendingId, setSendingId] = useState('');
   const [params] = useSearchParams();
   const requestedLead=params.get('lead'),requestedProposal=params.get('proposal');
@@ -173,6 +181,7 @@ export default function ProposalsAdminPage() {
           {leadReview && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <p>{leadReview.name} · {leadReview.email}</p>
+              <QuoteEstimateReview leadId={leadReview.id}/>
               {['selected_package','quick_pitch','problem_to_solve','must_have_features','nice_to_have_features','integrations_needed','existing_tools','ideal_launch_date','budget_range'].map(key => (
                 <div key={key}>
                   <h3 style={{ fontWeight: 500, textTransform: 'capitalize' }}>{key.replaceAll('_',' ')}</h3>
@@ -204,7 +213,8 @@ export default function ProposalsAdminPage() {
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <Button disabled={saving} onClick={saveReview}>Save review</Button>
-                <Button variant="outline" onClick={() => { setEditing({ lead: leadReview }); setLeadReview(null); }}>Build proposal</Button>
+                <Button disabled={preparing} onClick={prepareDraft}>{preparing?"Preparing draft…":leadReview.draft_proposal_id?"Open prepared draft":"Prepare draft from answers"}</Button>
+                <Button variant="outline" disabled={preparing} onClick={() => { setEditing({ lead: leadReview }); setLeadReview(null); }}>Build manually</Button>
               </div>
             </div>
           )}
@@ -277,7 +287,7 @@ export default function ProposalsAdminPage() {
                   <p style={{ fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.project_title}
                   </p>
-                  <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.status?.replaceAll('_', ' ')}</span>
+                  <span className={STATUS_BADGE[p.status] || 'irx-badge'}>{p.requires_scope_review ? 'Needs your review' : p.status?.replaceAll('_', ' ')}</span>
                 </div>
                 <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {p.proposal_number ? p.proposal_number + ' · ' : ''}{p.business_name || p.client_name || p.client_email} · {p.complimentary ? `Complimentary (value ${money(p.value_total)})` : money(p.price_total)}
@@ -301,7 +311,7 @@ export default function ProposalsAdminPage() {
                     </Button>
                     <MoreActions>
                     {!['declined', 'expired'].includes(p.status) && (
-                      <Button variant="outline" size="sm" disabled={sendingId === p.id} onClick={() => handleSend(p)} className="gap-1">
+                      <Button variant="outline" size="sm" disabled={sendingId === p.id || p.requires_scope_review} onClick={() => handleSend(p)} className="gap-1">
                         <Send className="h-3.5 w-3.5" /> {sendingId === p.id ? 'Sending...' : p.access_token ? 'Resend' : 'Send'}
                       </Button>
                     )}
