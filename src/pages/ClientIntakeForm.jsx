@@ -166,10 +166,11 @@ export default function ClientIntakeForm() {
           <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
             <h2 className="font-medium">Your Base44 account</h2>
             <p className="text-sm text-muted-foreground">Your finished app will transfer to your own account. If you already have one, confirm its email below. Otherwise, you can set it up before handoff. Roxanne will confirm the appropriate subscription and any separate platform costs before you choose a plan.</p>
-            <Button asChild className="min-h-11 whitespace-normal">
+            <label className="block text-sm">Base44 account email (optional for now)<Input type="email" value={intake.platform_account_email || ''} onChange={e=>patch('platform_account_email',e.target.value)} /></label>
+            {!intake.platform_account_email && <><Button asChild className="min-h-11 whitespace-normal">
               <a href="https://base44.pxf.io/c/7768369/2049275/25619?trafcat=lp" target="_blank" rel="sponsored noopener noreferrer">Create your free Base44 account<span className="sr-only"> (opens in a new tab)</span></a>
             </Button>
-            <p className="text-xs text-muted-foreground">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p>
+            <p className="text-xs text-muted-foreground">Disclosure: I earn a small commission if you sign up through this link, at no cost to you. You are welcome to sign up without it.</p></>}
           </section>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Button variant="outline" disabled={saving} onClick={() => handleSave(false)}>Save & return later</Button>

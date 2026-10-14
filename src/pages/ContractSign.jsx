@@ -71,12 +71,6 @@ export default function ContractSign() {
     }
   };
 
-  useEffect(() => {
-    if (!signed || !invoiceUrl) return;
-    const timer = setTimeout(() => { window.location.href = invoiceUrl; }, 4500);
-    return () => clearTimeout(timer);
-  }, [signed, invoiceUrl]);
-
   // Poll for the welcome video while it's generating (it takes a few minutes).
   useEffect(() => {
     if (!signed || welcomeVideoUrl || welcomeVideoStatus !== 'generating') return;
@@ -250,10 +244,10 @@ export default function ContractSign() {
               {invoiceUrl && (
                 <>
                   <p className="text-sm text-foreground mt-3 font-medium">
-                    Redirecting you to pay your deposit in a few seconds…
+                    Your agreement is saved. When you are ready, review your invoice and payment options.
                   </p>
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-3 print:hidden">
-                    <Button asChild><Link to={invoiceUrl}>Pay your deposit now</Link></Button>
+                    <Button asChild><Link to={invoiceUrl}>View invoice & payment options</Link></Button>
                     <Button variant="outline" asChild><Link to="/" replace>Done</Link></Button>
                     <PrintButton />
                   </div>
