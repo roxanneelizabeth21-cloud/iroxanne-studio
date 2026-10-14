@@ -8,7 +8,6 @@ import Process from '@/components/home/Process';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import About from '@/components/home/About';
 import CalendarPreview from '@/components/home/CalendarPreview';
-import BusinessConcepts from '@/components/home/BusinessConcepts';
 import '@/components/home/studio.css';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
@@ -76,7 +75,7 @@ export default function Home() {
 
 
         <CalendarPreview />
-        <BusinessConcepts />
+        <section id="possibilities" className="studio-wrap py-6"><div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-white/70 p-5"><div><h2 className="!text-3xl">Have an idea of your own?</h2><p className="studio-note mt-2">A few simple questions can help you find a starting point.</p></div><a className="studio-button" href="/ideas#possibilities">Explore your idea →</a></div></section>
         <FeaturedWork items={projects} loading={loading} />
         <Process />
         <About headshotUrl={headshotUrl} />
