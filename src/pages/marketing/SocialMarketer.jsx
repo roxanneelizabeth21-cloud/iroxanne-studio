@@ -10,14 +10,9 @@ import useSpokenReplies from '@/hooks/useSpokenReplies';
 
 const AGENT = 'social_media_marketer';
 const STARTERS = [
-  // Business operating cycle
-  'Give me a business status digest: new quote requests, proposals awaiting my review, contracts and invoices overdue for action, and the next thing I should do.',
-  'Read the marked test quote request and prepare a proposal draft in test mode. Leave the price for me to set. Show me the review link and the next action.',
-  'Which client records are overdue for an owner action right now? Prepare a follow-up draft for the most urgent one — do not send it.',
-  // Marketing operating cycle
-  'Draft my first Facebook post as a warm welcome: tell the story of my passion for helping people bring their dreams to life through iRoxanne Studio. Gently invite friends to like the page and follow along, without sales pressure. Save for review.',
-  'What’s been performing best this month based on the metrics we have?',
-  'Create two complete Facebook drafts with finished, distinct plum/cream/gold graphics: one helps someone imagine their idea becoming useful, and one gently welcomes referrals from friends. Speak to nontechnical people in my personal voice. Save for review.',
+  { label: 'Business overview', prompt: 'What needs my attention in the studio today?' },
+  { label: 'Create content', prompt: 'Help me create a post for iRoxanne Studio.' },
+  { label: 'Plan my week', prompt: 'Help me plan my marketing for this week.' },
 ];
 
 export default function SocialMarketer() {
@@ -27,7 +22,7 @@ export default function SocialMarketer() {
   const [loading, setLoading] = useState(true);
   const boot = useRef(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState(() => new URLSearchParams(window.location.search).has('weekly') ? 'Create four weekly stories for Facebook and Instagram, with tailored captions and finished graphics for each. Save drafts for my review; do not publish. Use my personal, sophisticated, people-first direction.' : '');
+  const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const bottomRef = useRef(null);
@@ -48,7 +43,7 @@ export default function SocialMarketer() {
     try {
       const conv = await base44.agents.createConversation({
         agent_name: AGENT,
-        metadata: { name: 'iRoxanne Studio strategy', description: 'Four weekly stories for Facebook and Instagram. Personal approval required.' }
+        metadata: { name: 'iRoxanne Studio strategy', description: 'Business and marketing conversation with Nova.' }
       });
       setConversation(conv); setMessages(conv.messages || []);
       setHistory(items => [conv, ...items]);
@@ -75,7 +70,7 @@ export default function SocialMarketer() {
     return () => unsubscribe();
   }, [conversation?.id]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => { if (messages.length) bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages]);
 
   const send = async (text) => {
     const content = (text ?? input).trim();
@@ -116,29 +111,30 @@ export default function SocialMarketer() {
         </div>
       </div>
 
-      <label className="text-sm mb-3">Conversation history
+      <details className="mb-3"><summary className="cursor-pointer text-sm text-muted-foreground">Previous conversations</summary>
+      <label className="block text-sm mt-2">Open a conversation
         <select className="mt-1 w-full rounded-lg border border-border bg-background text-foreground p-2" value={conversation?.id || ''} disabled={loading || sending} onChange={e => openConversation(e.target.value)}>
           <option value="" disabled>Select a conversation</option>
           {history.map(c => <option key={c.id} value={c.id}>{c.metadata?.name || 'Strategy conversation'} — {c.created_date ? new Date(c.created_date).toLocaleDateString() : c.id.slice(-6)}</option>)}
         </select>
-      </label>
+      </label></details>
       {error && <p role="alert" className="text-sm text-destructive mb-2">{error}</p>}
       <div className="flex-1 overflow-y-auto space-y-3 rounded-xl border border-border/50 bg-secondary/20 p-4">
         {loading && (
           <div className="flex justify-center pt-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
         )}
         {conversation && messages.length === 0 && (
-          <div className="space-y-2 pt-6">
-            <p className="text-center text-sm text-muted-foreground">Try one of these:</p>
-            {STARTERS.map((s) => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                className="block w-full rounded-lg border border-border/60 bg-card px-3 py-2 text-left text-sm hover:border-primary/40"
-              >
-                {s}
-              </button>
-            ))}
+          <div className="flex min-h-full flex-col items-center justify-center gap-3 py-6 text-center">
+            <JadeAvatar size={52} />
+            <h3 className="font-display text-2xl">What can I help with?</h3>
+            <p className="text-sm text-muted-foreground">Tell me what you’re working on. We’ll take it from there.</p>
+            <div className="flex flex-wrap justify-center gap-2 mt-2">
+              {STARTERS.map((s) => (
+                <button key={s.label} onClick={() => setInput(s.prompt)} className="rounded-full border border-border bg-card px-3 py-2 text-sm hover:border-primary/50">
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         {messages.map((m, i) => <AgentMessageBubble key={i} message={m} />)}
@@ -150,7 +146,8 @@ export default function SocialMarketer() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Ask for post ideas, a campaign plan, or a performance read… or tap the mic and talk"
+          aria-label="Message Nova"
+          placeholder="Message Nova…"
           rows={2}
           className="resize-none"
         />
