@@ -2,14 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import ts from 'typescript';
 function load(file, bindings={}) {
- let source=fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replace(/export default /,'return ').replace(/export function /g,'function ').replace(/export type /g,'type ');
+ let source=fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replace(/export default /,'return ').replace(/export function /g,'function ');
  if(file.endsWith('paymentSummary.ts')) source+='\nreturn paymentSummary;';
- if(file.endsWith('paymentSchedule.ts')) source+='\nreturn {withHandoffTerms,validateSchedule,scheduleText};';
  const js=ts.transpile(source,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None});
  return new Function(...Object.keys(bindings),js)(...Object.values(bindings));
 }
 const summary=load('base44/shared/paymentSummary.ts');
-const paymentSchedule=load('base44/shared/paymentSchedule.ts');
 let checks=0;
 const check=(label,fn)=>{fn();checks++;console.log('PASS '+label);};
 check('partial deposit uses cents',()=>assert.equal(summary({amount_total:1500,deposit_amount:750},[{kind:'deposit',amount:250.25}]).depositOutstanding,499.75));
@@ -19,7 +17,7 @@ check('waived deposit is not reported as money paid',()=>{const s=summary({amoun
 function mocks(record) {
  const writes=[], emails=[]; const entity={get:async()=>record,update:async(id,x)=>{writes.push(x);return {...record,...x};},create:async x=>{writes.push(x);return {...x,id:'contract1'};},filter:async()=>[],list:async()=>[]};
  const client={entities:{Proposal:entity,Contract:entity,Invoice:entity,Payment:entity,PricingSettings:entity,Lead:entity},asServiceRole:{entities:{Proposal:entity,Contract:entity,Invoice:entity,Lead:entity,PricingSettings:entity},integrations:{Core:{SendEmail:async x=>emails.push(x)}}}};
- return {writes,emails,client, bindings:{...paymentSchedule,studioUrl:()=> 'https://example.test',adminLink:()=> 'https://example.test/admin',sendStudioEmail:async(c,x)=>{emails.push(x);return {};},createClientFromRequest:()=>client,requireAdmin:async()=>({ok:true}),esc:x=>String(x||''),resolveAdminEmail:async()=>'',brandedEmail:x=>x.content,brandButton:()=>'',detailRows:()=>'',paymentSummary:summary}};
+ return {writes,emails,client, bindings:{createClientFromRequest:()=>client,requireAdmin:async()=>({ok:true}),esc:x=>String(x||''),resolveAdminEmail:async()=>'',brandedEmail:x=>x.content,brandButton:()=>'',detailRows:()=>'',paymentSummary:summary}};
 }
 const request=b=>new Request('https://example.test',{method:'POST',body:JSON.stringify(b),headers:{'content-type':'application/json'}});
 async function scenario(name,file,record,body,status,verify=()=>{}) {
