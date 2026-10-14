@@ -29,6 +29,7 @@ export default async function (req: Request) {
     } catch {
       return Response.json({ error: 'Proposal not found' }, { status: 404 });
     }
+    if (proposal.requires_scope_review) return Response.json({error:'Review the generated scope, questions and price, then mark it reviewed and save before sending.'},{status:409});
     if (!proposal.client_email) return Response.json({ error: 'Proposal has no client email' }, { status: 400 });
 
     if (['accepted', 'declined'].includes(proposal.status)) return Response.json({ error: 'Create a new proposal for a completed response.' }, { status: 409 });
