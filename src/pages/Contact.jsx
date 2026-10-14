@@ -42,14 +42,14 @@ export default function Contact() {
   return (
     <div className="studio-public min-h-screen bg-background text-foreground">
       <SiteNav />
-      <main className="mx-auto max-w-2xl px-5 md:px-8 pt-[100px] pb-12">
+      <main className="mx-auto max-w-2xl px-5 md:px-8 pt-[100px] pb-8">
         <p className="text-[13px] font-medium text-[#B8942E] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Contact</p>
         <h1 className="text-[34px] md:text-[42px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Get in touch</h1>
         <p className="mt-3 text-[15px] text-muted-foreground leading-relaxed max-w-md" style={{ fontFamily: "'Inter', sans-serif" }}>
           Have a question or an idea? Send a message. I read every one personally and reply within 1 business day.
         </p>
 
-        <div className="mt-6 flex items-start gap-4 rounded-2xl border border-[#2D2A4A]/10 bg-[#2D2A4A]/[0.03] p-5">
+        <div className="mt-4 flex items-start gap-4 rounded-2xl border border-[#2D2A4A]/10 bg-[#2D2A4A]/[0.03] p-5">
           <PhoneCall className="h-5 w-5 shrink-0 text-[#B8942E] mt-0.5" />
           <div>
             <p className="text-[14px] font-semibold text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>Prefer to talk it through?</p>
@@ -61,14 +61,14 @@ export default function Contact() {
         </div>
 
         {done ? (
-          <div className="mt-10 rounded-2xl border border-[#B8942E]/20 bg-card text-card-foreground p-10 text-center shadow-sm">
+          <div className="mt-6 rounded-2xl border border-[#B8942E]/20 bg-card text-card-foreground p-6 text-center shadow-sm">
             <CheckCircle2 className="mx-auto h-10 w-10 text-[#B8942E]" />
             <p className="mt-4 text-[18px] font-semibold text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Thanks, your message is on its way.</p>
             <p className="mt-1 text-[14px] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>I'll get back to you within 1 business day.</p>
           </div>
         ) : (
-          <div className="mt-8 rounded-2xl border border-[#2D2A4A]/6 bg-card text-card-foreground p-6 md:p-8 shadow-sm">
-            <form onSubmit={submit} className="space-y-5" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <div className="mt-5 rounded-2xl border border-[#2D2A4A]/6 bg-card text-card-foreground p-4 md:p-5 shadow-sm">
+            <form onSubmit={submit} className="space-y-4" style={{ fontFamily: "'Inter', sans-serif" }}>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-name">Name *</Label><Input id="c-name" value={form.name} onChange={(e) => update('name', e.target.value)} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>
                 <div className="space-y-1.5"><Label className="text-[13px] text-muted-foreground" htmlFor="c-email">Email *</Label><Input id="c-email" type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required className="border-[#2D2A4A]/10 bg-background text-foreground focus:border-[#B8942E] focus:ring-[#B8942E]/20" /></div>

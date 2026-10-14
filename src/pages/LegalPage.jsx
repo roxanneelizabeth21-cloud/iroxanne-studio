@@ -28,13 +28,13 @@ export default function LegalPage() {
   return (
     <>
       <PageBanner pageKey={slug} />
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {isLoading ? (
-          <div className="flex justify-center py-20">
+          <div className="flex justify-center py-10">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : !page ? (
-          <div className="text-center py-20">
+          <div className="text-center py-10">
             <FileText className="h-10 w-10 mx-auto mb-4 text-muted-foreground/40" />
             <h1 className="font-display text-2xl font-semibold mb-2">
               {slug === 'terms' ? 'Terms of Use' : 'Privacy Policy'}
@@ -55,7 +55,7 @@ export default function LegalPage() {
                 </p>
               )}
             </header>
-            <div className="prose-legal text-foreground/90 leading-relaxed space-y-4 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-8 [&_h3]:font-semibold [&_h3]:mt-6 [&_a]:text-primary [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_strong]:font-semibold">
+            <div className="prose-legal text-foreground/90 leading-relaxed space-y-4 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-5 [&_h3]:font-semibold [&_h3]:mt-4 [&_a]:text-primary [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_strong]:font-semibold">
               <ReactMarkdown>{page.content || ''}</ReactMarkdown>
             </div>
           </article>

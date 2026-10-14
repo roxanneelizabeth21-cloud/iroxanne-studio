@@ -4,7 +4,7 @@ export default function SiteFooter() {
   return (
     <footer className="studio-footer bg-background border-t border-border">
       {/* CTA band */}
-      <div className="mx-auto max-w-6xl px-5 md:px-8 py-8 text-center">
+      <div className="mx-auto max-w-6xl px-5 md:px-8 py-5 text-center">
         <h2 className="text-[30px] md:text-[36px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Your idea doesn’t have to fit a box.
         </h2>

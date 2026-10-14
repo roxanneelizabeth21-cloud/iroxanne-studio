@@ -26,20 +26,20 @@ export default function About() {
       <SiteNav />
       <main className="pt-[72px]">
         <section className="relative isolate overflow-hidden bg-[#e6eee5] text-[#203d39]">
-          <div className="mx-auto max-w-5xl px-5 md:px-8 py-8 grid gap-6 md:grid-cols-[240px_1fr] items-center">
+          <div className="mx-auto max-w-5xl px-5 md:px-8 py-5 grid gap-4 md:grid-cols-[240px_1fr] items-center">
             {headshotUrl && <img src={headshotUrl} alt="Roxanne, founder of iRoxanne Studio" className="w-48 md:w-60 aspect-[3/4] object-cover object-top rounded-2xl border border-[#D5BB82]/40 shadow-xl mx-auto" />}
             <div>
               <p className="text-sm tracking-widest text-[#756130]">ABOUT IROXANNE STUDIO</p>
               <h1 className="font-display text-4xl md:text-5xl mt-4">Hi, I’m Roxanne.</h1>
               <p className="mt-4 max-w-xl leading-relaxed text-[#4f665f]">I help people turn an idea into something they can use and share. You do not need to have it all figured out before we begin.</p>
               <p className="mt-4 max-w-xl leading-relaxed text-[#4f665f]">I build websites and custom apps that make running your business easier, from your first website to the tools that run your day. Tell me how your business works, and I’ll build the website or app to match. Starting with an early idea? We can start with a conversation.</p>
-              <a href="/quote" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#E9D5A5] text-[#302634] px-7 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Request a quote <ArrowRight className="h-4 w-4"/></a>
+              <a href="/quote" className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#E9D5A5] text-[#302634] px-7 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Request a quote <ArrowRight className="h-4 w-4"/></a>
             </div>
           </div>
         </section>
-        <section className="mx-auto max-w-3xl px-5 md:px-8 py-8">
+        <section className="mx-auto max-w-3xl px-5 md:px-8 py-5">
         <h2 className="font-display text-3xl">A little about me and how I work</h2>
-        <div className="mt-6 space-y-4 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="mt-4 space-y-4 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
           <p>I’ve been building apps for nearly 20 years, starting when bringing an idea to life meant writing the code behind it. Those years have taught me how to ask the right questions, work through challenges, and build around what people actually need.</p>
           <p>Today, newer tools let me bring that experience to projects in a different way. They can reduce the time and cost involved in development, making a custom app more accessible to someone starting a business or exploring an idea.</p>
           <p>That’s what excites me about iRoxanne Studio: combining years of hands-on experience with new possibilities to help people create something they might once have thought was out of reach.</p>

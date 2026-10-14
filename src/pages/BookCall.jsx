@@ -16,8 +16,8 @@ export default function BookCall(){
  const book=async()=>{if(busy)return;setBusy(true);setError('');try{const d=await call('book');if(d.booked){base44.analytics.track({eventName:'call_booked'});}setData(d);}catch(e){setError(e.message);setSelected('');}finally{setBusy(false);}};
  const days=[...new Set((data?.slots||[]).map(dateKey))];
  const chosenDay=days.includes(day)?day:days[0];
- return <div className="studio-surface min-h-screen bg-background px-4 py-8"><div className="max-w-2xl mx-auto"><BrandedPageHeader title="Schedule an optional call" subtitle="Choose a time to talk through your project."/>
- <div className="rounded-2xl border bg-card p-6 space-y-5">
+ return <div className="studio-surface min-h-screen bg-background px-4 py-5"><div className="max-w-2xl mx-auto"><BrandedPageHeader title="Schedule an optional call" subtitle="Choose a time to talk through your project."/>
+ <div className="rounded-2xl border bg-card p-6 space-y-4">
  {error&&<div role="alert"><p className="text-destructive">{error}</p><Button variant="outline" onClick={load} disabled={busy}>Refresh available times</Button></div>}
  {busy&&!data&&<p role="status">Checking availability…</p>}
  {data?.booked?<><h2 className="font-display text-2xl">Your call is booked</h2><p className="font-semibold">{format(data.start)}</p><p className="text-sm text-muted-foreground">Times shown in {zone}. Roxanne will call the phone number you provided. Check your email for the calendar invitation.</p>{data.email_sent===false&&<p>Your booking is saved, but an additional confirmation email could not be confirmed. The calendar invitation is separate.</p>}<p className="text-sm">To reschedule or cancel, contact the studio using the details in your confirmation.</p></>:data?.enabled===false?<p>Online booking is currently paused. Your quote request is still saved, and Roxanne will follow up by email.</p>:data&&<>

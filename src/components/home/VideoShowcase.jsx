@@ -29,19 +29,19 @@ export default function VideoShowcase() {
   const closeVideo = () => setActive(null);
 
   return (
-    <section id="videos" className="mx-auto max-w-6xl px-5 md:px-8 py-8 md:py-10">
+    <section id="videos" className="mx-auto max-w-6xl px-5 md:px-8 py-5 md:py-6">
       <p className="text-[12px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-[0.2em] uppercase mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>Watch</p>
       <h2 className="text-[32px] md:text-[40px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Videos</h2>
       <p className="mt-3 text-[15px] text-muted-foreground max-w-xl" style={{ fontFamily: "'Inter', sans-serif" }}>A look at some of the projects and moments I've shared.</p>
 
       {loading ? (
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="aspect-video rounded-xl bg-muted animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {videos.map((video) => (
             <VideoCard key={video.id} video={video} onPlay={openVideo} />
           ))}
@@ -51,7 +51,7 @@ export default function VideoShowcase() {
       {active && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4" onClick={closeVideo}>
           <div className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-            <button onClick={closeVideo} className="absolute -top-10 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close video">
+            <button onClick={closeVideo} className="absolute -top-6 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close video">
               <X className="h-5 w-5" />
             </button>
             {active.youtube_url ? (

@@ -25,7 +25,7 @@ export default function Ideas() {
   return <div className="studio-public min-h-screen bg-background text-foreground">
     <SiteNav/>
     <main className="pt-[72px]">
-      <header className="bg-[#e6eee5] text-[#203d39] px-5 py-8 md:py-10">
+      <header className="bg-[#e6eee5] text-[#203d39] px-5 py-5 md:py-6">
         <div className="mx-auto max-w-5xl">
           <p className="text-[#756130] text-sm tracking-wide">Different ideas. Real possibilities.</p>
           <h1 className="font-display text-4xl md:text-5xl mt-4">Let’s explore your possibilities</h1>
@@ -33,7 +33,7 @@ export default function Ideas() {
         </div>
       </header>
       <BusinessConcepts />
-      <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-8">
+      <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-5">
         {error?<p role="alert">The examples could not load. Please refresh to try again.</p>:!items?<p role="status">Loading examples…</p>:
           <div className="grid gap-5 md:grid-cols-2">{EXAMPLES.map(([slug,idea,description])=>{
             const app=items.find(item=>item.slug===slug);
@@ -49,7 +49,7 @@ export default function Ideas() {
           })}</div>}
       </section>
       <CalendarPreview />
-      <section className="studio-section"><div className="studio-wrap"><p className="studio-eyebrow">And then there’s your idea</p><h2>What else could we create?</h2><p className="studio-subtitle">A creative studio. A learning space. An interactive guide. A tool for your community. Something no one has quite put a name to yet.</p><a className="studio-button mt-6" href="/quote">Tell me what you’re imagining →</a></div></section>
+      <section className="studio-section"><div className="studio-wrap"><p className="studio-eyebrow">And then there’s your idea</p><h2>What else could we create?</h2><p className="studio-subtitle">A creative studio. A learning space. An interactive guide. A tool for your community. Something no one has quite put a name to yet.</p><a className="studio-button mt-4" href="/quote">Tell me what you’re imagining →</a></div></section>
     </main>
     <SiteFooter/>
   </div>;
