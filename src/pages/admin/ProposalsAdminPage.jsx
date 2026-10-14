@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { FileText, Plus, Send, Copy, Pencil, ChevronDown, ChevronRight, ArrowRight, Trash2 } from 'lucide-react';
+import { Plus, Send, Copy, ChevronDown, ChevronRight, ArrowRight, Trash2 } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import ProposalForm from '@/components/admin/ProposalForm';
 import { useConfirmDelete } from '@/components/admin/ConfirmDeleteDialog';
