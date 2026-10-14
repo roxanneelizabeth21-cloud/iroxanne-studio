@@ -9,6 +9,7 @@ import Services from '@/components/home/Services';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import About from '@/components/home/About';
 import CalendarPreview from '@/components/home/CalendarPreview';
+import BusinessConcepts from '@/components/home/BusinessConcepts';
 import '@/components/home/studio.css';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
@@ -76,6 +77,7 @@ export default function Home() {
 
 
         <Services />
+        <BusinessConcepts />
         <FeaturedWork items={projects} loading={loading} />
         <CalendarPreview />
         <Process />

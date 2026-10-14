@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
 import CalendarPreview from '@/components/home/CalendarPreview';
+import BusinessConcepts from '@/components/home/BusinessConcepts';
 
 const EXAMPLES = [
   ['quiet-time-daily', 'Make space for a daily pause', 'Bring Scripture, prayer, and reflection into a welcoming place people can return to.'],
@@ -31,6 +32,7 @@ export default function Ideas() {
           <p className="mt-5 max-w-2xl leading-relaxed text-[#4f665f]">An app can begin with a business, a shared challenge, or a simple “wouldn’t it be helpful if…” These projects show a few different starting points. Your idea does not need to look like any of them.</p>
         </div>
       </header>
+      <BusinessConcepts />
       <section aria-label="App examples" className="max-w-5xl mx-auto px-5 md:px-8 py-8">
         {error?<p role="alert">The examples could not load. Please refresh to try again.</p>:!items?<p role="status">Loading examples…</p>:
           <div className="grid gap-5 md:grid-cols-2">{EXAMPLES.map(([slug,idea,description])=>{
