@@ -61,7 +61,7 @@ export default function VisualIdeaStudio(){
  useEffect(()=>()=>{request.current++;},[]);
  useEffect(()=>{if(seedIdeas[seed]){const text=seedIdeas[seed],k=identify(text);request.current++;setBusy(false);setIdea(text);setKind(k);setScreen(types[k].screen);setStarted(true);setAI(null);setAnswers([]);setNotice('');}},[seed]);
  const c=types[kind];
- function choose(k){request.current++;setBusy(false);setNotice('');setKind(k);setScreen(types[k].screen);setStarted(true);setAI(null);setAnswers([]);}
+ function choose(k){setIdea('');setReply('');request.current++;setBusy(false);setNotice('');setKind(k);setScreen(types[k].screen);setStarted(true);setAI(null);setAnswers([]);}
  async function explore(text=idea){
   if(!text.trim()){choose('services');setNotice('No idea needed. Try booking a service in the preview, or choose another starting point.');return;}
   const k=identify(text,kind);choose(k);setIdea(text);const id=++request.current;setBusy(true);let timer;
