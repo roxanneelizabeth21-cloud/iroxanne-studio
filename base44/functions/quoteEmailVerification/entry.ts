@@ -1,3 +1,4 @@
+import {prepareNotesQuote} from '../../shared/notesQuote.ts';
 import {estimateProject} from '../../shared/quoteEstimate.ts';
 import {createClientFromRequest} from 'npm:@base44/sdk@0.8.44';
 const enc=new TextEncoder();
@@ -62,7 +63,7 @@ export default async function(req:Request){
   if(prior[0])return Response.json({id:prior[0].id,booking_token:prior[0].booking_token});
   const input=b.lead||{},data:any={};
   const fields=['name','phone','business_name','business_type','website','quick_pitch','problem_to_solve','existing_tools','design_style','design_inspiration','ideal_launch_date','budget_range','approver_name','compliance_requirements','platform_account_email'];
-  for(const key of fields)data[key]=String(input[key]||'').slice(0,key==='quick_pitch'||key==='problem_to_solve'?5000:1000);
+  for(const key of fields)data[key]=String(input[key]||'').slice(0,key==='quick_pitch'||key==='problem_to_solve'?6500:1000);
   if(!data.name.trim()||data.quick_pitch.trim().length<5||!['under_1500','1500_3000','3000_5000','5000_8000','8000_plus','not_sure'].includes(data.budget_range))fail('Please complete your name, idea and budget.');
   for(const key of ['must_have_features','nice_to_have_features','integrations_needed'])data[key]=Array.isArray(input[key])?input[key].slice(0,30).map((v:any)=>String(v).slice(0,150)):[];
   data.selected_package=['Quick Win','Starter','Business Website','Custom Application','Mobile App','Not sure'].includes(input.selected_package)?input.selected_package:'Not sure';
@@ -75,6 +76,9 @@ export default async function(req:Request){
   const token=hex(crypto.getRandomValues(new Uint8Array(32)));
   const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
   await db.QuoteEmailVerification.update(record.id,{lead_id:lead.id});
+  // Persist the inquiry first. AI failure must never lose a verified request.
+  try { await prepareNotesQuote(client,lead); }
+  catch { await db.Lead.update(lead.id,{draft_estimate_status:'failed'}).catch(()=>{}); }
   // Send pre-generated welcome video to the lead (idempotent — skips if already sent).
   client.asServiceRole.functions.invoke('generateQuoteVideo',{lead_id:lead.id}).catch((e:any)=>console.log('quote video send failed',e?.message));
   return Response.json({id:lead.id,booking_token:token});
