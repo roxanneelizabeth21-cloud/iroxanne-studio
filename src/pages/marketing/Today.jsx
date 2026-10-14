@@ -114,7 +114,7 @@ export default function Today() {
           className="flex items-center gap-2 rounded-full bg-secondary/60 pl-1.5 pr-3 py-1.5 hover:bg-secondary shrink-0"
         >
           <JadeAvatar src={brand?.agent_avatar_url} size={28} />
-          <span className="text-sm font-medium">Sam</span>
+          <span className="text-sm font-medium">Nova</span>
         </Link>
       </div>
 
@@ -138,12 +138,12 @@ export default function Today() {
         <Link to="/marketing/cards" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
           <Palette className="h-5 w-5 text-primary mb-3" />
           <h3 className="font-display text-lg font-semibold">Card studio</h3>
-          <p className="text-sm text-muted-foreground mt-0.5">Make an ad or a set of cards with Sam. Download a PNG, or build a reel.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Make an ad or a set of cards with Nova. Download a PNG, or build a reel.</p>
         </Link>
 
         <Link to="/marketing/strategist" className="glass rounded-2xl p-5 hover:border-primary/40 transition-colors">
           <JadeAvatar src={brand?.agent_avatar_url} size={22} className="mb-3" />
-          <h3 className="font-display text-lg font-semibold">Ask Sam</h3>
+          <h3 className="font-display text-lg font-semibold">Ask Nova</h3>
           <p className="text-sm text-muted-foreground mt-0.5">Ideas, a week of content, or a read on what is working.</p>
         </Link>
       </div>

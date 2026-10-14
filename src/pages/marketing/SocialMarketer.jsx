@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Send, Loader2, Plus, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { Send, Loader2, Plus, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import JadeAvatar from '@/components/agent/JadeAvatar';
 import AgentMessageBubble from '@/components/agent/AgentMessageBubble';
 import VoiceInputButton from '@/components/agent/VoiceInputButton';
 import useSpokenReplies from '@/hooks/useSpokenReplies';
@@ -95,7 +96,7 @@ export default function SocialMarketer() {
       <div className="flex items-center justify-between pb-3">
         <div>
           <h2 className="font-display text-xl flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Sam
+            <JadeAvatar size={40} /> Nova
           </h2>
           <p className="text-xs text-muted-foreground">Business & marketing operator — quotes, proposals, follow-ups, and content for your review.</p>
         </div>

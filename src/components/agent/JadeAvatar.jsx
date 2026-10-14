@@ -1,40 +1,23 @@
-// Jade's face. Same portrait she has on the music side, so she reads as one
-// person across both studios. Uses the owner's chosen picture when one is saved
-// on the BrandProfile; otherwise the built-in illustrated avatar.
-export default function JadeAvatar({ src, size = 40, className = '' }) {
-  if (src) {
-    return <img src={src} alt="Sam" width={size} height={size} className={`rounded-full object-cover shrink-0 ${className}`} style={{ width: size, height: size }} />;
-  }
+import { useId } from 'react';
+
+// Nova's studio identity. Legacy portrait settings stay saved but are not used.
+export default function JadeAvatar({ size = 40, className = '' }) {
+  const id = useId().replace(/:/g, '');
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Sam" className={`rounded-full shrink-0 ${className}`}>
+    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Nova" className={`shrink-0 ${className}`}>
       <defs>
-        <linearGradient id="jade-bg-studio" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#1f6f5f" />
-          <stop offset="1" stopColor="#0f3d35" />
+        <linearGradient id={`${id}-base`} x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#173f42" /><stop offset="1" stopColor="#071d25" />
+        </linearGradient>
+        <linearGradient id={`${id}-light`} x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#d3fff0" /><stop offset=".55" stopColor="#60c7bb" /><stop offset="1" stopColor="#d7b875" />
         </linearGradient>
       </defs>
-      <circle cx="32" cy="32" r="32" fill="url(#jade-bg-studio)" />
-      {/* hair */}
-      <ellipse cx="32" cy="27" rx="19" ry="17" fill="#2b1a12" />
-      <circle cx="16" cy="30" r="7" fill="#2b1a12" />
-      <circle cx="48" cy="30" r="7" fill="#2b1a12" />
-      <circle cx="20" cy="20" r="6" fill="#2b1a12" />
-      <circle cx="44" cy="20" r="6" fill="#2b1a12" />
-      {/* shoulders */}
-      <path d="M12 64c2-12 10-17 20-17s18 5 20 17z" fill="#e8c46a" />
-      {/* neck + face */}
-      <rect x="27" y="38" width="10" height="9" rx="4" fill="#8a5a3c" />
-      <ellipse cx="32" cy="30" rx="12.5" ry="14" fill="#9c6a48" />
-      {/* eyes */}
-      <ellipse cx="27" cy="30" rx="1.6" ry="2" fill="#1a1a1a" />
-      <ellipse cx="37" cy="30" rx="1.6" ry="2" fill="#1a1a1a" />
-      <path d="M24.5 27.2c1.5-1.4 3.5-1.4 5 0" stroke="#2b1a12" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-      <path d="M34.5 27.2c1.5-1.4 3.5-1.4 5 0" stroke="#2b1a12" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-      {/* smile */}
-      <path d="M27.5 36c2.5 2.6 6.5 2.6 9 0" stroke="#4a2418" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      {/* earrings */}
-      <circle cx="19.5" cy="35" r="1.6" fill="#e8c46a" />
-      <circle cx="44.5" cy="35" r="1.6" fill="#e8c46a" />
+      <rect x="1" y="1" width="62" height="62" rx="21" fill={`url(#${id}-base)`} stroke="#79ada5" strokeOpacity=".35" />
+      <ellipse cx="32" cy="32" rx="23" ry="14" transform="rotate(-38 32 32)" fill="none" stroke="#b8e4da" strokeOpacity=".2" />
+      <path d="M20 43V22l24 21V22" fill="none" stroke={`url(#${id}-light)`} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="47" cy="17" r="3" fill="#dfc58e" />
+      <circle cx="47" cy="17" r="6" fill="none" stroke="#dfc58e" strokeOpacity=".18" />
     </svg>
   );
 }
