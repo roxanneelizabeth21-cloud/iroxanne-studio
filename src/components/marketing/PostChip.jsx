@@ -90,7 +90,7 @@ export default function PostChip({
         onDragEnd={onDragEnd}
         onClick={onClick}
         className={`w-full flex items-center gap-1 text-left text-[10px] sm:text-[11px] rounded px-1 py-0.5 ${pc.bg} ${pc.text} hover:opacity-80 ${dragging ? 'opacity-40' : ''} ${posted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} ${moving === post.id ? 'animate-pulse' : ''}`}
-        title={`${post.platform} · ${post.format}${posted ? ' (posted — locked)' : ' — drag to reschedule'}`}
+        title={`${post.platform} · ${post.format}${posted ? ' (posted — locked)' : canDrag ? ' — drag to reschedule' : ' — view post'}`}
       >
         <Thumb media={media} post={post} size={16} />
         {(() => { const cfg = getPlatform(post.platform); return cfg ? <cfg.Icon className="h-2.5 w-2.5 shrink-0" aria-hidden="true" /> : null; })()}
@@ -122,7 +122,7 @@ export default function PostChip({
       onDragEnd={onDragEnd}
       onClick={onClick}
       className={`w-full flex gap-2 text-left rounded-lg p-1.5 border border-border/40 ${pc.bg} hover:shadow-sm transition-shadow ${dragging ? 'opacity-40' : ''} ${posted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} ${moving === post.id ? 'animate-pulse' : ''}`}
-      title={`${post.platform} · ${post.format}${posted ? ' (posted — locked)' : ' — drag to reschedule'}`}
+      title={`${post.platform} · ${post.format}${posted ? ' (posted — locked)' : canDrag ? ' — drag to reschedule' : ' — view post'}`}
     >
       <Thumb media={media} post={post} size={44} />
       <div className="flex-1 min-w-0">
