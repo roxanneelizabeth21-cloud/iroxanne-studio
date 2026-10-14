@@ -33,7 +33,7 @@ export default function SocialMarketer() {
     try {
       const conv = await base44.agents.getConversation(id);
       if (!conv || conv.agent_name !== AGENT) throw new Error('This conversation could not be opened.');
-      setConversation(conv); setMessages(conv.messages || []);
+      setConversation(conv); setMessages(conv.messages || []); setInput(''); stopSpeaking();
     } catch(e) { setError(e.message); }
     finally { setLoading(false); }
   };
@@ -43,9 +43,9 @@ export default function SocialMarketer() {
     try {
       const conv = await base44.agents.createConversation({
         agent_name: AGENT,
-        metadata: { name: 'iRoxanne Studio strategy', description: 'Business and marketing conversation with Nova.' }
+        metadata: { name: 'iRoxanne Studio strategy', description: 'Business and marketing conversation with Nova.', surface: 'studio_chat' }
       });
-      setConversation(conv); setMessages(conv.messages || []);
+      setConversation(conv); setMessages(conv.messages || []); setInput(''); stopSpeaking();
       setHistory(items => [conv, ...items]);
     } catch(e) { setError(e.message); }
     finally { setLoading(false); }
@@ -56,8 +56,9 @@ export default function SocialMarketer() {
     if (!boot.current) boot.current = base44.agents.listConversations({
       q: { agent_name: AGENT }, sort: '-updated_date', limit: 50
     }).then(async rows => {
-      setHistory(rows || []);
-      if (rows?.length) await openConversation(rows[0].id);
+      const chats = (rows || []).filter(c => !c.metadata?.surface || c.metadata.surface === 'studio_chat');
+      setHistory(chats);
+      if (chats.length) await openConversation(chats[0].id);
       else await start();
     }).catch(e => { setError(e.message); setLoading(false); });
   }, []);
@@ -111,13 +112,14 @@ export default function SocialMarketer() {
         </div>
       </div>
 
-      <details className="mb-3"><summary className="cursor-pointer text-sm text-muted-foreground">Previous conversations</summary>
+      <details className="mb-3"><summary className="cursor-pointer text-sm text-muted-foreground">Previous conversations · {history.length}</summary>
       <label className="block text-sm mt-2">Open a conversation
         <select className="mt-1 w-full rounded-lg border border-border bg-background text-foreground p-2" value={conversation?.id || ''} disabled={loading || sending} onChange={e => openConversation(e.target.value)}>
           <option value="" disabled>Select a conversation</option>
-          {history.map(c => <option key={c.id} value={c.id}>{c.metadata?.name || 'Strategy conversation'} — {c.created_date ? new Date(c.created_date).toLocaleDateString() : c.id.slice(-6)}</option>)}
+          {history.map(c => <option key={c.id} value={c.id}>{(c.messages || []).find(m => m.role === 'user' && m.content)?.content?.slice(0, 75) || c.metadata?.name || 'Conversation with Nova'} — {c.created_date ? new Date(c.created_date).toLocaleDateString() : c.id.slice(-6)}</option>)}
         </select>
       </label></details>
+      {conversation && messages.length > 0 && <p className="mb-2 text-xs text-muted-foreground">Continuing your conversation. Your earlier messages are above; choose Previous conversations to revisit another chat.</p>}
       {error && <p role="alert" className="text-sm text-destructive mb-2">{error}</p>}
       <div className="flex-1 overflow-y-auto space-y-3 rounded-xl border border-border/50 bg-secondary/20 p-4">
         {loading && (
