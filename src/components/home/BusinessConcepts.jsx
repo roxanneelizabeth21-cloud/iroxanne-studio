@@ -49,7 +49,7 @@ export default function BusinessConcepts(){
  }
  const resultTitle=d.ai?.title||concept.studio;
  return <section id="possibilities" className="studio-section studio-concepts"><div className="studio-wrap">
-  <div className="studio-section-heading"><div><p className="studio-eyebrow">A little curiosity goes a long way</p><h2>What could we<br/><em>create for you?</em></h2></div><p className="studio-calendar-intro">A clear plan, a rough idea, or no idea at all. Start wherever you are.</p></div>
+  <div className="studio-section-heading"><div><h2>Let’s explore your idea.</h2></div><p className="studio-calendar-intro">Not sure yet? We’ll help you find a starting point.</p></div>
   <div className="idea-explorer">
    <div className="idea-progress" aria-label="Explorer progress">{['Start','Your idea','Your goal','For whom','Your concept'].map((name,i)=><span key={name} aria-current={d.step===i?'step':undefined} className={i<=d.step?'is-current':''}>{name}</span>)}</div>
    <div className="idea-question" ref={heading} tabIndex={-1}>

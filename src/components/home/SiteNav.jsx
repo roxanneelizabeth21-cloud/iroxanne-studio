@@ -6,8 +6,8 @@ import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
   { label: 'What We Can Create', href: '/solutions' },
-  { label: 'Selected Work', href: '/#work' },
-  { label: 'Possibilities', href: '/#possibilities' },
+  { label: 'My Work', href: '/#work' },
+  { label: 'Explore Ideas', href: '/ideas' },
   { label: 'How It Works', href: '/#process' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },

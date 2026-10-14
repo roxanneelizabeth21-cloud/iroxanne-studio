@@ -75,9 +75,9 @@ export default function Home() {
         <Hero projects={projects} loading={loading}  />
 
 
+        <CalendarPreview />
         <BusinessConcepts />
         <FeaturedWork items={projects} loading={loading} />
-        <CalendarPreview />
         <Process />
         <About headshotUrl={headshotUrl} />
 
