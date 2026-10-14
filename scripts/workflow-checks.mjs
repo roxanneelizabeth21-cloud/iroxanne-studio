@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import ts from 'typescript';
 function load(file, bindings={}) {
- let source=fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replace(/export default /,'return ').replace(/export function /g,'function ');
+ let source=fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replace(/export default /,'return ').replace(/export function /g,'function ').replace(/export type /g,'type ');
  if(file.endsWith('paymentSummary.ts')) source+='\nreturn paymentSummary;';
  if(file.endsWith('paymentSchedule.ts')) source+='\nreturn {withHandoffTerms,validateSchedule,scheduleText};';
  const js=ts.transpile(source,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None});
