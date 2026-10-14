@@ -34,7 +34,7 @@ export default async function(req) {
         ['Email', lead.email || ''],
         ['Business', lead.business_name || ''],
         ['Budget', budgetLabel(lead.budget_range)],
-        ['Estimated', ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? `${lead.selected_package} website ($${lead.estimated_price_low ?? ''}); requested add-ons require a quote` : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
+        ['Estimated', lead.draft_estimate_status ? 'Notes-based draft: review scope and pricing in Quotes & Proposals.' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? `${lead.selected_package} website ($${lead.estimated_price_low ?? ''}); requested add-ons require a quote` : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
         ['Pitch', lead.quick_pitch || ''],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
@@ -73,7 +73,7 @@ export default async function(req) {
         subject: "We've got your project details — iRoxanne Studio",
         body: brandedEmail({
           title: `Thanks, ${esc(firstName)}!`,
-          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your project details and I'll review them personally — no bots, no agency hand-offs. Expect a reply within 2 business days with next steps and a rough estimate.</p>
+          content: `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#2D2A4A;">Thanks, ${esc(firstName)}!</h1><p style="margin:0 0 16px;">I've received your quote request and I'll review your details personally. Expect a reply within 2 business days with a proposal or any questions needed to prepare it.</p>
             ${summary.length ? `<p style="margin:0 0 8px;font-size:13px;font-weight:600;">What you told me:</p>${detailRows(summary)}` : ''}
             ${bookingLink ? '<p style="margin:20px 0 8px;">If a conversation would help, choose an available time for an optional call.</p><p>'+brandButton('Schedule an optional call',bookingLink)+'</p>' : ''}
             <p style="margin:22px 0 0;">${brandButton('See my work', 'https://iroxannestudio.com')}</p>

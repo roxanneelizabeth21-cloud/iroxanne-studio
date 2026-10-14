@@ -74,11 +74,11 @@ export default async function(req:Request){
   const websitePrices:any={'Quick Win':500,'Starter':1250,'Business Website':650};
   if(websitePrices[data.selected_package]!=null){const pkg=(pricing?.packages||[]).find((p:any)=>p?.name===data.selected_package);Object.assign(data,{estimated_tier:'starter',estimated_price_low:Number(pkg?.price)||websitePrices[data.selected_package],estimated_price_high:null,estimated_hours_low:null,estimated_hours_high:null});}
   const token=hex(crypto.getRandomValues(new Uint8Array(32)));
-  const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
+  const lead=await db.Lead.create({...data,email,booking_token:token,interested_apps:['service_inquiry'],source:'get_quote_form',request_type:'quote_request',draft_estimate_status:'pending',status:'new',email_verified_at:new Date(now).toISOString(),email_verification_id:record.id});
   await db.QuoteEmailVerification.update(record.id,{lead_id:lead.id});
   // Persist the inquiry first. AI failure must never lose a verified request.
   try { await prepareNotesQuote(client,lead); }
-  catch { await db.Lead.update(lead.id,{draft_estimate_status:'failed'}).catch(()=>{}); }
+  catch { await db.Lead.update(lead.id,{draft_estimate_status:'failed',estimated_price_low:null,estimated_price_high:null,estimated_hours_low:null,estimated_hours_high:null}).catch(()=>{}); }
   // Send pre-generated welcome video to the lead (idempotent — skips if already sent).
   client.asServiceRole.functions.invoke('generateQuoteVideo',{lead_id:lead.id}).catch((e:any)=>console.log('quote video send failed',e?.message));
   return Response.json({id:lead.id,booking_token:token});

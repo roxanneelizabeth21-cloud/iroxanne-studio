@@ -255,7 +255,7 @@ export default function ProposalsAdminPage() {
                   <p style={{ fontSize: '12px', color: 'var(--text-secondary, #66736e)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {lead.business_name ? `${lead.business_name} · ` : ''}{lead.quick_pitch?.slice(0, 80) || 'No pitch'}
                   </p>
-                  {lead.estimated_price_low != null && (
+                  {lead.estimated_price_low != null && (!lead.draft_estimate_status || lead.draft_estimate_status === 'ready') && (
                     <p style={{ fontSize: '12px', color: 'var(--primary)', marginTop: '2px' }}>
                       Est. {money(lead.estimated_price_low)}–{money(lead.estimated_price_high)}
                       {lead.estimated_tier ? ` · ${lead.estimated_tier}` : ''}

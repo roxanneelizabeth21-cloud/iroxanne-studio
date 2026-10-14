@@ -5,6 +5,7 @@
     "draft_estimate_status": {
       "type": "string",
       "enum": [
+        "pending",
         "ready",
         "needs_clarification",
         "failed"
