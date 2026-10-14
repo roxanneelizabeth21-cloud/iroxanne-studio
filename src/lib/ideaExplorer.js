@@ -5,10 +5,10 @@ export const seedIdeas={
  'booked-now-what':'A travel planning tool that helps people make more of their trips.',
  nestflow:'A shared home base for family schedules, meals, and everyday tasks.'
 };
-export const defaultDraft={step:0,mode:'',kind:'anything',idea:'',goal:'',audience:'',features:[],customFeature:'',ai:null};
+export const defaultDraft={step:0,mode:'',kind:'anything',idea:'',goal:'',audience:'',features:null,customFeature:'',ai:null};
 export function readDraft(seed){
  if(seedIdeas[seed])return {...defaultDraft,step:1,mode:'rough',idea:seedIdeas[seed]};
- try{const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');return d&&Number.isInteger(d.step)&&d.step>=0&&d.step<=4&&typeof d.idea==='string'&&Array.isArray(d.features)?{...defaultDraft,...d}:defaultDraft;}catch{return defaultDraft;}
+ try{const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');return d&&Number.isInteger(d.step)&&d.step>=0&&d.step<=4&&['idea','goal','audience','kind','customFeature','mode'].every(k=>typeof d[k]==='string')&&(d.features===null||Array.isArray(d.features)&&d.features.every(v=>typeof v==='string'))?{...defaultDraft,...d}:defaultDraft;}catch{return defaultDraft;}
 }
 export function saveDraft(d){try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify(d));}catch{/* in-memory explorer remains usable */}}
 export function makeBrief(d,concept,features){

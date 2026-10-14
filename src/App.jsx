@@ -40,7 +40,7 @@ import ProposalView from '@/pages/ProposalView';
 import ProposalsAdminPage from '@/pages/admin/ProposalsAdminPage';
 import ProjectsPipeline from '@/pages/admin/ProjectsPipeline';
 import ClientIntakeForm from '@/pages/ClientIntakeForm';
-import CaseStudy from '@/pages/CaseStudy';
+import CaseStudy from '@/pages/LegacyIdeaRedirect';
 import About from '@/pages/About';
 import Solutions from '@/pages/Solutions';
 import Ideas from '@/pages/Ideas';

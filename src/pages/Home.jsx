@@ -5,7 +5,6 @@ import SiteNav from '@/components/home/SiteNav';
 import Hero from '@/components/home/Hero';
 
 import Process from '@/components/home/Process';
-import Services from '@/components/home/Services';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import About from '@/components/home/About';
 import CalendarPreview from '@/components/home/CalendarPreview';
@@ -76,7 +75,6 @@ export default function Home() {
         <Hero projects={projects} loading={loading}  />
 
 
-        <Services />
         <BusinessConcepts />
         <FeaturedWork items={projects} loading={loading} />
         <CalendarPreview />

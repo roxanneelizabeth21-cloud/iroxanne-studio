@@ -28,8 +28,8 @@ export default function Ideas() {
       <header className="bg-[#e6eee5] text-[#203d39] px-5 py-8 md:py-10">
         <div className="mx-auto max-w-5xl">
           <p className="text-[#756130] text-sm tracking-wide">Different ideas. Real possibilities.</p>
-          <h1 className="font-display text-4xl md:text-5xl mt-4">Ideas brought to life</h1>
-          <p className="mt-5 max-w-2xl leading-relaxed text-[#4f665f]">An app can begin with a business, a shared challenge, or a simple “wouldn’t it be helpful if…” These projects show a few different starting points. Your idea does not need to look like any of them.</p>
+          <h1 className="font-display text-4xl md:text-5xl mt-4">Let’s explore your possibilities</h1>
+          <p className="mt-5 max-w-2xl leading-relaxed text-[#4f665f]">Choose a starting point, answer a little at a time, and see a concept take shape. No perfect brief needed.</p>
         </div>
       </header>
       <BusinessConcepts />
@@ -44,7 +44,7 @@ export default function Ideas() {
                 <div className="min-w-0"><p className="text-sm text-muted-foreground">{app.title}</p><h2 className="font-display text-2xl mt-1">{idea}</h2></div>
               </div>
               <p className="mt-4 text-muted-foreground leading-relaxed">{description}</p>
-              <Link to={'/work/'+slug} className="inline-flex items-center min-h-11 mt-3 font-semibold underline underline-offset-4">Explore this project<span className="sr-only">: {app.title}</span> →</Link>
+              <Link to={'/ideas?seed='+slug+'#possibilities'} className="inline-flex items-center min-h-11 mt-3 font-semibold underline underline-offset-4">Explore a similar idea<span className="sr-only">: {app.title}</span> →</Link>
             </article>;
           })}</div>}
       </section>
