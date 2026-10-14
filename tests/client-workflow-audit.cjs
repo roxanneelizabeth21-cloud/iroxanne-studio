@@ -61,7 +61,7 @@ assert.equal((await handoff({action:'accept',token:'bad',consent:true,name:'Test
 assert.equal((await handoff({action:'request_changes',token:firstToken,notes:'Test review correction'})).status,200);
 assert.equal(c.handoff_status,'changes_requested');
 role='admin';assert.equal((await handoff({action:'publish'})).status,200);role='client';
-assert.equal((await handoff({action:'accept',token:c.handoff_token,consent:true,name:'Test Client'})).status,200);
+assert.equal((await handoff({action:'accept',token:c.handoff_token,consent:true,name:'Test Client',platform_email:'test@example.test'})).status,200);
 assert.equal((await handoff({action:'complete'})).status,403);
 role='admin';assert.equal((await handoff({action:'complete'})).status,200);assert.equal(c.status,'completed');
 console.log('PASS paid project handoff, change request, re-release, acceptance, admin-only completion and token protection');

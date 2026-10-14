@@ -35,7 +35,7 @@ const mockFetch=async(url,opts={})=>{
  if(url.includes('/events/')){const e=events.get(url.split('/').pop());return Response.json(e||{}, {status:e?200:404});}
  return Response.json({summary:'Test calendar',timeZone:'America/New_York'});
 };
-const handler=load('base44/functions/quoteCallBooking/entry.ts','',{...helpers,fetch:mockFetch,createClientFromRequest:()=>({auth:{me:async()=>({role})},asServiceRole:{entities,connectors:{getConnection:async()=>({accessToken:'mock'})},integrations:{Core:{SendEmail:async()=>{emailCount++;}}}}}),esc:x=>String(x||''),brandedEmail:x=>x.content,brandButton:()=>'',resolveAdminEmail:async()=>'admin@example.test'});
+const handler=load('base44/functions/quoteCallBooking/entry.ts','',{...helpers,studioUrl:()=> 'https://example.test',fetch:mockFetch,createClientFromRequest:()=>({auth:{me:async()=>({role})},asServiceRole:{entities,connectors:{getConnection:async()=>({accessToken:'mock'})},integrations:{Core:{SendEmail:async()=>{emailCount++;}}}}}),esc:x=>String(x||''),brandedEmail:x=>x.content,brandButton:()=>'',resolveAdminEmail:async()=>'admin@example.test'});
 const invoke=async b=>handler(new Request('https://example.test',{method:'POST',body:JSON.stringify({lead_id:'lead1',token:'a'.repeat(64),...b})}));
 role='user';assert.equal((await invoke({action:'admin_load'})).status,403);
 assert.equal((await invoke({action:'slots',token:'wrong'})).status,403);
