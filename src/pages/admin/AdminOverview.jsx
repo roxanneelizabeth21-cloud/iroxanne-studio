@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
   FolderKanban, FileText, Receipt, Mail, MessageSquare,
-  CalendarDays, LayoutDashboard, Eye, Users, ScrollText
+  CalendarDays, LayoutDashboard, Users, ScrollText
 } from 'lucide-react';
 
 export default function AdminOverview() {

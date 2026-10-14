@@ -4,7 +4,7 @@ import {base44} from '@/api/base44Client';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
-import {Bot,RefreshCw,ArrowUpRight,Mail,CalendarDays,CheckCircle2,Clock,FileText,Loader2,Sparkles} from 'lucide-react';
+import {Bot,RefreshCw,ArrowUpRight,Mail,CalendarDays,Clock,FileText,Loader2,Sparkles} from 'lucide-react';
 const parse=(s,f=[])=>{try{return JSON.parse(s||'')||f;}catch{return f;}};
 const when=d=>d?new Date(d.length===10?d+'T12:00:00':d).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',...(d.length===10?{}:{timeStyle:'short'})}):'';
 const money=n=>Number(n||0).toLocaleString('en-US',{style:'currency',currency:'USD'});

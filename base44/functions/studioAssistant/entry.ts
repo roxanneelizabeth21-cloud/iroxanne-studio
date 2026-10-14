@@ -32,7 +32,7 @@ export async function handleAssistant(req:Request) {
     // Communications use isolated client context. Marketing uses public project context only.
     if((suggestion.kind==='email'&&!focus)||(suggestion.kind==='marketing'&&body.mode!=='marketing')){held++;continue;}
     const normalized=normalizeSuggestion(suggestion,{...ctx,sources:validSources});if(!normalized){held++;continue;}
-    const fingerprint=await hash(JSON.stringify([normalized.kind,normalized.client_email,normalized.title,normalized.body,normalized.due_date]));
+    const fingerprint=await hash(JSON.stringify([normalized.kind,normalized.client_email,normalized.title.toLowerCase().replace(/\s+/g,' '),normalized.source_json,normalized.payload_json,normalized.due_date]));
     const prior=await db.StudioAssistantItem.filter({fingerprint},'-created_date',1);
     if(prior[0]){saved.push(prior[0]);continue;}
     saved.push(await db.StudioAssistantItem.create({...normalized,fingerprint}));
@@ -81,6 +81,7 @@ export async function handleAssistant(req:Request) {
    if(['task','scope_change'].includes(item.kind))return Response.json({item:await db.StudioAssistantItem.update(item.id,{...approved,status:'active'})});
    if(!['email','marketing','calendar_change'].includes(item.kind))throw Error('This item does not need approval.');
    if(item.kind==='email'){
+    if(/payment|invoice|deposit|balance|reminder/i.test(item.body)){const invoices=await db.Invoice.filter({client_email:item.recipient});if(invoices.some((i:any)=>i.reminder_enabled||i.square_schedule_enabled||i.square_invoice_id))throw Error('Payment follow-ups for this client are managed by the invoice workflow. Review the existing reminders there.');}
     // Recheck reminder ownership at send time, including records changed since drafting.
     for(const ref of json(item.source_json))if(ref.kind==='Invoice'){const invoice=await db.Invoice.get(ref.id.split(':').slice(1).join(':'));if(invoice.reminder_enabled||invoice.square_schedule_enabled||invoice.square_invoice_id||['paid','cancelled'].includes(invoice.status))throw Error('Invoice status or reminder settings changed. Use the invoice workflow instead.');}
    }

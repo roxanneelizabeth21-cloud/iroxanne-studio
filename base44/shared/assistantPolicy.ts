@@ -18,6 +18,7 @@ export function normalizeSuggestion(s:any,ctx:any) {
  const thread=refs.find(r=>r.kind==='Email')?.data;
  if(s.kind==='email'){
   if(!emailValid(email)||email===STUDIO_EMAIL)return null;
+  if(/payment|invoice|deposit|balance|reminder/i.test(body)&&ctx.sources.some((r:any)=>r.kind==='Invoice'&&r.email===email&&(r.data.reminder_enabled||r.data.square_schedule_enabled||r.data.square_invoice_id)))return null;
   if(refs.some(r=>r.kind==='Invoice'&&(r.data.reminder_enabled||r.data.square_schedule_enabled||r.data.square_invoice_id)))return null;
   if(thread&&(!thread.awaiting_reply||thread.latest_from_email!==email))return null;
   if(refs.some(r=>r.email&&r.email!==email))return null;
