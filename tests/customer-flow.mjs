@@ -44,3 +44,12 @@ assert.equal(reminderDecision({...invoice,square_invoice_id:'sq'},100),'square')
 assert.equal(reminderDecision({...invoice,square_schedule_enabled:true},100),'square');
 assert.equal(reminderDecision({...invoice,status:'paid'},0),'skip');
 console.log('PASS Square payment plans cannot receive Studio payment reminders; normal unpaid invoices remain eligible');
+let savedIntake=null,intakeEmails=[];
+const intakeDb={Contract:{get:async()=>({id:'c',status:'signed',client_email:'client@example.invalid',client_name:'Test',lead_id:'l',project_title:'Salon',scope_summary:'Booking website'})},Lead:{get:async()=>({...existing,platform_account_email:'account@example.invalid',existing_tools:'Calendar'})},ClientIntake:{filter:async()=>savedIntake?[savedIntake]:[],create:async data=>savedIntake={id:'i',...data},update:async(id,data)=>savedIntake={...savedIntake,...data}}};
+const prepare=load('base44/functions/sendIntakeForm/entry.ts','',{...bindings,requireAdmin:async()=>({ok:true}),defaultRequests,createClientFromRequest:()=>({entities:intakeDb}),sendStudioEmail:async(c,m)=>intakeEmails.push(m)});
+assert.equal((await prepare(request({contract_id:'c',mode:'prepare'}))).status,200);
+assert.equal(intakeEmails.length,0);assert.equal(savedIntake.platform_account_email,'account@example.invalid');assert.equal(savedIntake.design_notes,'modern minimal — Soft colors');
+await prepare(request({contract_id:'c'}));assert.equal(intakeEmails.length,1);assert.ok(!intakeEmails[0].body.includes('Create your free Base44'));
+assert.equal((await prepare(request({contract_id:'c'}))).status,429);assert.equal(intakeEmails.length,1);
+savedIntake.status='submitted';assert.equal((await prepare(request({contract_id:'c'}))).status,409);
+console.log('PASS onboarding preparation preserves account/style/tools, sends only on request, and prevents rapid or completed-checklist resends');
