@@ -42,7 +42,11 @@ assert.equal((await invoke({action:'slots',token:'wrong'})).status,403);
 role='admin';mode='busy_error';assert.equal((await invoke({action:'slots'})).status,500);mode='normal';
 const available=await (await invoke({action:'slots'})).json();assert.ok(available.slots.length);
 assert.equal((await invoke({action:'book',start:'2020-01-01',phone:'5551234567'})).status,409);
-const start=available.slots[0];const booked=await invoke({action:'book',start,phone:'+1 555 123 4567'});assert.equal(booked.status,200);assert.equal((await booked.json()).booked,true);assert.equal(inserts,1);assert.equal(emailCount,2);
+const start=available.slots[0];
+assert.equal((await invoke({action:'book',start,phone:''})).status,400);
+assert.equal((await invoke({action:'book',start,phone:'abcdefg'})).status,400);
+lead.phone='+1 555 123 4567';assert.equal((await (await invoke({action:'slots'})).json()).phone,lead.phone);
+const booked=await invoke({action:'book',start,phone:'+1 555 123 4567'});assert.equal(booked.status,200);assert.equal((await booked.json()).booked,true);assert.equal(inserts,1);assert.equal(emailCount,2);
 await invoke({action:'book',start,phone:'+1 555 123 4567'});assert.equal(inserts,1);assert.equal(emailCount,2);
 console.log('PASS private links, admin guard, fail-closed calendar errors, invalid slot rejection, booking and retry');
 // Simulate lost response after Google created the event but before lead bookkeeping.

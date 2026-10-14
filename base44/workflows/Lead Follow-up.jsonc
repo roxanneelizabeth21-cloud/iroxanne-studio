@@ -45,8 +45,8 @@
           },
           "then": "end",
           "x-base44": {
-            "title": "Send follow-up nudge",
-            "description": "Only if lead still new/contacted"
+            "title": "Remind Roxanne to review",
+            "description": "Studio-only reminder; skips progressed requests and previously delivered reminders"
           }
         }
       }
@@ -62,5 +62,5 @@
       "entity_name": "Lead"
     }
   },
-  "description": "When a new quote request (Lead) is created, immediately notify the admin + welcome the client, then wait 2 days and send a gentle follow-up nudge if the lead hasn't progressed."
+  "description": "A new Lead sends one client confirmation and an admin notification. After two days, remind only the studio if the request still needs attention."
 }

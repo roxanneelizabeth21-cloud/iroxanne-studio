@@ -42,7 +42,7 @@ export default async function(req) {
       subject: 'A personal welcome from Roxanne — ' + contract.project_title,
       body: brandedEmail({
         title: 'Your welcome video is ready, ' + esc(firstName) + '.',
-        content: '<p style="margin:0 0 16px;">I just recorded a short welcome video for you about <strong>' + esc(contract.project_title) + '</strong>. Take a look — it covers what happens next and what to expect as we get started.</p>' +
+        content: '<p style="margin:0 0 16px;">Here is a short studio welcome as we get started on <strong>' + esc(contract.project_title) + '</strong>. Take a look — it covers what happens next and what to expect as we get started.</p>' +
           '<p style="margin:0 0 16px;">' + brandButton('Watch my welcome video', WELCOME_VIDEO_URL) + '</p>' +
           '<p style="margin:0 0 16px;">' + brandButton('View your signed agreement', contractLink) + '</p>' +
           '<p style="margin:0;color:#8B7B95;font-size:13px;">— Roxanne, iRoxanne Studio</p>',
