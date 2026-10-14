@@ -1,56 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-
 export default function FeaturedWork({ items, loading }) {
-  if (!loading && (!items || items.length === 0)) return null;
-  return (
-    <section id="work" tabIndex={-1} aria-label="Project examples" className="scroll-mt-24 focus:outline-none bg-card py-8 px-5 md:px-8">
-      <div className="mx-auto max-w-6xl">
-        <p className="text-[13px] font-medium text-[#876b26] dark:text-[#D5BB82] tracking-wide mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>App examples</p>
-        <h2 className="text-[28px] md:text-[32px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Selected projects
-        </h2>
-        <p className="mt-3 max-w-[480px] text-[15px] text-muted-foreground leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Each project starts with someone’s idea. These examples show some of the different ways an app can support a new venture or an existing business.
-        </p>
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(loading ? Array.from({ length: 3 }) : items.slice(0,3)).map((item, i) => {
-            const hasCaseStudy = !!item?.slug;
-            const inner = (
-              <>
-                <div className="h-28 overflow-hidden bg-background">
-                  {item?.cover_image_url ? (
-                    <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
-                  ) : (
-                    <div className="grid h-full w-full place-items-center text-sm text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      {item?.title || ''}
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-[15px] font-semibold text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>{item?.title || '—'}</h3>
-                    {!hasCaseStudy && item?.project_url && (
-                      <a href={item.project_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#876b26] dark:text-[#D5BB82] transition">
-                        <ArrowUpRight className="h-4 w-4" />
-                      </a>
-                    )}
-                  </div>
-                  {item?.category && <p className="text-[11px] font-medium text-[#876b26] dark:text-[#D5BB82]/70 mt-1 tracking-wide" style={{ fontFamily: "'Inter', sans-serif" }}>{item.category}</p>}
-                  <p className="mt-2 text-[13px] text-muted-foreground leading-relaxed line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>{item?.tagline || item?.description}</p>
-                </div>
-              </>
-            );
-            const cls = 'group block overflow-hidden rounded-2xl border border-border bg-card transition hover:border-[#B8942E]/30 hover:shadow-[0_12px_40px_rgba(45,42,74,0.06)]';
-            return hasCaseStudy ? (
-              <Link key={item?.id || i} to={`/work/${item.slug}`} className={cls}>{inner}</Link>
-            ) : (
-              <article key={item?.id || i} className={cls}>{inner}</article>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+ return <section id="work" tabIndex={-1} className="studio-section studio-work" aria-label="Selected projects"><div className="studio-wrap">
+  <div className="studio-section-heading"><div><p className="studio-eyebrow">A few ideas, brought to life</p><h2>Different dreams.<br/><em>Distinctly their own.</em></h2></div><a className="studio-text-link" href="/ideas">Explore all projects <ArrowUpRight size={17}/></a></div>
+  {loading?<p role="status">Loading projects…</p>:!items?.length?<p>Project previews are taking a moment. <a href="/ideas">Explore the portfolio.</a></p>:<div className="studio-project-grid">{items.map((item,i)=><Link key={item.id||item.slug} to={'/work/'+item.slug} className={'studio-project studio-project-'+i}><div className="studio-project-image"><img src={item.cover_image_url} alt={item.title+' project visual'} loading="lazy"/></div><div className="studio-project-info"><div><p className="studio-eyebrow">{item.category==='Other'?'Custom web app':item.category}</p><h3>{item.title}</h3><p>{item.tagline}</p></div><span className="studio-project-arrow"><ArrowUpRight aria-label="View project"/></span></div></Link>)}</div>}
+ </div></section>;
 }
