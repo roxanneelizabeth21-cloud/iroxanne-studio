@@ -56,7 +56,7 @@ export default function SocialMarketer() {
     if (!boot.current) boot.current = base44.agents.listConversations({
       q: { agent_name: AGENT }, sort: '-updated_date', limit: 50
     }).then(async rows => {
-      const chats = (rows || []).filter(c => !c.metadata?.surface || c.metadata.surface === 'studio_chat');
+      const chats = (rows || []).filter(c => !c.metadata?.post_id && (!c.metadata?.surface || c.metadata.surface === 'studio_chat'));
       setHistory(chats);
       if (chats.length) await openConversation(chats[0].id);
       else await start();
