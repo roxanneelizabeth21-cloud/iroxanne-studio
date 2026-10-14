@@ -51,3 +51,16 @@ const projection=await assistantContext({asServiceRole:{entities}},ctx.focus);as
 console.log('PASS assistant source projection excludes signing links, verification tokens, signature images and signer IPs');
 for(const name of ['StudioAssistantItem','StudioAssistantMessage']){const schema=JSON.parse(fs.readFileSync('base44/entities/'+name+'.jsonc'));for(const permission of ['create','read','update','delete'])assert.equal(schema.rls[permission].user_condition.role,'admin');}
 console.log('PASS all assistant data is restricted to administrators');
+const availability=load('base44/shared/callAvailability.ts','defaultCallSettings,callSlots');
+let event={id:'call1',etag:'version1',summary:'Intake call',start:{dateTime:new Date(Date.now()+86400000).toISOString()},end:{dateTime:new Date(Date.now()+86400000+1800000).toISOString()},extendedProperties:{private:{lead_id:'l'}}},callLead={id:'l',call_event_id:'call1'},calendarRequests=[];
+const gc=async(path,options={})=>{calendarRequests.push({path,options});if(path.startsWith('calendars/primary/events?'))return {items:[event],timeZone:'America/New_York'};if(options.method==='PATCH'){const p=JSON.parse(options.body);Object.assign(event,p);return event;}if(options.method==='DELETE'){event.status='cancelled';return {};}return {...event};};
+const cal=load('base44/shared/assistantCalendar.ts','calendarInstant,availableCallChanges,executeCalendarChange',{...availability,googleConnection:async()=>gc});
+assert.equal(cal.calendarInstant('2026-10-14','America/New_York'),'2026-10-14T04:00:00.000Z');assert.equal(cal.calendarInstant('2026-12-14','America/New_York'),'2026-12-14T05:00:00.000Z');
+const cc={asServiceRole:{entities:{Lead:{get:async()=>({...callLead}),update:async(id,p)=>Object.assign(callLead,p)},CallSettings:{list:async()=>[{...availability.defaultCallSettings,enabled:true,weekly_hours:[1,2,3,4,5].map(day=>({day,start:'17:00',end:'19:00'}))}]}}}};
+const options=await cal.availableCallChanges(cc,event.id);assert.ok(options.slots.length);for(const start of options.slots){const hour=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(new Date(start));assert.ok(['17','18'].includes(hour));}
+await assert.rejects(cal.executeCalendarChange(cc,{event_id:'call1',operation:'move',etag:'old',start:options.slots[0]}),/changed since/);
+await assert.rejects(cal.executeCalendarChange(cc,{event_id:'call1',operation:'move',etag:'version1',start:'2020-01-01T09:00:00Z'}),/no longer available/);
+assert.equal(calendarRequests.filter(r=>r.options.method==='PATCH').length,0);
+await cal.executeCalendarChange(cc,{event_id:'call1',operation:'move',etag:'version1',start:options.slots[0]});assert.equal(callLead.call_start,options.slots[0]);assert.ok(calendarRequests.some(r=>r.options.method==='PATCH'&&r.path.includes('sendUpdates=all')&&r.options.headers['If-Match']==='version1'));
+await cal.executeCalendarChange(cc,{event_id:'call1',operation:'cancel',etag:'version1'});assert.equal(callLead.call_event_id,'');assert.equal(event.status,'cancelled');
+console.log('PASS calendar evening hours, all-day timezone boundaries, stale-event and invalid-slot rejection, attendee notifications and booking record updates; Google mocked only');

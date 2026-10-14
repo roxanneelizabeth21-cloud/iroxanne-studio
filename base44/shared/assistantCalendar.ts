@@ -1,5 +1,12 @@
 import {googleConnection} from './assistantGoogle.ts';
 import {defaultCallSettings,callSlots} from './callAvailability.ts';
+export function calendarInstant(value:string,zone:string) {
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return value;
+ const desired=Date.parse(value+'T00:00:00Z');let result=desired;
+ const formatter=new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+ for(let i=0;i<3;i++){const p=Object.fromEntries(formatter.formatToParts(result).map(x=>[x.type,x.value]));const local=Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour),Number(p.minute),Number(p.second));result+=desired-local;}
+ return new Date(result).toISOString();
+}
 export async function managedCall(client:any,eventId:string) {
  if(!eventId||eventId.length>300)throw Error('Choose an intake call.');
  const call=await googleConnection(client,'googlecalendar');
@@ -18,11 +25,9 @@ export async function availableCallChanges(client:any,eventId:string) {
  let page='',events:any[]=[];
  do{
   const p=new URLSearchParams({singleEvents:'true',timeMin:new Date(now-s.buffer_minutes*60000).toISOString(),timeMax:new Date(end+s.buffer_minutes*60000).toISOString(),maxResults:'250',...(page?{pageToken:page}:{})});
-  const r=await call('calendars/primary/events?'+p);events.push(...r.items||[]);page=r.nextPageToken||'';if(page&&events.length>=2000)throw Error('Too many calendar events to check safely. Manage this change in Google Calendar.');
+  const r=await call('calendars/primary/events?'+p);events.push(...(r.items||[]).map((e:any)=>({...e,calendar_timezone:r.timeZone||s.timezone})));page=r.nextPageToken||'';if(page&&events.length>=2000)throw Error('Too many calendar events to check safely. Manage this change in Google Calendar.');
  }while(page);
- const busy=events.filter(e=>e.id!==eventId&&e.status!=='cancelled'&&e.transparency!=='transparent'&&!(e.attendees||[]).some((a:any)=>a.self&&a.responseStatus==='declined')).map(e=>({start:e.start.dateTime||e.start.date,end:e.end.dateTime||e.end.date}));
- // All-day busy events are expanded by one day on each side to avoid timezone gaps.
- for(let i=0;i<busy.length;i++)if(/^\d{4}-\d{2}-\d{2}$/.test(busy[i].start)){busy[i]={start:new Date(Date.parse(busy[i].start)-86400000).toISOString(),end:new Date(Date.parse(busy[i].end)+86400000).toISOString()};}
+ const busy=events.filter(e=>e.id!==eventId&&e.status!=='cancelled'&&e.transparency!=='transparent'&&!(e.attendees||[]).some((a:any)=>a.self&&a.responseStatus==='declined')).map(e=>({start:calendarInstant(e.start.dateTime||e.start.date,e.start.timeZone||e.calendar_timezone),end:calendarInstant(e.end.dateTime||e.end.date,e.end.timeZone||e.calendar_timezone)}));
  const duration=Math.round((Date.parse(event.end.dateTime)-Date.parse(event.start.dateTime))/60000);
  if(!Number.isFinite(duration)||duration<15||duration>120)throw Error('Review this call duration in Google Calendar.');
  return {slots:callSlots({...s,duration_minutes:duration},busy,now).filter(x=>x!==event.start.dateTime),timezone:s.timezone,event,lead,duration};
