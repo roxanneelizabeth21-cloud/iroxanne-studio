@@ -1,5 +1,7 @@
 import '@/components/home/studio.css';
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { readBrief } from '@/lib/ideaExplorer';
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,6 +80,8 @@ const BUDGET_LABELS = {
 };
 
 export default function GetQuote() {
+  const location = useLocation();
+  const [ideaBrief] = useState(() => readBrief(location.state?.ideaBrief, new URLSearchParams(location.search).get('from') === 'idea-explorer'));
   const [step, setStep] = useState(0);
   const [verification,setVerification]=useState(null);
   const [emailVerified,setEmailVerified]=useState(false);
@@ -97,7 +101,7 @@ export default function GetQuote() {
     }catch(e){setVerificationMessage(e?.response?.data?.error||e.message||'Please try again.');}
     finally{setVerificationBusy(false);}
   };
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState(() => ideaBrief ? {...emptyForm, ...ideaBrief, selected_package: 'Not sure'} : emptyForm);
   const [support, setSupport] = useState(() => {
     const choice = new URLSearchParams(window.location.search).get('support');
     return ['build', 'guidance'].includes(choice) ? choice : 'not_sure';
@@ -187,7 +191,7 @@ export default function GetQuote() {
         <div className="flex items-center gap-2 mb-8">{STEPS.map((label, i) => (<div key={label} className="flex-1"><div className={`h-1.5 rounded-full transition-colors ${i <= step ? 'bg-primary' : 'bg-muted'}`} /></div>))}</div>
         <p className="text-xs text-muted-foreground mb-6 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>Step {step + 1} of {STEPS.length}: {STEPS[step]}</p>
         <div className="bg-card text-card-foreground rounded-2xl p-6 md:p-8 border border-border shadow-sm space-y-5">
-          {step === 0 && (<><div className="grid sm:grid-cols-2 gap-4"><Field label="Your name *" htmlFor="gq-name"><Input id="gq-name" value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Jane Smith" /></Field><Field label="Email *" htmlFor="gq-email"><Input id="gq-email" type="email" autoComplete="email" disabled={verificationBusy} value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="jane@business.com" /></Field></div><div className="rounded-xl border border-border p-4 space-y-3">
+          {step === 0 && (<>{ideaBrief && <div className="rounded-xl border border-border p-4 space-y-3"><h2 className="font-semibold">Your idea came with you</h2><p className="text-sm text-muted-foreground">Keep this starting point or adjust anything before we talk.</p><Field label="Your concept notes" htmlFor="gq-concept-notes"><Textarea id="gq-concept-notes" rows={7} maxLength={6000} value={form.quick_pitch} onChange={e=>update("quick_pitch",e.target.value)}/></Field><a href="/ideas#possibilities" className="underline text-sm">Return to exploring</a></div>}<div className="grid sm:grid-cols-2 gap-4"><Field label="Your name *" htmlFor="gq-name"><Input id="gq-name" value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Jane Smith" /></Field><Field label="Email *" htmlFor="gq-email"><Input id="gq-email" type="email" autoComplete="email" disabled={verificationBusy} value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="jane@business.com" /></Field></div><div className="rounded-xl border border-border p-4 space-y-3">
             <p className="text-sm">Confirm this is the inbox where we can reach you.</p>
             {!emailVerified && <Button type="button" variant="outline" disabled={verificationBusy||!isEmailValid(form.email)} onClick={()=>verifyEmail('send')}>{verificationBusy?'Please wait…':verification?'Resend code':'Send verification code'}</Button>}
             {verification&&!emailVerified&&<div className="flex flex-wrap gap-2 items-end"><Field label="Six-digit email code" htmlFor="gq-code"><Input id="gq-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={emailCode} onChange={e=>setEmailCode(e.target.value.replace(/[^0-9]/g,''))} /></Field><Button type="button" disabled={verificationBusy||emailCode.length!==6} onClick={()=>verifyEmail('verify')}>Verify email</Button></div>}
