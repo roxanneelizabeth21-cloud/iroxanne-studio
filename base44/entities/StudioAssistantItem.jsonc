@@ -1,0 +1,106 @@
+{
+  "name": "StudioAssistantItem",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "task",
+        "email",
+        "scope_change",
+        "marketing",
+        "calendar_change",
+        "note"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "active",
+        "done",
+        "dismissed",
+        "sending",
+        "sent",
+        "error"
+      ],
+      "default": "pending_review"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "recipient": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string"
+    },
+    "minutes": {
+      "type": "number"
+    },
+    "source_json": {
+      "type": "string"
+    },
+    "payload_json": {
+      "type": "string"
+    },
+    "fingerprint": {
+      "type": "string"
+    },
+    "result_json": {
+      "type": "string"
+    },
+    "error": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "completed_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "status",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
