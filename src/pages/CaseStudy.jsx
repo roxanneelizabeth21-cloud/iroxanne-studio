@@ -90,12 +90,7 @@ export default function CaseStudy() {
               </p>
             )}
 
-            {item.saas_replacement_value && (
-              <div className="mt-8 rounded-2xl bg-[#2D2A4A] p-6 md:p-8">
-                <p className="text-[12px] font-medium text-[#C9A84C] tracking-wide mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>What this replaces</p>
-                <p className="text-[15px] text-white/80 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>{item.saas_replacement_value}</p>
-              </div>
-            )}
+
 
             {item.description && (
               <div className="mt-8 space-y-4 text-[15.5px] leading-[1.75] text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -103,14 +98,7 @@ export default function CaseStudy() {
               </div>
             )}
 
-            {item.marketing_features && (
-              <div className="mt-10">
-                <h2 className="text-[22px] font-semibold text-foreground mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>What's inside</h2>
-                <div className="rounded-2xl border border-border bg-card p-6 md:p-8 text-[14px] leading-[1.8] text-muted-foreground whitespace-pre-wrap" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  {item.marketing_features}
-                </div>
-              </div>
-            )}
+
 
             {item.tech_used?.length > 0 && (
               <div className="mt-10">
