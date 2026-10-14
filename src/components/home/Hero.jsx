@@ -1,6 +1,5 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
-export default function Hero({ projects, loading }) {
- const project = projects?.find(p=>p.slug==='quiet-time-daily') || projects?.[0];
+export default function Hero() {
  return <section className="studio-hero">
   <div className="studio-wrap studio-hero-grid">
    <div>
@@ -11,13 +10,11 @@ export default function Hero({ projects, loading }) {
     <div className="studio-actions"><a className="studio-button" href="#business-concepts">Explore what we could build <ArrowRight size={17}/></a><a className="studio-text-link" href="/contact">Talk with Roxanne <ArrowUpRight size={17}/></a></div>
    </div>
    <div className="studio-hero-art">
-    <span className="studio-orbit" aria-hidden="true"/>
-    {project ? <a className="studio-preview" href={'/ideas?seed='+project.slug+'#possibilities'}>
-     <div className="studio-browser-bar"><span aria-hidden="true">● ● ●</span><span>An example of my design & development work</span><ArrowUpRight size={15}/></div>
-     <img src={project.cover_image_url} alt={project.title+' — project preview'} fetchPriority="high"/>
-     <div className="studio-preview-caption"><span>Portfolio · {project.title}</span><span>Imagine something like this ↗</span></div>
-    </a> : <div className="studio-preview studio-art-placeholder" role="status">{loading?'Gathering a little inspiration…':'Your next chapter starts with an idea.'}</div>}
-    <div className="studio-glass-note"><span aria-hidden="true">✦</span> Thoughtfully made.<br/><strong>Personally yours.</strong></div>
+    <a className="studio-device-hero" href="/ideas?seed=hair#possibilities" aria-label="Explore a custom business website and app concept">
+     <img src="/images/studio-device-hero.jpg" alt="Concept mockup: a laptop showing a business dashboard beside a phone showing its customer booking app" width="1200" height="800" fetchPriority="high"/>
+     <div className="studio-device-caption"><span>A website for your customers. Tools for you.</span><ArrowUpRight size={17}/></div>
+    </a>
+    <p className="studio-device-label">Illustrative website & app concept</p>
    </div>
   </div>
   <div className="studio-wrap studio-hero-foot"><span>Websites & apps</span><span aria-hidden="true">✦</span><span>Creative tools</span><span aria-hidden="true">✦</span><span>Your next idea</span></div>
