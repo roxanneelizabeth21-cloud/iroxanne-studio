@@ -3,7 +3,7 @@ import {prepareNotesQuote,analyzeQuoteNotes} from '../../shared/notesQuote.ts';
 Deno.serve(async(req:Request)=>{
  try{
  const client=createClientFromRequest(req);
- const user=await client.auth.me();
+ const user=await client.auth.me().catch(()=>null);
  if(!user||user.role!=='admin')return Response.json({error:'Admin access required'},{status:403});
  const body=await req.json();
  if(body.action==='sample'){
