@@ -6,10 +6,10 @@ export default function SiteFooter() {
       {/* CTA band */}
       <div className="mx-auto max-w-6xl px-5 md:px-8 py-8 text-center">
         <h2 className="text-[30px] md:text-[36px] font-semibold text-foreground tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Have an idea you’d like to explore?
+          Your idea doesn’t have to fit a box.
         </h2>
         <p className="mt-3 text-[15px] text-muted-foreground max-w-md mx-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Tell me a little about what you have in mind. It is okay if you are still figuring it out; we can talk through the next steps together.
+          A website, an app, something creative, or a better way to do the everyday. Tell me what you’re imagining, and we’ll explore it together.
         </p>
         <a href="/quote" className="studio-button mt-5" style={{ fontFamily: "'Inter', sans-serif" }}>
           Let’s talk about your idea <ArrowRight className="h-4 w-4" />

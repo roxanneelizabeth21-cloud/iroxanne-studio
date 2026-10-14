@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import SiteNav from '@/components/home/SiteNav';
 import SiteFooter from '@/components/home/SiteFooter';
+import CalendarPreview from '@/components/home/CalendarPreview';
 
 const EXAMPLES = [
+  ['quiet-time-daily', 'Make space for a daily pause', 'Bring Scripture, prayer, and reflection into a welcoming place people can return to.'],
   ['booked-now-what', 'Make more of a trip', 'Turn a booked trip into a plan, with itineraries, packing lists, and travel details together.'],
-  ['bonded', 'Make space for connection', 'Help couples connect through daily check-ins, shared goals, and guided activities.'],
   ['nestflow', 'Bring family life together', 'Keep family schedules, chores, meals, and everyday planning in one place.'],
-  ['creatively-his-event-staging', 'Turn inquiries into events', 'Help an event business manage requests, proposals, agreements, and payments.'],
-  ['tyla-aadam-shoe-co', 'Bring a collection to customers', 'Give a footwear brand a storefront with shopping, pre-orders, and tools to manage the business.'],
-  ['nhd-customs', 'Make custom orders easier', 'Organize personalized jewelry requests from the first inspiration photo through delivery.'],
 ];
 
 export default function Ideas() {
@@ -48,6 +46,8 @@ export default function Ideas() {
             </article>;
           })}</div>}
       </section>
+      <CalendarPreview />
+      <section className="studio-section"><div className="studio-wrap"><p className="studio-eyebrow">And then there’s your idea</p><h2>What else could we create?</h2><p className="studio-subtitle">A creative studio. A learning space. An interactive guide. A tool for your community. Something no one has quite put a name to yet.</p><a className="studio-button mt-6" href="/quote">Tell me what you’re imagining →</a></div></section>
     </main>
     <SiteFooter/>
   </div>;

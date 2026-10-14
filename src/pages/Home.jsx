@@ -8,6 +8,7 @@ import Process from '@/components/home/Process';
 import Services from '@/components/home/Services';
 import FeaturedWork from '@/components/home/FeaturedWork';
 import About from '@/components/home/About';
+import CalendarPreview from '@/components/home/CalendarPreview';
 import '@/components/home/studio.css';
 import Testimonials from '@/components/home/Testimonials';
 import VideoShowcase from '@/components/home/VideoShowcase';
@@ -52,7 +53,7 @@ export default function Home() {
 
         if (!active) return;
 
-        const slugs = ['bonded', 'tyla-aadam-shoe-co', 'nhd-customs', 'creatively-his-event-staging'];
+        const slugs = ['quiet-time-daily', 'booked-now-what', 'nestflow'];
         setProjects(slugs.map(slug => (proj || []).find(p => p.slug === slug)).filter(Boolean));
         setTestimonials(test);
         setHeadshotUrl(settings?.[0]?.about_headshot_url || null);
@@ -76,6 +77,7 @@ export default function Home() {
 
         <Services />
         <FeaturedWork items={projects} loading={loading} />
+        <CalendarPreview />
         <Process />
         <About headshotUrl={headshotUrl} />
 
