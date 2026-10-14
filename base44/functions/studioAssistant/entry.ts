@@ -41,6 +41,7 @@ export async function handleAssistant(req:Request) {
    const message=await db.StudioAssistantMessage.create({question:prompt,answer:str(output.answer,16000)+notice,client_email:focus,source_json:JSON.stringify(refs),suggestion_ids:saved.map((i:any)=>i.id),coverage:[...supplied.coverage].join(' ')});
    return Response.json({message,items:saved,sent:false});
   }
+  if(action==='archive_message'){const id=str(body.id,200);await db.StudioAssistantMessage.get(id);await db.StudioAssistantMessage.update(id,{archived:true});return Response.json({archived:true,id});}
   if(action==='note'){
    const text=str(body.text,12000);if(!text)throw Error('Add your call notes or project update.');
    const item=await db.StudioAssistantItem.create({kind:'note',status:'active',title:str(body.title,160)||'Project notes',body:text,client_email:focus,source_json:'[]',payload_json:'{}',version:1});return Response.json({item});
