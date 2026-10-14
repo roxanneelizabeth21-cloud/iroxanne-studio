@@ -53,11 +53,20 @@ function Preview({kind,screen,title,detail}){
  {screen==='community'&&<><div className="vi-preview-hero"><span>A PLACE TO CONNECT</span><h3>{c.headline}</h3><p>{c.sub}</p></div><div className="vi-resource-grid">{['Read & discover','Share & connect','Meet & learn'].map((r,i)=><button className={selected===i?'selected':''} key={r} onClick={()=>setSelected(i)}><Users size={26}/><h4>{r}</h4><span>Take a look ↗</span></button>)}</div><div className="vi-task-detail"><h4>{['A moment of inspiration','A conversation worth having','Your next gathering'][selected]}</h4><p>{['A featured article, lesson, or resource could live here, with a library to explore at your own pace.','A member space could bring discussions, shared resources, and helpful updates together.','A shared events space could help your community discover what’s coming up and express interest.'][selected]}</p><button className="vi-solid" onClick={()=>setDone(!done)}>{done?'Saved to sample list':'Save this sample'}</button></div></>}
  </div>;
 }
+const VISUAL_DRAFT='iroxanne-visual-idea-v2';
+function restoreVisualDraft(){
+ try{
+  const d=JSON.parse(sessionStorage.getItem(VISUAL_DRAFT)||'null');
+  return d&&types[d.kind]&&screens[d.screen]&&typeof d.idea==='string'&&d.idea.length<=1200&&Array.isArray(d.answers)&&d.answers.length<=4&&d.answers.every(a=>typeof a.question==='string'&&a.question.length<=180&&typeof a.answer==='string'&&a.answer.length<=500)?d:null;
+ }catch{return null;}
+}
 export default function VisualIdeaStudio(){
  const loc=useLocation(),navigate=useNavigate(),seed=new URLSearchParams(loc.search).get('seed');
- const initial=seedIdeas[seed]||'';
- const [idea,setIdea]=useState(initial),[kind,setKind]=useState(identify(initial)),[screen,setScreen]=useState(types[identify(initial)].screen),[started,setStarted]=useState(!!initial),[ai,setAI]=useState(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[answers,setAnswers]=useState([]),[reply,setReply]=useState('');
+ const [saved]=useState(()=>seedIdeas[seed]?null:restoreVisualDraft());
+ const initial=seedIdeas[seed]||saved?.idea||'';
+ const [idea,setIdea]=useState(initial),[kind,setKind]=useState(saved?.kind||identify(initial)),[screen,setScreen]=useState(saved?.screen||types[identify(initial)].screen),[started,setStarted]=useState(saved?.started||!!initial),[ai,setAI]=useState(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[answers,setAnswers]=useState(saved?.answers||[]),[reply,setReply]=useState('');
  const request=useRef(0);
+ useEffect(()=>{try{sessionStorage.setItem(VISUAL_DRAFT,JSON.stringify({idea,kind,screen,started,answers}));}catch{}},[idea,kind,screen,started,answers]);
  useEffect(()=>()=>{request.current++;},[]);
  useEffect(()=>{if(seedIdeas[seed]){const text=seedIdeas[seed],k=identify(text);request.current++;setBusy(false);setIdea(text);setKind(k);setScreen(types[k].screen);setStarted(true);setAI(null);setAnswers([]);setNotice('');}},[seed]);
  const c=types[kind];
