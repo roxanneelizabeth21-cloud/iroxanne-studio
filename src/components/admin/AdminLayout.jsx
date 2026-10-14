@@ -12,6 +12,7 @@ import { LayoutDashboard, PenLine, Palette, Clapperboard, Megaphone, CalendarDay
 import './admin-views.css';
 
 const BUSINESS_PAGES = {
+  assistant: ['Daily work', 'Studio Assistant'],
   projects: ['Daily work', 'Client Journey'], messages: ['Daily work', 'Messages'],
   proposals: ['Client documents', 'Quotes & Proposals'], contracts: ['Client documents', 'Contracts'], invoices: ['Client documents', 'Invoices'],
   homepage: ['Website & audience', 'Homepage'], portfolio: ['Website & audience', 'Portfolio'], testimonials: ['Website & audience', 'Testimonials'], pages: ['Website & audience', 'Pages'], banners: ['Website & audience', 'Banners'], 'promo-banners': ['Website & audience', 'Promo Banners'], visitors: ['Website & audience', 'Visitors'], subscribers: ['Website & audience', 'Subscribers'],

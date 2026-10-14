@@ -43,6 +43,8 @@ export default function AdminOverview() {
         <p>Start with your client journey. Open a client to see their current stage and next action.</p>
       </div>
 
+      <section className="irx-card"><h2 className="font-display text-2xl mb-2">Your evening starts here</h2><p className="text-sm text-muted-foreground mb-4">Bring together client emails, upcoming calls, quote drafts, and your next steps.</p><Link to="/admin/assistant" className="irx-pill active inline-flex items-center">Open Studio Assistant →</Link></section>
+
       <section className="irx-card">
         <h2 className="font-display text-2xl mb-2">What needs to move forward?</h2>
         <p className="text-sm text-muted-foreground mb-4">Follow each client from their first inquiry through payment and delivery. The journey shows what needs your attention and what is waiting on the client.</p>

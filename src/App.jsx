@@ -14,6 +14,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AdminGuard from '@/components/AdminGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminOverview from '@/pages/admin/AdminOverview';
+import StudioAssistant from '@/pages/admin/StudioAssistant';
 import HomepageAdminPage from '@/pages/admin/HomepageAdminPage';
 import PortfolioAdminPage from '@/pages/admin/PortfolioAdminPage';
 import ContractsAdminPage from '@/pages/admin/ContractsAdminPage';
@@ -129,6 +130,7 @@ const AuthenticatedApp = () => {
       <Route path="/work/:slug" element={<CaseStudy />} />
       <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route path="/admin" element={<AdminOverview />} />
+        <Route path="/admin/assistant" element={<StudioAssistant />} />
         <Route path="/admin/projects" element={<ProjectsPipeline />} />
         <Route path="/admin/homepage" element={<HomepageAdminPage />} />
         <Route path="/admin/portfolio" element={<PortfolioAdminPage />} />

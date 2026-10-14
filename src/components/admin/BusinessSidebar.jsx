@@ -1,12 +1,13 @@
 import { NavLink, Link } from 'react-router-dom';
 import {
-  Home, FolderKanban, FileText, Receipt, CalendarDays, LayoutDashboard,
+  Bot, Home, FolderKanban, FileText, Receipt, CalendarDays, LayoutDashboard,
   MessageSquare, Image, Megaphone, Eye, Mail, ScrollText, ArrowLeft, Briefcase,
 } from 'lucide-react';
 import './admin-views.css';
 
 const NAV = [
   { to: '/admin', label: 'Business Home', Icon: Home, end: true },
+  { to: '/admin/assistant', label: 'Studio Assistant', Icon: Bot },
   { to: '/admin/projects', label: 'Client Journey', Icon: FolderKanban },
   { to: '/admin/proposals', label: 'Quotes & Proposals', Icon: FileText },
   { to: '/admin/contracts', label: 'Contracts', Icon: FileText },
@@ -26,7 +27,7 @@ const NAV = [
 ];
 
 const GROUPS = [
-  { title: 'Daily work', routes: ['/admin', '/admin/projects', '/admin/messages'] },
+  { title: 'Daily work', routes: ['/admin', '/admin/assistant', '/admin/projects', '/admin/messages'] },
   { title: 'Client documents', routes: ['/admin/proposals', '/admin/contracts', '/admin/invoices'] },
   { title: 'Website & audience', routes: ['/admin/homepage', '/admin/portfolio', '/admin/testimonials', '/admin/pages', '/admin/banners', '/admin/promo-banners', '/admin/visitors', '/admin/subscribers'] },
   { title: 'Business setup', routes: ['/admin/call-availability', '/admin/email-templates', '/admin/legal'] },
