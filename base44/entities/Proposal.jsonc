@@ -2,6 +2,11 @@
   "name": "Proposal",
   "type": "object",
   "properties": {
+    "requires_scope_review": {
+      "type": "boolean",
+      "default": false,
+      "description": "Generated draft must be reviewed and saved by Roxanne before sending"
+    },
     "complimentary": {
       "type": "boolean",
       "default": false,
