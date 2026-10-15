@@ -35,7 +35,7 @@ export default function Contact() {
       }).catch(() => {});
       setDone(true);
     } catch {
-      setSubmitError('Your message could not be sent. Your answers are still here. Please try again, or email roxanne@iroxannestudio.com.');
+      setSubmitError('Your message could not be sent. Your answers are still here. Please try again, or email info@iroxannestudio.com.');
     } finally { setSubmitting(false); }
   };
 
@@ -57,6 +57,17 @@ export default function Contact() {
             <a href="/quote" className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2D2A4A] hover:text-[#3D3A5A] transition" style={{ fontFamily: "'Inter', sans-serif" }}>
               Request a quote <ArrowRight className="h-3.5 w-3.5" />
             </a>
+          </div>
+        </div>
+
+        <div className="mt-4 grid sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-[#2D2A4A]/10 bg-card p-5">
+            <p className="text-[12px] font-semibold uppercase tracking-wide text-[#B8942E]" style={{ fontFamily: "'Inter', sans-serif" }}>Email</p>
+            <a href="mailto:info@iroxannestudio.com" className="mt-1.5 block text-[14px] font-medium text-foreground hover:text-[#2D2A4A] transition" style={{ fontFamily: "'Inter', sans-serif" }}>info@iroxannestudio.com</a>
+          </div>
+          <div className="rounded-2xl border border-[#2D2A4A]/10 bg-card p-5">
+            <p className="text-[12px] font-semibold uppercase tracking-wide text-[#B8942E]" style={{ fontFamily: "'Inter', sans-serif" }}>Mailing address</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>10612 Providence Rd STE D — PMB 747<br />Charlotte, NC 28277</p>
           </div>
         </div>
 

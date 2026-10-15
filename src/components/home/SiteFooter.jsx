@@ -19,7 +19,11 @@ export default function SiteFooter() {
       {/* Bottom bar */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 md:px-8 py-4 text-[12px] text-muted-foreground sm:flex-row" style={{ fontFamily: "'Inter', sans-serif" }}>
-          <span className="font-semibold text-muted-foreground">iRoxanne Studio</span>
+          <div className="flex flex-col sm:items-start">
+            <span className="font-semibold text-muted-foreground">iRoxanne Studio</span>
+            <a href="mailto:info@iroxannestudio.com" className="text-muted-foreground/80 hover:text-foreground transition">info@iroxannestudio.com</a>
+            <span className="text-muted-foreground/60">10612 Providence Rd STE D — PMB 747, Charlotte, NC 28277</span>
+          </div>
           <div className="flex items-center gap-5">
             <a href="/ideas" className="hover:text-foreground transition">Explore ideas</a>
             <a href="/about" className="hover:text-muted-foreground transition">About</a>
