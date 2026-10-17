@@ -17,6 +17,30 @@ export default async function (req: Request): Promise<Response> {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
+    const body = await req.json().catch(() => ({}));
+    if (body?.action === 'status') {
+      const auths = await base44.entities.CanvaAuth.list('-created_date', 10);
+      const connected = (auths || []).some((a: any) => a.status === 'connected');
+      const hasCredentials = (auths || []).some((a: any) => Boolean(a.client_id && a.client_secret));
+      const lastFailed = !connected ? (auths || []).find((a: any) => a.status === 'failed') : null;
+      return Response.json({
+        connected,
+        has_credentials: hasCredentials,
+        last_error: lastFailed?.error || null,
+      });
+    }
+    if (body?.action === 'save_credentials') {
+      const cid = String(body.client_id || '').trim();
+      const csec = String(body.client_secret || '').trim();
+      if (!cid || !csec) return Response.json({ error: 'Client ID and Client Secret are required' }, { status: 400 });
+      await base44.entities.CanvaAuth.create({
+        client_id: cid,
+        client_secret: csec,
+        status: 'pending',
+      });
+      return Response.json({ ok: true });
+    }
+
     const { clientId, clientSecret } = await getCanvaCredentials(base44);
 
     const state = randomString(24);

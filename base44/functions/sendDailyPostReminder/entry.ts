@@ -52,7 +52,7 @@ export default async function (req) {
         emailed = { error: e.message };
       }
     }
-    const pushed = await sendPush({ heading: subject, message: plainLines, url: origin ? `${origin}/marketing` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY') });
+    const pushed = await sendPush({ heading: subject, message: plainLines, url: origin ? `${origin}/marketing` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY'), appId: ns.onesignal_app_id });
 
     return Response.json({ sent: true, count: due.length, emailed, pushed });
   } catch (error) {

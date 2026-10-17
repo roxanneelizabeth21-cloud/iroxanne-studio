@@ -3,7 +3,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
-    const videos = await base44.asServiceRole.entities.Video.filter({ featured: true });
+    const user = await base44.auth.me().catch(() => null);
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    const videos = await base44.entities.Video.filter({ featured: true });
     const formatted = (videos || [])
       .map((v) => ({
         id: v.id,

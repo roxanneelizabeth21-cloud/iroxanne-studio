@@ -68,7 +68,11 @@ export default async function(req) {
   const day = new Date().toISOString().slice(0,10);
   if (settings.last_notice !== day) {
    await e.MarketingAutomation.update(settings.id,{last_notice:day});
-   try { await b.asServiceRole.integrations.Core.SendEmail({to:'roxanneelizabeth21@gmail.com',subject:'iRoxanne Studio marketing needs attention',body:'Automatic content production could not complete a story. Your existing posts are safe. Open https://iroxannestudio.com/marketing/controls to see the error and production status.'}); } catch {}
+   const [bp]=await e.BrandProfile.list().catch(()=>[]);
+   const notifyEmail=String(bp?.notify_email||'').trim();
+   if (notifyEmail) {
+    try { await b.asServiceRole.integrations.Core.SendEmail({to:notifyEmail,subject:'iRoxanne Studio marketing needs attention',body:'Automatic content production could not complete a story. Your existing posts are safe. Open https://iroxannestudio.com/marketing/controls to see the error and production status.'}); } catch {}
+   }
   }
   return Response.json({error:message},{status:500});
  }

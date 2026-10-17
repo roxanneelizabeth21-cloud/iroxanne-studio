@@ -12,7 +12,9 @@ export async function handleNovaBusiness(req:Request){
   if(focus&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(focus))throw Error('Choose a valid client email.');
   if(action==='context'){
    const ctx=await assistantContext(client,focus);
-   return Response.json({...modelContext(ctx),clients:ctx.clients,items:ctx.items,previous_briefings:ctx.history,review_url:'/admin/assistant?view=desk',sender:'roxanne@iroxannestudio.com',bcc:'roxanneelizabeth21@gmail.com'});
+   const [bp]=await (client.asServiceRole?.entities?.BrandProfile?.list?.()||Promise.resolve([])).catch(()=>[]);
+   const bcc=String(bp?.notify_email||'').trim();
+   return Response.json({...modelContext(ctx),clients:ctx.clients,items:ctx.items,previous_briefings:ctx.history,review_url:'/admin/assistant?view=desk',sender:'roxanne@iroxannestudio.com',bcc});
   }
   const allowed=['ask','note','prepare_quote','calendar_options','plan_calendar'];
   if(!allowed.includes(action))return Response.json({error:'Nova can prepare drafts only. Roxanne approves emails and calendar changes in the review panel.'},{status:403});

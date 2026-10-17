@@ -27,14 +27,17 @@ const sendCode=async(client:any,to:string,code:string)=>{
 export default async function(req:Request){
  try{
   const b=await req.json(),client=createClientFromRequest(req),db=client.asServiceRole.entities;
+  const actor=await client.auth.me().catch(()=>null);
+  const origin=String(req.headers.get('origin')||req.headers.get('referer')||'').trim();
+  if(!actor && origin && !/^https:\/\/([a-z0-9-]+\.)?(iroxannestudio\.com|base44\.(app|com))(\/|$)/i.test(origin))fail('Forbidden origin.',403);
   const email=emailOf(b.email),now=Date.now();
   if(b.action==='send'){
    const emailHash=await hash(email);
    const recent=await db.QuoteEmailVerification.filter({email_hash:emailHash},'-created_date',20);
    if(recent.some((r:any)=>now-Date.parse(r.created_date)<60000))fail('Please wait one minute before requesting another code.',429);
-   if(recent.filter((r:any)=>now-Date.parse(r.created_date)<3600000).length>=5)fail('Too many requests. Please try again in an hour.',429);
-   const global=await db.QuoteEmailVerification.list('-created_date',200);
-   if(global.filter((r:any)=>now-Date.parse(r.created_date)<86400000).length>=200)fail('Quote submission is temporarily busy. Please try again later.',429);
+   if(recent.filter((r:any)=>now-Date.parse(r.created_date)<3600000).length>=3)fail('Too many requests. Please try again in an hour.',429);
+   const global=await db.QuoteEmailVerification.list('-created_date',50);
+   if(global.filter((r:any)=>now-Date.parse(r.created_date)<86400000).length>=30)fail('Quote submission is temporarily busy. Please try again later.',429);
    const secret=hex(crypto.getRandomValues(new Uint8Array(32)));
    let random=crypto.getRandomValues(new Uint32Array(1))[0];
    while(random>=4294000000)random=crypto.getRandomValues(new Uint32Array(1))[0];

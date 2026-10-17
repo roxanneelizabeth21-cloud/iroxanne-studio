@@ -1,6 +1,13 @@
 export const STUDIO_EMAIL='roxanne@iroxannestudio.com';
-export const ASSISTANT_BCC='roxanneelizabeth21@gmail.com';
+export const ASSISTANT_BCC='';
 export const emailValid=(s:any)=>typeof s==='string'&&/^[a-z0-9.!#$%&'*+\-/=?^_`{|}~]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(s)&&s.length<=254;
+export async function resolveAssistantBcc(client:any):Promise<string>{
+ try{
+  const list=await client?.asServiceRole?.entities?.BrandProfile?.list?.();
+  const email=String(list?.[0]?.notify_email||'').trim().toLowerCase();
+  return emailValid(email)?email:'';
+ }catch{return '';}
+}
 export const emailAddress=(v:any)=>String(v||'').match(/<([^<>\s]+@[^<>\s]+)>/)?.[1]?.toLowerCase()||String(v||'').trim().toLowerCase();
 const clean=(s:any,n=10000)=>String(s||'').replace(/\u0000/g,'').slice(0,n);
 export async function googleConnection(client:any,kind:'gmail'|'googlecalendar') {
@@ -62,7 +69,9 @@ export async function sendAssistantReply(client:any,item:any) {
   if(/[\r\n]/.test(last.message_id+last.references))throw Error('The original email has invalid reply headers. Reply in Gmail.');
   if(last.message_id){replyHeaders='In-Reply-To: '+last.message_id+'\r\nReferences: '+[last.references,last.message_id].filter(Boolean).join(' ')+'\r\n';threadId=thread.id;}
  }
- const raw='From: Roxanne <'+STUDIO_EMAIL+'>\r\nTo: '+item.recipient+'\r\nBcc: '+ASSISTANT_BCC+'\r\nSubject: =?UTF-8?B?'+encode(item.subject.replace(/[\r\n]/g,' ').slice(0,300))+'?=\r\n'+replyHeaders+'Message-ID: <studio-assistant-'+item.id+'@iroxannestudio.com>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+encode(item.body);
+ const bcc=await resolveAssistantBcc(client);
+ const bccLine=bcc?'Bcc: '+bcc+'\r\n':'';
+ const raw='From: Roxanne <'+STUDIO_EMAIL+'>\r\nTo: '+item.recipient+'\r\n'+bccLine+'Subject: =?UTF-8?B?'+encode(item.subject.replace(/[\r\n]/g,' ').slice(0,300))+'?=\r\n'+replyHeaders+'Message-ID: <studio-assistant-'+item.id+'@iroxannestudio.com>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+encode(item.body);
  const result=await call('messages/send',{method:'POST',body:JSON.stringify({raw:encode(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),...(threadId?{threadId}:{})})});
- if(!result.id)throw Error('Gmail delivery could not be confirmed. Check Sent mail before retrying.');return {message_id:result.id,thread_id:result.threadId,bcc:ASSISTANT_BCC};
+ if(!result.id)throw Error('Gmail delivery could not be confirmed. Check Sent mail before retrying.');return {message_id:result.id,thread_id:result.threadId,bcc};
 }

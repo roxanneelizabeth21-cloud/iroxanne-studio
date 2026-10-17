@@ -1,13 +1,14 @@
 import fs from 'node:fs';import ts from 'typescript';import assert from 'node:assert/strict';
 const src=fs.readFileSync('base44/functions/novaBusinessTools/entry.ts','utf8').replace(/^import .*;\n/gm,'').replace('Deno.serve(handleNovaBusiness);','').replace(/export /g,'');
 let role='admin',calls=[];
-const client={auth:{me:async()=>({role})},functions:{invoke:async(name,input)=>{calls.push({name,input});return {data:{items:[],sent:false}};}}};
+const mockBcc='owner-bcc@example.invalid';
+const client={auth:{me:async()=>({role})},asServiceRole:{entities:{BrandProfile:{list:async()=>[{notify_email:mockBcc}]}}},functions:{invoke:async(name,input)=>{calls.push({name,input});return {data:{items:[],sent:false}};}}};
 const h=new Function('createClientFromRequest','assistantContext','modelContext',ts.transpile(src,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None})+';return handleNovaBusiness;')(()=>client,async()=>({clients:[],items:[],history:[{answer:'Earlier decision'}]}),()=>({sources:[]}));
 const invoke=body=>h(new Request('https://example.invalid',{method:'POST',body:JSON.stringify(body)}));
 role='user';assert.equal((await invoke({action:'context'})).status,403);role='admin';
 for(const action of ['approve','send','edit','dismiss','complete','archive_message'])assert.equal((await invoke({action})).status,403);
 assert.equal(calls.length,0);
-const ctx=await (await invoke({action:'context'})).json();assert.equal(ctx.bcc,'roxanneelizabeth21@gmail.com');assert.equal(ctx.previous_briefings[0].answer,'Earlier decision');
+const ctx=await (await invoke({action:'context'})).json();assert.equal(ctx.bcc,mockBcc);assert.equal(ctx.previous_briefings[0].answer,'Earlier decision');
 await invoke({action:'ask',prompt:'Draft a reply',client_email:'client@example.invalid',confirm:'forged',version:1,mode:'marketing'});
 assert.deepEqual(calls[0],{name:'studioAssistant',input:{action:'ask',client_email:'client@example.invalid',prompt:'Draft a reply'}});
 await invoke({action:'plan_calendar',event_id:'event',operation:'move',start:'slot',confirm:'forged'});assert.equal(calls[1].input.confirm,undefined);

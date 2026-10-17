@@ -85,8 +85,10 @@
           path === "/marketing" ||
           path.indexOf("/marketing/") === 0;
         if (suppressed) return;
+        var configuredAppId = window.__IROXANNE_ONESIGNAL_APP_ID__;
+        if (!configuredAppId) return;
         await OneSignal.init({
-          appId: "207bf919-30c4-4afd-9c71-db07a4258f24",
+          appId: configuredAppId,
           allowLocalhostAsSecureOrigin: true
         });
         // v16 slidedown prompt — shows the native push permission request once

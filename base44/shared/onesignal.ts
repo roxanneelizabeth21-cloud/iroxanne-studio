@@ -8,22 +8,23 @@
 // NOTE: this module never references `base44:runtime`. Each calling function
 // imports `secrets` itself and passes apiKey in.
 
-const ONESIGNAL_APP_ID = '207bf919-30c4-4afd-9c71-db07a4258f24';
-
 export async function sendPush(opts: {
   heading: string;
   message: string;
   url?: string;
   apiKey?: string;
+  appId?: string;
 }): Promise<{ ok: boolean; id?: string; recipients?: number; error?: string }> {
   // The caller reads ONESIGNAL_REST_API_KEY from `base44:runtime` and passes it
   // in: that backend-only specifier must not appear in this shared module,
   // because the client bundler scans base44/shared and cannot resolve it.
   const apiKey = opts.apiKey;
+  const appId = String(opts.appId || '').trim();
   if (!apiKey) return { ok: false, error: 'ONESIGNAL_REST_API_KEY not set' };
+  if (!appId) return { ok: false, error: 'onesignal_app_id not configured on BrandProfile' };
   try {
     const body: any = {
-      app_id: ONESIGNAL_APP_ID,
+      app_id: appId,
       contents: { en: opts.message },
       headings: { en: opts.heading },
       included_segments: ['Subscribed Users'],

@@ -14,26 +14,29 @@ export default function CanvaConnectCard() {
   const [clientSecret, setClientSecret] = useState('');
   const [showCreds, setShowCreds] = useState(false);
 
-  const { data: auths = [], isLoading } = useQuery({
-    queryKey: ['canva-auth'],
-    queryFn: () => base44.entities.CanvaAuth.list('-created_date'),
+  const { data: statusData, isLoading } = useQuery({
+    queryKey: ['canva-auth-status'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('canvaConnect', { action: 'status' });
+      return res?.data ?? res ?? {};
+    },
   });
 
-  const connected = auths.find((a) => a.status === 'connected');
-  const withCreds = auths.find((a) => a.client_id && a.client_secret);
-  const lastFailed = !connected && auths.find((a) => a.status === 'failed');
+  const connected = Boolean(statusData?.connected);
+  const withCreds = Boolean(statusData?.has_credentials);
+  const lastFailed = !connected && statusData?.last_error ? { error: statusData.last_error } : null;
 
   const saveCreds = async () => {
     if (!clientId.trim() || !clientSecret.trim()) return;
-    await base44.entities.CanvaAuth.create({
+    await base44.functions.invoke('canvaConnect', {
+      action: 'save_credentials',
       client_id: clientId.trim(),
       client_secret: clientSecret.trim(),
-      status: 'pending',
     });
     setClientId('');
     setClientSecret('');
     setShowCreds(false);
-    await qc.invalidateQueries({ queryKey: ['canva-auth'] });
+    await qc.invalidateQueries({ queryKey: ['canva-auth-status'] });
     toast({ title: 'Canva credentials saved' });
   };
 
@@ -79,7 +82,7 @@ export default function CanvaConnectCard() {
           {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
           {connected ? 'Reconnect Canva' : 'Connect Canva'}
         </Button>
-        <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ['canva-auth'] })} className="gap-2">
+        <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ['canva-auth-status'] })} className="gap-2">
           <RefreshCw className="h-4 w-4" /> Refresh status
         </Button>
         <Button variant="ghost" size="sm" onClick={() => setShowCreds((v) => !v)}>

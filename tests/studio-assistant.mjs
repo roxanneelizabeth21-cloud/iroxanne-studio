@@ -1,7 +1,7 @@
 import fs from 'node:fs';import ts from 'typescript';import assert from 'node:assert/strict';
 function load(path,names,bindings={}){const src=fs.readFileSync(path,'utf8').replace(/^import .*;\n/gm,'').replace(/Deno\.serve\(handleAssistant\);/,'').replace(/export /g,'')+'\nreturn {'+names+'};';return new Function(...Object.keys(bindings),ts.transpile(src,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}))(...Object.values(bindings));}
-const g=load('base44/shared/assistantGoogle.ts','emailValid,emailAddress,decodeBody,summarizeThread,sendAssistantReply,googleConnection,STUDIO_EMAIL,ASSISTANT_BCC');
-assert.equal(g.ASSISTANT_BCC,'roxanneelizabeth21@gmail.com');assert.equal(g.emailValid('x@example.invalid\r\nBcc:attacker@example.invalid'),false);
+const g=load('base44/shared/assistantGoogle.ts','emailValid,emailAddress,decodeBody,summarizeThread,sendAssistantReply,googleConnection,STUDIO_EMAIL,ASSISTANT_BCC,resolveAssistantBcc');
+assert.equal(g.emailValid('x@example.invalid\r\nBcc:attacker@example.invalid'),false);
 assert.equal(g.decodeBody({mimeType:'text/plain',body:{data:Buffer.from('Hello café').toString('base64url')}}),'Hello café');
 const {normalizeSuggestion,ASSISTANT_PROMPT,RESPONSE_SCHEMA}=load('base44/shared/assistantPolicy.ts','normalizeSuggestion,ASSISTANT_PROMPT,RESPONSE_SCHEMA',g);
 const emailSource={id:'Email:t',kind:'Email',email:'client@example.invalid',title:'Question',url:'https://mail.google.com/',data:{id:'t',subject:'Question',awaiting_reply:true,latest_from_email:'client@example.invalid',messages:[{id:'m'}]}};
@@ -16,11 +16,12 @@ assert.equal(normalizeSuggestion({kind:'email',title:'Payment reminder',body:'Pl
 console.log('PASS source validation, recipient binding, private-data marketing rejection and reminder overlap prevention');
 const originalFetch=globalThis.fetch;let calls=[],latestId='m',from='client@example.invalid',account=g.STUDIO_EMAIL;
 globalThis.fetch=async(url,opt={})=>{calls.push({url,opt});if(url.endsWith('/profile'))return Response.json({emailAddress:account});if(url.includes('/threads/'))return Response.json({id:'t',messages:[{id:latestId,internalDate:String(Date.now()),payload:{headers:[{name:'From',value:from},{name:'Subject',value:'Question'},{name:'Message-ID',value:'<source@example.invalid>'}],mimeType:'text/plain',body:{data:Buffer.from('Can you help?').toString('base64url')}}}]});if(url.endsWith('/messages/send'))return Response.json({id:'sent',threadId:'t'});throw Error('Unexpected request');};
-const client={asServiceRole:{connectors:{getConnection:async()=>({accessToken:'mock-only'})}}};
+const mockBcc='owner-bcc@example.invalid';
+const client={asServiceRole:{connectors:{getConnection:async()=>({accessToken:'mock-only'})},entities:{BrandProfile:{list:async()=>[{notify_email:mockBcc}]}}}};
 const item={id:'i',recipient:'client@example.invalid',subject:'Re: Question',body:'Yes, let us discuss.',payload_json:JSON.stringify({thread_id:'t',last_message_id:'m'})};
-const sent=await g.sendAssistantReply(client,item);assert.equal(sent.bcc,g.ASSISTANT_BCC);
+const sent=await g.sendAssistantReply(client,item);assert.equal(sent.bcc,mockBcc);
 const raw=Buffer.from(JSON.parse(calls.find(c=>c.url.endsWith('/messages/send')).opt.body).raw,'base64url').toString();
-assert.ok(raw.includes('From: Roxanne <roxanne@iroxannestudio.com>'));assert.ok(raw.includes('Bcc: roxanneelizabeth21@gmail.com\r\n'));assert.ok(raw.includes('In-Reply-To: <source@example.invalid>'));
+assert.ok(raw.includes('From: Roxanne <roxanne@iroxannestudio.com>'));assert.ok(raw.includes('Bcc: '+mockBcc+'\r\n'));assert.ok(raw.includes('In-Reply-To: <source@example.invalid>'));
 calls=[];latestId='newer';await assert.rejects(g.sendAssistantReply(client,item),/newer message/);assert.ok(!calls.some(c=>c.url.endsWith('/messages/send')));
 latestId='m';from=g.STUDIO_EMAIL;await assert.rejects(g.sendAssistantReply(client,item),/already replied/);
 from='client@example.invalid';account='wrong@example.invalid';await assert.rejects(g.sendAssistantReply(client,item),/Connect roxanne/);

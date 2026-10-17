@@ -11,9 +11,20 @@ export default function VideoShowcase() {
     let active = true;
     (async () => {
       try {
-        const res = await base44.functions.invoke('getPublicVideos', {});
-        const data = res?.data ?? res;
-        if (active) setVideos(data?.videos || []);
+        const rows = await base44.entities.Video.filter({ featured: true });
+        const list = Array.isArray(rows) ? rows : rows?.items || [];
+        const formatted = list
+          .map((v) => ({
+            id: v.id,
+            title: v.title || 'Untitled',
+            youtube_url: v.youtube_url || null,
+            file: v.optional_video_file || null,
+            thumbnail: v.thumbnail || null,
+            description: v.description || '',
+            type: v.type || '',
+          }))
+          .filter((v) => v.youtube_url || v.file);
+        if (active) setVideos(formatted);
       } catch {
         if (active) setVideos([]);
       } finally {

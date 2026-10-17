@@ -128,7 +128,7 @@ export default async function (req) {
           emailed = { error: e.message };
         }
       }
-      pushed = await sendPush({ heading, message: plainLines, url: origin ? `${origin}/marketing/calendar` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY') });
+      pushed = await sendPush({ heading, message: plainLines, url: origin ? `${origin}/marketing/calendar` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY'), appId: ns.onesignal_app_id });
     }
 
     return Response.json({

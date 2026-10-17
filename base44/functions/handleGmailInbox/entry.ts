@@ -18,18 +18,16 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { secrets } from 'base44:runtime';
 
-const ONESIGNAL_APP_ID = '207bf919-30c4-4afd-9c71-db07a4258f24';
-
 // Markers for our own nudge emails — used to detect & skip them.
 const SELF_SUBJECT_PREFIX = '📬 ';
 const SELF_SUBJECT_MARKER = 'new reply in your inbox';
 
-async function sendPush(heading: string, message: string, url?: string) {
+async function sendPush(appId: string, heading: string, message: string, url?: string) {
   const apiKey = secrets.get('ONESIGNAL_REST_API_KEY');
-  if (!apiKey) return;
+  if (!apiKey || !appId) return;
   try {
     const body: any = {
-      app_id: ONESIGNAL_APP_ID,
+      app_id: appId,
       contents: { en: message },
       headings: { en: heading },
       included_segments: ['Subscribed Users'],
@@ -64,9 +62,11 @@ export default async function (req) {
   // The watched inbox address = the admin's notify_email. Nudging on messages
   // from this address (our own sent mail / self-notifications) loops forever.
   let selfAddress = '';
+  let onesignalAppId = '';
   try {
     const [bp = null] = await base44.entities.BrandProfile.list();
     selfAddress = String(bp?.notify_email || '').trim().toLowerCase();
+    onesignalAppId = String(bp?.onesignal_app_id || '').trim();
   } catch {}
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
@@ -109,7 +109,7 @@ export default async function (req) {
 
     // Push nudge only — never email the watched inbox.
     try {
-      await sendPush(heading, message, 'https://mail.google.com');
+      await sendPush(onesignalAppId, heading, message, 'https://mail.google.com');
     } catch {}
   }
 

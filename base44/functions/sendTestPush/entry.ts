@@ -1,8 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { secrets } from 'base44:runtime';
 
-const ONESIGNAL_APP_ID = '207bf919-30c4-4afd-9c71-db07a4258f24';
-
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -16,6 +14,9 @@ export default async function(req) {
 
     const apiKey = secrets.get('ONESIGNAL_REST_API_KEY');
     if (!apiKey) return Response.json({ error: 'ONESIGNAL_REST_API_KEY not set' }, { status: 500 });
+    const [bp = null] = await base44.entities.BrandProfile.list().catch(() => []);
+    const appId = String(bp?.onesignal_app_id || '').trim();
+    if (!appId) return Response.json({ error: 'onesignal_app_id not configured in BrandProfile' }, { status: 500 });
 
     const res = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -24,7 +25,7 @@ export default async function(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        app_id: ONESIGNAL_APP_ID,
+        app_id: appId,
         contents: { en: message },
         headings: { en: heading },
         included_segments: ['Subscribed Users'],
