@@ -1,24 +1,34 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 // Public landing page for the unsubscribe link in subscriber emails.
 export default function Unsubscribe() {
-  const email = new URLSearchParams(window.location.search).get('email') || '';
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const email = params.get('email') || '';
+  const token = params.get('token') || '';
   const [state, setState] = useState('working');
 
   useEffect(() => {
-    if (!email) {
+    if (!email || !token) {
       setState('error');
       return;
     }
+    setState('working');
     base44.functions
-      .invoke('unsubscribeSubscriber', { email })
-      .then(() => setState('done'))
+      .invoke('unsubscribeSubscriber', { email, token })
+      .then((res) => {
+        if (res?.data?.unsubscribed) {
+          setState('done');
+        } else {
+          setState('error');
+        }
+      })
       .catch(() => setState('error'));
-  }, [email]);
+  }, [email, token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-6">

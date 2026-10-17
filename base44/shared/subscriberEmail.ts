@@ -7,6 +7,14 @@ import { CANONICAL_URL } from './studioUrl.ts';
 export const SITE_URL = CANONICAL_URL;
 export const FROM_NAME = 'iRoxanne Studio';
 
-export function unsubscribeUrl(email: string): string {
-  return `${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}`;
+export function generateUnsubscribeToken(): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export function unsubscribeUrl(email: string, token?: string): string {
+  const params = new URLSearchParams({ email });
+  if (token) params.set('token', token);
+  return `${SITE_URL}/unsubscribe?${params.toString()}`;
 }

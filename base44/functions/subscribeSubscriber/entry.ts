@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/subscriberEmail.ts';
+import { FROM_NAME, unsubscribeUrl, generateUnsubscribeToken, SITE_URL } from '../../shared/subscriberEmail.ts';
 import { renderTemplate, subscriberEmailHtml } from '../../shared/emailTemplates.ts';
 
 const enc = new TextEncoder();
@@ -8,7 +8,7 @@ const sha256 = async (text: string) => hex(new Uint8Array(await crypto.subtle.di
 
 // Public subscriber-capture endpoint with server-side rate limiting and double opt-in
 // confirmation before sending any welcome email to unverified addresses.
-async function sendWelcome(base44: any, email: string, name: string | undefined, recordId: string): Promise<boolean> {
+async function sendWelcome(base44: any, email: string, name: string | undefined, recordId: string, token: string): Promise<boolean> {
   try {
     const { subject, text } = await renderTemplate(base44, 'fan_welcome', {
       fan_name: name || 'there',
@@ -19,7 +19,7 @@ async function sendWelcome(base44: any, email: string, name: string | undefined,
       from_name: FROM_NAME,
       to: email,
       subject,
-      body: subscriberEmailHtml(text, unsubscribeUrl(email)),
+      body: subscriberEmailHtml(text, unsubscribeUrl(email, token)),
     });
     await base44.asServiceRole.entities.Subscriber.update(recordId, { welcome_sent_at: new Date().toISOString() });
     return true;
@@ -91,20 +91,23 @@ export default async function(req: Request): Promise<Response> {
     const existing = await base44.asServiceRole.entities.Subscriber.filter({ email });
     if (existing.length > 0) {
       const prev = existing[0];
+      const unsubscribe_token = prev.unsubscribe_token || generateUnsubscribeToken();
       const updated = await base44.asServiceRole.entities.Subscriber.update(prev.id, {
         source_slug: source_slug || prev.source_slug,
         utm_source: utm_source || prev.utm_source,
         utm_medium: utm_medium || prev.utm_medium,
         utm_campaign: utm_campaign || prev.utm_campaign,
+        unsubscribe_token,
       });
       let welcome_sent = false;
       if (confirmedOptIn && !prev.welcome_sent_at && prev.status !== 'unsubscribed') {
-        welcome_sent = await sendWelcome(base44, email, name || prev.name, prev.id);
+        welcome_sent = await sendWelcome(base44, email, name || prev.name, prev.id, unsubscribe_token);
       }
       return Response.json({ created: false, record: { id: updated.id, status: updated.status }, welcome_sent });
     }
 
     const now = new Date(nowMs).toISOString();
+    const unsubscribe_token = generateUnsubscribeToken();
     const record = await base44.asServiceRole.entities.Subscriber.create({
       email,
       name,
@@ -113,11 +116,12 @@ export default async function(req: Request): Promise<Response> {
       utm_medium,
       utm_campaign,
       status: 'active',
+      unsubscribe_token,
       signup_date: now,
       consent_timestamp: now,
       description: ipTag,
     });
-    const welcome_sent = confirmedOptIn ? await sendWelcome(base44, email, name, record.id) : false;
+    const welcome_sent = confirmedOptIn ? await sendWelcome(base44, email, name, record.id, unsubscribe_token) : false;
 
     return Response.json({ created: true, record: { id: record.id, status: record.status }, welcome_sent });
   } catch (error) {

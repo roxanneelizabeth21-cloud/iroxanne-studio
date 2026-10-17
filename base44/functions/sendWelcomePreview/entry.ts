@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     from_name: FROM_NAME,
     to,
     subject: `[Preview] ${subject}`,
-    body: subscriberEmailHtml(text, unsubscribeUrl(to)),
+    body: subscriberEmailHtml(text, unsubscribeUrl(to, 'preview-token')),
   });
 
   return Response.json({ sent: true, to });

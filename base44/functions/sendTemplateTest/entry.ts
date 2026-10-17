@@ -49,7 +49,7 @@ export default async function (req: Request): Promise<Response> {
 
     let html: string;
     if (key === 'fan_welcome') {
-      html = subscriberEmailHtml(text, unsubscribeUrl(to));
+      html = subscriberEmailHtml(text, unsubscribeUrl(to, 'test-token'));
     } else if (key === 'admin_new_subscriber') {
       html = brandedEmail({
         title: 'New subscriber',

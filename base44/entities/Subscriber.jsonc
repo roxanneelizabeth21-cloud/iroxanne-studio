@@ -35,6 +35,10 @@
       "default": "active",
       "description": "Subscription status \u2014 'active' receives emails, 'unsubscribed' opted out"
     },
+    "unsubscribe_token": {
+      "type": "string",
+      "description": "Unguessable random token required to unsubscribe via public link"
+    },
     "signup_date": {
       "type": "string",
       "format": "date-time",
