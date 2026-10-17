@@ -10,6 +10,9 @@ export default function CanvaConnectCard() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [starting, setStarting] = useState(false);
+  const [clientId, setClientId] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
+  const [showCreds, setShowCreds] = useState(false);
 
   const { data: auths = [], isLoading } = useQuery({
     queryKey: ['canva-auth'],
@@ -17,7 +20,22 @@ export default function CanvaConnectCard() {
   });
 
   const connected = auths.find((a) => a.status === 'connected');
+  const withCreds = auths.find((a) => a.client_id && a.client_secret);
   const lastFailed = !connected && auths.find((a) => a.status === 'failed');
+
+  const saveCreds = async () => {
+    if (!clientId.trim() || !clientSecret.trim()) return;
+    await base44.entities.CanvaAuth.create({
+      client_id: clientId.trim(),
+      client_secret: clientSecret.trim(),
+      status: 'pending',
+    });
+    setClientId('');
+    setClientSecret('');
+    setShowCreds(false);
+    await qc.invalidateQueries({ queryKey: ['canva-auth'] });
+    toast({ title: 'Canva credentials saved' });
+  };
 
   const connect = async () => {
     setStarting(true);
@@ -64,7 +82,31 @@ export default function CanvaConnectCard() {
         <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ['canva-auth'] })} className="gap-2">
           <RefreshCw className="h-4 w-4" /> Refresh status
         </Button>
+        <Button variant="ghost" size="sm" onClick={() => setShowCreds((v) => !v)}>
+          {withCreds ? 'Update App Credentials' : 'Set App Credentials'}
+        </Button>
       </div>
+      {showCreds && (
+        <div className="space-y-2 pt-2 border-t border-border/50">
+          <input
+            type="text"
+            placeholder="Canva Client ID"
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+          />
+          <input
+            type="password"
+            placeholder="Canva Client Secret"
+            value={clientSecret}
+            onChange={(e) => setClientSecret(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+          />
+          <Button size="sm" onClick={saveCreds} disabled={!clientId.trim() || !clientSecret.trim()}>
+            Save Credentials
+          </Button>
+        </div>
+      )}
       <p className="text-xs text-muted-foreground/80">Canva opens in a new tab. Approving access there finishes the connection.</p>
     </div>
   );

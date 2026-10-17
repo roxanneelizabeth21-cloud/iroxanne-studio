@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { secrets } from 'base44:runtime';
 import { CANVA_API, getCanvaAccessToken } from '../../shared/canva.ts';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -27,7 +26,7 @@ export default async function (req: Request): Promise<Response> {
     const { image_url: imageUrl, title, gallery_image_id: galleryImageId } = await req.json();
     if (!imageUrl) return Response.json({ error: 'An image is required' }, { status: 400 });
 
-    const token = await getCanvaAccessToken(base44, secrets.get('CANVA_CLIENT_ID'), secrets.get('CANVA_CLIENT_SECRET'));
+    const token = await getCanvaAccessToken(base44);
 
     const fileRes = await fetch(imageUrl);
     if (!fileRes.ok) return Response.json({ error: 'Could not read this media file' }, { status: 400 });

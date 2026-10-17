@@ -9,23 +9,30 @@ const WELCOME_VIDEO_URL = 'https://media.base44.com/videos/public/6a94dbc673f0d1
 
 // Called after a contract is signed — sends the pre-generated welcome video
 // to the client and marks the contract so duplicates are skipped.
-export default async function(req) {
+export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me().catch(() => null);
+    const isAdmin = user?.role === 'admin';
+
     const body = await req.json().catch(() => ({}));
-    const { contract_id, regenerate } = body || {};
+    const { contract_id, token, regenerate } = body || {};
     if (!contract_id) return Response.json({ error: 'contract_id is required' }, { status: 400 });
 
-    // Admin guard — only admins can manually trigger or regenerate.
-    if (regenerate) {
-      const user = await base44.auth.me().catch(() => null);
-      if (!user || user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
+    if (regenerate && !isAdmin) {
+      return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const contract = await base44.asServiceRole.entities.Contract.get(contract_id);
+    const contract = await base44.asServiceRole.entities.Contract.get(contract_id).catch(() => null);
     if (!contract) return Response.json({ error: 'Contract not found' }, { status: 404 });
 
-    // Idempotent — skip if already sent (unless explicitly regenerating).
+    // Require either an authenticated admin or the contract's private access_token.
+    const hasValidToken = typeof token === 'string' && token.length >= 16 && contract.access_token === token;
+    if (!isAdmin && !hasValidToken) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Idempotent — skip if already sent (unless explicitly regenerating as admin).
     if (!regenerate && contract.welcome_video_status === 'ready' && contract.welcome_video_sent_at) {
       return Response.json({ ok: true, status: 'already_sent' });
     }
@@ -63,6 +70,6 @@ export default async function(req) {
     });
   } catch (error) {
     console.error('generateWelcomeVideo error', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: (error as Error).message }, { status: 500 });
   }
 }

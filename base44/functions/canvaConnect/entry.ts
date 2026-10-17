@@ -1,10 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { secrets } from 'base44:runtime';
 import {
   CANVA_AUTHORIZE_URL,
   CANVA_REDIRECT_URI,
   CANVA_SCOPES,
   codeChallenge,
+  getCanvaCredentials,
   randomString,
 } from '../../shared/canva.ts';
 
@@ -17,12 +17,13 @@ export default async function (req: Request): Promise<Response> {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
-    const clientId = secrets.get('CANVA_CLIENT_ID');
-    if (!clientId) return Response.json({ error: 'CANVA_CLIENT_ID is not set' }, { status: 500 });
+    const { clientId, clientSecret } = await getCanvaCredentials(base44);
 
     const state = randomString(24);
     const verifier = randomString(64);
     await base44.entities.CanvaAuth.create({
+      client_id: clientId,
+      client_secret: clientSecret,
       state,
       code_verifier: verifier,
       status: 'pending',

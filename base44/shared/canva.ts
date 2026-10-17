@@ -16,9 +16,23 @@ export const CANVA_SCOPES = [
 
 export const CANVA_API = 'https://api.canva.com/rest/v1';
 
+export async function getCanvaCredentials(base44) {
+  const records = await base44.asServiceRole.entities.CanvaAuth.list('-created_date', 20);
+  const withCreds = (records || []).find((r) => r.client_id && r.client_secret);
+  if (!withCreds) {
+    throw new Error('Canva client credentials are not configured yet. Add them on the Brand page first.');
+  }
+  return { clientId: withCreds.client_id, clientSecret: withCreds.client_secret };
+}
+
 // Returns a live Canva access token for the connected account, refreshing it
 // when it has expired. Throws a plain message the UI can show as-is.
-export async function getCanvaAccessToken(base44, clientId, clientSecret) {
+export async function getCanvaAccessToken(base44, clientId?: string, clientSecret?: string) {
+  if (!clientId || !clientSecret) {
+    const creds = await getCanvaCredentials(base44);
+    clientId = creds.clientId;
+    clientSecret = creds.clientSecret;
+  }
   const records = await base44.asServiceRole.entities.CanvaAuth.filter({ status: 'connected' });
   const record = records.sort((a, b) => String(b.created_date).localeCompare(String(a.created_date)))[0];
   if (!record) throw new Error('Canva is not connected yet. Connect it on the Brand page first.');

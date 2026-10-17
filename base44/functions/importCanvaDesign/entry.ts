@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { secrets } from 'base44:runtime';
 import { CANVA_API, getCanvaAccessToken } from '../../shared/canva.ts';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -17,7 +16,7 @@ export default async function (req: Request): Promise<Response> {
     if (!designId) return Response.json({ error: 'A design is required' }, { status: 400 });
     const isVideo = format === 'mp4';
 
-    const token = await getCanvaAccessToken(base44, secrets.get('CANVA_CLIENT_ID'), secrets.get('CANVA_CLIENT_SECRET'));
+    const token = await getCanvaAccessToken(base44);
     const auth = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     const startRes = await fetch(`${CANVA_API}/exports`, {
@@ -54,8 +53,6 @@ export default async function (req: Request): Promise<Response> {
       const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({
         file: new File([blob], name, { type: isVideo ? 'video/mp4' : 'image/png' }),
       });
-      // A Canva video (the owner's audio added over the canvas) belongs in the
-      // clips library, where posts pick their ready-to-post media from.
       if (isVideo) {
         const clip = await base44.asServiceRole.entities.ClipAsset.create({
           title: title || 'Canva video',
@@ -68,8 +65,6 @@ export default async function (req: Request): Promise<Response> {
         assets.push({ id: clip.id, url: file_url, type: 'video' });
         continue;
       }
-      // Pulling edits back into the image the design came from: replace that
-      // image's file so every post using it shows the edited version.
       if (replaceImageId && page === 0) {
         await base44.asServiceRole.entities.GalleryImage.update(replaceImageId, { image_url: file_url });
         created.push(replaceImageId);

@@ -84,23 +84,29 @@ export default function PageVisitTracker() {
       storeSessionAttribution(attribution);
     }
 
-    base44.functions.invoke('logPageVisit', {
-      landing_page: attribution.landing_page,
-      current_page: location.pathname,
-      referrer_url: attribution.referrer_url,
-      source: attribution.source,
-      medium: attribution.medium,
-      campaign: attribution.campaign,
-      utm_source: attribution.utm_source,
-      utm_medium: attribution.utm_medium,
-      utm_campaign: attribution.utm_campaign,
-      utm_content: attribution.utm_content,
-      utm_term: attribution.utm_term,
-      device_type,
-      browser,
-      visitor_id,
-      session_id,
-    }).catch(() => {});
+    (async () => {
+      const data = new TextEncoder().encode(`irx-visit:${visitor_id}:${session_id}:${location.pathname}`);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      const visit_token = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+      await base44.functions.invoke('logPageVisit', {
+        landing_page: attribution.landing_page,
+        current_page: location.pathname,
+        referrer_url: attribution.referrer_url,
+        source: attribution.source,
+        medium: attribution.medium,
+        campaign: attribution.campaign,
+        utm_source: attribution.utm_source,
+        utm_medium: attribution.utm_medium,
+        utm_campaign: attribution.utm_campaign,
+        utm_content: attribution.utm_content,
+        utm_term: attribution.utm_term,
+        device_type,
+        browser,
+        visitor_id,
+        session_id,
+        visit_token,
+      });
+    })().catch(() => {});
   }, [location.pathname, authChecked, isAuthenticated]);
 
   return null;

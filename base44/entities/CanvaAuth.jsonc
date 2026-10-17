@@ -2,6 +2,14 @@
   "name": "CanvaAuth",
   "type": "object",
   "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Canva OAuth Client ID (admin-only)"
+    },
+    "client_secret": {
+      "type": "string",
+      "description": "Canva OAuth Client Secret (admin-only)"
+    },
     "state": {
       "type": "string",
       "description": "Random state value for this Canva connect attempt (CSRF protection)"

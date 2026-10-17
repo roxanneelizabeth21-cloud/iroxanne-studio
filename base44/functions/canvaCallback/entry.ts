@@ -1,6 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { secrets } from 'base44:runtime';
-import { CANVA_REDIRECT_URI, CANVA_TOKEN_URL } from '../../shared/canva.ts';
+import { CANVA_REDIRECT_URI, CANVA_TOKEN_URL, getCanvaCredentials } from '../../shared/canva.ts';
 
 function page(title, message) {
   return new Response(
@@ -36,13 +35,16 @@ export default async function (req: Request): Promise<Response> {
       return page('Canva connection failed', 'Canva did not grant access. You can try connecting again from your app.');
     }
 
+    const clientId = record.client_id || (await getCanvaCredentials(base44)).clientId;
+    const clientSecret = record.client_secret || (await getCanvaCredentials(base44)).clientSecret;
+
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
       code,
       code_verifier: record.code_verifier,
       redirect_uri: CANVA_REDIRECT_URI,
     });
-    const basic = btoa(`${secrets.get('CANVA_CLIENT_ID')}:${secrets.get('CANVA_CLIENT_SECRET')}`);
+    const basic = btoa(`${clientId}:${clientSecret}`);
     const tokenRes = await fetch(CANVA_TOKEN_URL, {
       method: 'POST',
       headers: {
