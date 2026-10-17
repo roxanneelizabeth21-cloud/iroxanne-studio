@@ -29,11 +29,12 @@
     "status": {
       "type": "string",
       "enum": [
+        "pending",
         "active",
         "unsubscribed"
       ],
-      "default": "active",
-      "description": "Subscription status \u2014 'active' receives emails, 'unsubscribed' opted out"
+      "default": "pending",
+      "description": "Subscription status \u2014 'pending' awaits opt-in confirmation, 'active' receives emails, 'unsubscribed' opted out"
     },
     "unsubscribe_token": {
       "type": "string",
@@ -47,7 +48,7 @@
     "consent_timestamp": {
       "type": "string",
       "format": "date-time",
-      "description": "Timestamp proving the subscriber consented to receive email updates (auto-set on create)"
+      "description": "Timestamp proving the subscriber consented to receive email updates (set on confirmed opt-in)"
     },
     "welcome_sent_at": {
       "type": "string",

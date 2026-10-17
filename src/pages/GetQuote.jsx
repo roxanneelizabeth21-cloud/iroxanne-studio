@@ -89,7 +89,7 @@ export default function GetQuote() {
       const response=await base44.functions.invoke('quoteEmailVerification',{action,email,...(action==='verify'?{id:verification?.id,secret:verification?.secret,code:emailCode}:{})});
       const result=response.data||response;
       if(result.error)throw new Error(result.error);
-      if(action==='send'){setVerification(result);setEmailVerified(!!result.verified);setEmailCode('');setVerificationMessage(result.verified?'Email confirmed. Thank you!':'Code sent. Check your inbox and spam folder. It expires in 10 minutes.');}
+      if(action==='send'){setVerification(result);setEmailVerified(false);setEmailCode('');setVerificationMessage('Code sent. Check your inbox and spam folder. It expires in 10 minutes.');}
       else{setEmailVerified(true);setVerificationMessage('Email verified. Thank you!');}
     }catch(e){setVerificationMessage(e?.response?.data?.error||e.message||'Please try again.');}
     finally{setVerificationBusy(false);}

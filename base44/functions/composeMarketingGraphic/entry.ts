@@ -140,9 +140,40 @@ function drawImageCover(target: Img, src: Img, dw: number, dh: number, dx: numbe
   }
 }
 
+const ALLOWED_MEDIA_HOSTS = new Set([
+  'media.base44.com',
+  'base44.app',
+  'images.unsplash.com',
+  'iroxannestudio.com',
+  'www.iroxannestudio.com',
+]);
+
+function parseSafeMediaUrl(raw: string): URL {
+  let parsed: URL;
+  try {
+    parsed = new URL(String(raw || '').trim());
+  } catch {
+    throw new Error('Invalid source image URL.');
+  }
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password || (parsed.port && parsed.port !== '443')) {
+    throw new Error('Only standard https media URLs are allowed.');
+  }
+  const host = parsed.hostname.toLowerCase();
+  const isAllowedHost =
+    ALLOWED_MEDIA_HOSTS.has(host) ||
+    host.endsWith('.base44.com') ||
+    host.endsWith('.base44.app') ||
+    host.endsWith('.supabase.co');
+  if (!isAllowedHost) {
+    throw new Error('Source image URL must be hosted on the app media storage.');
+  }
+  return parsed;
+}
+
 async function decodeSourceImage(url: string): Promise<Img> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Could not fetch source image (HTTP ${res.status}).`);
+  const safeUrl = parseSafeMediaUrl(url);
+  const res = await fetch(safeUrl.toString(), { redirect: 'error' });
+  if (!res.ok) throw new Error('Could not read source image.');
   const buf = Buffer.from(await res.arrayBuffer());
   if (buf.length < 3) throw new Error('Source image is empty or unreadable.');
   if (buf[0] === 0x89 && buf[1] === 0x50) {

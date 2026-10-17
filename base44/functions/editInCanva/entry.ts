@@ -3,6 +3,39 @@ import { CANVA_API, getCanvaAccessToken } from '../../shared/canva.ts';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const ALLOWED_MEDIA_HOSTS = new Set([
+  'media.base44.com',
+  'base44.app',
+  'images.unsplash.com',
+  'iroxannestudio.com',
+  'www.iroxannestudio.com',
+]);
+
+function parseSafeMediaUrl(raw: unknown): URL {
+  if (typeof raw !== 'string' || !raw.trim()) {
+    throw new Error('A valid https media URL is required');
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(raw.trim());
+  } catch {
+    throw new Error('Invalid image URL');
+  }
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password || (parsed.port && parsed.port !== '443')) {
+    throw new Error('Only standard https media URLs are allowed');
+  }
+  const host = parsed.hostname.toLowerCase();
+  const isAllowedHost =
+    ALLOWED_MEDIA_HOSTS.has(host) ||
+    host.endsWith('.base44.com') ||
+    host.endsWith('.base44.app') ||
+    host.endsWith('.supabase.co');
+  if (!isAllowedHost) {
+    throw new Error('Image URL must be hosted on the app media storage');
+  }
+  return parsed;
+}
+
 function nameBase64(title) {
   // Canva caps an asset name at 50 unencoded characters and rejects the whole
   // metadata header when it's longer.
@@ -26,9 +59,16 @@ export default async function (req: Request): Promise<Response> {
     const { image_url: imageUrl, title, gallery_image_id: galleryImageId } = await req.json();
     if (!imageUrl) return Response.json({ error: 'An image is required' }, { status: 400 });
 
+    let safeMediaUrl: URL;
+    try {
+      safeMediaUrl = parseSafeMediaUrl(imageUrl);
+    } catch (e) {
+      return Response.json({ error: (e as Error).message }, { status: 400 });
+    }
+
     const token = await getCanvaAccessToken(base44);
 
-    const fileRes = await fetch(imageUrl);
+    const fileRes = await fetch(safeMediaUrl.toString(), { redirect: 'error' });
     if (!fileRes.ok) return Response.json({ error: 'Could not read this media file' }, { status: 400 });
     const bytes = new Uint8Array(await fileRes.arrayBuffer());
 

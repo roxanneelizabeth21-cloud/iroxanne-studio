@@ -52,7 +52,7 @@ export default function SubscribersAdmin() {
         (s.source_slug || '').toLowerCase().includes(search.toLowerCase()))
     : subscribers;
 
-  const activeCount = subscribers.filter((s) => s.status !== 'unsubscribed').length;
+  const activeCount = subscribers.filter((s) => s.status === 'active').length;
 
   const exportCsv = () => {
     const headers = ['Email', 'Name', 'Source', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Status', 'Signup Date'];
@@ -133,8 +133,8 @@ export default function SubscribersAdmin() {
                       {[s.utm_source, s.utm_medium, s.utm_campaign].filter(Boolean).join(' / ') || '—'}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={s.status === 'unsubscribed' ? 'text-muted-foreground' : 'text-primary'}>
-                        {s.status || 'active'}
+                      <span className={s.status === 'active' ? 'text-primary' : 'text-muted-foreground'}>
+                        {s.status || 'pending'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{formatDate(s.signup_date)}</td>

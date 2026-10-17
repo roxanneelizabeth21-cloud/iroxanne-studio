@@ -1,6 +1,6 @@
-import {prepareNotesQuote} from '../../shared/notesQuote.ts';
-import {estimateProject} from '../../shared/quoteEstimate.ts';
-import {createClientFromRequest} from 'npm:@base44/sdk@0.8.44';
+import { prepareNotesQuote } from '../../shared/notesQuote.ts';
+import { estimateProject } from '../../shared/quoteEstimate.ts';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 const enc=new TextEncoder();
 const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 const hash=async(text:string)=>hex(new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(text))));
@@ -9,6 +9,20 @@ const emailOf=(value:any)=>{
  const email=String(value||'').trim().toLowerCase();
  if(email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))fail('Please enter a valid email address.');
  return email;
+};
+const sendCode=async(client:any,to:string,code:string)=>{
+ const {accessToken}=await client.asServiceRole.connectors.getConnection('gmail');
+ if(!accessToken)fail('Email verification is temporarily unavailable. Please try again shortly.',503);
+ const headers={Authorization:'Bearer '+accessToken};
+ const profileResponse=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile',{headers});
+ const profile=await profileResponse.json();
+ if(!profileResponse.ok||String(profile.emailAddress).toLowerCase()!=='roxanne@iroxannestudio.com')fail('Email verification is temporarily unavailable. Please try again shortly.',503);
+ const encode=(s:string)=>btoa(Array.from(enc.encode(s),b=>String.fromCharCode(b)).join(''));
+ const subject='=?UTF-8?B?'+encode('Your iRoxanne Studio verification code')+'?=';
+ const body=`<div style="font-family:Inter,Arial,sans-serif;color:#1d3532;line-height:1.6;max-width:520px;margin:0 auto;padding:24px"><p style="margin:0 0 12px">Use this six-digit code to verify your email address for your iRoxanne Studio quote request:</p><p style="font-size:28px;font-weight:700;letter-spacing:0.18em;margin:16px 0;color:#4d2b64">${code}</p><p style="margin:12px 0 0;font-size:13px;color:#555">This code expires in 10 minutes. If you did not request a quote, you can safely ignore this email.</p></div>`;
+ const raw='From: iRoxanne Studio <roxanne@iroxannestudio.com>\r\nTo: '+to+'\r\nSubject: '+subject+'\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+encode(body);
+ const res=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({raw:encode(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')})});
+ if(!res.ok)fail('Could not send the verification email. Please check the address and try again.',502);
 };
 export default async function(req:Request){
  try{
@@ -31,10 +45,11 @@ export default async function(req:Request){
     secret_hash:await hash(secret),
     code_hash:await hash(secret+':'+code),
     expires_at:new Date(now+600000).toISOString(),
-    verified_until:new Date(now+3600000).toISOString(),
-    sent:true
+    sent:false
    });
-   return Response.json({id:record.id,secret,expires_in:600,verified:true});
+   await sendCode(client,email,code);
+   await db.QuoteEmailVerification.update(record.id,{sent:true});
+   return Response.json({id:record.id,secret,expires_in:600});
   }
   if(!['verify','submit'].includes(b.action))fail('Unknown action.');
   if(!b.id||!/^[a-f0-9]{64}$/.test(String(b.secret||'')))fail('Please request a new code.',403);
