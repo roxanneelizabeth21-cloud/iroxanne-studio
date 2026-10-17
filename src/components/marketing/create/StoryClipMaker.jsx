@@ -17,10 +17,13 @@ export default function StoryClipMaker({ media, post, onAttach }) {
   const writeLines = async () => {
     setBusy(true); setError('');
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: 'Write exactly three short on-screen beats for a 12-second iRoxanne Studio motion graphic based ONLY on this post. Each maximum 65 characters. First a specific hook, then a concrete possibility, then a warm invitation. No generic motivational slogans, fabricated claims or metrics. Exact brand spelling iRoxanne Studio. Caption: ' + (post?.caption || '') + ' Hook: ' + (post?.hook || ''),
-        response_json_schema: {type:'object',properties:{lines:{type:'array',minItems:3,maxItems:3,items:{type:'string',maxLength:65}}},required:['lines']}
+      const res = await base44.functions.invoke('studioMediaTools', {
+        action: 'write_story_beats',
+        caption: post?.caption || '',
+        hook: post?.hook || '',
       });
+      const result = res?.data ?? res;
+      if (result?.error) throw new Error(result.error);
       if (!Array.isArray(result.lines) || result.lines.length !== 3 || result.lines.some(x => typeof x !== 'string' || !x.trim() || x.length > 80)) throw new Error('Scene writing returned invalid text.');
       setLines(result.lines); setBlob(null); setAudioUrl('');
     } catch(e) {setError(e.message);} finally {setBusy(false);}
@@ -28,7 +31,9 @@ export default function StoryClipMaker({ media, post, onAttach }) {
   const makeVoice = async () => {
     setBusy(true); setError(''); setAudioUrl(''); setBlob(null);
     try {
-      const speech = await base44.integrations.Core.GenerateSpeech({ text: lines.join(' '), voice: 'honey' });
+      const res = await base44.functions.invoke('studioMediaTools', { action: 'generate_narration', text: lines.join(' ') });
+      const speech = res?.data ?? res;
+      if (speech?.error) throw new Error(speech.error);
       if (!speech?.url || !/^https:\/\//.test(speech.url)) throw new Error('Speech generation returned no audio. Your draft was not changed.');
       setAudioUrl(speech.url);
     } catch(e) { setError('Could not generate narration: ' + e.message); }

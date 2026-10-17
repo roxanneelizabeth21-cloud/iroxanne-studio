@@ -177,7 +177,7 @@ export default async function (req) {
 
     // Plan alternatives against recent work before spending an image generation.
     const recent = await base44.entities.GalleryImage.list('-created_date', 8).catch(() => []);
-    const creative = await base44.integrations.Core.InvokeLLM({
+    const creative = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: 'Act as an editorial art director for iRoxanne Studio. Develop three materially different visual treatments of the supplied brief, then choose the strongest. Respect the requested subject, exact approved text and references; do not change requested content. Different means different compositions and visual storytelling, not three color variations. Each needs a specific focal subject, contrast, readable hierarchy and a reason a nontechnical person would care. No generic technology devices, filler decor or compulsory purple backdrop. Do not fabricate actual app screens, people, testimonials or results. Previous directions to avoid repeating: ' + JSON.stringify(recent.map(x => x.visual_direction?.creative_concept || x.description || x.title)) + '\nBRIEF: ' + finalPrompt,
       response_json_schema: {type:'object',properties:{
         concepts:{type:'array',minItems:3,maxItems:3,items:{type:'object',properties:{treatment:{type:'string'},reason:{type:'string'}},required:['treatment','reason']}},
@@ -191,7 +191,7 @@ export default async function (req) {
     // --- Generate the actual image ---
     const passedRefs = Array.isArray(reference_asset_urls) ? reference_asset_urls.filter(Boolean) : [];
     const refs = [...new Set(passedRefs.filter(Boolean))];
-    const gen = await base44.integrations.Core.GenerateImage(
+    const gen = await base44.asServiceRole.integrations.Core.GenerateImage(
       refs.length ? { prompt: renderPrompt, existing_image_urls: refs } : { prompt: renderPrompt }
     );
     const image_url = gen?.url || gen?.data?.url;
@@ -200,7 +200,7 @@ export default async function (req) {
     }
 
     // Inspect the actual generated pixels before replacing the owner's asset.
-    const review = await base44.integrations.Core.InvokeLLM({
+    const review = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: 'Inspect the attached finished marketing image against this brief. This is marketing for iRoxanne Studio, which builds custom apps and websites; any app shown is evidence of that work.\n\nFail it only for a real defect: lettering that is actually unreadable or misspelled, malformed anatomy, fabricated app UI presented as real, or a composition with no clear focal point. If the business name appears it must read exactly iRoxanne Studio; reject iRoxan, Roxanne Studios, Roxsan or other variants.\n\nDo NOT fail an image merely for containing text, for imperfect kerning or spacing, or for a minor flaw that does not stop a viewer reading it. Legible text carrying the studio name or a headline is wanted, not a defect. If you cannot inspect the image, fail. Return pass and reason. Brief: ' + finalPrompt,
       file_urls: [image_url],
       response_json_schema: { type:'object', properties:{pass:{type:'boolean'},reason:{type:'string'}}, required:['pass','reason'] }

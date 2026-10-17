@@ -357,7 +357,7 @@ Return ONLY a JSON object with fields: platform, format, content_bucket, schedul
 
   let generated = null;
   for (let attempt = 0; attempt < 2 && !generated; attempt++) {
-    const res = await base44.integrations.Core.InvokeLLM({ prompt: systemPrompt, response_json_schema: schema });
+    const res = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt: systemPrompt, response_json_schema: schema });
     const candidate = res && typeof res === 'object' ? normalizePost({ ...res, ...post }) : null;
     if (candidate && (candidate.caption || candidate.hook || candidate.image_prompt)) generated = candidate;
   }

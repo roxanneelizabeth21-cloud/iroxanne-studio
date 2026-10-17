@@ -44,7 +44,8 @@ export default function useSpokenReplies(messages, enabled) {
     (async () => {
       setSpeaking(true);
       try {
-        const { url } = await base44.integrations.Core.GenerateSpeech({ text, voice: 'honey' });
+        const res = await base44.functions.invoke('studioMediaTools', { action: 'generate_narration', text });
+        const url = res?.data?.url || res?.url;
         if (cancelled || !url) return;
         stop();
         const audio = new Audio(url);

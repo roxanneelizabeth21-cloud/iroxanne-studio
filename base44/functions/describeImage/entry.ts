@@ -26,7 +26,7 @@ export default async function (req: Request): Promise<Response> {
       ? ` Focus specifically on this question: ${question.trim()}`
       : '';
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: `You are a visual analyst for iRoxanne Studio. Describe what you see in this image in clear, specific detail so a colleague who cannot see it can understand exactly what it contains. Cover: the main subject, composition, colors, any text visible in the image (quote it exactly including spelling), the mood, and whether it looks like a finished marketing graphic or a raw photo/screenshot. If the image contains the business name, confirm whether it reads exactly 'iRoxanne Studio' (lowercase i, capital R, capital S).${focus}`,
       file_urls: [image_url],
       response_json_schema: {

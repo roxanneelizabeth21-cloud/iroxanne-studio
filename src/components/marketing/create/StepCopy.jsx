@@ -81,16 +81,15 @@ export default function StepCopy({ draft, patch, post, patchPost, linkOptions, p
   const tweak = async (instruction) => {
     setBusy('tweak');
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Rewrite this social caption for iRoxanne Studio, about "${projectTitle}". ${instruction}
-Keep it truthful: never invent results, metrics, quotes, testimonials, prices or links. Keep any existing link exactly as written.
-
-Current caption:
-${post.caption || ''}
-
-Return only the rewritten caption text.`,
+      const res = await base44.functions.invoke('studioMediaTools', {
+        action: 'tweak_post_caption',
+        project_title: projectTitle,
+        instruction,
+        caption: post.caption || '',
       });
-      const text = typeof res === 'string' ? res : (res?.caption || '');
+      const data = res?.data ?? res;
+      if (data?.error) throw new Error(data.error);
+      const text = typeof data?.caption === 'string' ? data.caption : '';
       if (!text.trim()) throw new Error('Nothing was returned');
       setUndoState({ hook: post.hook, caption: post.caption, cta: post.cta, hashtags: post.hashtags });
       await patchPost({ caption: text.trim() });

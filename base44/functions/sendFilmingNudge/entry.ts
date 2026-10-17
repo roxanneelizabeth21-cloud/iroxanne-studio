@@ -55,7 +55,7 @@ Return ONLY { "shots": [ { opening_line, shot_description, which_project, length
 
     let shots = [];
     for (let attempt = 0; attempt < 2 && shots.length === 0; attempt++) {
-      const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema });
+      const res = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema });
       shots = Array.isArray(res?.shots) ? res.shots : [];
     }
 

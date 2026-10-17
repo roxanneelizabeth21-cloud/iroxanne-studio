@@ -108,7 +108,7 @@ Return ONLY { "posts": [ ... ] }. No commentary, no markdown fences.`;
 
       let parsed = [];
       for (let attempt = 0; attempt < 2 && parsed.length === 0; attempt++) {
-        const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema });
+        const res = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema });
         parsed = parsePostsArray(res);
       }
       const records = parsed.slice(0, count).map((p, i) => {

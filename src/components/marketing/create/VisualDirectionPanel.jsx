@@ -49,27 +49,16 @@ export default function VisualDirectionPanel({ draft, post, projectContext, aspe
   const suggest = async () => {
     setBusy('suggest');
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an art director for the app-development studio iRoxanne Studio. Propose ONE visual direction for a single social image.
-
-Project: ${projectContext.title || 'untitled'}
-Project type: ${projectContext.releaseType || ''}
-Project status: ${projectContext.status || ''}
-Themes: ${projectContext.themes || ''}
-Story: ${projectContext.story || ''}
-Key details / highlights: ${projectContext.keyLines || ''}
-Project category / identity: ${projectContext.genre || ''}
-Campaign: ${projectContext.campaignName || ''} ${projectContext.campaignGoal || ''}
-Post goal: ${effectiveGoal(draft)}
-Owner instruction: ${draft.instruction || 'none'}
-Aspect ratio: ${aspect}
-Brand image rules: ${projectContext.imageStyleNotes || ''}
-
-Vary the aesthetic to suit THIS project specifically. Avoid repeating generic stock clichés (generic mockups, flat backgrounds, empty screenshots) unless the project truly calls for it. Never invent quotes or metrics: only use the real details above, and only if a text overlay genuinely helps.
-Return concise plain-language values for: creative_concept, mood, subject, setting, composition, lighting, color_direction, text_overlay (empty string when the image should be text-free), reason_for_match.`,
-        response_json_schema: DIRECTION_SCHEMA,
+      const res = await base44.functions.invoke('studioMediaTools', {
+        action: 'suggest_visual_direction',
+        project_context: projectContext,
+        goal: effectiveGoal(draft),
+        instruction: draft.instruction || 'none',
+        aspect,
       });
-      const d = res && typeof res === 'object' ? res : null;
+      const data = res?.data ?? res;
+      if (data?.error) throw new Error(data.error);
+      const d = data?.direction && typeof data.direction === 'object' ? data.direction : null;
       if (!d?.creative_concept) throw new Error('No direction returned');
       setDirection(d);
       setOverlay(choices.with_text ? (d.text_overlay || '') : '');

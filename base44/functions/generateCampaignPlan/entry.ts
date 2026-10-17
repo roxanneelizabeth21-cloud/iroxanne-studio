@@ -125,7 +125,7 @@ Return ONLY a JSON object with a "posts" array. No commentary, no markdown fence
 
     let posts: any[] = [];
     for (let attempt = 0; attempt < 2 && posts.length === 0; attempt++) {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt: systemPrompt,
         response_json_schema: schema,
       });

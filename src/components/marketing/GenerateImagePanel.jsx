@@ -23,8 +23,10 @@ export default function GenerateImagePanel({ prompt, attachedUrl, onUseForPost }
     }
     setBusy(true);
     try {
-      const res = await base44.integrations.Core.GenerateImage({ prompt });
-      const url = res?.url || res?.data?.url;
+      const res = await base44.functions.invoke('studioMediaTools', { action: 'generate_post_image', prompt });
+      const data = res?.data ?? res;
+      if (data?.error) throw new Error(data.error);
+      const url = data?.url;
       if (!url) throw new Error('No image returned');
       setPreview(url);
       onUseForPost(url);

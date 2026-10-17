@@ -27,8 +27,10 @@ export default function useVoiceInput({ onText }) {
         const ext = (recorder.mimeType || '').includes('mp4') ? 'mp4' : 'webm';
         const file = new File([blob], `voice-note.${ext}`, { type: blob.type });
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        const text = await base44.integrations.Core.TranscribeAudio({ audio_url: file_url });
-        const clean = typeof text === 'string' ? text.trim() : '';
+        const res = await base44.functions.invoke('studioMediaTools', { action: 'transcribe_voice_note', audio_url: file_url });
+        const data = res?.data ?? res;
+        if (data?.error) throw new Error(data.error);
+        const clean = typeof data?.text === 'string' ? data.text.trim() : '';
         if (clean) onText(clean);
         else setError('I could not make out any words there.');
       } catch (e) {

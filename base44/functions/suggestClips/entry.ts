@@ -81,7 +81,7 @@ Return ONLY the JSON object. No commentary.`;
 
     let result: any = null;
     for (let attempt = 0; attempt < 2 && !result; attempt++) {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: schema,
       });

@@ -30,7 +30,10 @@ export default function ReelVoicePanel({ cards, uploaded, onUploaded, audioUrl, 
     if (!text) return;
     setBusy(true);
     try {
-      const { url } = await base44.integrations.Core.GenerateSpeech({ text: text.replace(/\n/g, ' '), voice: 'honey' });
+      const res = await base44.functions.invoke('studioMediaTools', { action: 'generate_narration', text: text.replace(/\n/g, ' ') });
+      const data = res?.data ?? res;
+      if (data?.error) throw new Error(data.error);
+      const url = data?.url;
       onAudio(url);
       const probe = new Audio(url);
       probe.addEventListener('loadedmetadata', () => setSeconds(Math.ceil(probe.duration || 0)));
