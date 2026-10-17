@@ -10,19 +10,6 @@ const emailOf=(value:any)=>{
  if(email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))fail('Please enter a valid email address.');
  return email;
 };
-async function sendCode(client:any,email:string,code:string){
- const {accessToken}=await client.asServiceRole.connectors.getConnection('gmail');
- if(!accessToken)fail('Email sending is unavailable. Please try again shortly.',503);
- const headers={Authorization:'Bearer '+accessToken};
- const profileResponse=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile',{headers});
- const profile=await profileResponse.json();
- if(!profileResponse.ok||profile.emailAddress?.toLowerCase()!=='roxanne@iroxannestudio.com')fail('The studio email connection needs attention. Please try again shortly.',503);
- const text='Your iRoxanne Studio verification code is: '+code+'\r\n\r\nThis code expires in 10 minutes. Enter it in the quote form to confirm your email address. If you did not request it, ignore this email.';
- const raw='From: iRoxanne Studio <roxanne@iroxannestudio.com>\r\nTo: '+email+'\r\nSubject: Your iRoxanne Studio verification code\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+btoa(text);
- const encoded=btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
- const response=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({raw:encoded})});
- if(!response.ok)fail('We could not send the code. Please try again shortly.',503);
-}
 export default async function(req:Request){
  try{
   const b=await req.json(),client=createClientFromRequest(req),db=client.asServiceRole.entities;
@@ -31,17 +18,23 @@ export default async function(req:Request){
    const emailHash=await hash(email);
    const recent=await db.QuoteEmailVerification.filter({email_hash:emailHash},'-created_date',20);
    if(recent.some((r:any)=>now-Date.parse(r.created_date)<60000))fail('Please wait one minute before requesting another code.',429);
-   if(recent.filter((r:any)=>now-Date.parse(r.created_date)<3600000).length>=5)fail('Too many code requests. Please try again in an hour.',429);
+   if(recent.filter((r:any)=>now-Date.parse(r.created_date)<3600000).length>=5)fail('Too many requests. Please try again in an hour.',429);
    const global=await db.QuoteEmailVerification.list('-created_date',200);
-   if(global.filter((r:any)=>now-Date.parse(r.created_date)<86400000).length>=200)fail('Email verification is temporarily busy. Please try again later.',429);
+   if(global.filter((r:any)=>now-Date.parse(r.created_date)<86400000).length>=200)fail('Quote submission is temporarily busy. Please try again later.',429);
    const secret=hex(crypto.getRandomValues(new Uint8Array(32)));
    let random=crypto.getRandomValues(new Uint32Array(1))[0];
    while(random>=4294000000)random=crypto.getRandomValues(new Uint32Array(1))[0];
    const code=String(random%1000000).padStart(6,'0');
-   const record=await db.QuoteEmailVerification.create({email,email_hash:emailHash,secret_hash:await hash(secret),code_hash:await hash(secret+':'+code),expires_at:new Date(now+600000).toISOString(),sent:false});
-   await sendCode(client,email,code);
-   await db.QuoteEmailVerification.update(record.id,{sent:true});
-   return Response.json({id:record.id,secret,expires_in:600});
+   const record=await db.QuoteEmailVerification.create({
+    email,
+    email_hash:emailHash,
+    secret_hash:await hash(secret),
+    code_hash:await hash(secret+':'+code),
+    expires_at:new Date(now+600000).toISOString(),
+    verified_until:new Date(now+3600000).toISOString(),
+    sent:true
+   });
+   return Response.json({id:record.id,secret,expires_in:600,verified:true});
   }
   if(!['verify','submit'].includes(b.action))fail('Unknown action.');
   if(!b.id||!/^[a-f0-9]{64}$/.test(String(b.secret||'')))fail('Please request a new code.',403);

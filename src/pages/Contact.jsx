@@ -27,12 +27,7 @@ export default function Contact() {
     setSubmitError('');
     setSubmitting(true);
     try {
-      const created = await base44.entities.ContactMessage.create(form);
-      // Fire the admin email notification — non-blocking so the user isn't
-      // delayed by email delivery. The record is already saved in the backend.
-      base44.functions.invoke('sendContactNotification', {
-        data: { ...created, id: created.id, created_date: created.created_date },
-      }).catch(() => {});
+      await base44.entities.ContactMessage.create(form);
       setDone(true);
     } catch {
       setSubmitError('Your message could not be sent. Your answers are still here. Please try again, or email info@iroxannestudio.com.');

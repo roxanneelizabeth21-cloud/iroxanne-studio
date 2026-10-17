@@ -6,44 +6,18 @@ import { renderTemplate, textToHtmlParagraphs } from '../../shared/emailTemplate
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
-    const body = await req.json();
-    const data = body.data || {};
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
-    // Strip CR/LF from any field that flows into MIME headers to prevent
-    // header injection. Body fields are left intact (newlines are valid there).
+    const body = await req.json().catch(() => ({}));
+    const data = body.data || {};
     const stripCRLF = (v: unknown) => String(v == null ? '' : v).replace(/[\r\n]+/g, ' ').trim();
 
-    // --- Authorization gate (this endpoint has a public URL) ---
-    // Verify either an authenticated admin OR a real ContactMessage record
-    // created within the last 2 minutes that has not yet triggered an alert.
-    const user = await base44.auth.me().catch(() => null);
-    const isAdmin = user?.role === 'admin';
-
     const entityId = data.id || body.event?.entity_id;
-    let rec: any = null;
-    if (entityId) {
-      try {
-        rec = await base44.asServiceRole.entities.ContactMessage.get(entityId);
-      } catch (_e) {
-        rec = null;
-      }
-    }
-
-    const createdMs = rec?.created_date ? new Date(rec.created_date).getTime() : 0;
-    const alreadyNotified = String(rec?.description || '').startsWith('notified:');
-    const recordOk = !!rec && !alreadyNotified && createdMs > 0 && (Date.now() - createdMs) < 120_000;
-
-    if (!isAdmin && !recordOk) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (rec?.id && !alreadyNotified) {
-      await base44.asServiceRole.entities.ContactMessage.update(rec.id, {
-        description: `notified:${new Date().toISOString()}`,
-      }).catch(() => {});
-    }
-
+    const rec = entityId ? await base44.entities.ContactMessage.get(entityId).catch(() => null) : null;
     const sourceData = rec || data;
+
     const name = stripCRLF(sourceData.name) || 'Unknown';
     const email = stripCRLF(sourceData.email) || 'No email provided';
     const phone = stripCRLF(sourceData.phone) || '';
