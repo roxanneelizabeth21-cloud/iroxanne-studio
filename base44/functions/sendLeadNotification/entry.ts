@@ -12,6 +12,8 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const guard=await requireAuthenticated(base44);
     if(!guard.ok)return guard.response;
+    const actor=await base44.auth.me().catch(()=>null);
+    if(!actor||(actor.role!=='admin'&&actor.is_service!==true))return Response.json({error:'Forbidden'},{status:403});
     const body = await req.json().catch(() => ({}));
     const leadId = body.lead_id || body.id || body.entity_id;
     if (!leadId) return Response.json({ error: 'Missing lead_id' }, { status: 400 });
@@ -29,12 +31,12 @@ export default async function(req) {
     if (adminEmail && !lead.quote_admin_email_state) {
       await base44.asServiceRole.entities.Lead.update(lead.id,{quote_admin_email_state:'sending'});
       const rows: [string, string][] = [
-        ['Name', lead.name || ''],
-        ['Email', lead.email || ''],
-        ['Business', lead.business_name || ''],
-        ['Budget', budgetLabel(lead.budget_range)],
-        ['Estimated', lead.draft_estimate_status ? 'Notes-based draft: review scope and pricing in Quotes & Proposals.' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? `${lead.selected_package} website ($${lead.estimated_price_low ?? ''}); requested add-ons require a quote` : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : ''],
-        ['Pitch', lead.quick_pitch || ''],
+        ['Name', esc(lead.name || '')],
+        ['Email', esc(lead.email || '')],
+        ['Business', esc(lead.business_name || '')],
+        ['Budget', esc(budgetLabel(lead.budget_range))],
+        ['Estimated', esc(lead.draft_estimate_status ? 'Notes-based draft: review scope and pricing in Quotes & Proposals.' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? `${lead.selected_package} website ($${lead.estimated_price_low ?? ''}); requested add-ons require a quote` : lead.estimated_price_low != null ? `$${lead.estimated_price_low}–$${lead.estimated_price_high} (${lead.estimated_tier || ''})` : '')],
+        ['Pitch', esc(lead.quick_pitch || '')],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
         to: adminEmail,
@@ -54,9 +56,9 @@ export default async function(req) {
       await base44.asServiceRole.entities.Lead.update(lead.id,{quote_confirmation_email_state:'sending'});
       const firstName = (lead.name || '').split(' ')[0] || 'there';
       const summary: [string, string][] = [
-        ['Business', lead.business_name || ''],
-        ['Requested help', lead.selected_package === 'Not sure' ? 'Help shaping your idea' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? 'Website' : lead.selected_package || ''],
-        ['Ideal launch', lead.ideal_launch_date || ''],
+        ['Business', esc(lead.business_name || '')],
+        ['Requested help', esc(lead.selected_package === 'Not sure' ? 'Help shaping your idea' : ['Quick Win','Starter','Business Website'].includes(lead.selected_package) ? 'Website' : lead.selected_package || '')],
+        ['Ideal launch', esc(lead.ideal_launch_date || '')],
       ].filter(([, v]) => v);
       await sendStudioEmail(base44,{
         to: lead.email,

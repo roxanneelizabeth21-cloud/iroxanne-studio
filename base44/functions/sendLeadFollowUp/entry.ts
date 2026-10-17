@@ -9,6 +9,8 @@ export default async function(req: Request) {
  try {
   const base44=createClientFromRequest(req),guard=await requireAuthenticated(base44);
   if(!guard.ok)return guard.response;
+  const actor=await base44.auth.me().catch(()=>null);
+  if(!actor||(actor.role!=='admin'&&actor.is_service!==true))return Response.json({error:'Forbidden'},{status:403});
   const body=await req.json().catch(()=>({}));
   const id=body.lead_id||body.id||body.entity_id;
   if(!id)return Response.json({error:'Missing lead_id'},{status:400});

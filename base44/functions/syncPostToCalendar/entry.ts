@@ -78,6 +78,10 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     const auth = await requireAuthenticated(base44);
     if (!auth.ok) return auth.response;
+    const actor = await base44.auth.me().catch(() => null);
+    if (!actor || (actor.role !== 'admin' && actor.is_service !== true)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await req.json().catch(() => ({}));
 

@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 import { sendGmail } from '../../shared/gmail.ts';
-import { brandedEmail, detailRows } from '../../shared/emailBrand.ts';
+import { brandedEmail, detailRows, esc } from '../../shared/emailBrand.ts';
 import { renderTemplate, textToHtmlParagraphs } from '../../shared/emailTemplates.ts';
 
 // Fires on Subscriber create (entity automation). Sends a Gmail alert to
@@ -45,13 +45,13 @@ Deno.serve(async (req) => {
     });
     const emailBody = brandedEmail({
       title: 'New subscriber',
-      content: `${textToHtmlParagraphs(intro)}
+      content: `${textToHtmlParagraphs(esc(intro))}
 ${detailRows([
-  ['Email', email],
-  ['Name', name],
-  ['Source', source],
-  ['UTM', utm],
-  ['Signed up', signedUp],
+  ['Email', esc(email)],
+  ['Name', esc(name)],
+  ['Source', esc(source)],
+  ['UTM', esc(utm)],
+  ['Signed up', esc(signedUp)],
 ])}`,
       footerNote: 'Manage all subscribers in your admin → Subscribers.',
     });

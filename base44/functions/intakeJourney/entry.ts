@@ -18,10 +18,11 @@ export default async function(req: Request) {
       for (const key of FIELDS) if (Object.hasOwn(body.answers || {},key)) updates[key]=body.answers[key];
       if (Array.isArray(body.answers?.requests) && Array.isArray(record.requests)) {
         const incoming = new Map(body.answers.requests.map((r:any)=>[r?.id,r]));
+        const safeUrl = (u: any) => typeof u === 'string' && /^https?:\/\/\S+$/i.test(u.trim());
         updates.requests = record.requests.map((r:any)=>{
           const n:any = incoming.get(r.id); if (!n) return r;
           const answer = String(n.answer ?? r.answer ?? '').slice(0,5000);
-          const file_urls = Array.isArray(n.file_urls) ? n.file_urls.filter((u:any)=>typeof u==='string').slice(0,20) : (r.file_urls||[]);
+          const file_urls = Array.isArray(n.file_urls) ? n.file_urls.filter(safeUrl).map((u:string)=>u.trim()).slice(0,20) : (r.file_urls||[]).filter(safeUrl);
           return { ...r, answer, file_urls };
         });
         const acct = (updates.requests as any[]).find(r=>r.id==='platform_account_email');

@@ -2,12 +2,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { FROM_NAME, unsubscribeUrl, SITE_URL } from '../../shared/subscriberEmail.ts';
 import { renderTemplate, subscriberEmailHtml } from '../../shared/emailTemplates.ts';
 
-// Public subscriber-capture endpoint. Runs as service role to bypass the
-// admin-only read/update RLS on Subscriber — so anonymous visitors still get
-// true dedupe (existing record updated, not a duplicate created).
-// Sends the branded welcome email and stamps welcome_sent_at on success, so a
-// later signup on a different page doesn't send it twice. A send failure must
-// never fail the signup itself.
+const enc = new TextEncoder();
+const hex = (bytes: Uint8Array) => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+const sha256 = async (text: string) => hex(new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(text))));
+
+// Public subscriber-capture endpoint with server-side rate limiting and double opt-in
+// confirmation before sending any welcome email to unverified addresses.
 async function sendWelcome(base44: any, email: string, name: string | undefined, recordId: string): Promise<boolean> {
   try {
     const { subject, text } = await renderTemplate(base44, 'fan_welcome', {
@@ -31,6 +31,9 @@ async function sendWelcome(base44: any, email: string, name: string | undefined,
 
 export default async function(req: Request): Promise<Response> {
   try {
+    if (req.method !== 'POST') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405 });
+    }
     const base44 = createClientFromRequest(req);
 
     let body: any;
@@ -41,15 +44,48 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const email = (body?.email || '').toString().trim().toLowerCase();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return Response.json({ error: 'A valid email is required' }, { status: 400 });
     }
 
-    const name = body?.name ? body.name.toString().trim() : undefined;
-    const source_slug = body?.source_slug ? body.source_slug.toString() : 'newsletter';
-    const utm_source = body?.utm_source ? body.utm_source.toString() : undefined;
-    const utm_medium = body?.utm_medium ? body.utm_medium.toString() : undefined;
-    const utm_campaign = body?.utm_campaign ? body.utm_campaign.toString() : undefined;
+    // Per-IP and global daily rate limit against subscriber flooding / mail-bombing
+    const nowMs = Date.now();
+    const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
+    const ipTag = `ip:${(await sha256(new Date(nowMs).toISOString().slice(0, 10) + ':' + ip)).slice(0, 24)}`;
+    const recentSubs = await base44.asServiceRole.entities.Subscriber.list('-created_date', 100).catch(() => []);
+    const lastDaySubs = (recentSubs || []).filter((r: any) => nowMs - Date.parse(r.created_date || '') < 86_400_000);
+    if (lastDaySubs.length >= 50) {
+      return Response.json({ error: 'Too many signup requests today. Please try again tomorrow.' }, { status: 429 });
+    }
+    const lastHourFromIp = lastDaySubs.filter(
+      (r: any) => nowMs - Date.parse(r.created_date || '') < 3_600_000 && String(r.description || '').includes(ipTag)
+    );
+    if (lastHourFromIp.length >= 3) {
+      return Response.json({ error: 'Too many signup requests. Please try again later.' }, { status: 429 });
+    }
+
+    const clean = (v: unknown, max = 120) => (typeof v === 'string' ? v.replace(/[\r\n<>]/g, '').trim().slice(0, max) : undefined);
+    const name = clean(body?.name, 100);
+    const source_slug = clean(body?.source_slug, 80) || 'newsletter';
+    const utm_source = clean(body?.utm_source, 100);
+    const utm_medium = clean(body?.utm_medium, 100);
+    const utm_campaign = clean(body?.utm_campaign, 100);
+
+    // Check whether caller proved ownership via a verified QuoteEmailVerification token or admin session
+    const actor = await base44.auth.me().catch(() => null);
+    let confirmedOptIn = actor?.role === 'admin';
+    if (!confirmedOptIn && body?.verification_id && typeof body?.verification_secret === 'string') {
+      const ver = await base44.asServiceRole.entities.QuoteEmailVerification.get(String(body.verification_id)).catch(() => null);
+      if (
+        ver &&
+        ver.email === email &&
+        ver.verified_until &&
+        Date.parse(ver.verified_until) > nowMs &&
+        ver.secret_hash === (await sha256(body.verification_secret))
+      ) {
+        confirmedOptIn = true;
+      }
+    }
 
     // Dedupe: update existing subscriber's source/UTMs rather than creating a dup.
     const existing = await base44.asServiceRole.entities.Subscriber.filter({ email });
@@ -61,17 +97,14 @@ export default async function(req: Request): Promise<Response> {
         utm_medium: utm_medium || prev.utm_medium,
         utm_campaign: utm_campaign || prev.utm_campaign,
       });
-      // A deduped signup still deserves the welcome email when the first one
-      // never went out (send failed, or the record predates welcome emails).
-      // Never re-send to someone who already got it, or who unsubscribed.
       let welcome_sent = false;
-      if (!prev.welcome_sent_at && prev.status !== 'unsubscribed') {
+      if (confirmedOptIn && !prev.welcome_sent_at && prev.status !== 'unsubscribed') {
         welcome_sent = await sendWelcome(base44, email, name || prev.name, prev.id);
       }
-      return Response.json({ created: false, record: updated, welcome_sent });
+      return Response.json({ created: false, record: { id: updated.id, status: updated.status }, welcome_sent });
     }
 
-    const now = new Date().toISOString();
+    const now = new Date(nowMs).toISOString();
     const record = await base44.asServiceRole.entities.Subscriber.create({
       email,
       name,
@@ -82,10 +115,11 @@ export default async function(req: Request): Promise<Response> {
       status: 'active',
       signup_date: now,
       consent_timestamp: now,
+      description: ipTag,
     });
-    const welcome_sent = await sendWelcome(base44, email, name, record.id);
+    const welcome_sent = confirmedOptIn ? await sendWelcome(base44, email, name, record.id) : false;
 
-    return Response.json({ created: true, record, welcome_sent });
+    return Response.json({ created: true, record: { id: record.id, status: record.status }, welcome_sent });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

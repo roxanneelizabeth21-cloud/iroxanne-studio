@@ -8,12 +8,16 @@ import { resolveLinkForPost } from '../../shared/publishPost.ts';
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const actor = await base44.auth.me().catch(() => null);
+    if (!actor || (actor.role !== 'admin' && actor.is_service !== true)) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const body = await req.json().catch(() => ({}));
     const postId = body?.event?.entity_id;
     if (!postId) return Response.json({ skipped: 'no entity id' });
 
-    const post = await base44.asServiceRole.entities.MarketingPost.get(postId);
-    if (!post) return Response.json({ skipped: 'post not found' });
+    const post = await base44.asServiceRole.entities.MarketingPost.get(postId).catch(() => null);
+    if (!post) return Response.json({ skipped: 'skipped' });
 
     if (String(post.instagram_first_comment || '').trim() || String(post.facebook_first_comment || '').trim()) {
       return Response.json({ skipped: 'already has a first comment' });

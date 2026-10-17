@@ -19,7 +19,12 @@ export async function requireAdmin(base44): Promise<{ ok: true; user: any } | { 
 export async function requireAuthenticated(base44): Promise<{ ok: true } | { ok: false; response: Response }> {
   try {
     const authed = await base44.auth.isAuthenticated();
-    if (authed) return { ok: true };
+    if (!authed) return { ok: false, response: Response.json({ error: 'Unauthorized' }, { status: 401 }) };
+    const actor = await base44.auth.me().catch(() => null);
+    if (!actor || (actor.role !== 'admin' && actor.is_service !== true)) {
+      return { ok: false, response: Response.json({ error: 'Forbidden' }, { status: 403 }) };
+    }
+    return { ok: true };
   } catch (_e) {}
   return { ok: false, response: Response.json({ error: 'Unauthorized' }, { status: 401 }) };
 }

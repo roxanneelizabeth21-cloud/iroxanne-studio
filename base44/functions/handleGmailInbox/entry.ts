@@ -47,8 +47,15 @@ async function sendPush(heading: string, message: string, url?: string) {
 
 export default async function (req) {
   const base44 = createClientFromRequest(req);
+  const actor = await base44.auth.me().catch(() => null);
+  if (!actor || (actor.role !== 'admin' && actor.is_service !== true)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   const body = await req.json().catch(() => ({}));
-  const messageIds: string[] = body?.data?.new_message_ids ?? [];
+  const rawIds = Array.isArray(body?.data?.new_message_ids) ? body.data.new_message_ids : [];
+  const messageIds: string[] = rawIds
+    .filter((id: any) => typeof id === 'string' && /^[a-zA-Z0-9_-]{4,64}$/.test(id))
+    .slice(0, 20);
 
   if (!messageIds.length) {
     return Response.json({ ok: true, processed: 0 });
