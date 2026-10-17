@@ -1,10 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { loadNotificationSettings, dateKeyInTZ, appOrigin, requireAuthenticated, marketingEmailHtml, shortTime } from '../../shared/marketingAdmin.ts';
-import { sendPush } from '../../shared/onesignal.ts';
+import { loadNotificationSettings, dateKeyInTZ, requireAuthenticated, marketingEmailHtml, shortTime } from '../../shared/marketingAdmin.ts';
 import { renderTemplate } from '../../shared/emailTemplates.ts';
-import { secrets } from 'base44:runtime';
 
-// sendDailyPostReminder — scheduled (service role). Emails AND pushes the
+// sendDailyPostReminder — scheduled (service role). Emails the
 // admin a summary of every post due today (in the admin's timezone), so they
 // start the day knowing what to post. Rejects anonymous external callers.
 export default async function (req) {
@@ -22,7 +20,6 @@ export default async function (req) {
     const due = (posts || []).filter((p) => p.status === 'Draft' || p.status === 'Pending Review' || p.status === 'Ready');
     if (!due.length) return Response.json({ sent: false, reason: 'no posts due today' });
 
-    const origin = appOrigin(req);
     const rows = due.map((p) => {
       const firstLine = String(p.hook || (p.caption || '').split('\n')[0] || '(no caption yet)').trim();
       const time = shortTime(p.scheduled_time);
@@ -34,7 +31,6 @@ export default async function (req) {
       plural: due.length === 1 ? '' : 's',
       date: today,
     });
-    const plainLines = rows.map((r) => `• ${r}`).join('\n');
     const body = marketingEmailHtml({
       heading: subject,
       intro,
@@ -52,9 +48,8 @@ export default async function (req) {
         emailed = { error: e.message };
       }
     }
-    const pushed = await sendPush({ heading: subject, message: plainLines, url: origin ? `${origin}/marketing` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY'), appId: ns.onesignal_app_id });
 
-    return Response.json({ sent: true, count: due.length, emailed, pushed });
+    return Response.json({ sent: true, count: due.length, emailed });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

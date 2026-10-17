@@ -67,35 +67,6 @@
     <meta name="facebook-domain-verification" content="2gcj9r75y8ysbc5nksayhfo1ue0lcc" />
 
     <!-- Legacy Meta pixels disabled pending ownership confirmation. -->
-    <!-- OneSignal Web Push (Typical Site, SDK v16) -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        // Route-based prompt suppression: do not initialize OneSignal on
-        // ad-traffic capture pages (/go/:slug) or admin/marketing routes.
-        // Only public content pages initialize -> dashboard-managed slidedown.
-        var path = window.location.pathname;
-        var suppressed =
-          path.indexOf("/go/") === 0 ||
-          path === "/MusicAdmin" ||
-          path === "/admin" ||
-          path.indexOf("/admin/") === 0 ||
-          path === "/AdminMusicLinks" ||
-          path === "/marketing" ||
-          path.indexOf("/marketing/") === 0;
-        if (suppressed) return;
-        var configuredAppId = window.__IROXANNE_ONESIGNAL_APP_ID__;
-        if (!configuredAppId) return;
-        await OneSignal.init({
-          appId: configuredAppId,
-          allowLocalhostAsSecureOrigin: true
-        });
-        // v16 slidedown prompt — shows the native push permission request once
-        // per browser. OneSignal suppresses repeat prompts automatically.
-        try { await OneSignal.Slidedown.promptPush(); } catch (e) {}
-      });
-    </script>
   </head>
   <body>
     <!-- Legacy noscript pixels disabled; IDs preserved in base44/legacy-meta-tracking.txt -->

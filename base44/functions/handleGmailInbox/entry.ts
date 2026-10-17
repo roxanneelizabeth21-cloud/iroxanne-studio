@@ -10,38 +10,11 @@
 // The platform pre-enriches the payload with data.new_message_ids — we do NOT
 // track historyId ourselves.
 //
-// NOTE: the OneSignal REST call is inlined here (rather than imported from
-// base44/shared/onesignal.ts) because this function is new and not yet
-// externalized from the client bundle by the dev server — importing the shared
-// helper (which uses `base44:runtime`) would break the client build. `base44:runtime`
-// resolves fine inside a function entry file.
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { secrets } from 'base44:runtime';
 
 // Markers for our own nudge emails — used to detect & skip them.
 const SELF_SUBJECT_PREFIX = '📬 ';
 const SELF_SUBJECT_MARKER = 'new reply in your inbox';
-
-async function sendPush(appId: string, heading: string, message: string, url?: string) {
-  const apiKey = secrets.get('ONESIGNAL_REST_API_KEY');
-  if (!apiKey || !appId) return;
-  try {
-    const body: any = {
-      app_id: appId,
-      contents: { en: message },
-      headings: { en: heading },
-      included_segments: ['Subscribed Users'],
-    };
-    if (url) body.url = url;
-    await fetch('https://onesignal.com/api/v1/notifications', {
-      method: 'POST',
-      headers: { Authorization: `Basic ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    // best-effort — never fail the webhook on a push error
-  }
-}
 
 export default async function (req) {
   const base44 = createClientFromRequest(req);
@@ -62,11 +35,9 @@ export default async function (req) {
   // The watched inbox address = the admin's notify_email. Nudging on messages
   // from this address (our own sent mail / self-notifications) loops forever.
   let selfAddress = '';
-  let onesignalAppId = '';
   try {
     const [bp = null] = await base44.entities.BrandProfile.list();
     selfAddress = String(bp?.notify_email || '').trim().toLowerCase();
-    onesignalAppId = String(bp?.onesignal_app_id || '').trim();
   } catch {}
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
@@ -100,18 +71,5 @@ export default async function (req) {
     }
   }
 
-  if (summaries.length) {
-    const count = summaries.length;
-    const heading = `📬 ${count} new reply${count > 1 ? 'ies' : ''} in your inbox`;
-    const message = summaries
-      .map((s) => `From: ${s.from}\nSubject: ${s.subject}`)
-      .join('\n\n');
-
-    // Push nudge only — never email the watched inbox.
-    try {
-      await sendPush(onesignalAppId, heading, message, 'https://mail.google.com');
-    } catch {}
-  }
-
-  return Response.json({ ok: true, processed: summaries.length });
+  return Response.json({ ok: true, processed: summaries.length, summaries });
 }

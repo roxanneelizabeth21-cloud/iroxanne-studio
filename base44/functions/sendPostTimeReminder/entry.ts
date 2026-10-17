@@ -3,18 +3,15 @@ import {
   loadNotificationSettings,
   dateKeyInTZ,
   hourMinuteInTZ,
-  appOrigin,
   requireAuthenticated,
   marketingEmailHtml,
   shortTime,
 } from '../../shared/marketingAdmin.ts';
-import { sendPush } from '../../shared/onesignal.ts';
 import { renderTemplate } from '../../shared/emailTemplates.ts';
-import { secrets } from 'base44:runtime';
 
 // sendPostTimeReminder — scheduled every 15 minutes (service role). At each run
 // it finds posts whose scheduled_time falls in the current 15-minute window
-// (in the admin's timezone) and sends a single combined push + email nudge so
+// (in the admin's timezone) and sends an email nudge so
 // the admin knows it's time to post. Rejects anonymous external callers.
 export default async function (req) {
   try {
@@ -57,13 +54,11 @@ export default async function (req) {
 
     if (!due.length) return Response.json({ sent: false, reason: `no posts in window ${startStr}-${endStr}` });
 
-    const origin = appOrigin(req);
     const rows = due.map((p) => {
       const firstLine = String(p.hook || (p.caption || '').split('\n')[0] || '(no caption yet)').trim();
       const time = shortTime(p.scheduled_time);
       return `${time ? time + ' ' : ''}${p.platform} · ${p.format || 'post'} — ${firstLine}`;
     });
-    const plainLines = rows.map((r) => `• ${r}`).join('\n');
 
     const { subject: heading, text: intro } = await renderTemplate(base44, 'admin_post_time', {
       count: due.length,
@@ -88,9 +83,8 @@ export default async function (req) {
         emailed = { error: e.message };
       }
     }
-    const pushed = await sendPush({ heading, message: plainLines, url: origin ? `${origin}/marketing` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY'), appId: ns.onesignal_app_id });
 
-    return Response.json({ sent: true, count: due.length, window: `${startStr}-${endStr}`, emailed, pushed });
+    return Response.json({ sent: true, count: due.length, window: `${startStr}-${endStr}`, emailed });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

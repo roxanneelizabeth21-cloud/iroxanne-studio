@@ -393,7 +393,6 @@ export async function loadNotificationSettings(base44): Promise<any> {
     const bp = list && list[0] ? list[0] : {};
     return {
       email: String(bp.notify_email || '').trim(),
-      onesignal_app_id: String(bp.onesignal_app_id || '').trim(),
       timezone: String(bp.notify_timezone || 'America/New_York').trim() || 'America/New_York',
       daily_posts: bp.notify_daily_posts !== false,
       weekly_digest: bp.notify_weekly_digest !== false,
@@ -402,7 +401,7 @@ export async function loadNotificationSettings(base44): Promise<any> {
       send_time: String(bp.notify_send_time || '08:00'),
     };
   } catch {
-    return { email: '', onesignal_app_id: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, launch_countdown: false, filming_nudge: true, send_time: '08:00' };
+    return { email: '', timezone: 'America/New_York', daily_posts: true, weekly_digest: true, launch_countdown: false, filming_nudge: true, send_time: '08:00' };
   }
 }
 

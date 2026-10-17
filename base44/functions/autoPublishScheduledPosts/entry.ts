@@ -4,13 +4,10 @@ import {
   loadNotificationSettings,
   dateKeyInTZ,
   hourMinuteInTZ,
-  appOrigin,
   requireAuthenticated,
   marketingEmailHtml,
 } from '../../shared/marketingAdmin.ts';
-import { sendPush } from '../../shared/onesignal.ts';
 import { renderTemplate } from '../../shared/emailTemplates.ts';
-import { secrets } from 'base44:runtime';
 
 // autoPublishScheduledPosts — scheduled every 15 minutes (service role).
 // Finds Ready posts with publish_mode = 'auto' whose scheduled_time falls in the
@@ -102,13 +99,10 @@ export default async function (req) {
       }
     }
 
-    // Notify the admin about failures (push + email with the specific error).
+    // Notify the admin about failures via email with the specific error.
     let emailed = null;
-    let pushed = null;
     if (failures.length) {
-      const origin = appOrigin(req);
       const rows = failures.map((f) => `${f.platform} — ${f.firstLine}: ${f.error}`);
-      const plainLines = rows.map((r) => `• ${r}`).join('\n');
       const { subject: heading, text: intro } = await renderTemplate(base44, 'admin_publish_failed', {
         count: failures.length,
         plural: failures.length === 1 ? '' : 's',
@@ -128,7 +122,6 @@ export default async function (req) {
           emailed = { error: e.message };
         }
       }
-      pushed = await sendPush({ heading, message: plainLines, url: origin ? `${origin}/marketing/calendar` : undefined, apiKey: secrets.get('ONESIGNAL_REST_API_KEY'), appId: ns.onesignal_app_id });
     }
 
     return Response.json({
@@ -138,7 +131,6 @@ export default async function (req) {
       successes,
       failures,
       emailed,
-      pushed,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
