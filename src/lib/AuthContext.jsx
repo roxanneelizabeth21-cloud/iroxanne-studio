@@ -117,6 +117,14 @@ export const AuthProvider = ({ children }) => {
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
+    try {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+      }
+      if ('caches' in window) {
+        caches.keys().then((names) => names.forEach((n) => caches.delete(n))).catch(() => {});
+      }
+    } catch {}
     
     if (shouldRedirect) {
       // Use the SDK's logout method which handles token cleanup and redirect

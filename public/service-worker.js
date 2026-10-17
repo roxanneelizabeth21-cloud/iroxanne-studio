@@ -1,4 +1,4 @@
-const CACHE_NAME = 'iroxanne-studio-v4';
+const CACHE_NAME = 'iroxanne-studio-v5';
 // NOTE: do NOT pre-cache /manifest.json — it must always be fetched fresh so
 // installed PWAs pick up branding/name updates instead of serving a stale copy.
 const urlsToCache = [
@@ -42,6 +42,19 @@ function hasAccessToken(url) {
   }
 }
 
+function isNoStoreOrPrivate(response) {
+  const cc = (response.headers && response.headers.get('cache-control')) || '';
+  return /\b(no-store|private)\b/i.test(cc);
+}
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((names) => Promise.all(names.map((n) => caches.delete(n))))
+    );
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -50,22 +63,13 @@ self.addEventListener('fetch', (event) => {
 
   const url = event.request.url;
 
-  // Network-first for API calls
-  if (url.includes('/api') || url.includes('base44')) {
-    event.respondWith(
-      fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === 'error') {
-          return response;
-        }
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-        return response;
-      }).catch(() => {
-        return caches.match(event.request);
-      })
-    );
+  // Never cache API, backend function, or authenticated requests — pass directly to network
+  if (
+    url.includes('/api') ||
+    url.includes('/functions/') ||
+    url.includes('base44') ||
+    event.request.headers.has('authorization')
+  ) {
     return;
   }
 
@@ -118,7 +122,7 @@ self.addEventListener('fetch', (event) => {
         return response;
       }
       return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === 'error' || hasAccessToken(event.request.url)) {
+        if (!response || response.status !== 200 || response.type === 'error' || hasAccessToken(event.request.url) || isNoStoreOrPrivate(response)) {
           return response;
         }
         const responseToCache = response.clone();
