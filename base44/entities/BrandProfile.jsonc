@@ -6,7 +6,6 @@
       "type": "string",
       "description": "Optional picture for Jade, the marketing agent. When set it replaces her built-in illustrated avatar in the post panel."
     },
-
     "studio_name": {
       "type": "string",
       "default": "iRoxanne Studio",
@@ -119,6 +118,10 @@
     "notify_email": {
       "type": "string",
       "description": "Email address to send reminder/digest emails to (the admin's account email)"
+    },
+    "onesignal_app_id": {
+      "type": "string",
+      "description": "OneSignal Web Push application ID"
     },
     "notify_timezone": {
       "type": "string",
