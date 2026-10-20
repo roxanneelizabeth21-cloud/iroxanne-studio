@@ -21,6 +21,8 @@ export default function MediaLibrary() {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
   const [selected, setSelected] = useState(null);
   const [canvaOpen, setCanvaOpen] = useState(false);
   const [filters, setFilters] = useState({ q: '', type: '', campaign: '', project: '', category: '' });
@@ -83,10 +85,27 @@ export default function MediaLibrary() {
     // Videos must become ClipAsset records — a video stored as a GalleryImage
     // renders in an <img> tag and shows up as a blank tile.
     const isVideo = (file.type || '').startsWith('video/') || /\.(mp4|mov|webm|m4v)$/i.test(file.name);
+    const projectPatch = filters.project ? { portfolio_item_id: filters.project } : {};
+    const categoryPatch = filters.category ? { media_category: filters.category } : {};
+    const campaignPatch = filters.campaign ? { campaign_id: filters.campaign } : {};
     if (isVideo) {
-      await base44.entities.ClipAsset.create({ title, file: file_url, source_type: 'My Footage' });
+      await base44.entities.ClipAsset.create({
+        title,
+        file: file_url,
+        source_type: 'My Footage',
+        ...projectPatch,
+        ...categoryPatch,
+      });
     } else {
-      await base44.entities.GalleryImage.create({ title, image_url: file_url, category: 'promo', source: 'upload' });
+      await base44.entities.GalleryImage.create({
+        title,
+        image_url: file_url,
+        category: 'promo',
+        source: 'upload',
+        ...projectPatch,
+        ...categoryPatch,
+        ...campaignPatch,
+      });
     }
   };
 
@@ -117,17 +136,96 @@ export default function MediaLibrary() {
     }
   };
 
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (e.dataTransfer?.items?.length) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = Math.max(0, dragCounter.current - 1);
+    if (dragCounter.current === 0) setIsDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = 0;
+    setIsDragging(false);
+    if (uploading) return;
+    const droppedFiles = e.dataTransfer?.files;
+    if (droppedFiles?.length) upload(droppedFiles);
+  };
+
+  const activeProjectTitle = filters.project
+    ? (filters.project === STUDIO_SERVICE_ID
+      ? STUDIO_SERVICE_ITEM.title
+      : portfolioItems.find((r) => r.id === filters.project)?.title)
+    : '';
+
   return (
-    <div className="space-y-4">
+    <div
+      className="space-y-4 relative"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <HowThisWorks
         steps={[
-          'Upload your graphics and videos here once, and they become reusable on every post.',
+          'Drag and drop multiple graphics or videos into the upload box (or anywhere on this page), and they become reusable on every post.',
           'Bring finished designs across with Import from Canva.',
           'Narrow things down with the search box and the filters below it.',
           'Tap any tile to see where that piece of media has been used and to file it under a project.',
         ]}
         note="Everything is filed under the project it belongs to, so a project's screenshots and promos stay together."
       />
+
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => !uploading && fileRef.current?.click()}
+        onKeyDown={(e) => {
+          if ((e.key === 'Enter' || e.key === ' ') && !uploading) {
+            e.preventDefault();
+            fileRef.current?.click();
+          }
+        }}
+        className={`rounded-2xl border-2 border-dashed p-5 text-center transition-colors cursor-pointer ${
+          isDragging
+            ? 'border-primary bg-primary/10'
+            : 'border-border/80 bg-card/50 hover:border-primary/50 hover:bg-primary/5'
+        } ${uploading ? 'pointer-events-none opacity-75' : ''}`}
+      >
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
+          </div>
+          <div className="text-center sm:text-left">
+            <p className="text-sm font-medium text-foreground">
+              {uploading && uploadProgress
+                ? `Uploading ${uploadProgress.done} of ${uploadProgress.total} files…`
+                : isDragging
+                  ? 'Drop your files here to upload'
+                  : 'Drag & drop multiple images or videos here, or click to browse'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {activeProjectTitle
+                ? `New uploads will be filed under ${activeProjectTitle}${filters.category ? ` · ${filters.category}` : ''}.`
+                : 'Supports multiple PNG, JPG, WebP, MP4, and MOV files at once.'}
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 justify-between">
         <div className="relative flex-1 min-w-[220px]">

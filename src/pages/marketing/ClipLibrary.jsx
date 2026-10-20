@@ -70,11 +70,39 @@ function UploadForm({ projects, onDone }) {
     }
   };
 
+  const [dragging, setDragging] = useState(false);
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+    const dropped = e.dataTransfer?.files;
+    if (dropped?.length) addFiles([...dropped]);
+  };
+
   return (
     <div className="glass rounded-2xl p-5 space-y-4">
-      <div className="flex items-center gap-3 flex-wrap">
-        <label className={FL}>Add clips</label>
-        <input ref={inputRef} type="file" accept="video/*,image/*" multiple onChange={(e) => addFiles([...e.target.files])} className="text-xs" />
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
+        onDrop={onDrop}
+        className={`rounded-xl border-2 border-dashed p-5 text-center cursor-pointer transition-colors ${
+          dragging ? 'border-primary bg-primary/10' : 'border-border/70 hover:border-primary/50 hover:bg-primary/5'
+        }`}
+      >
+        <Upload className="h-6 w-6 text-primary mx-auto mb-1.5" />
+        <p className="text-sm font-medium">Drag & drop multiple clips or images here, or click to browse</p>
+        <p className="text-xs text-muted-foreground mt-0.5">Select as many video or image files as you want at once</p>
+        <input ref={inputRef} type="file" accept="video/*,image/*" multiple onChange={(e) => addFiles([...e.target.files])} className="hidden" />
       </div>
 
       {rows.length > 0 && (
