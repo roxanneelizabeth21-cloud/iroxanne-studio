@@ -12,6 +12,15 @@ export default function CaseStudy() {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    base44.auth.me().then((user) => {
+      if (active) setIsAdmin(user?.role === 'admin');
+    }).catch(() => { if (active) setIsAdmin(false); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -26,10 +35,11 @@ export default function CaseStudy() {
   }, [slug]);
 
   const generateVideo = async () => {
-    if (!item?.id || generating) return;
+    if (!item?.id || generating || !isAdmin) return;
+    if (!window.confirm('Generate a HeyGen video presentation for this project? This action uses paid HeyGen credits.')) return;
     setGenerating(true);
     try {
-      const res = await base44.functions.invoke('generateCaseStudyVideo', { portfolio_item_id: item.id });
+      const res = await base44.functions.invoke('generateCaseStudyVideo', { portfolio_item_id: item.id, allow_heygen: true });
       const data = res?.data ?? res;
       if (data?.error) throw new Error(data.error);
       if (data?.watch_url) {
@@ -144,7 +154,7 @@ export default function CaseStudy() {
               </a>
             )}
 
-            <button
+            {isAdmin && <button
               onClick={generateVideo}
               disabled={generating}
               className="mt-4 inline-flex items-center gap-2 h-12 px-7 rounded-full border border-[#2D2A4A]/20 bg-card text-[#2D2A4A] dark:text-[#756130] text-[14px] font-semibold transition hover:bg-[#2D2A4A]/5 disabled:opacity-60 shadow-sm"
@@ -152,7 +162,7 @@ export default function CaseStudy() {
             >
               {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
               {generating ? 'Generating…' : 'Generate video presentation'}
-            </button>
+            </button>}
           </article>
         )}
       </main>
