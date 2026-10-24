@@ -1,0 +1,24 @@
+name: HeyGen safety checks
+on:
+  pull_request:
+    paths:
+      - 'src/pages/CaseStudy.jsx'
+      - 'base44/functions/generateCaseStudyVideo/entry.ts'
+      - 'base44/shared/heygen.ts'
+      - 'scripts/heygen-safety-checks.mjs'
+      - '.github/workflows/heygen-safety.yml'
+  workflow_dispatch:
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/heygen-safety-checks.mjs
+      - run: npm run build

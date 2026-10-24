@@ -12,13 +12,14 @@ export default async function(req) {
     const { portfolio_item_id } = body || {};
     if (!portfolio_item_id) return Response.json({ error: 'portfolio_item_id is required' }, { status: 400 });
 
-    // Hard guard — prevents accidental HeyGen credit usage.
+    // Reject missing consent before accessing credentials or paid endpoints.
+    if (body?.allow_heygen !== true) return Response.json({ error: 'Explicit HeyGen credit authorization is required' }, { status: 400 });
     guardHeyGenCall(body);
-
-    const apiKey = getHeyGenApiKey();
 
     const item = await loadPortfolioItem(base44, portfolio_item_id);
     if (!item) return Response.json({ error: 'Portfolio item not found' }, { status: 404 });
+
+    const apiKey = getHeyGenApiKey();
 
     const prompt = buildPrompt(item);
 
