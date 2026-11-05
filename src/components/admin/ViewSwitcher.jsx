@@ -13,7 +13,7 @@ export default function ViewSwitcher() {
   return (
     <div className="view-switcher">
       <Link to="/" className="vs-brand">
-        <BrandLogo height="h-9" />
+        <BrandLogo height="h-9" swapInDark />
       </Link>
       <div className="vs-tabs">
         <button
