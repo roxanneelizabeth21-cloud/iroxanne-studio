@@ -61,6 +61,10 @@ export default function Contact() {
             <a href="mailto:info@iroxannestudio.com" className="mt-1.5 block text-[14px] font-medium text-foreground hover:text-[#2D2A4A] transition" style={{ fontFamily: "'Inter', sans-serif" }}>info@iroxannestudio.com</a>
           </div>
           <div className="rounded-2xl border border-[#2D2A4A]/10 bg-card p-5">
+            <p className="text-[12px] font-semibold uppercase tracking-wide text-[#B8942E]" style={{ fontFamily: "'Inter', sans-serif" }}>Phone</p>
+            <a href="tel:+18392703623" className="mt-1.5 block text-[14px] font-medium text-foreground underline underline-offset-4" style={{ fontFamily: "'Inter', sans-serif" }}>839-270-3623</a>
+          </div>
+          <div className="rounded-2xl border border-[#2D2A4A]/10 bg-card p-5">
             <p className="text-[12px] font-semibold uppercase tracking-wide text-[#B8942E]" style={{ fontFamily: "'Inter', sans-serif" }}>Mailing address</p>
             <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>10612 Providence Rd STE D — PMB 747<br />Charlotte, NC 28277</p>
           </div>
