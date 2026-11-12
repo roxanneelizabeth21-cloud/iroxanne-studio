@@ -22,6 +22,7 @@ export default function SiteFooter() {
           <div className="flex flex-col sm:items-start">
             <span className="font-semibold text-muted-foreground">iRoxanne Studio</span>
             <a href="mailto:info@iroxannestudio.com" className="text-muted-foreground/80 hover:text-foreground transition">info@iroxannestudio.com</a>
+            <a href="tel:+18392703623" className="text-muted-foreground/80 hover:text-foreground transition">839-270-3623</a>
             <span className="text-muted-foreground/60">10612 Providence Rd STE D — PMB 747, Charlotte, NC 28277</span>
           </div>
           <div className="flex items-center gap-5">
