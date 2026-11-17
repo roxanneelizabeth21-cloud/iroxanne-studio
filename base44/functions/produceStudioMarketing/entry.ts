@@ -41,7 +41,10 @@ export default async function(req) {
    prompt:'Review this marketing draft and image for iRoxanne Studio. Pass only if warm, nontechnical, truthful hypothetical copy, no invented client stories or outcomes, no pricing or guarantees, no gibberish or malformed imagery. Reject repetitive generic sales copy. Assess the actual attached image; if unavailable set pass=false. Return pass boolean and reason. Copy: '+JSON.stringify(content),
    file_urls:[image_url],response_json_schema:{type:'object',properties:{pass:{type:'boolean'},reason:{type:'string'}},required:['pass','reason']}
   });
-  if (quality?.pass !== true) throw new Error('Creative review failed: '+String(quality?.reason||'Image could not be inspected'));
+  if (quality?.pass !== true) {
+   await e.MarketingProduction.update(job.id,{image_url:'',phase:'image'});
+   throw new Error('Creative review failed: '+String(quality?.reason||'Image could not be inspected'));
+  }
   // Owner requires personal approval for every post; AI checks never approve.
   const automatic=false;
   if (!!job.facebook_post_id !== !!job.instagram_post_id) throw new Error('An earlier two-record story needs review before production can complete. Existing content was preserved.');
