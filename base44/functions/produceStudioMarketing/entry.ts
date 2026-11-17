@@ -29,7 +29,7 @@ export default async function(req) {
    await e.MarketingProduction.update(job.id,{content,phase:'image'});
   }
   validateCopy(content);
-  let image_url=job.image_url;
+  let image_url=job.error?.startsWith('Creative review failed:') ? '' : job.image_url;
   if(!image_url) {
    const image=await b.asServiceRole.integrations.Core.GenerateImage({prompt:content.image_prompt+' Finished editorial graphic, 4:5 portrait, strong focal point, intentional scale and contrast, story-specific subject. Use brand plum/cream/gold as accents, not a compulsory dark backdrop. No text, no logos, no invented app interface. Keep subject within generous margins.'});
    image_url=image?.url||image?.data?.url;
