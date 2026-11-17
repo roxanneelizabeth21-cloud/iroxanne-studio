@@ -5,7 +5,7 @@ export default function Hero() {
    <div>
     <p className="studio-eyebrow">Custom websites & apps · Built by Roxanne</p>
     <h1>I build websites that help customers find you<br/>and apps that <em>make your work easier.</em></h1>
-    <p className="studio-lead">I’m Roxanne. Tell me what you’d like your customers to do online or what you’d like to simplify in your day-to-day work.</p>
+    <p className="studio-lead">I’m Roxanne. What would you like your website or app to do for you or your customers?</p>
     <p className="studio-note">We’ll figure out what to build together.</p>
     <div className="studio-actions"><a className="studio-button" href="#business-concepts">Explore what we could build <ArrowRight size={17}/></a><a className="studio-text-link" href="/contact">Talk with Roxanne <ArrowUpRight size={17}/></a></div>
    </div>
