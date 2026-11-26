@@ -22,7 +22,7 @@ export default async function(req) {
    const recent=await e.MarketingPost.list('-created_date',30);
    const themes=['an early idea becoming useful','an everyday task that could be easier','a hypothetical community or family app','a warm referral invitation'];
    content=await b.asServiceRole.integrations.Core.InvokeLLM({
-    prompt:STUDIO_CONTEXT+'\nCreate one story with separate Facebook and Instagram captions. Theme: '+themes[slot.index]+'. No invented personal anecdotes, clients, results, prices or promises. Use hypothetical situations, not claims about completed work. Instagram should invite a conversation, not promise a clickable caption link. Return facebook, instagram, hook, image_prompt. Vary the visual approach: editorial photography, narrative illustration, close-up human activity or a bold visual metaphor. Choose what best conveys this story. Plum/cream/gold are accents; avoid repetitive purple backgrounds. No text or fake UI. Avoid recent hooks: '+JSON.stringify(recent.map(p=>p.hook).filter(Boolean)),
+    prompt:STUDIO_CONTEXT+'\nCreate one story with separate Facebook and Instagram captions. Theme: '+themes[slot.index]+'. No invented personal anecdotes, clients, results, prices or promises. Use hypothetical situations, not claims about completed work. Instagram should invite a conversation, not promise a clickable caption link. Return facebook, instagram, hook, image_prompt. Vary the visual approach: editorial photography, narrative illustration, close-up human activity or a bold visual metaphor. Choose what best conveys this story. Plum/cream/gold are accents; avoid repetitive purple backgrounds. The image_prompt must describe a scene with no text, handwriting, written lists, signs or screens, and any paper or notebooks must be blank. No fake UI. Avoid recent hooks: '+JSON.stringify(recent.map(p=>p.hook).filter(Boolean)),
     response_json_schema:{type:'object',properties:{facebook:{type:'string'},instagram:{type:'string'},hook:{type:'string'},image_prompt:{type:'string'}},required:['facebook','instagram','hook','image_prompt']}
    });
    validateCopy(content);
@@ -31,7 +31,7 @@ export default async function(req) {
   validateCopy(content);
   let image_url=job.error?.startsWith('Creative review failed:') ? '' : job.image_url;
   if(!image_url) {
-   const image=await b.asServiceRole.integrations.Core.GenerateImage({prompt:content.image_prompt+' Finished editorial graphic, 4:5 portrait, strong focal point, intentional scale and contrast, story-specific subject. Use brand plum/cream/gold as accents, not a compulsory dark backdrop. No text, no logos, no invented app interface. Keep subject within generous margins.'});
+   const image=await b.asServiceRole.integrations.Core.GenerateImage({prompt:content.image_prompt+' Finished editorial graphic, 4:5 portrait, strong focal point, intentional scale and contrast, story-specific subject. Use brand plum/cream/gold as accents, not a compulsory dark backdrop. Absolutely no text of any kind: no words, letters, numbers, handwriting, notes, lists, signs, labels, books with visible writing, screens or captions. All paper, notebooks and surfaces must be blank. No logos, no invented app interface. Keep subject within generous margins.'});
    image_url=image?.url||image?.data?.url;
    if(!image_url || !/^https:\/\//.test(image_url)) throw new Error('Image service did not return a usable asset');
    await e.MarketingProduction.update(job.id,{image_url,phase:'quality'});
